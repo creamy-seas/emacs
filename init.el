@@ -31,7 +31,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (elfeed try yasnippet-snippets company-irony captain expand-region mark-multiple linum-relative popup-kill-ring swiper epa-file symon dmenu diminish spaceline company dashboard rainbow-delimiters sudo-edit hungry-delete avy ido-vertical-mode beacon f org-bullets spacemacs-theme which-key use-package auctex yasnippet w3 undo-tree switch-window smex ranger powerline nlinum-relative multiple-cursors minimap autopair auto-complete alpha ace-jump-mode)))
+    (elfeed-web hydra elfeed-goodies elfeed-org try yasnippet-snippets company-irony captain expand-region mark-multiple linum-relative popup-kill-ring swiper epa-file symon dmenu diminish spaceline company dashboard rainbow-delimiters sudo-edit hungry-delete avy ido-vertical-mode beacon f org-bullets spacemacs-theme which-key use-package auctex yasnippet w3 undo-tree switch-window smex ranger powerline nlinum-relative multiple-cursors minimap autopair auto-complete alpha ace-jump-mode)))
  '(symon-mode t)
  '(tramp-default-host "134.219.128.96" nil (tramp))
  '(tramp-default-method "ssh" nil (tramp))
@@ -41,5 +41,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#2d3743" :foreground "#e1e1e0" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 190 :width normal :foundry "nil" :family "Inconsolata")))))
+ '(default ((t (:inherit nil :stipple nil :background "#2d3743" :foreground "#e1e1e0" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 175 :width normal :foundry "nil" :family "Inconsolata"))))
+ '(elfeed-search-date-face ((t :foreground "#11a" :weight bold)))
+ '(elfeed-search-feed-face ((t :foreground "#444" :weight bold)))
+ '(elfeed-search-title-face ((t :foreground "#3ef" :weight bold))))
 
