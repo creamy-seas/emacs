@@ -129,6 +129,8 @@ press a function key to enter new keybinding
 
   (push '(starred elfeed-search-starred-title-face) elfeed-search-face-alist)
 #+END_SRC
+** image chaseup
+The problem is that the entry content only includes the tiny reddit-hosted thumbnail and Elfeed doesn't know to chase through the chain of links to get to the actual image that you care about. You could try assigning your own function to elfeed-show-refresh-function that treats reddit posts differently (and calling the default for everything else). You'd need to shr-insert an img element with the full size image as the src.
 * autocomplete in document (company mode)                      :company:mode:
 1) you need to first check that clang is on computer =clang --version=
 2) then make sure that cmake is also installed =brew install cmake=
@@ -272,11 +274,17 @@ to call it use =s-enter=
     :ensure t
     :config
     (custom-set-variables
-    '(tramp-default-method "ssh")
-    '(tramp-default-user "antonov")
-    '(tramp-default-host "134.219.128.96")))
-    (add-to-list 'tramp-default-proxies-alist
-		 '("134\\.219\\.128\\.96" "root" "/ssh:antonov@134.219.128.96:"))
+     '(tramp-default-method "ssh")
+     '(tramp-default-user "antonov")
+     '(tramp-default-host "192.168.0.5")))
+  ;;  (add-to-list 'tramp-default-user-alist
+  ;;               '("ssh" "192\\.168\\.0\\.5#6767" "antonov")))
+    ;;  (custom-set-variables
+    ;;  '(tramp-default-method "ssh")
+  ;;  '(tramp-default-user "antonov")
+     ;;  '(tramp-default-host "134.219.128.96")))
+  ;;   (add-to-list 'tramp-default-proxies-alist
+  ;;	       '("134\\.219\\.128\\.96" "root" ;;"/ssh:antonov@134.219.128.96:"))
   ;;when using /sudo:134.219.128.96 we first login to the proxy via my antonov@134.219.128.96 account, and then | as sudo to the root@134.219.128.96
   ;;([host] [username] [proxy])
 #+END_SRC
@@ -383,6 +391,10 @@ to call it use =s-enter=
 ** do not shot startup screen
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-screen t)
+#+END_SRC
+** maximise to full screen
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'default-frame-alist '(fullscreen . maximized))
 #+END_SRC
 ** startup dashboard
 #+BEGIN_SRC emacs-lisp
@@ -593,6 +605,10 @@ hexadecimal in programming mode will show up in a coloured box
 dfsfdsa and that is that. come on. why doesnt it work? do i. dsfds. dsfdsdsaaaa. hheh. dsfdasflkjdsa. hrelo. tetst. dsfsa.  
 
 * Aesthetics
+** move mouse around
+#+BEGIN_SRC emacs-lisp
+  (setq mouse-avoidance-mode "cat-and-mouse")
+#+END_SRC
 ** Title bars
 #+BEGIN_SRC emacs-lisp
   (setq frame-title-format "nsdap")
@@ -664,3 +680,13 @@ to access the inconsolata font you need to
 #+BEGIN_SRC emacs-lisp
   (load-theme 'misterioso)
 #+END_SRC
+** line highlight
+#+BEGIN_SRC emacs-lisp
+  (global-hl-line-mode 1)
+  (set-face-background 'hl-line "#3e4446")
+  (set-cursor-color "yellow")
+#+END_SRC
+
+
+
+

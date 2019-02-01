@@ -31,9 +31,9 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (elfeed-web hydra elfeed-goodies elfeed-org try yasnippet-snippets company-irony captain expand-region mark-multiple linum-relative popup-kill-ring swiper epa-file symon dmenu diminish spaceline company dashboard rainbow-delimiters sudo-edit hungry-delete avy ido-vertical-mode beacon f org-bullets spacemacs-theme which-key use-package auctex yasnippet w3 undo-tree switch-window smex ranger powerline nlinum-relative multiple-cursors minimap autopair auto-complete alpha ace-jump-mode)))
+    (counsel ox-reveal elfeed-web hydra elfeed-goodies elfeed-org try yasnippet-snippets company-irony captain expand-region mark-multiple linum-relative popup-kill-ring swiper epa-file symon dmenu diminish spaceline company dashboard rainbow-delimiters sudo-edit hungry-delete avy ido-vertical-mode beacon f org-bullets spacemacs-theme which-key use-package auctex yasnippet w3 undo-tree switch-window smex ranger powerline nlinum-relative multiple-cursors minimap autopair auto-complete alpha ace-jump-mode)))
  '(symon-mode t)
- '(tramp-default-host "134.219.128.96" nil (tramp))
+ '(tramp-default-host "192.168.0.5" nil (tramp))
  '(tramp-default-method "ssh" nil (tramp))
  '(tramp-default-user "antonov" nil (tramp)))
 (custom-set-faces
