@@ -529,24 +529,28 @@ to access the inconsolata font you need to
 **** run =M-x customize= go to =faces= then =defaults= and type =Inconsolata=
 ** bottoms bar
 #+BEGIN_SRC emacs-lisp
-  (use-package powerline
+  ;(use-package powerline			
+  ;  :ensure t
+  ;  :init
+  ;  (powerline-center-theme)
+  ;  (setq ns-use-srgb-colorspace nil))
+  ;(setq powerline-default-separator 'wave)
+  (use-package spaceline
     :ensure t
-    :init
-    (powerline-center-theme)
-    (setq ns-use-srgb-colorspace nil))
-  (setq powerline-default-separator 'wave)
-  ;;(use-package spaceline
-  ;;  :ensure t
-  ;;  :config
-  ;;  (require 'spaceline-config)
-  ;;  (setq powerline-default-separator (quote arrow))
-  ;;  (setq ns-use-srgb-colorspace nil)
-  ;;  (spaceline-spacemacs-theme))
+    :config
+    (require 'spaceline-config)
+    (setq powerline-default-separator (quote arrow))
+    (setq ns-use-srgb-colorspace nil)
+    (spaceline-spacemacs-theme))
 #+END_SRC
 
 ** theme
 #+BEGIN_SRC emacs-lisp
-  (load-theme 'misterioso)
+  ;;(load-theme 'misterioso)
+  (use-package spacemacs-theme
+    :defer t
+    :ensure t
+    :config (load-theme 'spacemacs-dark))
 #+END_SRC
 
 * Emacs colouring
