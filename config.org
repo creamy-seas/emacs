@@ -9,25 +9,39 @@
 #+END_SRC
 * Autocapitalize                                                :not_working:
 #+BEGIN_SRC emacs-lisp
-    (use-package captain
-      :ensure t
-      :init
+  ;;  (use-package captain
+  ;;    :ensure t
+  ;;    :init
   ;;    (global-captain-mode t)
   ;;    (add-hook 'org-mode-h captain-predicate 'captain-sentence-start-function)
-      ;;only in capitalize in comments in programming mode
-      (add-hook 'prog-mode-hook (lambda ()
-				  (setq captain-predicate (lambda () nth 8 (syntax-ppss (point))))))
-      ;;always capitalize in text mode
-      (add-hook 'text-mode-hook
-		(lambda ()
-		  (setq captain-predicate (lambda () t))))
-      (add-hook 'org-mode-hook
-		(lambda ()
-		  (setq captain-predicate (lambda () (not (org-in-src-block-p))))))
-      )
+  ;;
+  ;;    (add-hook 'prog-mode-hook (lambda ()
+  ;;				(setq captain-predicate (lambda () nth 8 (syntax-ppss (point))))))
+  ;;
+  ;;    (add-hook 'text-mode-hook
+  ;;	      (lambda ()
+  ;;		(setq captain-predicate (lambda () t))))
+  ;;    (add-hook 'org-mode-hook
+  ;;	      (lambda ()
+  ;;		(setq captain-predicate (lambda () (not (org-in-src-block-p))))))
+  ;;    )
 #+END_SRC
 dfsfdsa and that is that. come on. why doesnt it work? do i. dsfds. dsfdsdsaaaa. hheh. dsfdasflkjdsa. hrelo. tetst. dsfsa.  
 
+* Global configuration
+#+BEGIN_SRC emacs-lisp 
+  (defun set-exec-path-from-shell-PATH ()
+    "Sets the exec-path to the same value used by the user shell"
+    (let ((path-from-shell
+           (replace-regexp-in-string
+            "[[:space:]\n]*$" ""
+            (shell-command-to-string "$SHELL -l -c 'echo $PATH'"))))
+      (setenv "PATH" path-from-shell)
+      (setq exec-path (split-string path-from-shell path-separator))))
+
+  ;; call function now
+  (set-exec-path-from-shell-PATH)
+ #+END_SRC
 * Very cool benis
 ** multiple cursors
 #+BEGIN_SRC emacs-lisp
@@ -47,6 +61,81 @@ dfsfdsa and that is that. come on. why doesnt it work? do i. dsfds. dsfdsdsaaaa.
 #+BEGIN_SRC emacs-lisp
   (when window-system (global-prettify-symbols-mode t))
 #+END_SRC
+* C++ mode
+*** Preliminary instructions
+1) you need to first check that clang is on computer =clang --version=
+2) then make sure that cmake is also installed =brew install cmake=
+3) after filling out the code below, run =M-x irony-install-server=
+4) this should prepare to run some long command like:
+#+BEGIN_SRC sh
+  cmake -DCMAKE_INSTALL_PREFIX\=/Users/CCCP/.emacs.d/irony/  /Users/CCCP/.emacs.d/elpa/irony-20181218.2241/server && cmake --build . --use-stderr --config Release --target install
+#+END_SRC
+5) *copy this into terminal and evalute. Then it chould be working*
+#+BEGIN_SRC emacs-lisp 
+   ;;tie backend of autocompletion to company-irony
+  (use-package company-irony
+    :ensure t
+    :config
+    (require 'company)
+    (add-to-list 'company-backends 'company-irony))
+
+  ;;setup company-irony with c++ connection
+  (use-package irony
+    :ensure t
+    :config
+    (add-hook 'c++-mode-hook 'irony-mode)
+    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+
+  ;;finally ensure that c++-mode-hook is activated when company mode is on
+  (with-eval-after-load 'company
+    (add-hook 'c++-mode-hook 'company-mode))
+ #+END_SRC
+* Latex mode
+#+BEGIN_SRC emacs-lisp 
+  (use-package auctex
+    :defer t
+    :ensure t
+    :config(
+            (setq TeX-auto-save t) ;; document parsing enabled
+            (setq TeX-parse-self t)
+            (setq-default Tex-master nil) ;; every time a file is opened, specify the master file that inputs it
+
+            (add-hook 'LaTeX-mode-hook 'flyspell-mode) ;;spell checking
+            (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode) ;;show math
+
+            (add-hook 'LaTeX-mode-hook 'turn-on-reftex) ;;refferencing
+            (setq reftex-plug-into-AUCTeX t)
+            ))
+
+  ;; to install predictive, copy the github repository 'predictive' into the emacs.d folder
+  ;; predictive install location
+  (add-to-list 'load-path "~/.emacs.d/predictive/")
+  ;; dictionary locations
+  (add-to-list 'load-path "~/.emacs.d/predictive/latex/")
+  (add-to-list 'load-path "~/.emacs.d/predictive/texinfo/")
+  (add-to-list 'load-path "~/.emacs.d/predictive/html/")
+  ;; load predictive package
+  (require 'predictive)
+
+  (add-hook 'LaTeX-mode-hook 'predictive-mode)
+
+
+  ;;(add-hook 'LaTex-mode-hook (lambda ()
+  ;;			     (push
+  ;;			      '("Make" "latexmk -outdir=/tmp "))))
+
+  ;;even better autocompletion
+  ;;(use-package cdlatex
+  ;;  :ensure t)
+  ;;(add-hook 'Latex-mode-hook 'turn-on-cd)
+  ;;
+  ;;
+  ;;
+  ;;(setq-default TeX-master nil)
+  ;;
+  ;;
+  ;;(setq reftex-plug-into-AUCTeX t)
+ #+END_SRC
 * Org mode
 **** get rid of anoying 'ding in table'
 C-u C-c C-x !
@@ -307,7 +396,6 @@ The problem is that the entry content only includes the tiny reddit-hosted thumb
    ;;  :ensure t
    ;;  :config
    ;;  (customize-set-variable 'auth-sources "~/.authinfo"))
-
 * Alternative keybindings
 ** zoom in and out
 #+BEGIN_SRC emacs-lisp
@@ -319,36 +407,6 @@ The problem is that the entry content only includes the tiny reddit-hosted thumb
       ("g" text-scale-increase "in")
       ("l" text-scale-decrease "out")))
 #+END_SRC
-* Autocomplete C++
-*** Preliminary instructions
-1) you need to first check that clang is on computer =clang --version=
-2) then make sure that cmake is also installed =brew install cmake=
-3) after filling out the code below, run =M-x irony-install-server=
-4) this should prepare to run some long command like:
-#+BEGIN_SRC sh
-  cmake -DCMAKE_INSTALL_PREFIX\=/Users/CCCP/.emacs.d/irony/  /Users/CCCP/.emacs.d/elpa/irony-20181218.2241/server && cmake --build . --use-stderr --config Release --target install
-#+END_SRC
-5) *copy this into terminal and evalute. Then it chould be working*
-#+BEGIN_SRC emacs-lisp 
-   ;;tie backend of autocompletion to company-irony
-  (use-package company-irony
-    :ensure t
-    :config
-    (require 'company)
-    (add-to-list 'company-backends 'company-irony))
-
-  ;;setup company-irony with c++ connection
-  (use-package irony
-    :ensure t
-    :config
-    (add-hook 'c++-mode-hook 'irony-mode)
-    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
-
-  ;;finally ensure that c++-mode-hook is activated when company mode is on
-  (with-eval-after-load 'company
-    (add-hook 'c++-mode-hook 'company-mode))
- #+END_SRC
- 
 * Autocomplete Yasnippet                                           :yas_mode:
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
@@ -356,23 +414,27 @@ The problem is that the entry content only includes the tiny reddit-hosted thumb
     :config
     (use-package yasnippet-snippets
       :ensure t)
-    (yas-reload-all)
-    :hook
-    ('emacs-lisp-mode-hook)
-    ('latex-mode))
-  ;;(add-hook 'emacs-lisp-mode-hook 'yas-minor-mode)
-  ;;(add-hook 'latex-mode 'yas-minor-mode)
+    (yas-reload-all))
+  ;;  :hook
+  ;;  ('emacs-lisp-mode-hook)
+  ;;  ('latex-mode))
+  (add-hook 'emacs-lisp-mode-hook 'yas-minor-mode)
+  (add-hook 'latex-mode 'yas-minor-mode)
 #+END_SRC
-* Autocomplete                                                 :company:mode:
+* Autocomplete Company                                         :company:mode:
+Autocomplete shoudl only run in certain environments
 #+BEGIN_SRC emacs-lisp
   (use-package company
     :ensure t
-    :init
-    (add-hook 'after-init-hook 'global-company-mode)
     :config
+    (add-hook 'org-mode-hook 'company-mode)
+    (add-hook 'emacs-lisp-mode-hook 'company-mode)
+
+  ;;  (add-hook 'after-init-hook 'global-company-mode)
+  ;;  (setq company-global-modes '(not LaTeX-mode))
     (setq company-idle-delay 0)
     (setq company-minimum-prefix-length 3))
-    
+
   (with-eval-after-load 'company;;remap navigation only if company mode is loaded
     ;;cancel some keys, and activate others
     (define-key company-active-map (kbd "M-n") nil)
@@ -432,7 +494,16 @@ buffer suggestion is given as a list in the terminal command (after C-x b)
                               (?\( . ?\))
                               (?\" . ?\")
                               ))
-  (electric-pair-mode t)
+  (add-hook
+   'LaTex-mode-hook
+   (lambda ()
+     (setq-local electric-pair-inhibit-predicate
+                 `(lambda (c)
+                    (if (char-equal c ?{) t (,electric-pair-inhibit-predicate c))))))
+
+  (add-hook 'org-mode-hook 'electric-pair-mode)
+  (add-hook 'emacs-lisp-mode-hook 'electric-pair-mode)
+
 #+END_SRC
 ** highlight brackets
 #+BEGIN_SRC emacs-lisp
@@ -445,7 +516,9 @@ buffer suggestion is given as a list in the terminal command (after C-x b)
     :init
     (rainbow-delimiters-mode 1))
 #+END_SRC
-* Copying and pasting
+* Copying and searching
+** select all matching ones
+
 ** select same element
 #+BEGIN_SRC emacs-lisp
   (use-package mark-multiple
@@ -529,28 +602,28 @@ to access the inconsolata font you need to
 **** run =M-x customize= go to =faces= then =defaults= and type =Inconsolata=
 ** bottoms bar
 #+BEGIN_SRC emacs-lisp
-  ;(use-package powerline			
-  ;  :ensure t
-  ;  :init
-  ;  (powerline-center-theme)
-  ;  (setq ns-use-srgb-colorspace nil))
-  ;(setq powerline-default-separator 'wave)
-  (use-package spaceline
+  (use-package powerline			
     :ensure t
-    :config
-    (require 'spaceline-config)
-    (setq powerline-default-separator (quote arrow))
-    (setq ns-use-srgb-colorspace nil)
-    (spaceline-spacemacs-theme))
+    :init
+    (powerline-center-theme)
+    (setq ns-use-srgb-colorspace nil))
+  (setq powerline-default-separator 'wave)
+  ;(use-package spaceline
+  ;  :ensure t
+  ;  :config
+  ;  (require 'spaceline-config)
+  ;  (setq powerline-default-separator (quote arrow))
+  ;  (setq ns-use-srgb-colorspace nil)
+  ;  (spaceline-spacemacs-theme))
 #+END_SRC
 
 ** theme
 #+BEGIN_SRC emacs-lisp
-  ;;(load-theme 'misterioso)
-  (use-package spacemacs-theme
-    :defer t
-    :ensure t
-    :config (load-theme 'spacemacs-dark))
+  (load-theme 'misterioso)
+  ;;(use-package spacemacs-theme
+  ;;  :defer t
+  ;;  :ensure t
+  ;;  :config (load-theme 'spacemacs-dark))
 #+END_SRC
 
 * Emacs colouring
@@ -752,17 +825,24 @@ one can turn it off, or make the backups in a separate directory
     ("s-SPC" . 'dmenu))
 #+END_SRC
 * Hide minor modes                                             :must_be_last:
+hides the minor modes that are trivial
 #+BEGIN_SRC emacs-lisp
-    (use-package diminish
-      :ensure t
-      :init
-      (diminish 'hungry-delete-mode)
-      (diminish 'beacon-mode)		
-      (diminish 'which-key-mode)
-      (diminish 'undo-tree-mode)
-      (diminish 'rainbow-mode)
-      (diminish 'subword-mode)
-      (diminish 'visual-line-mode)
-      (diminish 'org-indent-mode)
-  )
+      (use-package diminish
+        :ensure t
+        :init
+        (diminish 'hungry-delete-mode)
+        (diminish 'beacon-mode)		
+        (diminish 'which-key-mode)
+        (diminish 'undo-tree-mode)
+  ;;      (diminish 'rainbow-mode)
+        (diminish 'subword-mode)
+        (diminish 'visual-line-mode)
+        (diminish 'org-indent-mode)
+        (diminish 'prettify-symbols-mode)
+  ;;      (diminish 'yas-minor-mode)
+        (diminish 'hl-line-mode)
+        (diminish 'column-number-mode)
+        (diminish 'line-number-mode)
+        (diminish 'linum-relative-mode)
+    )
 #+END_SRC
