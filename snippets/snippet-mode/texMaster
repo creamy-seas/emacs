@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: texMaster_for_latex
+# type: snippet
+# key: tm
+# 
+# --
+% -*- TeX-master: "../${1:MASTERFILEEDITHERENIGGER}" -*-$0
