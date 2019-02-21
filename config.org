@@ -149,29 +149,31 @@ path for emacs executables to
 * LaTeX mode (AUCTex LaTeX mode)
 - suggest my own commands
 ** commands                                                 :listOfCommands:
-|---------------+---------------------------------|
-| General       |                                 |
-| =C-c C-e=     | instert environment             |
-| =C-c C-s=     | insrt section                   |
-| =C-c C-f=     | font changes                    |
-| =C-c C-o=     | autohide section                |
-| =`=           | to get suggestion in math mode  |
-| =C-c C-q C-e= | to indent environemnt           |
-|---------------+---------------------------------|
-| Reftex        | =M-x reftex-info=               |
-| =C-c (=       | create a citation               |
-| =C-c )=       | refferences a citation          |
-| =C-c ==       | create content list to navigate |
-| =C-c [=       | citation                        |
-|---------------+---------------------------------|
-| Cdflatex      |                                 |
-| ="C-c {"=     | list the availble templates     |
-|---------------+---------------------------------|
-| Compling      |                                 |
-| =C-c C-c=     | run next latex generations tep  |
-| =C-c `=       | look through errors             |
-| =C-c C-v=     | Look at pdf                     |
-|---------------+---------------------------------|
+I will most be using CDLaTeX to type in a command and then autocomplete it
+Yasnippet to add stuff once I am there (like and an extra item) and create own tab commands
+I will use C-c C-f for font changes
+Indenting environment
+|-----------------+------------------------------------------+----------------------------------|
+| TABBING         | -----------------                        | ------------------               |
+| =cdlatex=       | tabbing out common commands              | =cdlatex=                        |
+| =yasnippet=     | tabbing out common and personal commands | =yasnippet= =yasnippet-snippets= |
+| CREATE AND FILL | ------------------                       | -------------------              |
+| =C-c C-f=       | change the font                          | =auctex=                         |
+| =C-c C-e=       | create figure environemnt                | =auctex=                         |
+| =C-c C-s=       | create section environment               | =auctex=                         |
+| =`=             | math mode help                           | =LaTeX-math-mode=                |
+| REFFERENCING    | ------------------                       | -------------------              |
+| =C-c (= =C-c )= | create/use refference                    | =reftex=                         |
+| =C-c [=         | refferences a citation                   | =reftex=                         |
+| =C-c ==         | create content list to navigate          | =reftex=                         |
+| AESTHETICS      | ------------                             | --------------                   |
+| =C-c C-o=       | autohide sections                        |                                  |
+| =C-c C-q C-e=   | indent environment or region             |                                  |
+| COMPILING       | ------------                             | --------------                   |
+| =C-c C-c=       | run next latex generations tep           |                                  |
+| =C-c `=         | look through errors                      |                                  |
+| =C-c C-v=       | Look at pdf                              |                                  |
+|-----------------+------------------------------------------+----------------------------------|
 
 ** general setup
 - =flyspell= requires ispell to be installed on computer
