@@ -3,6 +3,7 @@
 | =C-h b=            | list key bindings             |
 | =C-h m=            | get major and minor mode info |
 | =C-h v major-mode= | get major mode                |
+- =export EMACS_HOME="pathToemacs.dDirectory" in =.profile= of the system
 - =rx= to build regular expressions
 - global mode -> major mode -> minor mode in terms of key bindings
 - modes have hooks associeted with them
@@ -41,8 +42,6 @@ MAP is the keybinding map for the major or minor mode e.g. LaTeX-mode-map
 dfsfdsa and that is that. come on. why doesnt it work? do i. dsfds. dsfdsdsaaaa. hheh. dsfdasflkjdsa. hrelo. tetst. dsfsa.
 * Terminal and Bash
 ** import bash variables
-
-- fireUpScript is a function that creates a string from the emacs home directory
 #+BEGIN_SRC emacs-lisp 
   (use-package exec-path-from-shell
     :ensure t
@@ -51,9 +50,10 @@ dfsfdsa and that is that. come on. why doesnt it work? do i. dsfds. dsfdsdsaaaa.
       (exec-path-from-shell-initialize))
     )
 
-  (defun fireUpScript(scriptName)
+  (defun ilya_fire-up-from-emacs(relative-path)
+    "Create a string that appends onto the systems .emacs.d directory. EMACS_HOME must be specified in .profile"
     (setq path (exec-path-from-shell-copy-env "EMACS_HOME"))
-    (concat path "/" scriptName)
+    (concat path "/" relative-path)
     )
  #+END_SRC
 ** do not ask for kill confirmation
@@ -159,7 +159,8 @@ path for emacs executables to
     (add-hook 'c++-mode-hook 'company-mode))
  #+END_SRC
 * LaTeX mode (AUCTex LaTeX mode)
-- suggest my own commands
+
+will insert the required parameters
 ** commands                                                 :listOfCommands:
 I will most be using CDLaTeX to type in a command and then autocomplete it
 Yasnippet to add stuff once I am there (like and an extra item) and create own tab commands
@@ -215,16 +216,49 @@ Indenting environment
     )
  #+END_SRC
 ** pdf synchronisation
+*Some important AucTex commands and variables*
+| =TeX-expand-list-builtin= | pair list tying command with a % expression e.g. =%s= -> master latex file |
+| =TeX-expand-list=         | this variables contains the above =TeX-expand-list-builtin                 |
+| =Tex-command-expand=      | "commandInStringForm" 'TeX-master-file TeX-expand-list                     |
+|                           |                                                                            |
+- and important variable is =TeX-expand-list-builtin= which defines variables such as =%s= =%t=
+- using the function =TeX-command-expand= with variables ="COMMAND TO CALL"= =masterFile= and =TeX-expand-list-builtin=
 *** command to generate file
 #+BEGIN_SRC emacs-lisp
   (add-hook 'LaTeX-mode-hook (lambda ()
-                               (push
-                                `("gen_ilya" "/Users/CCCP/.emacs.d/ilya_scripts/pdf_engine.sh %s" TeX-run-TeX nil t
-                                  :help "Run latexmk on file")
-                                TeX-command-list)))
+                               (setq argument-list
+                                     `(TeX-run-TeX nil t :help "run latemk on the master file"))
+                               (setq command-script
+                                     (ilya_fire-up-from-emacs
+                                                   "ilya_scripts/pdf_engine.sh %s"))
+                               (setq process-name
+                                     (ilya_generate-process-name "genPDF"))
+
+                               (push command-script argument-list)
+                               (push process-name argument-list)
+                               (push argument-list
+                                     ;;                              `("gen_ilya" "/Users/CCCP/.emacs.d/ilya_scripts/pdf_engine.sh %s" TeX-run-TeX nil t
+                                     TeX-command-list)))
 
   (add-hook 'LaTeX-mode-hook
             (lambda () (setq TeX-command-default "gen_ilya")))
+ #+END_SRC
+*** key command generate file
+#+BEGIN_SRC emacs-lisp 
+  (defun ilya_gen-key ()
+    "Command binded to C-c C-g will generate pdf with latexmk"
+    (interactive)
+    (let (;;a) variable definition
+          (process-name (format "%s" (ilya_generate-process-name "genPDF")))
+          (command-script (ilya_fire-up-from-emacs "ilya_scripts/pdf_engine.sh %s"))
+          (expanded-command-script
+           (TeX-command-expand command-script 'TeX-master-file TeX-expand-list)))
+
+      ;;b) programming
+      (TeX-run-TeX process-name expanded-command-script (TeX-master-file))))
+
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (local-set-key (kbd "C-c C-g") (function ilya_gen-key))))
  #+END_SRC
 *** clean the directory of processed files
 #+BEGIN_SRC emacs-lisp 
@@ -239,22 +273,44 @@ Indenting environment
 2 - delete the buffer that was running the pdf
 
 #+BEGIN_SRC emacs-lisp
-  (defun jew_key()
+  (defun ilya_get-master-file-name ()
+    "Get the name of the master latex file in the current project"
     (interactive)
-    (minibuffer-message (TeX-master-file))
+    (TeX-command-expand "%s" 'TeX-master-file TeX-expand-list))
+
+  (defun ilya_generate-process-name (process_name)
+    "Generates a string of the form [processName_masterFile]"
+    (concat process_name "_" (ilya_get-master-file-name)))
+
+  (defun test()
+    (interactive)
+    (setq command-script (format "%S" (ilya_fire-up-from-emacs "ilya_scripts/pdf_engine.sh %s")))
+    (setq process-name (format "%S" (ilya_generate-process-name "genPDF")))
+    (setq other-arguments `(TeX-run-TeX nil t :help "run latemk on the master file"))
+    (push command-script other-arguments)
+    (push process-name other-arguments) 
+    (minibuffer-message other-arguments))
+
+
+  (defun ilya_jew-key()
+    (interactive)
+    (ignore-errors
+      ;;  (minibuffer-message (concat "卍 Exterminating " (TeX-master-file) " 卍"))
+
+      (minibuffer-message other-arguments)
       ;;1) delete "ilya_gen" processes (pdf generation) processes
     (ignore-errors (set-process-query-on-exit-flag (get-process "gen_ilya") nil))
     (ignore-errors (delete-process (get-process "gen_ilya")))
     ;;2) run the process to delete the buffer window
     (ignore-errors (kill-buffer "卍 Compiling Jews 卍"))
     ;;3) move the files in directory
-    (TeX-run-TeX "jew_process"
-                 (TeX-command-expand "/Users/CCCP/.emacs.d/ilya_scripts/jew_engine.sh %s" 'TeX-master-file)
-                 (TeX-master-file))
+
+    ;;  (minibuffer-message (TeX-command-expand "/Users %s" 'Tex-master-file TeX-expand-list))
+    (TeX-run-TeX "jew_process" (TeX-command-expand "/Users/CCCP/.emacs.d/ilya_scripts/jew_engine.sh %s" 'TeX-master-file TeX-expand-list) (TeX-master-file)))
+    )
     ;;4) close this window
   ;;  (ignore-errors (kill-buffer (get-buffer "卍 Compiling Jews 卍")))
     ;;(minibuffer-message "===> 卍 extermination complete 卍")
-    )
       ;;3) kill the buffers
   ;;   (ignore-errors (kill-buffer (get-buffer "卍 Compiling Jews 卍")))
   ;;   (ignore-errors (kill-buffer (get-buffer "卍 ====> Gassing (((Jews))) 卍"))))
@@ -262,8 +318,8 @@ Indenting environment
 
   (add-hook 'LaTeX-mode-hook (lambda ()
                                (define-key LaTeX-mode-map (kbd "C-c C-j") nil)
-                               (local-set-key (kbd "C-c C-j") (function jew_key))
-                               (global-set-key (kbd "C-c C-j") (function jew_key))))
+                               (local-set-key (kbd "C-c C-j") (function ilya_jew-key))
+                               (global-set-key (kbd "C-c C-j") (function ilya_jew-key))))
 
   ;;actually, global is overkill, since local will take precendence. and define-key... should be replaced with local-set-key too
 #+END_SRC
@@ -288,22 +344,17 @@ Indenting environment
 #+BEGIN_SRC emacs-lisp 
   (defun LaTeX-compilation-buffer-size ()
     "Resize the latex compilation buffer when it launches because it is seriosuly bloat"
-    (interactive)
     ;;1) check if a compilation window is running 
   ;;  (if (not (eq (get-process "gen_ilya") nil))
     (if (eq (get-buffer "卍 Compiling Jews 卍") nil)
         ;;a) if the window does not exist, create a new compilation window
         (progn
-          (minibuffer-message "Creating compile window")
-          (rename-buffer "卍 Compiling Jews 卍")
+          (ignore-errors (minibuffer-message "Renaming compile window to \"卍 Compiling Jews 卍\""))
+          (ignore-errors (rename-buffer "卍 Compiling Jews 卍"))
           )
       ;;b) if this is called after a compilation, delete the original compilation window and rename this one
-      (progn
-  ;;      (kill-buffer (get-buffer "卍 Compiling Jews 卍"))
-  ;;      (rename-buffer "卍 ====> Gassing (((Jews))) 卍")
-  ;;      (minibuffer-message "Deleting compile window")
         )
-    ))
+    )
 
   (add-hook 'comint-mode-hook (function LaTeX-compilation-buffer-size))
  #+END_SRC
@@ -657,7 +708,7 @@ work will be done with the python package manager pip (or pip3)
     (global-set-key (kbd "C-c C-n") 'yas-new-snippet)
     (yas-global-mode)
     :config
-    (add-to-list 'yas-snippet-dirs (fireUpScript "snippets/snippet-mode"))
+    (add-to-list 'yas-snippet-dirs (ilya_fire-up-from-emacs "snippets/snippet-mode")) ;; adds our locally created snippets
     (use-package yasnippet-snippets
       :ensure t)
     (yas-reload-all))
