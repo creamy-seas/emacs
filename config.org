@@ -221,54 +221,31 @@ Indenting environment
 | =TeX-expand-list=         | this variables contains the above =TeX-expand-list-builtin                 |
 | =Tex-command-expand=      | "commandInStringForm" 'TeX-master-file TeX-expand-list                     |
 |                           |                                                                            |
-- and important variable is =TeX-expand-list-builtin= which defines variables such as =%s= =%t=
-- using the function =TeX-command-expand= with variables ="COMMAND TO CALL"= =masterFile= and =TeX-expand-list-builtin=
-*** command to generate file
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'LaTeX-mode-hook (lambda ()
-                               (setq argument-list
-                                     `(TeX-run-TeX nil t :help "run latemk on the master file"))
-                               (setq command-script
-                                     (ilya_fire-up-from-emacs
-                                                   "ilya_scripts/pdf_engine.sh %s"))
-                               (setq process-name
-                                     (ilya_generate-process-name "genPDF"))
 
-                               (push command-script argument-list)
-                               (push process-name argument-list)
-                               (push argument-list
-                                     ;;                              `("gen_ilya" "/Users/CCCP/.emacs.d/ilya_scripts/pdf_engine.sh %s" TeX-run-TeX nil t
-                                     TeX-command-list)))
-
-  (add-hook 'LaTeX-mode-hook
-            (lambda () (setq TeX-command-default "gen_ilya")))
- #+END_SRC
 *** key command generate file
+- a process name is generated based off the name of the master file
+- the actual command calls the =pdf_engine= script in the emacs.d directory
+- expansion if performed to change =%s= to the master file name
 #+BEGIN_SRC emacs-lisp 
   (defun ilya_gen-key ()
     "Command binded to C-c C-g will generate pdf with latexmk"
     (interactive)
-    (let (;;a) variable definition
+    (minibuffer-message (concat "ᛋᛋ Generating \"" (TeX-master-file) "\" ᛋᛋ"))
+    (let (
+          ;;a) variable definition
           (process-name (format "%s" (ilya_generate-process-name "genPDF")))
-          (command-script (ilya_fire-up-from-emacs "ilya_scripts/pdf_engine.sh %s"))
-          (expanded-command-script
-           (TeX-command-expand command-script 'TeX-master-file TeX-expand-list)))
-
+          (command-script (ilya_fire-up-from-emacs "ilya_scripts/pdf_engine.sh %s")))
+    
       ;;b) programming
-      (TeX-run-TeX process-name expanded-command-script (TeX-master-file))))
+      (setq expanded-command-script
+           (TeX-command-expand command-script 'TeX-master-file TeX-expand-list))
+      (ignore-errors
+        (TeX-run-TeX process-name expanded-command-script (TeX-master-file)))))
 
   (add-hook 'LaTeX-mode-hook (lambda ()
                                (local-set-key (kbd "C-c C-g") (function ilya_gen-key))))
  #+END_SRC
-*** clean the directory of processed files
-#+BEGIN_SRC emacs-lisp 
-  (add-hook 'LaTeX-mode-hook (lambda ()
-                               (push
-                                '("jew_ilya" "/Users/CCCP/.emacs.d/ilya_scripts/jew_engine.sh %s" TeX-run-TeX nil t
-                                  :help "clean directory from nigger crap")
-                                TeX-command-list)))
- #+END_SRC
-**** this is the =C-c C-j= binding to the same command
+*** key command clear the files
 1 - stop and kill any pdf compilation process called ="gen_ilya"= without confirmation
 2 - delete the buffer that was running the pdf
 
@@ -282,34 +259,24 @@ Indenting environment
     "Generates a string of the form [processName_masterFile]"
     (concat process_name "_" (ilya_get-master-file-name)))
 
-  (defun test()
-    (interactive)
-    (setq command-script (format "%S" (ilya_fire-up-from-emacs "ilya_scripts/pdf_engine.sh %s")))
-    (setq process-name (format "%S" (ilya_generate-process-name "genPDF")))
-    (setq other-arguments `(TeX-run-TeX nil t :help "run latemk on the master file"))
-    (push command-script other-arguments)
-    (push process-name other-arguments) 
-    (minibuffer-message other-arguments))
-
-
   (defun ilya_jew-key()
     (interactive)
-    (ignore-errors
-      ;;  (minibuffer-message (concat "卍 Exterminating " (TeX-master-file) " 卍"))
+    (minibuffer-message (concat "卍 Exterminating \"" (ilya_get-master-file-name) "\" 卍"))
+   (let (
+         (process-name (format "%s" (ilya_generate-process-name "genPDF"))))
+     ;;1) delete the "genPDF" process for the current master file
+     (ignore-errors
+       (set-process-query-on-exit-flag (get-process process-name) nil)
+       (delete-process (get-process process-name)))
 
-      (minibuffer-message other-arguments)
-      ;;1) delete "ilya_gen" processes (pdf generation) processes
-    (ignore-errors (set-process-query-on-exit-flag (get-process "gen_ilya") nil))
-    (ignore-errors (delete-process (get-process "gen_ilya")))
-    ;;2) run the process to delete the buffer window
-    (ignore-errors (kill-buffer "卍 Compiling Jews 卍"))
-    ;;3) move the files in directory
+     ;;2) delete the buffer the window was in
+     (kill-buffer "卍 Compiling Jews 卍")
 
-    ;;  (minibuffer-message (TeX-command-expand "/Users %s" 'Tex-master-file TeX-expand-list))
-    (TeX-run-TeX "jew_process" (TeX-command-expand "/Users/CCCP/.emacs.d/ilya_scripts/jew_engine.sh %s" 'TeX-master-file TeX-expand-list) (TeX-master-file)))
-    )
-    ;;4) close this window
-  ;;  (ignore-errors (kill-buffer (get-buffer "卍 Compiling Jews 卍")))
+     ;;3) move the files in to the output directory
+     (ignore-errors (TeX-run-TeX "jew_process" (TeX-command-expand "/Users/CCCP/.emacs.d/ilya_scripts/jew_engine.sh %s" 'TeX-master-file TeX-expand-list) (TeX-master-file)))
+
+     ;;4) close this window
+     (kill-buffer (get-buffer "卍 Compiling Jews 卍"))))
     ;;(minibuffer-message "===> 卍 extermination complete 卍")
       ;;3) kill the buffers
   ;;   (ignore-errors (kill-buffer (get-buffer "卍 Compiling Jews 卍")))
