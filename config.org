@@ -1,3 +1,15 @@
+* Do not forget
+| =C-c C-h=          | list key bindings by mode     |
+| =C-h b=            | list key bindings             |
+| =C-h m=            | get major and minor mode info |
+| =C-h v major-mode= | get major mode                |
+- =rx= to build regular expressions
+- global mode -> major mode -> minor mode in terms of key bindings
+- modes have hooks associeted with them
+- when rebinding keys, call  =define-key MAP (kbd "combo") (function NAME)=
+MAP is the keybinding map for the major or minor mode e.g. LaTeX-mode-map
+- to set major mode key =(local-set key (kbd "combo") (function NAME)=
+- to set global key =(global-set-key (kbd "combo") (function NAME)=
 * Passwords (MUST HAVE gpg installed)                           :not_working:
 ** enable the encrypting password package
 #+BEGIN_SRC emacs-lisp
@@ -155,7 +167,7 @@ I will use C-c C-f for font changes
 Indenting environment
 |-----------------+------------------------------------------+----------------------------------|
 | TABBING         | -----------------                        | ------------------               |
-| =cdlatex=       | tabbing out common commands              | =cdlatex=                        |
+| =cdlatex=       | tabbing out common commands              | =cdlatex= help with =C-c ?=      |
 | =yasnippet=     | tabbing out common and personal commands | =yasnippet= =yasnippet-snippets= |
 | CREATE AND FILL | ------------------                       | -------------------              |
 | =C-c C-f=       | change the font                          | =auctex=                         |
@@ -167,8 +179,11 @@ Indenting environment
 | =C-c [=         | refferences a citation                   | =reftex=                         |
 | =C-c ==         | create content list to navigate          | =reftex=                         |
 | AESTHETICS      | ------------                             | --------------                   |
-| =C-c C-o=       | autohide sections                        |                                  |
+| =C-c C-o=       | autohide sections                        | =TeX-fold-mode=                  |
 | =C-c C-q C-e=   | indent environment or region             |                                  |
+| COMMENTING      | ------------                             | --------------                   |
+| =C-c '=         | comment paragraph                        |                                  |
+| =C-c ;=         | comment region                           |                                  |
 | COMPILING       | ------------                             | --------------                   |
 | =C-c C-c=       | run next latex generations tep           |                                  |
 | =C-c `=         | look through errors                      |                                  |
@@ -185,8 +200,8 @@ Indenting environment
     (setq TeX-parse-self t)  ;;access imported packages
     (setq TeX-save-query nil)  ;;don't prompt file save
     (setq-default TeX-show-compilation t)
+    (setq TeX-interactive-mode t)
     (setq Tex-master nil)  ;;specify master file for each project
-
     :config
     (add-hook 'LaTeX-mode-hook 'flyspell-mode)
     (add-hook 'LaTeX-mode-hook
@@ -194,21 +209,109 @@ Indenting environment
     (add-hook 'LaTeX-mode-hook
               (lambda () (set (make-variable-buffer-local 'TeX-electric-math)
                          (cons "$" "$"))))
-
     :hook
     (LaTeX-mode-hook . LaTeX-math-mode);; type ` to get suggestions
     (LaTeX-mode-hook . font-lock-mode);; font highlighting
     )
  #+END_SRC
+** pdf synchronisation
+*** command to generate file
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (push
+                                `("gen_ilya" "/Users/CCCP/.emacs.d/ilya_scripts/pdf_engine.sh %s" TeX-run-TeX nil t
+                                  :help "Run latexmk on file")
+                                TeX-command-list)))
+
+  (add-hook 'LaTeX-mode-hook
+            (lambda () (setq TeX-command-default "gen_ilya")))
+ #+END_SRC
+*** clean the directory of processed files
+#+BEGIN_SRC emacs-lisp 
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (push
+                                '("jew_ilya" "/Users/CCCP/.emacs.d/ilya_scripts/jew_engine.sh %s" TeX-run-TeX nil t
+                                  :help "clean directory from nigger crap")
+                                TeX-command-list)))
+ #+END_SRC
+**** this is the =C-c C-j= binding to the same command
+1 - stop and kill any pdf compilation process called ="gen_ilya"= without confirmation
+2 - delete the buffer that was running the pdf
+
+#+BEGIN_SRC emacs-lisp
+  (defun jew_key()
+    (interactive)
+    (minibuffer-message (TeX-master-file))
+      ;;1) delete "ilya_gen" processes (pdf generation) processes
+    (ignore-errors (set-process-query-on-exit-flag (get-process "gen_ilya") nil))
+    (ignore-errors (delete-process (get-process "gen_ilya")))
+    ;;2) run the process to delete the buffer window
+    (ignore-errors (kill-buffer "卍 Compiling Jews 卍"))
+    ;;3) move the files in directory
+    (TeX-run-TeX "jew_process"
+                 (TeX-command-expand "/Users/CCCP/.emacs.d/ilya_scripts/jew_engine.sh %s" 'TeX-master-file)
+                 (TeX-master-file))
+    ;;4) close this window
+  ;;  (ignore-errors (kill-buffer (get-buffer "卍 Compiling Jews 卍")))
+    ;;(minibuffer-message "===> 卍 extermination complete 卍")
+    )
+      ;;3) kill the buffers
+  ;;   (ignore-errors (kill-buffer (get-buffer "卍 Compiling Jews 卍")))
+  ;;   (ignore-errors (kill-buffer (get-buffer "卍 ====> Gassing (((Jews))) 卍"))))
+     ;;    (minibuffer-message "====> jew have been cleared - 卍 heil! 卍"))
+
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (define-key LaTeX-mode-map (kbd "C-c C-j") nil)
+                               (local-set-key (kbd "C-c C-j") (function jew_key))
+                               (global-set-key (kbd "C-c C-j") (function jew_key))))
+
+  ;;actually, global is overkill, since local will take precendence. and define-key... should be replaced with local-set-key too
+#+END_SRC
+*** jump to pdf
+- skim is run, reading the current line in the emacs buffer and highlighting it in the pdf
+- =syntex.gz= file needs to be in the directory for this to occur, so it's copied
+| unique to skim  |                                                      |
+| =-b=            | inserts a reading bar into the pdf                   |
+| =-g=            | tells it to load in background                       |
+| unique to emacs | commands in TeX-expand-list-builtin in =tex.el= file |
+| =%n=            | is the line number we are on                         |
+| =%o=            | is the output file name                              |
+| =%b=            | is the tex file name                                 |
+
+#+BEGIN_SRC emacs-lisp
+  (setq TeX-view-program-list
+        '(("SkimViewer" "/Users/CCCP/.emacs.d/ilya_scripts/search_engine.sh %s %n %o %b")))
+  (setq TeX-view-program-selection '((output-pdf "SkimViewer")))
+  (server-start)
+ #+END_SRC
+*** compilation window resize
+#+BEGIN_SRC emacs-lisp 
+  (defun LaTeX-compilation-buffer-size ()
+    "Resize the latex compilation buffer when it launches because it is seriosuly bloat"
+    (interactive)
+    ;;1) check if a compilation window is running 
+  ;;  (if (not (eq (get-process "gen_ilya") nil))
+    (if (eq (get-buffer "卍 Compiling Jews 卍") nil)
+        ;;a) if the window does not exist, create a new compilation window
+        (progn
+          (minibuffer-message "Creating compile window")
+          (rename-buffer "卍 Compiling Jews 卍")
+          )
+      ;;b) if this is called after a compilation, delete the original compilation window and rename this one
+      (progn
+  ;;      (kill-buffer (get-buffer "卍 Compiling Jews 卍"))
+  ;;      (rename-buffer "卍 ====> Gassing (((Jews))) 卍")
+  ;;      (minibuffer-message "Deleting compile window")
+        )
+    ))
+
+  (add-hook 'comint-mode-hook (function LaTeX-compilation-buffer-size))
+ #+END_SRC
+
 ** reftex
 #+BEGIN_SRC emacs-lisp 
   (use-package reftex
     :ensure t
-
-    :bind
-    (:map LaTeX-mode-map
-          ("C-c C-r" . reftex-query-replace-document)
-          ("C-c C-g" . reftex-grep-document))
     :init
     (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
     (setq reftex-plug-into-AUCTeX t)
@@ -220,56 +323,6 @@ Indenting environment
     :ensure t
     :config
     (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex))
- #+END_SRC
-** pdf synchronisation
-must specify =EMACS_PATH\=~/.emacs.d= in =.profile=
-
-| unique to emacs | commands in TeX-expand-list-builtin in =tex.el= file |
-| =%n=            | is the line number we are on                         |
-| =%o=            | is the output file name                              |
-| =%b=            | is the tex file name                                 |
-*** command to generate file using latexmk
-1- if files have already been generated into the output directory, copy them
-2- a pdf (=-pdf=) file is generated and automatically checked (=-pvc=) for changes using the supplied file (=%s=)
-  ;;                              '("gen_ilya" "mv _output/%s.* . 2> /dev/null; latexmk -pdf -pvc %s" TeX-run-TeX nil t
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'LaTeX-mode-hook (lambda ()
-                               (push
-                                `("gen_ilya" "/Users/CCCP/.emacs.d/ilya_scripts/pdf_engine.sh %s" TeX-run-TeX nil t
-                                  :help "Run latexmk on file")
-                                TeX-command-list)))
-
-    (add-hook 'TeX-mode-hook
-              (lambda () (setq TeX-command-default "gen_ilya")))
- #+END_SRC
-*** clean the directory of processed files
-1- remove auto directory and copy and files with this master file name into the output directoty
-#+BEGIN_SRC emacs-lisp 
-  (add-hook 'LaTeX-mode-hook (lambda ()
-                               (push
-                               '("jew_ilya" "/Users/CCCP/.emacs.d/ilya_scripts/jew_engine.sh %s" TeX-run-TeX nil t
-                               ;; '("jew_ilya" "rm -f -r auto; mkdir -p _output; mv %s.* _output; mv _output/%s.pdf _output/%s.tex ." TeX-run-TeX nil t
-                                  :help "clean directory from nigger crap")
-                                TeX-command-list)))
-
-  ;;'("jew_ilya" "latexmk -c %s && rm -r auto" TeX-run-TeX nil t
- #+END_SRC
-*** Program for when view (="C-c C-v"=) is run
-- skim is run, reading the current line in the emacs buffer and highlighting it in the pdf
-- =syntex.gz= file needs to be in the directory for this to occur, so it's copied
-| unique to skim  |                                    |
-| =-b=            | inserts a reading bar into the pdf |
-| =-g=            | tells it to load in background     |
-
-#+BEGIN_SRC emacs-lisp
-  ;; -b puts a reading bar up
-  (setq TeX-view-program-list
-        '(("SkimViewer" "/Users/CCCP/.emacs.d/ilya_scripts/search_engine.sh %s %n %o %b")))
-  ;; %s %n %o %a")))
-        ;;      '(("SkimViewer" "mv _output/%s.synctex.gz . ; /Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
-  (setq TeX-view-program-selection '((output-pdf "SkimViewer")))
-
-  (server-start)
  #+END_SRC
 ** matching regular expressions
 *Suppose we want to highlight certain constructs in a document*
@@ -316,6 +369,7 @@ The string below matches anything in quotes «» (to access quotes, run ="C-x 8 
 
   (global-set-key (kbd "C-c l") 'setBufferToSize)
  #+END_SRC
+
 * Org mode
 **** get rid of anoying 'ding in table'
 C-u C-c C-x !
@@ -1028,9 +1082,4 @@ hides the minor modes that are trivial
         (diminish 'line-number-mode)
         (diminish 'linum-relative-mode)
     )
-#+END_SRC
-* Cursor
-#+BEGIN_SRC emacs-lisp
-  (set-default 'cursor-type 'hbar)
-  (set-cursor-color "#FF0")
 #+END_SRC
