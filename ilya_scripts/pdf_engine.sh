@@ -21,9 +21,10 @@ else
     #3) if there is no master file, all operations are done on the parent directory
     relMastDir="."
 fi
-
+echo "$pwd"
 #4) copy previous compulation into the master folder
-mv $relMastDir/_output/$1.* $relMastDir 2> /dev/null
-
+mv $relMastDir/_output/$1.* $relMastDir/ 2> /dev/null
+#mv $relMastDir/_outputs/bibliography* $relMastDir/ 2> /dev/null
+sleep 1
 #5) run latexmk to create a pdf and run in contant update mode (pvc)
 latexmk -pdf -pvc $1

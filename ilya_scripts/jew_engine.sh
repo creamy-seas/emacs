@@ -12,19 +12,11 @@
 # $1 name of the master file (%s in auctex)
 #----------------------------------------
 
-#1) check if the master file is in this directory
-if [ -f $1 ]; then
-    #2) if the master file is in this directory, all operations done locally
-    relMastDir="."
-else
-    #3) if there is no master file, all operations are done on the parent directory
-    relMastDir="."
-fi
+#1) remove and copy the generate "_output" directory in the master directory
+rm -r ./auto 2> /dev/null
+mkdir -p ./_output 2> /dev/null
 
-#4) remove and copy the generate "_output" directory in the master directory
-rm -r $relMastDir/auto 2> /dev/null
-mkdir -p $relMastDir/_output
-
-#5) copy all the files into there and move pdf and tex back
-mv $relMastDir/$1.* $relMastDir/_output
-mv $relMastDir/_output/$1.{pdf,tex} $relMastDir
+#2) copy all the files into there and move pdf and tex back
+sleep 1
+mv -f "./$1."* ./_output 2> /dev/null
+mv "./_output/$1."{pdf,tex} . 2> /dev/null
