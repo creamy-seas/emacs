@@ -227,27 +227,28 @@ Indenting environment
 - the actual command calls the =pdf_engine= script in the emacs.d directory
 - expansion if performed to change =%s= to the master file name
 #+BEGIN_SRC emacs-lisp 
-  (defun ilya_gen-key ()
-    "Command binded to C-c C-m will make the pdf with latexmk"
-    (interactive)
-    (minibuffer-message (concat "ᛋᛋ Generating \"" (TeX-master-file) "\" ᛋᛋ"))
-    (let (
-          ;;a) variable definition
-          (process-name (format "%s" (ilya_generate-process-name "genPDF")))
-          (command-script (ilya_expand-latex-command (ilya_fire-up-from-emacs "ilya_scripts/pdf_engine.sh %s"))))
-          ;;(command-script (ilya_fire-up-from-emacs "ilya_scripts/pdf_engine.sh %s")))
+    (defun ilya_gen-key ()
+      "Command binded to C-c C-m will make the pdf with latexmk"
+      (interactive)
+      (minibuffer-message (concat "ᛋᛋ Generating \"" (TeX-master-file) "\" ᛋᛋ"))
+      (let (
+            ;;a) variable definition
+            (process-name (format "%s" (ilya_generate-process-name "genPDF")))
+            (command-script (ilya_expand-latex-command (ilya_fire-up-from-emacs "ilya_scripts/pdf_engine.sh %s"))))
+            ;;(command-script (ilya_fire-up-from-emacs "ilya_scripts/pdf_engine.sh %s")))
 
-      ;;b) expand some variables
-;;      (setq expanded-command-script
-;;            (TeX-command-expand command-script 'TeX-master-file TeX-expand-list))
+        ;;b) expand some variables
+  ;;      (setq expanded-command-script
+  ;;            (TeX-command-expand command-script 'TeX-master-file TeX-expand-list))
 
-      ;;c) launch the compulation buffer
-      (ilya_set-compilation-buffer-state (ilya_get-master-file-name) "genPDF")
-      (ignore-errors
-        (TeX-run-TeX process-name command-script (TeX-master-file)))))
+        ;;c) launch the compulation buffer
+        (ilya_set-compilation-buffer-state (ilya_get-master-file-name) "genPDF")
+        (ignore-errors
+        (TeX-run-TeX process-name command-script (TeX-master-file))))
+  )
 
-  (add-hook 'LaTeX-mode-hook (lambda ()
-                               (local-set-key (kbd "C-c C-m") (function ilya_gen-key))))
+    (add-hook 'LaTeX-mode-hook (lambda ()
+                                 (local-set-key (kbd "C-c C-m") (function ilya_gen-key))))
  #+END_SRC
 *** key command clear the files
 1 - stop and kill any pdf compilation process called ="gen_ilya"= without confirmation
@@ -292,12 +293,21 @@ Indenting environment
      ;;3) move the files in to the output directory
      (ilya_set-compilation-buffer-state (ilya_get-master-file-name) "jewGas")
      (ignore-errors 
-(TeX-run-TeX "jew_process" command-script (TeX-master-file))
-)
+       (TeX-run-TeX "jew_process" command-script (TeX-master-file))
+       )
+  ;;   (minibuffer-message "completed stage 1")
+
 
      ;;4) close this buffer window
-     (kill-buffer (get-buffer "卍 Exterminating 卍"))
+  ;;   (kill-buffer (get-buffer "卍 Exterminating 卍"))
+     ;;(ignore-errors(TeX-run-TeX "jew_process" command-script (TeX-master-file)))
+
      (minibuffer-message "===> 卍 Extermination complete 卍 - heil!")))
+
+  (defun test ()
+    "test"
+    (interactive)
+    (minibuffer-message (ilya_expand-latex-command "%a")))
 
   (add-hook 'LaTeX-mode-hook (lambda ()
                                (define-key LaTeX-mode-map (kbd "C-c C-j") nil)
@@ -337,6 +347,7 @@ Indenting environment
               (ignore-errors (rename-buffer ilya_compilation-name))))
         (if (string-equal ilya_compilation-process "jewGas")
             (progn
+              (minibuffer-message "here")
               (setq ilya_compilation-name "卍 Exterminating 卍")
               (ignore-errors (rename-buffer ilya_compilation-name))))
         )
