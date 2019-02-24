@@ -1,3 +1,4 @@
+
 * Do not forget
 | =C-c C-h=          | list key bindings by mode     |
 | =C-h b=            | list key bindings             |
@@ -222,10 +223,10 @@ Indenting environment
 | =Tex-command-expand=      | "commandInStringForm" 'TeX-master-file TeX-expand-list                     |
 |                           |                                                                            |
 
-*** key command generate file
-- a process name is generated based off the name of the master file
-- the actual command calls the =pdf_engine= script in the emacs.d directory
-- expansion if performed to change =%s= to the master file name
+*** generate file =C-c C-m=
+1 - a process name is generated based off the name of the master file
+2 - the actual command calls the =pdf_engine= script in the emacs.d directory
+3 - expansion if performed to change =%s= to the master file name
 #+BEGIN_SRC emacs-lisp 
     (defun ilya_gen-key ()
       "Command binded to C-c C-m will make the pdf with latexmk"
@@ -235,14 +236,10 @@ Indenting environment
             ;;a) variable definition
             (process-name (format "%s" (ilya_generate-process-name "genPDF")))
             (command-script (ilya_expand-latex-command (ilya_fire-up-from-emacs "ilya_scripts/pdf_engine.sh %s"))))
-            ;;(command-script (ilya_fire-up-from-emacs "ilya_scripts/pdf_engine.sh %s")))
 
-        ;;b) expand some variables
-  ;;      (setq expanded-command-script
-  ;;            (TeX-command-expand command-script 'TeX-master-file TeX-expand-list))
-
-        ;;c) launch the compulation buffer
+        ;;b) launch the compilation buffer
         (ilya_set-compilation-buffer-state (ilya_get-master-file-name) "genPDF")
+        (split-window-below)
         (ignore-errors
         (TeX-run-TeX process-name command-script (TeX-master-file))))
   )
@@ -250,71 +247,50 @@ Indenting environment
     (add-hook 'LaTeX-mode-hook (lambda ()
                                  (local-set-key (kbd "C-c C-m") (function ilya_gen-key))))
  #+END_SRC
-*** key command clear the files
-1 - stop and kill any pdf compilation process called ="gen_ilya"= without confirmation
-2 - delete the buffer that was running the pdf
+*** exterminate files =C-c C-j=
+1 - kill any running processes on this master files
+2 - delete the buffer that was running that process
+3 - move files into output directory
+4 - close this buffer as well
 
 #+BEGIN_SRC emacs-lisp
-  (defun ilya_set-compilation-buffer-state (master-file process)
-    "Set variables that the compulation buffer (latex) will then use to set the name"
-    (setq ilya_compilation-master-file master-file)
-    (setq ilya_compilation-process process))
+    (defun ilya_jew-key()
+      (interactive)
+      (minibuffer-message (concat "卍 Exterminating \"" (ilya_get-master-file-name) "\" 卍"))
+     (let (
+           (process-name (format "%s" (ilya_generate-process-name "genPDF")))
+           (command-script (ilya_expand-latex-command (ilya_fire-up-from-emacs "ilya_scripts/jew_engine.sh %s"))))
 
-  (defun ilya_get-master-file-name ()
-    "Get the name of the master latex file in the current project"
-    (interactive)
-    (TeX-command-expand "%s" 'TeX-master-file TeX-expand-list))
+       ;;1) delete the "genPDF" process for the current master file
+       (ignore-errors
+         (set-process-query-on-exit-flag (get-process process-name) nil)
+         (delete-process (get-process process-name)))
 
-  (defun ilya_generate-process-name (process_name)
-    "Generates a string of the form [processName_masterFile]"
-    (concat process_name "_" (ilya_get-master-file-name)))
+       ;;2) delete the buffer the process was in (reset the buffer name)
+       (ilya_set-compilation-buffer-state (ilya_get-master-file-name) "genPDF")
+       (ignore-errors (kill-buffer ilya_compilation-name))
 
-  (defun ilya_expand-latex-command (command-script)
-    "Expands the latex command by evaluating the % variables in accordance with the system's master file"
-    (TeX-command-expand command-script 'TeX-master-file TeX-expand-list)
-    )
+       ;;3) move the files in to the output directory
+       (ilya_set-compilation-buffer-state (ilya_get-master-file-name) "jewGas")
+       (ignore-errors 
+         (TeX-run-TeX "jew_process" command-script (TeX-master-file))
+         )
 
-  (defun ilya_jew-key()
-    (interactive)
-    (minibuffer-message (concat "卍 Exterminating \"" (ilya_get-master-file-name) "\" 卍"))
-   (let (
-         (process-name (format "%s" (ilya_generate-process-name "genPDF")))
-         (command-script (ilya_expand-latex-command (ilya_fire-up-from-emacs "ilya_scripts/jew_engine.sh %s"))))
+       ;;4) close this buffer window
+       (sleep-for 1)
+       (kill-buffer (get-buffer "卍 Exterminating 卍"))
+       (delete-window (get-buffer-window "卍 Exterminating 卍"))
+  ;;     (switch-to-buffer (get-buffer "卍 Exterminating 卍"))
+  ;;     (delete-window 1)
+    ;;   (kill-buffer-and-window)
+       (minibuffer-message "===> 卍 Extermination complete 卍 - heil!")))
 
-     ;;1) delete the "genPDF" process for the current master file
-     (ignore-errors
-       (set-process-query-on-exit-flag (get-process process-name) nil)
-       (delete-process (get-process process-name)))
+    (add-hook 'LaTeX-mode-hook (lambda ()
+                                 (define-key LaTeX-mode-map (kbd "C-c C-j") nil)
+                                 (local-set-key (kbd "C-c C-j") (function ilya_jew-key))
+                                 (global-set-key (kbd "C-c C-j") (function ilya_jew-key))))
 
-     ;;2) delete the buffer the process was in (reset the buffer name)
-     (ilya_set-compilation-buffer-state (ilya_get-master-file-name) "genPDF")
-     (ignore-errors (kill-buffer ilya_compilation-name))
-
-     ;;3) move the files in to the output directory
-     (ilya_set-compilation-buffer-state (ilya_get-master-file-name) "jewGas")
-     (ignore-errors 
-       (TeX-run-TeX "jew_process" command-script (TeX-master-file))
-       )
-  ;;   (minibuffer-message "completed stage 1")
-
-
-     ;;4) close this buffer window
-  ;;   (kill-buffer (get-buffer "卍 Exterminating 卍"))
-     ;;(ignore-errors(TeX-run-TeX "jew_process" command-script (TeX-master-file)))
-
-     (minibuffer-message "===> 卍 Extermination complete 卍 - heil!")))
-
-  (defun test ()
-    "test"
-    (interactive)
-    (minibuffer-message (ilya_expand-latex-command "%a")))
-
-  (add-hook 'LaTeX-mode-hook (lambda ()
-                               (define-key LaTeX-mode-map (kbd "C-c C-j") nil)
-                               (local-set-key (kbd "C-c C-j") (function ilya_jew-key))
-                               (global-set-key (kbd "C-c C-j") (function ilya_jew-key))))
-
-  ;;actually, global is overkill, since local will take precendence. and define-key... should be replaced with local-set-key too
+    ;;actually, global is overkill, since local will take precendence. and define-key... should be replaced with local-set-key too
 #+END_SRC
 *** jump to pdf
 - skim is run, reading the current line in the emacs buffer and highlighting it in the pdf
@@ -333,39 +309,53 @@ Indenting environment
   (setq TeX-view-program-selection '((output-pdf "SkimViewer")))
   (server-start)
  #+END_SRC
-*** compilation window resize
+*** supporting functions
 #+BEGIN_SRC emacs-lisp 
-    (defun LaTeX-compilation-buffer-size ()
-      "Resize the latex compilation buffer when it launches because it is seriosuly bloat"
+  (defun ilya_set-compilation-buffer-state (master-file process)
+    "Set variables that the compulation buffer (latex) will then use to set the name"
+    (setq ilya_compilation-master-file master-file)
+    (setq ilya_compilation-process process))
 
-      (progn
-        ;;1) pdf generation case
-        (if (string-equal ilya_compilation-process "genPDF")
-            (progn
-              (setq ilya_compilation-name
-                    (concat "ᛋᛋ Compiling [" ilya_compilation-master-file "] ᛋᛋ"))
-              (ignore-errors (rename-buffer ilya_compilation-name))))
-        (if (string-equal ilya_compilation-process "jewGas")
-            (progn
-              (minibuffer-message "here")
-              (setq ilya_compilation-name "卍 Exterminating 卍")
-              (ignore-errors (rename-buffer ilya_compilation-name))))
-        )
+  (defun ilya_get-master-file-name ()
+    "Get the name of the master latex file in the current project"
+    (interactive)
+    (TeX-command-expand "%s" 'TeX-master-file TeX-expand-list))
+
+  (defun ilya_generate-process-name (process_name)
+    "Generates a string of the form [processName_masterFile] to uniqely identify a process"
+    (concat process_name "_" (ilya_get-master-file-name)))
+
+  (defun ilya_expand-latex-command (command-script)
+    "Expands the latex command by evaluating the % variables in accordance with the system's master file"
+    (TeX-command-expand command-script 'TeX-master-file TeX-expand-list)
+    )
+
+  (defun ilya_LaTeX-compilation-buffer-size ()
+    "Resize the latex compilation buffer when it launches because it is seriosuly bloat"
+
+    (progn
+      (setq compilation-window-name "NA")
+    
+      ;;1) pdf generation case
+      (if (string-equal ilya_compilation-process "genPDF")
+          (progn
+            (setq ilya_compilation-name
+                  (concat "ᛋᛋ Compiling [" ilya_compilation-master-file "] ᛋᛋ"))
+            (ignore-errors (rename-buffer ilya_compilation-name))
+            (setq compilation-window-name (get-buffer-window ilya_compilation-name))))
+      ;;2) file clearing case
+      (if (string-equal ilya_compilation-process "jewGas")
+          (progn
+            (setq ilya_compilation-name "卍 Exterminating 卍")
+            (ignore-errors (rename-buffer ilya_compilation-name))
+            (setq compilation-window-name (get-buffer-window ilya_compilation-name))))
+
+      ;;3) resize the window
+      (window-resize-no-error compilation-window-name (- 5 (window-height compilation-window-name "floor")))
       )
+    )
 
-      ;;1) check if a compilation window is running 
-    ;;  (if (not (eq (get-process "gen_ilya") nil))
-    ;;  (if (eq (get-buffer "卍 Compiling Jews 卍") nil)
-          ;;a) if the window does not exist, create a new compilation window
-    ;;      (progn
-    ;;        (ignore-errors (minibuffer-message "Renaming compile window to \"卍 Compiling Jews 卍\""))
-    ;;        (ignore-errors (rename-buffer "卍 Compiling Jews 卍"))
-  ;;          )
-        ;;b) if this is called after a compilation, delete the original compilation window and rename this one
-      ;;    )
-    ;;  )
-
-    (add-hook 'comint-mode-hook (function LaTeX-compilation-buffer-size))
+  (add-hook 'comint-mode-hook (function ilya_LaTeX-compilation-buffer-size))
  #+END_SRC
 
 ** reftex

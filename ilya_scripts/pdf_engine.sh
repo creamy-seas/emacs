@@ -14,7 +14,7 @@
 
 #1) copy previous compilation into the master folder
 mv ./_output/$1.* ./ 2> /dev/null
-#mv $relMastDir/_outputs/bibliography* $relMastDir/ 2> /dev/null
 sleep 1
+
 #2) run latexmk to create a pdf and run in contant update mode (pvc)
 latexmk -pdf -pvc $1
