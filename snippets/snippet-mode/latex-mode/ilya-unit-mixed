@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ilya-unit-mixed
+# key: ium
+# --
+\iunitMixed{${1:math-unit}}{${2:text-unit}}$0

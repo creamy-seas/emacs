@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: dim2-matrix
+# key: pm2
+# --
+\begin{pmatrix}
+ $1 & $2\\
+ $3 & $4
+\end{pmatrix} $0

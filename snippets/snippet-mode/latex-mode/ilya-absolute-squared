@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ilya-absolute-squared
+# key: iabs
+# --
+\iabsSquared{${1:math-value}} $0

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ilya-ket
+# key: ik
+# --
+\iket{$1} $0
