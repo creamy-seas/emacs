@@ -1,10 +1,12 @@
-
 * Do not forget
 | =C-c C-h=          | list key bindings by mode     |
 | =C-h b=            | list key bindings             |
 | =C-h m=            | get major and minor mode info |
 | =C-h v major-mode= | get major mode                |
+
 - =export EMACS_HOME="pathToemacs.dDirectory" in =.profile= of the system
+- =make sure ispell is installed=
+
 - =rx= to build regular expressions
 - global mode -> major mode -> minor mode in terms of key bindings
 - modes have hooks associeted with them
@@ -159,7 +161,7 @@ path for emacs executables to
   (with-eval-after-load 'company
     (add-hook 'c++-mode-hook 'company-mode))
  #+END_SRC
-* LaTeX mode (AUCTex LaTeX mode)
+* LaTeX mode (AUCTex LaTeX mode)                          :emacs_home:ispell:
 
 will insert the required parameters
 ** commands                                                 :listOfCommands:
@@ -221,7 +223,6 @@ Indenting environment
 | =TeX-expand-list-builtin= | pair list tying command with a % expression e.g. =%s= -> master latex file |
 | =TeX-expand-list=         | this variables contains the above =TeX-expand-list-builtin                 |
 | =Tex-command-expand=      | "commandInStringForm" 'TeX-master-file TeX-expand-list                     |
-|                           |                                                                            |
 
 *** generate file =C-c C-m=
 1 - a process name is generated based off the name of the master file
@@ -335,14 +336,15 @@ Indenting environment
 
     (progn
       (setq compilation-window-name "NA")
-    
+
       ;;1) pdf generation case
       (if (string-equal ilya_compilation-process "genPDF")
           (progn
             (setq ilya_compilation-name
                   (concat "ᛋᛋ Compiling [" ilya_compilation-master-file "] ᛋᛋ"))
             (ignore-errors (rename-buffer ilya_compilation-name))
-            (setq compilation-window-name (get-buffer-window ilya_compilation-name))))
+            (setq compilation-window-name (get-buffer-window ilya_compilation-name))
+            (delete-window (get-buffer-window ilya_compilation-name))))
       ;;2) file clearing case
       (if (string-equal ilya_compilation-process "jewGas")
           (progn
@@ -778,9 +780,7 @@ buffer suggestion is given as a list in the terminal command (after C-x b)
     (kill-buffer (current-buffer)))
   (global-set-key (kbd "C-x k") 'kill-curr-buffer)
 #+END_SRC
-* Copying and searching
-** select all matching ones
-
+* Copying and killing
 ** select same element
 #+BEGIN_SRC emacs-lisp
   (use-package mark-multiple
@@ -831,6 +831,11 @@ nice popup menu when pasting of the past history
     :ensure t
     :bind ("M-y" . popup-kill-ring))
 #+END_SRC
+** select all cases (iedit)
+#+BEGIN_SRC emacs-lisp 
+  (use-package iedit
+    :ensure t)
+ #+END_SRC
 * Default loading screens
 ** do not show startup screen
 #+BEGIN_SRC emacs-lisp
@@ -933,7 +938,12 @@ becuase initially emacs keeps it in the original window
 ** jump using highlighted syntax
 the superior search method
 #+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "M-s") 'ace-jump-mode)
+  (use-package avy
+    :ensure t
+    :init
+    (global-set-key (kbd "M-s") 'avy-goto-word-or-subword-1)
+    (setq avy-background t))
+  ;;(global-set-key (kbd "M-s") 'ace-jump-mode)
 #+END_SRC
 
 ** searching
