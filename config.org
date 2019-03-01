@@ -307,6 +307,7 @@ Indenting environment
 #+BEGIN_SRC emacs-lisp
   (setq TeX-view-program-list
         '(("SkimViewer" "/Users/CCCP/.emacs.d/ilya_scripts/search_engine.sh %s %n %o %b")))
+
   (setq TeX-view-program-selection '((output-pdf "SkimViewer")))
   (server-start)
  #+END_SRC
@@ -1046,28 +1047,31 @@ to access the inconsolata font you need to
 **** run =M-x customize= go to =faces= then =defaults= and type =Inconsolata=
 ** bottoms bar
 #+BEGIN_SRC emacs-lisp
-  (use-package powerline			
-    :ensure t
-    :init
-    (powerline-center-theme)
-    (setq ns-use-srgb-colorspace nil))
-  (setq powerline-default-separator 'wave)
-  ;(use-package spaceline
-  ;  :ensure t
-  ;  :config
-  ;  (require 'spaceline-config)
-  ;  (setq powerline-default-separator (quote arrow))
-  ;  (setq ns-use-srgb-colorspace nil)
-  ;  (spaceline-spacemacs-theme))
+  (if (file-exists-p "~/macbook_localiser")
+      (progn
+        (use-package powerline			
+          :ensure t
+          :init
+          (powerline-center-theme)
+          (setq ns-use-srgb-colorspace nil))
+        (setq powerline-default-separator 'wave))
+    (progn
+      (use-package spaceline
+        :ensure t
+        :config
+        (require 'spaceline-config)
+        (setq powerline-default-separator (quote arrow))
+        (setq ns-use-srgb-colorspace nil)
+        (spaceline-spacemacs-theme))))
 #+END_SRC
-
 ** theme
 #+BEGIN_SRC emacs-lisp
-  (load-theme 'misterioso)
-  ;;(use-package spacemacs-theme
-  ;;  :defer t
-  ;;  :ensure t
-  ;;  :config (load-theme 'spacemacs-dark))
+  (if (file-exists-p "~/macbook_localiser")
+      (load-theme 'misterioso)
+    (use-package spacemacs-theme
+      :defer t
+      :ensure t
+      :config (load-theme 'spacemacs-dark)))
 #+END_SRC
 ** line highlight
 #+BEGIN_SRC emacs-lisp
