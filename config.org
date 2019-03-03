@@ -229,24 +229,25 @@ Indenting environment
 2 - the actual command calls the =pdf_engine= script in the emacs.d directory
 3 - expansion if performed to change =%s= to the master file name
 #+BEGIN_SRC emacs-lisp 
-    (defun ilya_gen-key ()
-      "Command binded to C-c C-m will make the pdf with latexmk"
-      (interactive)
-      (minibuffer-message (concat "ᛋᛋ Generating \"" (TeX-master-file) "\" ᛋᛋ"))
-      (let (
-            ;;a) variable definition
-            (process-name (format "%s" (ilya_generate-process-name "genPDF")))
-            (command-script (ilya_expand-latex-command (ilya_fire-up-from-emacs "ilya_scripts/pdf_engine.sh %s"))))
+      (defun ilya_gen-key ()
+        "Command binded to C-c C-m will make the pdf with latexmk"
+        (interactive)
+        (minibuffer-message (concat "ᛋᛋ Generating \"" (TeX-master-file) "\" ᛋᛋ"))
+        (let (
+              ;;a) variable definition
+              (process-name (format "%s" (ilya_generate-process-name "genPDF")))
+              ;;	    (command-script (ilya_expand-latex-command (ilya_fire-up-from-emacs "ilya_scripts/pdf_engine.sh %s"))))
+              (command-script (ilya_expand-latex-command "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/pdf_engine.sh %s")))
 
-        ;;b) launch the compilation buffer
-        (ilya_set-compilation-buffer-state (ilya_get-master-file-name) "genPDF")
-        (split-window-below)
-        (ignore-errors
-        (TeX-run-TeX process-name command-script (TeX-master-file))))
-  )
+          ;;b) launch the compilation buffer
+          (ilya_set-compilation-buffer-state (ilya_get-master-file-name) "genPDF")
+  ;;        (split-window-below)
+          (ignore-errors
+          (TeX-run-TeX process-name command-script (TeX-master-file))))
+    )
 
-    (add-hook 'LaTeX-mode-hook (lambda ()
-                                 (local-set-key (kbd "C-c C-m") (function ilya_gen-key))))
+      (add-hook 'LaTeX-mode-hook (lambda ()
+                                   (local-set-key (kbd "C-c C-m") (function ilya_gen-key))))
  #+END_SRC
 *** exterminate files =C-c C-j=
 1 - kill any running processes on this master files
@@ -260,7 +261,8 @@ Indenting environment
       (minibuffer-message (concat "卍 Exterminating \"" (ilya_get-master-file-name) "\" 卍"))
      (let (
            (process-name (format "%s" (ilya_generate-process-name "genPDF")))
-           (command-script (ilya_expand-latex-command (ilya_fire-up-from-emacs "ilya_scripts/jew_engine.sh %s"))))
+           ;;         (command-script (ilya_expand-latex-command (ilya_fire-up-from-emacs "ilya_scripts/jew_engine.sh %s"))))
+           (command-script (ilya_expand-latex-command "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/jew_engine.sh %s")))
 
        ;;1) delete the "genPDF" process for the current master file
        (ignore-errors
@@ -306,7 +308,7 @@ Indenting environment
 
 #+BEGIN_SRC emacs-lisp
   (setq TeX-view-program-list
-        '(("SkimViewer" "/Users/CCCP/.emacs.d/ilya_scripts/search_engine.sh %s %n %o %b")))
+        '(("SkimViewer" "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/search_engine.sh %s %n %o %b")))
 
   (setq TeX-view-program-selection '((output-pdf "SkimViewer")))
   (server-start)
@@ -344,8 +346,8 @@ Indenting environment
             (setq ilya_compilation-name
                   (concat "ᛋᛋ Compiling [" ilya_compilation-master-file "] ᛋᛋ"))
             (ignore-errors (rename-buffer ilya_compilation-name))
-            (setq compilation-window-name (get-buffer-window ilya_compilation-name))
-            (delete-window (get-buffer-window ilya_compilation-name))))
+            (setq compilation-window-name (get-buffer-window ilya_compilation-name))))
+ ;;           (delete-window (get-buffer-window ilya_compilation-name))))
       ;;2) file clearing case
       (if (string-equal ilya_compilation-process "jewGas")
           (progn
@@ -475,16 +477,21 @@ the nice bullets instead of multiplication symbols
   ;;(setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
 #+END_SRC
 * Python mode
-elpy (does syntax checking, autocomplete and command suggestion)
-work will be done with the python package manager pip (or pip3)
-** setup python virtual environment
+
+** install =venv=
+*** mac
 1) run =pip install virtualenvwrapper= to install a manager for different python environments
 2) add the following to the =~/.profile= file to tell where the environment will be located
 #+BEGIN_SRC sh
   export WORKON_HOME=~/creamy_seas/syncFiles/python_vi
   export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/virtualenvwrapper.sh 
 #+END_SRC
-3) go to directory and run =python3 -m venv NAME= to create virtual environment
+
+*** arch
+=venv= comes with the newest 3.7 python package installation.
+** setup python virtual environment
+
+1) go to directory and run =python3 -m venv NAME= to create virtual environment (=python -m venv NAME) on arch
 4) activate it with =source /emacs/bin/activate=
 5) use =pip= (python package manager) to install all of the below
 |---------------+---------------------------------------|
@@ -498,6 +505,8 @@ work will be done with the python package manager pip (or pip3)
 |---------------+---------------------------------------|
 
 ** tell emacs to use the specific virtual environment
+elpy (does syntax checking, autocomplete and command suggestion)
+work will be done with the python package manager pip (or pip3)
 #+BEGIN_SRC emacs-lisp
   (use-package pyenv-mode
     :ensure t
@@ -537,7 +546,7 @@ work will be done with the python package manager pip (or pip3)
     :ensure t
     :config
     (elfeed-org)
-    (setq rmh-elfeed-org-files (list "~/creamy_seas/syncFiles/elfeed.org")))
+    (setq rmh-elfeed-org-files (list "~/creamy_seas/syncFiles/emacs_config/elfeed.org")))
 #+END_SRC
 ** environment setup
 #+BEGIN_SRC emacs-lisp
@@ -546,7 +555,7 @@ work will be done with the python package manager pip (or pip3)
     :init
     (global-set-key (kbd "C-c f") 'elfeed)
     (setq-default elfeed-search-filter "@2-year-ago +unread")
-    (setq elfeed-db-directory "~/creamy_seas/syncFiles/elfeeddb")
+    (setq elfeed-db-directory "~/creamy_seas/syncFiles/emacs_config/elfeeddb")
     :bind     ;;once the package is loaded, bing some commands
     (:map elfeed-search-mode-map
           ("*" . bjm/elfeed-star)
@@ -701,19 +710,20 @@ work will be done with the python package manager pip (or pip3)
 
 *create a hard link between the =.emacs.d/snippets= files and the =.emacs/elpa/yasnippets-snippets/snippets/REQUIRED_MODE/= files*
 #+BEGIN_SRC emacs-lisp
-  (use-package yasnippet
-    :ensure t
+    (use-package yasnippet
+      :ensure t
 
-    :init
-    (add-hook 'emacs-lisp-mode-hook 'yas-minor-mode)
-    (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
-    (global-set-key (kbd "C-c C-n") 'yas-new-snippet)
-    (yas-global-mode)
-    :config
-    (add-to-list 'yas-snippet-dirs (ilya_fire-up-from-emacs "snippets/snippet-mode")) ;; adds our locally created snippets
-    (use-package yasnippet-snippets
-      :ensure t)
-    (yas-reload-all))
+      :init
+      (add-hook 'emacs-lisp-mode-hook 'yas-minor-mode)
+      (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
+      (global-set-key (kbd "C-c C-n") 'yas-new-snippet)
+      (yas-global-mode)
+      :config
+  ;;    (add-to-list 'yas-snippet-dirs (ilya_fire-up-from-emacs "snippets/snippet-mode")) ;; adds our locally created snippets
+      (add-to-list 'yas-snippet-dirs "~/creamy_seas/syncFiles/emacs_config/snippets/snippet-mode")
+      (use-package yasnippet-snippets
+        :ensure t)
+      (yas-reload-all))
 #+END_SRC
 * Autocomplete Company                                         :company:mode:
 Autocomplete shoudl only run in certain environments
@@ -989,14 +999,14 @@ the superior search mode to the original
 #+BEGIN_SRC emacs-lisp
   (defun config-visit()                       ;;no arguments
     (interactive)                                 ;;function type
-    (find-file "~/.emacs.d/config.org"))
+    (find-file "~/creamy_seas/syncFiles/emacs_config/config.org"))
   (global-set-key (kbd "C-c e") 'config-visit) ;;call the function defined above
 #+END_SRC
 ** function to load the configuration into emacs
 #+BEGIN_SRC emacs-lisp
   (defun reload-config()
     (interactive)
-    (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
+    (org-babel-load-file (expand-file-name "~/creamy_seas/syncFiles/emacs_config/config.org")))
   (global-set-key (kbd "C-c r") 'reload-config)
 #+END_SRC
 

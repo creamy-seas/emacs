@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: left-right-bracket
+# key: lr
+# --
+\left(${1:content}\right)$0

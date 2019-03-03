@@ -17,8 +17,8 @@ rm -r _region_* 2> /dev/null
 mkdir -p _output
 
 #2) copy all the files into there. 3 times, because the script quits prematurely for some reason, so need to be repeated
-echo "Removing files: " $1.{aux,bbl,blg,fdb_latexmk,fls,log,out}
-mv -f $1.{aux,bbl,blg,fdb_latexmk,fls,log,out} ./_output
+echo "Removing files: " $1.{aux,bbl,blg,fdb_latexmk,fls,log,out,toc,bcf,run.xml}
+mv -f $1.{aux,bbl,blg,fdb_latexmk,fls,log,out,toc,bcf,run.xml} ./_output
 
 
 #echo $(ls -l)
