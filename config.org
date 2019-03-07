@@ -14,7 +14,7 @@
 MAP is the keybinding map for the major or minor mode e.g. LaTeX-mode-map
 - to set major mode key =(local-set key (kbd "combo") (function NAME)=
 - to set global key =(global-set-key (kbd "combo") (function NAME)=
-* Passwords (MUST HAVE gpg installed)                           :not_working:
+* Passwords (MUST HAVE gpg installed)                           :nnot_working:
 ** enable the encrypting password package
 #+BEGIN_SRC emacs-lisp
   ;;(use-package epa
@@ -114,6 +114,12 @@ path for emacs executables to
   (setq exec-path (append exec-path '("/usr/local/bin")))
  #+END_SRC
 * Very cool benis
+** reload file on the go
+any changes of a file, will be automatically reloaded
+#+BEGIN_SRC emacs-lisp 
+  (global-auto-revert-mode 1)
+  (setq auto-revert-mode nil)
+ #+END_SRC
 ** multiple cursors
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-(") 'mc/mark-next-lines)
@@ -162,9 +168,7 @@ path for emacs executables to
     (add-hook 'c++-mode-hook 'company-mode))
  #+END_SRC
 * LaTeX mode (AUCTex LaTeX mode)                          :emacs_home:ispell:
-
-will insert the required parameters
-** commands                                                 :listOfCommands:
+** latex commands                                           :listOfCommands:
 I will most be using CDLaTeX to type in a command and then autocomplete it
 Yasnippet to add stuff once I am there (like and an extra item) and create own tab commands
 I will use C-c C-f for font changes
@@ -223,31 +227,31 @@ Indenting environment
 | =TeX-expand-list-builtin= | pair list tying command with a % expression e.g. =%s= -> master latex file |
 | =TeX-expand-list=         | this variables contains the above =TeX-expand-list-builtin                 |
 | =Tex-command-expand=      | "commandInStringForm" 'TeX-master-file TeX-expand-list                     |
-
 *** generate file =C-c C-m=
 1 - a process name is generated based off the name of the master file
 2 - the actual command calls the =pdf_engine= script in the emacs.d directory
 3 - expansion if performed to change =%s= to the master file name
 #+BEGIN_SRC emacs-lisp 
-      (defun ilya_gen-key ()
-        "Command binded to C-c C-m will make the pdf with latexmk"
-        (interactive)
-        (minibuffer-message (concat "ᛋᛋ Generating \"" (TeX-master-file) "\" ᛋᛋ"))
-        (let (
-              ;;a) variable definition
-              (process-name (format "%s" (ilya_generate-process-name "genPDF")))
-              ;;	    (command-script (ilya_expand-latex-command (ilya_fire-up-from-emacs "ilya_scripts/pdf_engine.sh %s"))))
-              (command-script (ilya_expand-latex-command "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/pdf_engine.sh %s")))
+  (defun ilya_gen-key ()
+    "Command binded to C-c C-m will make the pdf with latexmk"
+    (interactive)
+    (minibuffer-message (concat "ᛋᛋ Generating \"" (TeX-master-file) "\" ᛋᛋ"))
+    (let (
+          ;;a) variable definition
+          (process-name (format "%s" (ilya_generate-process-name "genPDF")))
+          (command-script (ilya_expand-latex-command "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/pdf_engine.sh %s")))
 
-          ;;b) launch the compilation buffer
-          (ilya_set-compilation-buffer-state (ilya_get-master-file-name) "genPDF")
-  ;;        (split-window-below)
-          (ignore-errors
-          (TeX-run-TeX process-name command-script (TeX-master-file))))
+      ;;b) prepare for compilation buffer
+      (ilya_set-compilation-buffer-state (ilya_get-master-file-name) "genPDF")
+  ;;    (setq split-width-threshold nil)
+    
+      ;;c) launch compilation
+      (ignore-errors
+        (TeX-run-TeX process-name command-script (TeX-master-file))))
     )
 
-      (add-hook 'LaTeX-mode-hook (lambda ()
-                                   (local-set-key (kbd "C-c C-m") (function ilya_gen-key))))
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (local-set-key (kbd "C-c C-m") (function ilya_gen-key))))
  #+END_SRC
 *** exterminate files =C-c C-j=
 1 - kill any running processes on this master files
@@ -256,44 +260,43 @@ Indenting environment
 4 - close this buffer as well
 
 #+BEGIN_SRC emacs-lisp
-    (defun ilya_jew-key()
-      (interactive)
-      (minibuffer-message (concat "卍 Exterminating \"" (ilya_get-master-file-name) "\" 卍"))
-     (let (
-           (process-name (format "%s" (ilya_generate-process-name "genPDF")))
-           ;;         (command-script (ilya_expand-latex-command (ilya_fire-up-from-emacs "ilya_scripts/jew_engine.sh %s"))))
-           (command-script (ilya_expand-latex-command "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/jew_engine.sh %s")))
+  (defun ilya_jew-key()
+    (interactive)
+    (minibuffer-message (concat "卍 Exterminating \"" (ilya_get-master-file-name) "\" 卍"))
+    (let (
+          (process-name (format "%s" (ilya_generate-process-name "genPDF")))
+          (command-script (ilya_expand-latex-command "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/jew_engine.sh %s")))
 
-       ;;1) delete the "genPDF" process for the current master file
-       (ignore-errors
-         (set-process-query-on-exit-flag (get-process process-name) nil)
-         (delete-process (get-process process-name)))
+      ;;1) delete the "genPDF" process for the current master file
+      (ignore-errors
+        (set-process-query-on-exit-flag (get-process process-name) nil)
+        (delete-process (get-process process-name)))
 
-       ;;2) delete the buffer the process was in (reset the buffer name)
-       (ilya_set-compilation-buffer-state (ilya_get-master-file-name) "genPDF")
-       (ignore-errors (kill-buffer ilya_compilation-name))
+      ;;2) delete the buffer the process was in (reset the buffer name)
+      (ilya_set-compilation-buffer-state (ilya_get-master-file-name) "genPDF")
+      (ignore-errors (kill-buffer ilya_compilation-name))
 
-       ;;3) move the files in to the output directory
-       (ilya_set-compilation-buffer-state (ilya_get-master-file-name) "jewGas")
-       (ignore-errors 
-         (TeX-run-TeX "jew_process" command-script (TeX-master-file))
-         )
+      ;;3) move the files in to the output directory
+      (ilya_set-compilation-buffer-state (ilya_get-master-file-name) "jewGas")
+      (ignore-errors 
+        (TeX-run-TeX "jew_process" command-script (TeX-master-file))
+        )
 
-       ;;4) close this buffer window
-       (sleep-for 1)
-       (kill-buffer (get-buffer "卍 Exterminating 卍"))
-       (delete-window (get-buffer-window "卍 Exterminating 卍"))
-  ;;     (switch-to-buffer (get-buffer "卍 Exterminating 卍"))
-  ;;     (delete-window 1)
-    ;;   (kill-buffer-and-window)
-       (minibuffer-message "===> 卍 Extermination complete 卍 - heil!")))
+      ;;4) close this buffer window
+      (sleep-for 1)
+      (kill-buffer (get-buffer "卍 Exterminating 卍"))
+      (delete-window (get-buffer-window "卍 Exterminating 卍"))
+      ;;     (switch-to-buffer (get-buffer "卍 Exterminating 卍"))
+      ;;     (delete-window 1)
+      ;;   (kill-buffer-and-window)
+      (minibuffer-message "===> 卍 Extermination complete 卍 - heil!")))
 
-    (add-hook 'LaTeX-mode-hook (lambda ()
-                                 (define-key LaTeX-mode-map (kbd "C-c C-j") nil)
-                                 (local-set-key (kbd "C-c C-j") (function ilya_jew-key))
-                                 (global-set-key (kbd "C-c C-j") (function ilya_jew-key))))
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (define-key LaTeX-mode-map (kbd "C-c C-j") nil)
+                               (local-set-key (kbd "C-c C-j") (function ilya_jew-key))
+                               (global-set-key (kbd "C-c C-j") (function ilya_jew-key))))
 
-    ;;actually, global is overkill, since local will take precendence. and define-key... should be replaced with local-set-key too
+  ;;actually, global is overkill, since local will take precendence. and define-key... should be replaced with local-set-key too
 #+END_SRC
 *** jump to pdf
 - skim is run, reading the current line in the emacs buffer and highlighting it in the pdf
@@ -311,10 +314,12 @@ Indenting environment
         '(("SkimViewer" "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/search_engine.sh %s %n %o %b")))
 
   (setq TeX-view-program-selection '((output-pdf "SkimViewer")))
-  (server-start)
+;;  (server-start)
  #+END_SRC
 *** supporting functions
 #+BEGIN_SRC emacs-lisp 
+  (setq ilya_compilation-process "python")
+
   (defun ilya_set-compilation-buffer-state (master-file process)
     "Set variables that the compulation buffer (latex) will then use to set the name"
     (setq ilya_compilation-master-file master-file)
@@ -338,32 +343,28 @@ Indenting environment
     "Resize the latex compilation buffer when it launches because it is seriosuly bloat"
 
     (progn
-      (setq compilation-window-name "NA")
-
       ;;1) pdf generation case
       (if (string-equal ilya_compilation-process "genPDF")
           (progn
             (setq ilya_compilation-name
                   (concat "ᛋᛋ Compiling [" ilya_compilation-master-file "] ᛋᛋ"))
             (ignore-errors (rename-buffer ilya_compilation-name))
-            (setq compilation-window-name (get-buffer-window ilya_compilation-name))))
- ;;           (delete-window (get-buffer-window ilya_compilation-name))))
+            (setq compilation-window-name (get-buffer-window ilya_compilation-name))
+            (window-resize-no-error compilation-window-name (- 5 (window-height compilation-window-name "floor")))))
       ;;2) file clearing case
       (if (string-equal ilya_compilation-process "jewGas")
           (progn
             (setq ilya_compilation-name "卍 Exterminating 卍")
             (ignore-errors (rename-buffer ilya_compilation-name))
-            (setq compilation-window-name (get-buffer-window ilya_compilation-name))))
-
-      ;;3) resize the window
-      (window-resize-no-error compilation-window-name (- 5 (window-height compilation-window-name "floor")))
+            (setq compilation-window-name (get-buffer-window ilya_compilation-name))))      
       )
     )
 
   (add-hook 'comint-mode-hook (function ilya_LaTeX-compilation-buffer-size))
  #+END_SRC
 
-** reftex
+** minor modes
+*** reftex
 #+BEGIN_SRC emacs-lisp 
   (use-package reftex
     :ensure t
@@ -372,7 +373,7 @@ Indenting environment
     (setq reftex-plug-into-AUCTeX t)
     )
  #+END_SRC
-** cdlatex (autcompletion)
+*** cdlatex (autcompletion)
 #+BEGIN_SRC emacs-lisp 
   (use-package cdlatex
     :ensure t
@@ -477,67 +478,136 @@ the nice bullets instead of multiplication symbols
   ;;(setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
 #+END_SRC
 * Python mode
+** commands
+| =C-c C-e=   | edit all occurunces of this symbol in the file |
+| =C-C C-r r= | refactor the code (needs rope)                 |
+|             |                                                |
+** external setup
+*** install =virtualenvwrapper=
+**** mac
+=pip install virtualenvwrapper= 
 
-** install =venv=
-*** mac
-1) run =pip install virtualenvwrapper= to install a manager for different python environments
-2) add the following to the =~/.profile= file to tell where the environment will be located
+add the following to the =~/.bashrc= file to tell where the environment will be located
 #+BEGIN_SRC sh
   export WORKON_HOME=~/creamy_seas/syncFiles/python_vi
-  export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/virtualenvwrapper.sh 
+  source /usr/local/bin/virtualenvwrapper.sh
 #+END_SRC
 
-*** arch
-=venv= comes with the newest 3.7 python package installation.
-** setup python virtual environment
+**** arch
+=sudo pacman -S python-virtualenvwrapper=
 
-1) go to directory and run =python3 -m venv NAME= to create virtual environment (=python -m venv NAME) on arch
-4) activate it with =source /emacs/bin/activate=
-5) use =pip= (python package manager) to install all of the below
-|---------------+---------------------------------------|
-| =rope=        | 'refactoring' library                 |
-| =jedi=        | autocompletion python                 |
-| =flake8=      | linting (checks typos, syntax errors) |
-| =importmagic= | automatic imports                     |
-| =autopep8=    | format the code (indent etc)          |
-| =yapf=        | code formatiing                       |
-| =ipython3=    | kernel                            |
-|---------------+---------------------------------------|
+add the following to =bashrc=
+#+BEGIN_SRC sh
+  export WORKON_HOME=~/creamy_seas/syncFiles/python_vi
+  source /usr/bin/virtualenvwrapper.sh
+#+END_SRC
+(** setup python virtual environment
+make virtual end with =mkvirtualenv NAME=
+|------------------------------------+----------------------------------------------|
+| =source NAMELOCATION/bin/activate= | activate an environment                      |
+| =deactivate=                       | deactivate an environement                   |
+| =workon NAME=                      | swtich environment                           |
+| =lssitepackages=                   | list everything that is installed            |
+| =pip install PACKAGENAME=          | install a package to the virtual environemnt |
+| =echo $VIRTUAL_ENV=                | the currently activate virtual environment   |
+|------------------------------------+----------------------------------------------|
 
-** tell emacs to use the specific virtual environment
-elpy (does syntax checking, autocomplete and command suggestion)
-work will be done with the python package manager pip (or pip3)
+*** to install using pip
+|---------------+---------------------------------------------|
+| =rope=        | 'refactoring' library                       |
+| =jedi=        | autocompletion python (suggest names)       |
+| =flake8=      | linting (checks typos, syntax errors)       |
+| =autopep8=    | format the code (indent etc). uses =flake8= |
+| =importmagic= | automatic imports                           |
+| =yapf=        | code formatiing                             |
+| =ipython3=    | kernel                                      |
+| =jupyter=     | notebook                                    |
+| =matplotlib=  |                                             |
+| =qutip=       | needs =numpy= =Cython= =scipy=              |
+| PyQt5         | gui interface                               |
+|---------------+---------------------------------------------|
+#+TBLFM: $1=PyQt5
+
+*** tell emacs to use the specific virtual environment
 #+BEGIN_SRC emacs-lisp
   (use-package pyenv-mode
     :ensure t
     :config
-    (pyvenv-activate "~/creamy_seas/syncFiles/python_vi/emacs_vi/"))
+    (if (file-exists-p "~/macbook_localiser")
+        (pyvenv-activate "~/creamy_seas/syncFiles/python_vi/mac_vi")
+      (pyvenv-activate "~/creamy_seas/syncFiles/python_vi/arch_vi")))
 #+END_SRC
-** configuration
-#+BEGIN_SRC emacs-lisp
+** matplotlib setup
+- put the =matplotlibrc= files into either =.config/matplotlib= or =.matplotlib=
+- check location with =matplotlib.matplotlib_fname()= or =matplotlib.get_configdir()=
+
+*** setting the backend
+to control where the plots are sent to, set the backend to =Qt5Agg=
+*** creating styles
+- to print the available styles =plt.styles.available=
+- to use styles =plt.style.use('ggplot')=
+- create a style document =example.mplstyle= in the =matplolib/stylelib= folder
+** activate elpy and choose interpreter
+#+BEGIN_SRC emacs-lisp 
   (use-package elpy
     :ensure t
     :config
     (elpy-enable))
-
-  ;;(add-hook 'python-mode-hook 'auto-complete-mode)
-  ;;(add-hook 'python-mode-hook 'jedi:ac-setup)
-
-  ;;(setq python-shell-interpreter "python3"
-  ;;      python-shell-interpreter-args "-i")
+ #+END_SRC
+*** jupyter notebook
+#+BEGIN_SRC emacs-lisp 
+  ;;(setq python-shell-interpreter "jupyter"
+  ;;      python-shell-interpreter-args "console --simple-prompt"
+  ;;      python-shell-prompt-detect-failure-warning nil)
+  ;;(add-to-list 'python-shell-completion-native-disabled-interpreters
+  ;;             "jupyter")
+ #+END_SRC
+*** ipython (do not use - buggy)
+#+BEGIN_SRC emacs-lisp 
   ;;(setq python-shell-interpreter "ipython"
-  ;;      python-shell-interpreter-args "-i --simple-prompt")
-  (setq python-shell-interpreter "jupyter"
-        pyhon-shell-interpreter-args "console --simple-prompt"
-        python-shell-prompt-detect-failure-warning nil)
-  (add-to-list 'python-shell-completion-native-disabled-interpreters
-               "jupyter")
-
-  ;;(defun ilya-python-hooks()
-  ;;  (interactive)
-  ;;  (setq tab-width 4
-  ;;        python-indent-offset 4))
-  ;;(add-hook 'python-mode-hook 'ilya-python-hooks)
+  ;;      python-shell-interpreter-args "-i --simple-prompt") 
+ #+END_SRC
+*** python3 (use in script mode)
+#+BEGIN_SRC emacs-lisp
+  (setq python-shell-interpreter "python3"
+      python-shell-interpreter-args "-i")
+#+END_SRC
+** elpy settings
+*** syntax checking =jedi, flycheck=
+- deactivate flymake and use flycheck - syntax is checked ont the fly
+- uses jedi
+#+BEGIN_SRC emacs-lisp 
+  (use-package flycheck
+    :ensure t
+    :init
+    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+    (add-hook 'elpy-mode-hook 'flycheck-mode))  
+ #+END_SRC
+*** code formatting =autopep8=
+- automatically fix syntax errors upon saving
+#+BEGIN_SRC emacs-lisp 
+  (use-package py-autopep8
+    :ensure t
+    :init
+    (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))  
+ #+END_SRC
+** ein (jupyter notebook server in emacs)
+#+BEGIN_SRC emacs-lisp 
+;;  (use-package ein
+;;   :ensure t) 
+ #+END_SRC
+** window splitting
+#+BEGIN_SRC emacs-lisp 
+  (defadvice elpy-shell-send-region-or-buffer (after ilya-resize-python-buffer activate)
+    (window-resize-no-error (get-buffer-window "*Python*") (- 10 (window-height (get-buffer-window "*Python*") "floor"))))
+ #+END_SRC
+** minor modes
+#+BEGIN_SRC emacs-lisp
+  (use-package diminish
+    :ensure t
+    :init
+    (diminish 'highlight-indentation-mode)
+    )
 #+END_SRC
 * RSS mode
 ** location of configuration file
@@ -1145,7 +1215,7 @@ hides the minor modes that are trivial
         (diminish 'beacon-mode)		
         (diminish 'which-key-mode)
         (diminish 'undo-tree-mode)
-  ;;      (diminish 'rainbow-mode)
+        (diminish 'rainbow-mode)
         (diminish 'subword-mode)
         (diminish 'visual-line-mode)
         (diminish 'org-indent-mode)
