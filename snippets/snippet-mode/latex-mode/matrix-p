@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: matrix-p
+# key: pmat
+# --
+\begin{pmatrix}
+	${1:matrix-value}
+\end{pmatrix}$0

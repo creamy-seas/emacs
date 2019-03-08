@@ -222,7 +222,7 @@ Indenting environment
     (LaTeX-mode-hook . font-lock-mode);; font highlighting
     )
  #+END_SRC
-** pdf synchronisation
+** generation commands
 *Some important AucTex commands and variables*
 | =TeX-expand-list-builtin= | pair list tying command with a % expression e.g. =%s= -> master latex file |
 | =TeX-expand-list=         | this variables contains the above =TeX-expand-list-builtin                 |
@@ -237,17 +237,15 @@ Indenting environment
     (interactive)
     (minibuffer-message (concat "ᛋᛋ Generating \"" (TeX-master-file) "\" ᛋᛋ"))
     (let (
-          ;;a) variable definition
-          (process-name (format "%s" (ilya_generate-process-name "genPDF")))
+          ;; 1 - variable definition
           (command-script (ilya_expand-latex-command "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/pdf_engine.sh %s")))
 
-      ;;b) prepare for compilation buffer
-      (ilya_set-compilation-buffer-state (ilya_get-master-file-name) "genPDF")
-  ;;    (setq split-width-threshold nil)
+      ;; 2 - prepare for compilation buffer
+      (ilya_latex-compilation-prepare "generate-zoomer-pdf")
     
-      ;;c) launch compilation
+      ;; 3 - launch compilation
       (ignore-errors
-        (TeX-run-TeX process-name command-script (TeX-master-file))))
+        (TeX-run-TeX ilya_latex-compilation-process-id command-script (TeX-master-file))))
     )
 
   (add-hook 'LaTeX-mode-hook (lambda ()
@@ -263,42 +261,39 @@ Indenting environment
   (defun ilya_jew-key()
     (interactive)
     (minibuffer-message (concat "卍 Exterminating \"" (ilya_get-master-file-name) "\" 卍"))
-    (let (
-          (process-name (format "%s" (ilya_generate-process-name "genPDF")))
-          (command-script (ilya_expand-latex-command "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/jew_engine.sh %s")))
+    (let ((command-script (ilya_expand-latex-command "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/jew_engine.sh %s")))
 
-      ;;1) delete the "genPDF" process for the current master file
+
+      ;; 1 - get the buffer names and variables of running process
+      (ilya_latex-compilation-prepare "generate-zoomer-pdf")
+
+      ;; 2 - delete the "genPDF" process for the current master file
       (ignore-errors
-        (set-process-query-on-exit-flag (get-process process-name) nil)
-        (delete-process (get-process process-name)))
+        (set-process-query-on-exit-flag (get-process ilya_latex-compilation-process-id) nil)
+        (delete-process (get-process ilya_latex-compilation-process-id)))
 
-      ;;2) delete the buffer the process was in (reset the buffer name)
-      (ilya_set-compilation-buffer-state (ilya_get-master-file-name) "genPDF")
-      (ignore-errors (kill-buffer ilya_compilation-name))
+      ;; 3 - delete the buffer the process was in (reset the buffer name)
+      (ignore-errors (kill-buffer (TeX-active-buffer)))
+      (ignore-errors (kill-buffer "*TeX Help*"))
 
-      ;;3) move the files in to the output directory
-      (ilya_set-compilation-buffer-state (ilya_get-master-file-name) "jewGas")
+      ;; 4 - prepare variables for the gassing
+      (ilya_latex-compilation-prepare "jewGas")
+
       (ignore-errors 
         (TeX-run-TeX "jew_process" command-script (TeX-master-file))
         )
 
-      ;;4) close this buffer window
-      (sleep-for 1)
+      ;; 5 - close this buffer window
       (kill-buffer (get-buffer "卍 Exterminating 卍"))
-      (delete-window (get-buffer-window "卍 Exterminating 卍"))
-      ;;     (switch-to-buffer (get-buffer "卍 Exterminating 卍"))
-      ;;     (delete-window 1)
-      ;;   (kill-buffer-and-window)
       (minibuffer-message "===> 卍 Extermination complete 卍 - heil!")))
 
   (add-hook 'LaTeX-mode-hook (lambda ()
                                (define-key LaTeX-mode-map (kbd "C-c C-j") nil)
-                               (local-set-key (kbd "C-c C-j") (function ilya_jew-key))
-                               (global-set-key (kbd "C-c C-j") (function ilya_jew-key))))
+                               (local-set-key (kbd "C-c C-j") (function ilya_jew-key))))
 
   ;;actually, global is overkill, since local will take precendence. and define-key... should be replaced with local-set-key too
 #+END_SRC
-*** jump to pdf
+*** jump to pdf =C-c C-v=
 - skim is run, reading the current line in the emacs buffer and highlighting it in the pdf
 - =syntex.gz= file needs to be in the directory for this to occur, so it's copied
 | unique to skim  |                                                      |
@@ -314,55 +309,99 @@ Indenting environment
         '(("SkimViewer" "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/search_engine.sh %s %n %o %b")))
 
   (setq TeX-view-program-selection '((output-pdf "SkimViewer")))
-;;  (server-start)
+  (server-start)
  #+END_SRC
 *** supporting functions
-#+BEGIN_SRC emacs-lisp 
-  (setq ilya_compilation-process "python")
+#+BEGIN_SRC emacs-lisp
+  (defun ilya_LaTeX-compilation-buffer-size ()
+    "Resize the latex compilation buffer when it launches because it is seriosuly bloat"
 
-  (defun ilya_set-compilation-buffer-state (master-file process)
-    "Set variables that the compulation buffer (latex) will then use to set the name"
-    (setq ilya_compilation-master-file master-file)
-    (setq ilya_compilation-process process))
+    (progn
+      ;;1) pdf generation case
+      (if (string-equal ilya_latex-compilation-process-type "generate-zoomer-pdf")
+          (progn
+            (ignore-errors (rename-buffer ilya_latex-compilation-buffer-name))
+            (setq compilation-window-name (get-buffer-window ilya_latex-compilation-buffer-name))
+            (window-resize-no-error compilation-window-name (- 5 (window-height compilation-window-name "floor")))))
+      ;;2) file clearing case
+      (if (string-equal ilya_compilation-process "jewGas")
+          (progn
+            (ignore-errors (rename-buffer ilya_compilation-name))))))
+
+;;  (add-hook 'comint-mode-hook (function ilya_LaTeX-compilation-buffer-size))
+
+  (defun ilya_latex-compilation-prepare (process-type)
+    "Set variables that the latex compilation buffer will use"
+    ;; 1 - get the master file name
+    (setq temp-master-file (ilya_get-master-file-name))
+
+    ;; 2 - generate further variables
+    (setq ilya_latex-compilation-process-id (concat process-type "_" temp-master-file))
+    (setq ilya_latex-compilation-process-type process-type)
+    (setq ilya_latex-compilation-master-file temp-master-file)
+
+    ;; 3 - generate buffer name
+    (if (string-equal process-type "generate-zoomer-pdf")
+        (setq ilya_latex-compilation-buffer-name (concat "ᛋᛋ Compiling [" temp-master-file "] ᛋᛋ")))
+    (if (string-equal process-type "jewGas")
+        (setq ilya_latex-compilation-buffer-name "卍 Exterminating 卍")))
 
   (defun ilya_get-master-file-name ()
     "Get the name of the master latex file in the current project"
     (interactive)
     (TeX-command-expand "%s" 'TeX-master-file TeX-expand-list))
 
-  (defun ilya_generate-process-name (process_name)
-    "Generates a string of the form [processName_masterFile] to uniqely identify a process"
-    (concat process_name "_" (ilya_get-master-file-name)))
-
   (defun ilya_expand-latex-command (command-script)
+    (interactive)
     "Expands the latex command by evaluating the % variables in accordance with the system's master file"
-    (TeX-command-expand command-script 'TeX-master-file TeX-expand-list)
-    )
-
-  (defun ilya_LaTeX-compilation-buffer-size ()
-    "Resize the latex compilation buffer when it launches because it is seriosuly bloat"
-
-    (progn
-      ;;1) pdf generation case
-      (if (string-equal ilya_compilation-process "genPDF")
-          (progn
-            (setq ilya_compilation-name
-                  (concat "ᛋᛋ Compiling [" ilya_compilation-master-file "] ᛋᛋ"))
-            (ignore-errors (rename-buffer ilya_compilation-name))
-            (setq compilation-window-name (get-buffer-window ilya_compilation-name))
-            (window-resize-no-error compilation-window-name (- 5 (window-height compilation-window-name "floor")))))
-      ;;2) file clearing case
-      (if (string-equal ilya_compilation-process "jewGas")
-          (progn
-            (setq ilya_compilation-name "卍 Exterminating 卍")
-            (ignore-errors (rename-buffer ilya_compilation-name))
-            (setq compilation-window-name (get-buffer-window ilya_compilation-name))))      
-      )
-    )
-
-  (add-hook 'comint-mode-hook (function ilya_LaTeX-compilation-buffer-size))
+    (TeX-command-expand command-script 'TeX-master-file TeX-expand-list))
  #+END_SRC
 
+*** error checking =C-c C-w=
+natively, auctex creates a list of errors once the compiling finishes.
+here we make it do it explictly 
+1 - get the current active compilation buffer.
+
+#+BEGIN_SRC emacs-lisp 
+  (defun ilya_latex-next-error (args)
+    "Reads the compilation buffer and extracts errors to run through"
+    (interactive "p")
+
+    ;; 1 - search for active buffer (assign it to tempvar)
+    (if-let ((tempvar (TeX-active-buffer)))
+
+        ;; 2 - if open, go to that buffer and get all the errors
+        (save-excursion
+          (set-buffer (TeX-active-buffer))
+          (TeX-parse-all-errors)
+
+          ;; 3 - display error list
+          (if TeX-error-list
+              (minibuffer-message "ᛋᛋ Jew hunt finished ᛋᛋ"))
+
+          ;; 4 - iterate through error list
+          (call-interactively (function TeX-next-error))
+          ;; clear region
+          (delete-region (point-min) (point-max))
+          (minibuffer-message "ᛋᛋ Make this totally aryan, free from scheckel mounds ᛋᛋ"))
+
+      (minibuffer-message "ᛋᛋ But mein Führer - there's no-one running ᛋᛋ"))) 
+
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (local-unset-key (kbd "C-c C-w"))
+                               (local-set-key (kbd "C-c C-w") (function ilya_latex-next-error))))
+
+  (defmacro my-save-excursion (&rest forms)
+    (let ((old-point (gensym "old-point"))
+          (old-buff (gensym "old-buff")))
+      `(let ((,old-point (point))
+             (,old-buff (current-buffer)))
+         (prog1
+             (progn ,@forms)
+           (unless (eq (current-buffer) ,old-buff)
+             (switch-to-buffer ,old-buff))
+           (goto-char ,old-point)))))
+ #+END_SRC
 ** minor modes
 *** reftex
 #+BEGIN_SRC emacs-lisp 
@@ -418,14 +457,68 @@ The string below matches anything in quotes «» (to access quotes, run ="C-x 8 
     (setq fci-rule-color "#248")
     (setq fci-rule-width 1))
 
-  (defun setBufferToSize ()
+  (defun ilya_buffer-fill-column ()
     (interactive)
+
+    ;; 1 - get the window width
     (setq windowWidth (window-width))
-    (set-fill-column (- windowWidth 10)))
+    (setq temp-fill-width (- windowWidth 10))
 
-  (global-set-key (kbd "C-c l") 'setBufferToSize)
+    ;; 2 - set the fill width to 94 max
+    (if (> 94 temp-fill-width)
+        (set-fill-column temp-fill-width)
+      (set-fill-column 94)))
+
+
+  (global-set-key (kbd "C-c l") (function ilya_buffer-fill-column))
  #+END_SRC
+ 
+** remove bindings
+#+BEGIN_SRC emacs-lisp 
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (local-unset-key (kbd "C-c C-a"))
+                               (local-unset-key (kbd "C-c C-b"))
+                               (local-unset-key (kbd "C-c C-d"))
+                               (local-unset-key (kbd "C-c C-k"))
+                               (local-unset-key (kbd "C-c C-r"))
+                               (local-unset-key (kbd "C-c C-z"))
+                               (local-unset-key (kbd "C-c ESC"))
+                               (local-unset-key (kbd "C-c C-t"))
+                               (local-unset-key (kbd "C-c <")) ;;index and glossary
+                               (local-unset-key (kbd "C-c /")) ;;index
+                               (local-unset-key (kbd "C-c \\")) ;;index
+                               (local-unset-key (kbd "C-c >")) ;;index
+                               (local-unset-key (kbd "C-c _")) ;;set master file
+                               (local-unset-key (kbd "C-c C-n")) ;;normal mode (use C-c #)
+                               ))
 
+  (global-unset-key (kbd "C-c q"))
+
+
+
+  (defun ilya_insert-underscore (args)
+    "Inserts an underscore, because the jews put in dollars around it"
+    (interactive "P")
+    (insert "_"))
+
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (local-set-key (kbd "C-c C-u") (function ilya_insert-underscore))
+                               (local-unset-key (kbd "C-c C-q"))
+                               (local-set-key (kbd "C-c C-q") (function ilya_latex-indent-buffer))
+                               ))
+
+  (defun ilya_latex-indent-buffer (args)
+    "Indents the full buffer"
+    (interactive "P")
+    ;; 1 - fill the column
+    (setq justify-width (ilya_buffer-fill-column))
+
+    ;; 3 - perform fill
+    (LaTeX-fill-buffer justify-width)
+    )
+
+
+ #+END_SRC
 * Org mode
 **** get rid of anoying 'ding in table'
 C-u C-c C-x !

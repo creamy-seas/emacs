@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: aligned
+# key: ali
+# --
+\begin{aligned}
+	${1:first-line} \\\\
+	${2:second-line} $0
+\end{aligned}

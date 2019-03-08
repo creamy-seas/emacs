@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: picture
+# key: pic
+# --
+\begin{figure}[h]
+  \centering
+  \includegraphics[height=${1:height}]{${2:image}}
+  \caption{\small ${3:caption-text}\label{fig:$2}}
+\end{figure}
+
+\noindent $0

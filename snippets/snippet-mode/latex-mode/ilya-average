@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ilya-average
+# key: av
+# --
+\iaverage{${1:average-value}} $0
