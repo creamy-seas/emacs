@@ -222,7 +222,7 @@ Indenting environment
     (LaTeX-mode-hook . font-lock-mode);; font highlighting
     )
  #+END_SRC
-** generation commands
+** tailored commands
 *Some important AucTex commands and variables*
 | =TeX-expand-list-builtin= | pair list tying command with a % expression e.g. =%s= -> master latex file |
 | =TeX-expand-list=         | this variables contains the above =TeX-expand-list-builtin                 |
@@ -258,40 +258,41 @@ Indenting environment
 4 - close this buffer as well
 
 #+BEGIN_SRC emacs-lisp
-  (defun ilya_jew-key()
-    (interactive)
-    (minibuffer-message (concat "卍 Exterminating \"" (ilya_get-master-file-name) "\" 卍"))
-    (let ((command-script (ilya_expand-latex-command "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/jew_engine.sh %s")))
+    (defun ilya_jew-key()
+      (interactive)
+      (minibuffer-message (concat "卍 Exterminating \"" (ilya_get-master-file-name) "\" 卍"))
+      (let ((command-script (ilya_expand-latex-command "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/jew_engine.sh %s")))
 
 
-      ;; 1 - get the buffer names and variables of running process
-      (ilya_latex-compilation-prepare "generate-zoomer-pdf")
+        ;; 1 - get the buffer names and variables of running process
+        (ilya_latex-compilation-prepare "generate-zoomer-pdf")
 
-      ;; 2 - delete the "genPDF" process for the current master file
-      (ignore-errors
-        (set-process-query-on-exit-flag (get-process ilya_latex-compilation-process-id) nil)
-        (delete-process (get-process ilya_latex-compilation-process-id)))
+        ;; 2 - delete the "genPDF" process for the current master file
+        (ignore-errors
+          (set-process-query-on-exit-flag (get-process ilya_latex-compilation-process-id) nil)
+          (delete-process (get-process ilya_latex-compilation-process-id)))
 
-      ;; 3 - delete the buffer the process was in (reset the buffer name)
-      (ignore-errors (kill-buffer (TeX-active-buffer)))
-      (ignore-errors (kill-buffer "*TeX Help*"))
+        ;; 3 - delete the buffer the process was in (reset the buffer name)
+  ;;      (ignore-errors (kill-buffer (TeX-active-buffer)))
+        (ignore-errors (kill-buffer "*TeX Help*"))
 
-      ;; 4 - prepare variables for the gassing
-      (ilya_latex-compilation-prepare "jewGas")
+        ;; 4 - prepare variables for the gassing
+        (ilya_latex-compilation-prepare "jewGas")
 
-      (ignore-errors 
-        (TeX-run-TeX "jew_process" command-script (TeX-master-file))
-        )
+        (ignore-errors 
+          (TeX-run-TeX "jew_process" command-script (TeX-master-file))
+          )
+        
+        (sleep-for 2)
+        ;; 5 - close this buffer window
+        (kill-buffer (get-buffer "卍 Exterminating 卍"))
+        (minibuffer-message "===> 卍 Extermination complete 卍 - heil!")))
 
-      ;; 5 - close this buffer window
-      (kill-buffer (get-buffer "卍 Exterminating 卍"))
-      (minibuffer-message "===> 卍 Extermination complete 卍 - heil!")))
+    (add-hook 'LaTeX-mode-hook (lambda ()
+                                 (define-key LaTeX-mode-map (kbd "C-c C-j") nil)
+                                 (local-set-key (kbd "C-c C-j") (function ilya_jew-key))))
 
-  (add-hook 'LaTeX-mode-hook (lambda ()
-                               (define-key LaTeX-mode-map (kbd "C-c C-j") nil)
-                               (local-set-key (kbd "C-c C-j") (function ilya_jew-key))))
-
-  ;;actually, global is overkill, since local will take precendence. and define-key... should be replaced with local-set-key too
+    ;;actually, global is overkill, since local will take precendence. and define-key... should be replaced with local-set-key too
 #+END_SRC
 *** jump to pdf =C-c C-v=
 - skim is run, reading the current line in the emacs buffer and highlighting it in the pdf
@@ -427,6 +428,7 @@ It would be a mumble jumble like
 ="\\(«\\(.+?\\|\n\\)\\)\\(+?\\)\\(»\\)"=
 
 which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
+
 where =OPTIONG= can be 
 | 'words   | to go specify match in start/end of word  |
 | 'symbols | to specifify match in start/end of symbol |
@@ -438,7 +440,7 @@ where =OPTIONG= can be
 
 for more info go to https://www.emacswiki.org/emacs/RegularExpression
 
-The string below matches anything in quotes «» (to access quotes, run ="C-x 8 "=
+The string below matches anything in quotes «» (to access quotes, run ="C-x 8 "=)
 #+BEGIN_SRC emacs-lisp
   (font-lock-add-keywords 'latex-mode
                           (list
@@ -446,7 +448,15 @@ The string below matches anything in quotes «» (to access quotes, run ="C-x 8 
                             "\\(«\\(.+?\\|\n\\)\\)\\(+?\\)\\(»\\)"
                             '(1 'font-latex-string-face t)
                             '(2 'font-latex-string-face t)
-                            '(3 'font-latex-string-face t)))) 
+                            '(3 'font-latex-string-face t))))
+ #+END_SRC
+#+BEGIN_SRC emacs-lisp 
+  ;;(font-lock-add-keywords 'latex-mode
+  ;;                        '("\\red{.*}" 1 'font-latex-string-face t))
+
+  ;; the numbers reffer to the group that need to be highlighted
+
+  ;;  ("\\<\\(and\\|or\\|not\\)\\>" . 'font-lock-keyword-face))
  #+END_SRC
 ** latex fill settings
 #+BEGIN_SRC emacs-lisp 
@@ -490,6 +500,8 @@ The string below matches anything in quotes «» (to access quotes, run ="C-x 8 
                                (local-unset-key (kbd "C-c >")) ;;index
                                (local-unset-key (kbd "C-c _")) ;;set master file
                                (local-unset-key (kbd "C-c C-n")) ;;normal mode (use C-c #)
+                               (local-unset-key (kbd "C-c ~")) ;;math mode
+                               (local-unset-key (kbd "C-c }")) ;;up list
                                ))
 
   (global-unset-key (kbd "C-c q"))
@@ -514,7 +526,7 @@ The string below matches anything in quotes «» (to access quotes, run ="C-x 8 
     (setq justify-width (ilya_buffer-fill-column))
 
     ;; 3 - perform fill
-    (LaTeX-fill-buffer justify-width)
+    (ignore-errors (LaTeX-fill-buffer justify-width))
     )
 
 
