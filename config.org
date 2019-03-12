@@ -457,32 +457,33 @@ The string below matches anything in quotes «» (to access quotes, run ="C-x 8 
 
 #+BEGIN_SRC emacs-lisp 
   (font-lock-add-keywords 'latex-mode
-                          '(("\\(\\\\red\{\\)\\(.*\\)\\(}\\)"
-                             (1 'ilya_face-latex-red-command t)
-                             (2 'ilya_face-latex-red-content t)
-                             (3 'ilya_face-latex-red-command t))))
+			  ;;                        '(("\\(\\\\red\{\\)\\(.*\\)\\(}\\)"
+			  '(("\\(\\\\red\{\\)\\(\\([^}]\\)*\\)\\(}\\)"
+			     (1 'ilya_face-latex-red-command t)
+			     (4 'ilya_face-latex-red-command t))))
 
   (defface ilya_face-latex-red-command
     '((t :background "#964854"
-         :weight bold
-         :distant-foreground "red"
-         ))
+	 :weight bold
+	 :distant-foreground "red"
+	 ))
     "Face for red blocks")
 
   (defface ilya_face-latex-red-content
     '((t :distant-foreground "red"
-         ))
+	 ))
     "Face for red blocks")
 
   (font-lock-add-keywords 'latex-mode
-                          '(("\\(\\\\blue\{\\)\\(.*\\)\\(}\\)"
-                             (1 'ilya_face-latex-blue t)
-                             (3 'ilya_face-latex-blue t))))
+;;			  '(("\\(\\\\blue\{\\)\\(.*\\)\\(}\\)"
+			  '(("\\(\\\\blue\{\\)\\(\\([^}]\\)*\\)\\(}\\)"
+			     (1 'ilya_face-latex-blue t)
+			     (3 'ilya_face-latex-blue t))))
 
   (defface ilya_face-latex-blue
     '((t :background "#464896"
-         :weight bold
-         ))
+	 :weight bold
+	 ))
     "Face for red blocks")
  #+END_SRC
 ** latex fill settings
