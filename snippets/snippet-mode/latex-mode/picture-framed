@@ -4,6 +4,7 @@
 # --
 \begin{center}
   \includegraphics[height=${1:height}]{${2:image}}
+  
   {\small ${3:caption-text}\label{fig:$2}}
 \end{center}
 

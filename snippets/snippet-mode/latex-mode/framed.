@@ -2,6 +2,6 @@
 # name: framed 
 # key: ifr
 # --
-\begin{framed}
+\begin{framed}\noindent
 	${1:frame-contnent}$0
 \end{framed}

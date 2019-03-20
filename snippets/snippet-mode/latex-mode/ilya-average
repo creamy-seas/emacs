@@ -2,4 +2,4 @@
 # name: ilya-average
 # key: av
 # --
-\iaverage{${1:average-value}} $0
+\iaverage{${1:average-value}}$0

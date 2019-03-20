@@ -14,6 +14,14 @@
 MAP is the keybinding map for the major or minor mode e.g. LaTeX-mode-map
 - to set major mode key =(local-set key (kbd "combo") (function NAME)=
 - to set global key =(global-set-key (kbd "combo") (function NAME)=
+* Macros
+** comment-org-mode
+#+BEGIN_SRC emacs-lisp 
+  (fset 'comment-orgmode
+        ";;\C-n\C-a")
+
+  ;;(global-set-key (kbd "C-c a") 'comment-orgmode)
+ #+END_SRC
 * Passwords (MUST HAVE gpg installed)                           :nnot_working:
 ** enable the encrypting password package
 #+BEGIN_SRC emacs-lisp
@@ -427,20 +435,48 @@ The first thing that would happen, is latex searches for matching expressions - 
 It would be a mumble jumble like
 ="\\(«\\(.+?\\|\n\\)\\)\\(+?\\)\\(»\\)"=
 
-which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
+which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)= where =OPTIONG= can be (search Emacs Search)
+|-----------+------------------------------------------|
+| .         | matches any character                    |
+| ?         | repeat the previos match 0 or 1 time     |
+| +         | repeat the previous match 1 or more time |
+| *         | repeat previous match 0 or more times    |
+| [^x]      | any symbol appart from x                 |
+| [:ascii:] | match ascii characters                   |
+|-----------+------------------------------------------|
+*** matching colour
+| =\\(=           | begin group number 1     |
+| =\\\\red\{=     | search \red{             |
+| =\\)=           | close group              |
+| =\\(}\\\\ec\\)= | group searching for {\ec |
 
-where =OPTIONG= can be 
-| 'words   | to go specify match in start/end of word  |
-| 'symbols | to specifify match in start/end of symbol |
-| t        | to specif                                 |
-| .        | matches any character                     |
-| ?        | repeat the previos match 0 or 1 time      |
-| +        | repeat the previous match 1 or more time  |
-| *        | repeat previous match 0 or more times     |
 
-for more info go to https://www.emacswiki.org/emacs/RegularExpression
+#+BEGIN_SRC emacs-lisp 
+  (font-lock-add-keywords 'latex-mode
+                          '(("\\(\\\\red\{\\)\\(\\([^}]\\)*\\)\\(}\\)"
+                             (1 'ilya_face-latex-red t)
+                             (4 'ilya_face-latex-red t))))
 
-The string below matches anything in quotes «» (to access quotes, run ="C-x 8 "=)
+  (font-lock-add-keywords 'latex-mode
+                          '(("\\(\\\\blue\{\\)\\(\\([^}]\\)*\\)\\(}\\)"
+                             (1 'ilya_face-latex-blue t)
+                             (4 'ilya_face-latex-blue t))))
+
+  (defface ilya_face-latex-red
+    '((t :background "#964854"
+         :weight bold
+         :distant-foreground "red"
+         ))
+    "Face for red blocks")
+
+  (defface ilya_face-latex-blue
+    '((t :background "#464896"
+         :weight bold
+         ))
+    "Face for red blocks")
+ #+END_SRC
+
+*** examples
 #+BEGIN_SRC emacs-lisp
   (font-lock-add-keywords 'latex-mode
                           (list
@@ -449,42 +485,6 @@ The string below matches anything in quotes «» (to access quotes, run ="C-x 8 
                             '(1 'font-latex-string-face t)
                             '(2 'font-latex-string-face t)
                             '(3 'font-latex-string-face t))))
- #+END_SRC
-| =\\(=     | begin group number 1  |
-| =\\red\{= | search \red{          |
-| =.*?=     | match anything inside |
-| =\}\)=    | close } and finish group |
-
-#+BEGIN_SRC emacs-lisp 
-  (font-lock-add-keywords 'latex-mode
-			  ;;                        '(("\\(\\\\red\{\\)\\(.*\\)\\(}\\)"
-			  '(("\\(\\\\red\{\\)\\(\\([^}]\\)*\\)\\(}\\)"
-			     (1 'ilya_face-latex-red-command t)
-			     (4 'ilya_face-latex-red-command t))))
-
-  (defface ilya_face-latex-red-command
-    '((t :background "#964854"
-	 :weight bold
-	 :distant-foreground "red"
-	 ))
-    "Face for red blocks")
-
-  (defface ilya_face-latex-red-content
-    '((t :distant-foreground "red"
-	 ))
-    "Face for red blocks")
-
-  (font-lock-add-keywords 'latex-mode
-;;			  '(("\\(\\\\blue\{\\)\\(.*\\)\\(}\\)"
-			  '(("\\(\\\\blue\{\\)\\(\\([^}]\\)*\\)\\(}\\)"
-			     (1 'ilya_face-latex-blue t)
-			     (3 'ilya_face-latex-blue t))))
-
-  (defface ilya_face-latex-blue
-    '((t :background "#464896"
-	 :weight bold
-	 ))
-    "Face for red blocks")
  #+END_SRC
 ** latex fill settings
 #+BEGIN_SRC emacs-lisp 
@@ -559,6 +559,16 @@ The string below matches anything in quotes «» (to access quotes, run ="C-x 8 
 
 
  #+END_SRC
+* Markdown mode
+#+BEGIN_SRC emacs-lisp 
+  (use-package markdown-mode
+    :ensure t
+    :commands (markdown-mode gfm-mode)
+    :mode (("README\\.md\\'" . gfm-mode)
+           ("\\.md\\'" . markdown-mode)
+           ("\\.markdown\\'" . markdown-mode))
+    :init (setq markdown-command "multimarkdown"))
+ #+END_SRC
 * Org mode
 **** get rid of anoying 'ding in table'
 C-u C-c C-x !
@@ -567,11 +577,26 @@ C-u C-c C-x !
   ;;(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 #+END_SRC
 ** agenda files
+create tasks to do
 #+BEGIN_SRC emacs-lisp
-  (setq org-agenda-files
-        (append
-         (file-expand-wildcards "*.org")))
+
 #+END_SRC
+*** keybinding =C-c c=
+#+BEGIN_SRC emacs-lisp 
+(global-set-key (kbd "C-c c") (function org-capture))
+ #+END_SRC
+*** agenda file location
+#+BEGIN_SRC emacs-lisp 
+  (setq org-agenda-files (list "~/creamy_seas/syncFiles/orgfiles/i.org"))
+  ;;(setq org-agenda-files
+  ;;      (append
+  ;;       (file-expand-wildcards "*.org")))
+ #+END_SRC
+*** org-capture-templates
+#+BEGIN_SRC emacs-lisp 
+  (setq org-capture-templates
+        '(("s" "Screencast" entry (file "~/creamy_seas/syncFiles/orgfiles/i.org") "* %?\n%i\n")))
+ #+END_SRC
 ** bullets
 the nice bullets instead of multiplication symbols
 #+BEGIN_SRC emacs-lisp
@@ -596,6 +621,15 @@ the nice bullets instead of multiplication symbols
 #+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook 'org-indent-mode)
 #+END_SRC
+** autocomplete in org mode (when typing #+)
+#+BEGIN_SRC emacs-lisp  
+  (use-package org-ac
+    :ensure t
+    :init (progn
+            (require 'org-ac)
+            (org-ac/config-default)
+            ))
+ #+END_SRC
 ** export to nice html
 #+BEGIN_SRC emacs-lisp
   (use-package ox-twbs
@@ -645,28 +679,31 @@ make virtual end with =mkvirtualenv NAME=
 | =echo $VIRTUAL_ENV=                | the currently activate virtual environment   |
 |------------------------------------+----------------------------------------------|
 
-*** to install using pip
+*** to install using pip (second part not required)
 |---------------+---------------------------------------------|
-| =rope=        | 'refactoring' library                       |
 | =jedi=        | autocompletion python (suggest names)       |
-| =flake8=      | linting (checks typos, syntax errors)       |
 | =autopep8=    | format the code (indent etc). uses =flake8= |
+| =flake8=      | linting (checks typos, syntax errors)       |
 | =importmagic= | automatic imports                           |
-| =yapf=        | code formatiing                             |
-| =ipython3=    | kernel                                      |
-| =jupyter=     | notebook                                    |
 | =matplotlib=  |                                             |
 | =qutip=       | needs =numpy= =Cython= =scipy=              |
-| PyQt5         | gui interface                               |
+| =PyQt5=       | gui interface                               |
+|---------------+---------------------------------------------|
+| =ipython3=    | kernel                                      |
+| =yapf=        | code formatiing                             |
+| =rope=        | 'refactoring' library                       |
+| =jupyter=     | notebook                                    |
 |---------------+---------------------------------------------|
 #+TBLFM: $1=PyQt5
 
 *** tell emacs to use the specific virtual environment
+a check is run to see if the =macbook_localiser= file exists and the corresponding environment
+is activated
 #+BEGIN_SRC emacs-lisp
   (use-package pyenv-mode
     :ensure t
     :config
-    (if (file-exists-p "~/macbook_localiser")
+    (if (file-exists-p "~/.macbook_localiser")
         (pyvenv-activate "~/creamy_seas/syncFiles/python_vi/mac_vi")
       (pyvenv-activate "~/creamy_seas/syncFiles/python_vi/arch_vi")))
 #+END_SRC
@@ -687,6 +724,11 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
     :config
     (elpy-enable))
  #+END_SRC
+*** python3 (the way to handle long scripts)
+#+BEGIN_SRC emacs-lisp
+  (setq python-shell-interpreter "python3"
+      python-shell-interpreter-args "-i")
+#+END_SRC
 *** jupyter notebook
 #+BEGIN_SRC emacs-lisp 
   ;;(setq python-shell-interpreter "jupyter"
@@ -700,11 +742,6 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
   ;;(setq python-shell-interpreter "ipython"
   ;;      python-shell-interpreter-args "-i --simple-prompt") 
  #+END_SRC
-*** python3 (use in script mode)
-#+BEGIN_SRC emacs-lisp
-  (setq python-shell-interpreter "python3"
-      python-shell-interpreter-args "-i")
-#+END_SRC
 ** elpy settings
 *** syntax checking =jedi, flycheck=
 - deactivate flymake and use flycheck - syntax is checked ont the fly
@@ -726,13 +763,38 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
  #+END_SRC
 ** ein (jupyter notebook server in emacs)
 #+BEGIN_SRC emacs-lisp 
-;;  (use-package ein
-;;   :ensure t) 
+  (use-package ein
+    :ensure t)
+
+  (add-hook 'ein:notebook-multilang-mode
+            (lambda ()
+              (local-unset-key (kbd "C-c C-u"))
+              (local-unset-key (kbd "C-c C-d"))
+              (local-unset-key (kbd "C-c C-j"))))
  #+END_SRC
+*** common commands
+| =C-c C-a/b= | create cell above/below           |
+| =C-c C-c=   | evalute cell                      |
+| =C-c C-e=   | hide evaluation                   |
+| =C-c C-h=   | get python documentation at point |
+| =C-c C-TAB= | autocmplete                       |
+| =C-c C-k=   | kill cell                         |
+| =C-c C-m/s= | merge or split cell               |
+| =C-c C-n/p= | next/previous cell                |
+| =C-c C-o=   | open notebook                     |
+| =C-c C-q=   | close ntebook                     |
+| =C-c C-t=   | change cell format                |
+| =C-c C-w/y= | copy/yank cell                    |
+| =C-c C-z=   | interrupt kernel                  |
 ** window splitting
 #+BEGIN_SRC emacs-lisp 
   (defadvice elpy-shell-send-region-or-buffer (after ilya-resize-python-buffer activate)
     (window-resize-no-error (get-buffer-window "*Python*") (- 10 (window-height (get-buffer-window "*Python*") "floor"))))
+ #+END_SRC
+** debugging
+remove a warming about native completion
+#+BEGIN_SRC emacs-lisp 
+  (setq python-shell-completion-native-enable nil)
  #+END_SRC
 ** minor modes
 #+BEGIN_SRC emacs-lisp
@@ -919,10 +981,11 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
       :init
       (add-hook 'emacs-lisp-mode-hook 'yas-minor-mode)
       (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
+      (add-hook 'python-mode-hook 'yas-minor-mode)
+
       (global-set-key (kbd "C-c C-n") 'yas-new-snippet)
-      (yas-global-mode)
+      ;;(yas-global-mode)
       :config
-  ;;    (add-to-list 'yas-snippet-dirs (ilya_fire-up-from-emacs "snippets/snippet-mode")) ;; adds our locally created snippets
       (add-to-list 'yas-snippet-dirs "~/creamy_seas/syncFiles/emacs_config/snippets/snippet-mode")
       (use-package yasnippet-snippets
         :ensure t)
@@ -1260,7 +1323,7 @@ to access the inconsolata font you need to
 **** run =M-x customize= go to =faces= then =defaults= and type =Inconsolata=
 ** bottoms bar
 #+BEGIN_SRC emacs-lisp
-  (if (file-exists-p "~/macbook_localiser")
+  (if (file-exists-p "~/.macbook_localiser")
       (progn
         (use-package powerline			
           :ensure t
@@ -1279,7 +1342,7 @@ to access the inconsolata font you need to
 #+END_SRC
 ** theme
 #+BEGIN_SRC emacs-lisp
-  (if (file-exists-p "~/macbook_localiser")
+  (if (file-exists-p "~/.macbook_localiser")
       (load-theme 'misterioso)
     (use-package spacemacs-theme
       :defer t

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ilya-command-quotes
+# key: icmdq
+# --
+\cmd{\`\`${1:comment}''}$0

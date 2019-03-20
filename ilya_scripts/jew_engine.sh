@@ -12,13 +12,15 @@
 #----------------------------------------
 
 #1) remove and copy the generate "_output" directory in the master directory
-rm -r ./auto 2> /dev/null
-rm -r _region_* 2> /dev/null
-mkdir -p _output
+rm -r auto 2> /dev/null
+rm -r */auto 2> /dev/null
+rm -r */_region_* 2> /dev/null
+rm prv* 2> /dev/null
+mkdir -p _output 2> /dev/null
 
 #2) copy all the files into there. 3 times, because the script quits prematurely for some reason, so need to be repeated
 echo "Removing files: " $1.{aux,bbl,blg,fdb_latexmk,fls,log,out,toc,bcf,run.xml}
-mv -f $1.{aux,bbl,blg,fdb_latexmk,fls,log,out,toc,bcf,run.xml} ./_output
+mv -f $1.{aux,bbl,blg,fdb_latexmk,fls,log,out,toc,bcf,run.xml,nav,snm} ./_output 2> /dev/null
 
 
 #echo $(ls -l)

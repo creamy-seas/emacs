@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
-# name: dim2-matrix
-# key: pm2
+# name: matrix2-2
+# key: mat2
 # --
 \begin{pmatrix}
  $1 & $2\\

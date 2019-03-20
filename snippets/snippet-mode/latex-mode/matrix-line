@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: line-matrix
-# key: lmat
+# name: matrix-line
+# key: matl
 # --
 \ensuremath{\left(\begin{smallmatrix} ${1:matrix-values} \end{smallmatrix}\right)} $0
