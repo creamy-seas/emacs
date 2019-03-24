@@ -20,7 +20,18 @@ MAP is the keybinding map for the major or minor mode e.g. LaTeX-mode-map
   (fset 'comment-orgmode
         ";;\C-n\C-a")
 
-  ;;(global-set-key (kbd "C-c a") 'comment-orgmode)
+  (add-hook 'org-mode-hook (lambda ()
+                             (local-set-key (kbd "C-c a") 'comment-orgmode)))
+
+  (fset 'comment-python-mode
+     "\C-a\346\342# \C-b\C-b\C-n")
+
+;;  (add-hook 'python-mode-hook (lambda ()
+;;                             (local-set-key (kbd "C-c a") 'comment-python-mode)))
+ #+END_SRC
+* Global Unbindings
+#+BEGIN_SRC emacs-lisp 
+  (global-unset-key (kbd "C-c q"))
  #+END_SRC
 * Passwords (MUST HAVE gpg installed)                           :nnot_working:
 ** enable the encrypting password package
@@ -511,7 +522,7 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
   (global-set-key (kbd "C-c l") (function ilya_buffer-fill-column))
  #+END_SRC
  
-** remove bindings
+** key bindings
 #+BEGIN_SRC emacs-lisp 
   (add-hook 'LaTeX-mode-hook (lambda ()
                                (local-unset-key (kbd "C-c C-a"))
@@ -532,20 +543,6 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
                                (local-unset-key (kbd "C-c }")) ;;up list
                                ))
 
-  (global-unset-key (kbd "C-c q"))
-
-
-
-  (defun ilya_insert-underscore (args)
-    "Inserts an underscore, because the jews put in dollars around it"
-    (interactive "P")
-    (insert "_"))
-
-  (add-hook 'LaTeX-mode-hook (lambda ()
-                               (local-set-key (kbd "C-c C-u") (function ilya_insert-underscore))
-                               (local-unset-key (kbd "C-c C-q"))
-                               (local-set-key (kbd "C-c C-q") (function ilya_latex-indent-buffer))
-                               ))
 
   (defun ilya_latex-indent-buffer (args)
     "Indents the full buffer"
@@ -557,7 +554,23 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
     (ignore-errors (LaTeX-fill-buffer justify-width))
     )
 
+  (defun ilya_insert-underscore (args)
+    "Inserts an underscore, because the jews put in dollars around it"
+    (interactive "P")
+    (insert "_"))
 
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (local-set-key (kbd "C-c C-u") (function ilya_insert-underscore))
+                               (local-unset-key (kbd "C-c C-q"))
+                               (local-set-key (kbd "C-c C-q") (function ilya_latex-indent-buffer))))
+ #+END_SRC
+** colouring
+#+BEGIN_SRC emacs-lisp 
+  (custom-set-faces
+   '(font-latex-bold-face ((t (:inherit bold))))
+   '(font-latex-italic-face ((t (:inherit italic))))
+   '(font-latex-math-face ((t (:foreground "#99c616"))))
+   '(font-latex-sedate-face ((t (:foreground "burlywood")))))
  #+END_SRC
 * Markdown mode
 #+BEGIN_SRC emacs-lisp 
@@ -569,6 +582,11 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
            ("\\.markdown\\'" . markdown-mode))
     :init (setq markdown-command "multimarkdown"))
  #+END_SRC
+* Magit mode
+#+BEGIN_SRC emacs-lisp 
+  (use-package magit
+    :ensure t)
+ #+END_SRC
 * Org mode
 **** get rid of anoying 'ding in table'
 C-u C-c C-x !
@@ -578,16 +596,14 @@ C-u C-c C-x !
 #+END_SRC
 ** agenda files
 create tasks to do
-#+BEGIN_SRC emacs-lisp
-
-#+END_SRC
 *** keybinding =C-c c=
 #+BEGIN_SRC emacs-lisp 
 (global-set-key (kbd "C-c c") (function org-capture))
  #+END_SRC
 *** agenda file location
 #+BEGIN_SRC emacs-lisp 
-  (setq org-agenda-files (list "~/creamy_seas/syncFiles/orgfiles/i.org"))
+  (setq org-agenda-files (list "~/creamy_seas/syncFiles/orgfiles/i.org"
+                               "~/creamy_seas/1488.org"))
   ;;(setq org-agenda-files
   ;;      (append
   ;;       (file-expand-wildcards "*.org")))
@@ -595,7 +611,10 @@ create tasks to do
 *** org-capture-templates
 #+BEGIN_SRC emacs-lisp 
   (setq org-capture-templates
-        '(("s" "Screencast" entry (file "~/creamy_seas/syncFiles/orgfiles/i.org") "* %?\n%i\n")))
+        '(("s" "Screencast" entry
+           (file "~/creamy_seas/syncFiles/orgfiles/i.org") "* %?\n%i\n")
+          ("l" "LukeSmith entry"
+           (file "~/creamy_seas/1488.org") "%?")))
  #+END_SRC
 ** bullets
 the nice bullets instead of multiplication symbols
@@ -644,11 +663,15 @@ the nice bullets instead of multiplication symbols
   ;;  :ensure t)
   ;;(setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
 #+END_SRC
+** keybindings
+#+BEGIN_SRC emacs-lisp 
+  (define-key org-mode-map (kbd "C-c C-;") (function comment-line))
+  (define-key emacs-lisp-mode-map (kbd "C-c C-;") (function comment-line))
+ #+END_SRC
 * Python mode
 ** commands
 | =C-c C-e=   | edit all occurunces of this symbol in the file |
 | =C-C C-r r= | refactor the code (needs rope)                 |
-|             |                                                |
 ** external setup
 *** install =virtualenvwrapper=
 **** mac
@@ -696,6 +719,8 @@ make virtual end with =mkvirtualenv NAME=
 |---------------+---------------------------------------------|
 #+TBLFM: $1=PyQt5
 
+*** configuration files
+the flake8 (used for syntax checking) has configuration file =~/.config/flake8=
 *** tell emacs to use the specific virtual environment
 a check is run to see if the =macbook_localiser= file exists and the corresponding environment
 is activated
@@ -788,8 +813,8 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
 | =C-c C-z=   | interrupt kernel                  |
 ** window splitting
 #+BEGIN_SRC emacs-lisp 
-  (defadvice elpy-shell-send-region-or-buffer (after ilya-resize-python-buffer activate)
-    (window-resize-no-error (get-buffer-window "*Python*") (- 10 (window-height (get-buffer-window "*Python*") "floor"))))
+;;  (defadvice elpy-shell-send-region-or-buffer (after ilya-resize-python-buffer activate)
+;;    (window-resize-no-error (get-buffer-window "*Python*") (- 10 (window-height ;;(get-buffer-window "*Python*") "floor"))))
  #+END_SRC
 ** debugging
 remove a warming about native completion
@@ -804,6 +829,15 @@ remove a warming about native completion
     (diminish 'highlight-indentation-mode)
     )
 #+END_SRC
+** key rebinding
+#+BEGIN_SRC emacs-lisp 
+  (add-hook 'python-mode-hook (lambda ()
+                                (local-unset-key (kbd "C-c C-j")) ;imenu
+                                (local-unset-key (kbd "C-c C-f")) ;find file
+                                (define-key elpy-mode-map (kbd "C-c C-n") (function flycheck-next-error))
+                                (define-key elpy-mode-map (kbd "C-c C-p") (function flycheck-previous-error))
+                                (define-key elpy-mode-map (kbd "C-c C-;") (function comment-line))))
+ #+END_SRC
 * RSS mode
 ** location of configuration file
 #+BEGIN_SRC emacs-lisp
@@ -905,20 +939,13 @@ remove a warming about native completion
   (custom-set-faces
    '(elfeed-search-date-face
      ((t :foreground "#11a"
-         :weight bold
-         ))))
-
-  (custom-set-faces
+         :weight bold))))
    '(elfeed-search-feed-face
      ((t :foreground "#444"
-         :weight bold
-         ))))
-
-  (custom-set-faces
+         :weight bold)))
    '(elfeed-search-title-face
      ((t :foreground "#3ef"
-         :weight bold
-         ))))
+         :weight bold)))
 
   (defface elfeed-search-starred-title-face
     '((t :foreground "#f77"
@@ -991,6 +1018,7 @@ remove a warming about native completion
         :ensure t)
       (yas-reload-all))
 #+END_SRC
+* Autocomplete
 * Autocomplete Company                                         :company:mode:
 Autocomplete shoudl only run in certain environments
 #+BEGIN_SRC emacs-lisp
@@ -1000,12 +1028,34 @@ Autocomplete shoudl only run in certain environments
     (add-hook 'org-mode-hook 'company-mode)
     (add-hook 'emacs-lisp-mode-hook 'company-mode)
     (add-hook 'text-mode-hook 'company-mode)
-
-  ;;  (add-hook 'after-init-hook 'global-company-mode)
-  ;;  (setq company-global-modes '(not LaTeX-mode))
+    (add-hook 'inferior-python-mode-hook 'company-mode)
     (setq company-idle-delay 0)
-    (setq company-minimum-prefix-length 4))
+    (setq company-minimum-prefix-length 3))
+#+END_SRC
+** company colours
+#+BEGIN_SRC emacs-lisp 
+  (use-package company
+    :ensure t
+    :init
+    (custom-set-faces
+     ;; annotation (i.e. function or method)
+     `(company-tooltip-annotation ((t (:foreground "#CFD0E3"))))
+     `(company-tooltip-annotation-selection ((t (:foreground "#334676"))))
+     ;; scrollbar showing position in list
+     `(company-scrollbar-bg ((t (:background "#189a1e1224a2"))))
+     `(company-scrollbar-fg ((t (:background "#41bf505b61e3"))))
+     ;; text being expanded
+     `(company-tooltip-common ((t (:foreground "#33ccff"))))
+     `(company-tooltip-common-selection ((t (:foreground "#3a3a6e" :weight bold))))
+     ;; autocompletion selection
+     `(company-tooltip-selection ((t (:background "orange2" :foreground "#090C42" :weight bold))))
+     ;; change background of the box
+     `(company-tooltip ((t (:inherit default :background "#41bf505b61e3"))))
+     ))
+ #+END_SRC
 
+** keybinding
+#+BEGIN_SRC emacs-lisp 
   (with-eval-after-load 'company;;remap navigation only if company mode is loaded
     ;;cancel some keys, and activate others
     (define-key company-active-map (kbd "M-n") nil)
@@ -1013,7 +1063,7 @@ Autocomplete shoudl only run in certain environments
     (define-key company-active-map (kbd "C-n") #'company-select-next)
     (define-key company-active-map (kbd "C-p") #'company-select-previous)
     )
-#+END_SRC
+ #+END_SRC
 * Buffers 
 ** kill all buffers
 #+BEGIN_SRC emacs-lisp
@@ -1190,7 +1240,7 @@ when the there are more than two windows =C-x o= will give each window a letter 
     (setq switch-window-threshold 2)
     (setq switch-window-shortcut-style 'qwerty) 
     (setq switch-window-qwerty-shortcuts
-          '("a" "s" "d" "f" "j" "k" "l"))
+          '("a" "s" "d" "f" "g" "h" "i"))
     :bind
     ([remap other-window] . switch-window))
   ;;(global-set-key (kbd "C-M-z") 'switch-window)
@@ -1369,6 +1419,12 @@ to access the inconsolata font you need to
     :init
     (add-hook 'prog-mode-hook 'rainbow-mode))
 #+END_SRC
+** colouring
+#+BEGIN_SRC emacs-lisp 
+  (custom-set-faces
+   '(default ((t (:inherit nil :stipple nil :background "#2d3743" :foreground "#e1e1e0" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 175 :width normal :foundry "nil" :family "Inconsolata"))))
+   )
+ #+END_SRC
 * Emacs brackets
 ** autoclosing parantheses
 #+BEGIN_SRC emacs-lisp
