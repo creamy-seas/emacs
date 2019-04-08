@@ -3,5 +3,14 @@
 # key: com
 # --
 """
-${1:content}$0
+__ Parameters __
+${1:parameter me up}
+
+__ Description __
+${2:what führer does}
+
+__ Return __
+${3:any return values}
 """
+
+$0

@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: ilya-slide
+# key: isl
+# --
+\begin{frame}
+  \frametitle{\insertsection}
+  \framesubtitle{\insertsubsection}
+
+  ${1:get-creative-here!}
+
+\end{frame}

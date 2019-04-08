@@ -240,6 +240,8 @@ Indenting environment
     (LaTeX-mode-hook . LaTeX-math-mode);; type ` to get suggestions
     (LaTeX-mode-hook . font-lock-mode);; font highlighting
     )
+
+  (server-start)
  #+END_SRC
 ** tailored commands
 *Some important AucTex commands and variables*
@@ -261,14 +263,17 @@ Indenting environment
 
       ;; 2 - prepare for compilation buffer
       (ilya_latex-compilation-prepare "generate-zoomer-pdf")
-    
+
       ;; 3 - launch compilation
       (ignore-errors
         (TeX-run-TeX ilya_latex-compilation-process-id command-script (TeX-master-file))))
+    (custom-set-faces
+     '(mode-line ((t (:background "#2d379a" :foreground "#1eafe1" :box (:line-width -1 :color "red"))))))
     )
 
   (add-hook 'LaTeX-mode-hook (lambda ()
-                               (local-set-key (kbd "C-c C-m") (function ilya_gen-key))))
+                               (define-key LaTeX-mode-map (kbd "C-c C-c") (function ilya_gen-key))))
+                               ;; (local-set-key (kbd "C-c C-m") (function ilya_gen-key))))
  #+END_SRC
 *** exterminate files =C-c C-j=
 1 - kill any running processes on this master files
@@ -301,7 +306,9 @@ Indenting environment
         (ignore-errors 
           (TeX-run-TeX "jew_process" command-script (TeX-master-file))
           )
-        
+
+        (custom-set-faces
+         '(mode-line ((t (:background "#2d379a" :foreground "#1eafe1")))))
         (sleep-for 2)
         ;; 5 - close this buffer window
         (kill-buffer (get-buffer "卍 Exterminating 卍"))
@@ -329,7 +336,6 @@ Indenting environment
         '(("SkimViewer" "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/search_engine.sh %s %n %o %b")))
 
   (setq TeX-view-program-selection '((output-pdf "SkimViewer")))
-  (server-start)
  #+END_SRC
 *** supporting functions
 #+BEGIN_SRC emacs-lisp
@@ -449,6 +455,7 @@ It would be a mumble jumble like
 which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)= where =OPTIONG= can be (search Emacs Search)
 |-----------+------------------------------------------|
 | .         | matches any character                    |
+| ^ or $    | start or end of line                     |
 | ?         | repeat the previos match 0 or 1 time     |
 | +         | repeat the previous match 1 or more time |
 | *         | repeat previous match 0 or more times    |
@@ -524,45 +531,64 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
  
 ** key bindings
 #+BEGIN_SRC emacs-lisp 
+    (add-hook 'LaTeX-mode-hook (lambda ()
+                                 (local-unset-key (kbd "C-c C-a"))
+                                 (local-unset-key (kbd "C-c C-b"))
+                                 (local-unset-key (kbd "C-c C-d"))
+                                 (local-unset-key (kbd "C-c C-k"))
+                                 (local-unset-key (kbd "C-c C-r"))
+                                 (local-unset-key (kbd "C-c C-z"))
+                                 (local-unset-key (kbd "C-c ESC"))
+                                 (local-unset-key (kbd "C-c C-t"))
+                                 (local-unset-key (kbd "C-c <")) ;;index and glossary
+                                 (local-unset-key (kbd "C-c /")) ;;index
+                                 (local-unset-key (kbd "C-c \\")) ;;index
+                                 (local-unset-key (kbd "C-c >")) ;;index
+                                 (local-unset-key (kbd "C-c _")) ;;set master file
+                                 (local-unset-key (kbd "C-c C-n")) ;;normal mode (use C-c #)
+                                 (local-unset-key (kbd "C-c ~")) ;;math mode
+                                 (local-unset-key (kbd "C-c }")) ;;up list
+                                 (local-unset-key (kbd "C-c `")) ;TeX-next-error
+                                 (local-unset-key (kbd "C-c ^")) ;TeX-home-buffer
+                                 (local-unset-key (kbd "C-x `")) ;next-error
+                                 (local-unset-key (kbd "C-c C-n")) ;yasnippet
+                                 ))
+
+    (defun ilya_latex-save-buffer ()
+      "Save the current buffer and performs indent"
+      (interactive)
+      ;; 1 - fill colum
+      (setq justify-width (ilya_buffer-fill-column))
+
+      ;; 3 - perform fill
+      (ignore-errors (LaTeX-fill-buffer justify-width))
+
+      ;; 2 - save file
+      (save-buffer))
+
+    (defun ilya_latex-indent-buffer (args)
+      "Indents the full buffer"
+      (interactive "P")
+      ;; 1 - fill the column
+      (setq justify-width (ilya_buffer-fill-column))
+
+      ;; 3 - perform fill
+      (ignore-errors (LaTeX-fill-buffer justify-width))
+      )
+
+    (defun ilya_insert-underscore (args)
+      "Inserts an underscore, because the jews put in dollars around it"
+      (interactive "P")
+      (insert "_"))
+
   (add-hook 'LaTeX-mode-hook (lambda ()
-                               (local-unset-key (kbd "C-c C-a"))
-                               (local-unset-key (kbd "C-c C-b"))
-                               (local-unset-key (kbd "C-c C-d"))
-                               (local-unset-key (kbd "C-c C-k"))
-                               (local-unset-key (kbd "C-c C-r"))
-                               (local-unset-key (kbd "C-c C-z"))
-                               (local-unset-key (kbd "C-c ESC"))
-                               (local-unset-key (kbd "C-c C-t"))
-                               (local-unset-key (kbd "C-c <")) ;;index and glossary
-                               (local-unset-key (kbd "C-c /")) ;;index
-                               (local-unset-key (kbd "C-c \\")) ;;index
-                               (local-unset-key (kbd "C-c >")) ;;index
-                               (local-unset-key (kbd "C-c _")) ;;set master file
-                               (local-unset-key (kbd "C-c C-n")) ;;normal mode (use C-c #)
-                               (local-unset-key (kbd "C-c ~")) ;;math mode
-                               (local-unset-key (kbd "C-c }")) ;;up list
-                               ))
-
-
-  (defun ilya_latex-indent-buffer (args)
-    "Indents the full buffer"
-    (interactive "P")
-    ;; 1 - fill the column
-    (setq justify-width (ilya_buffer-fill-column))
-
-    ;; 3 - perform fill
-    (ignore-errors (LaTeX-fill-buffer justify-width))
-    )
-
-  (defun ilya_insert-underscore (args)
-    "Inserts an underscore, because the jews put in dollars around it"
-    (interactive "P")
-    (insert "_"))
-
-  (add-hook 'LaTeX-mode-hook (lambda ()
-                               (local-set-key (kbd "C-c C-u") (function ilya_insert-underscore))
-                               (local-unset-key (kbd "C-c C-q"))
-                               (local-set-key (kbd "C-c C-q") (function ilya_latex-indent-buffer))))
+                               (define-key LaTeX-mode-map (kbd "C-c C-n") (function next-error))
+                               ;; (define-key LaTeX-mode-map (kbd "C-c C-p") (function previous-error))
+                               (define-key LaTeX-mode-map (kbd "C-c C-;") (function comment-line))
+                               (define-key LaTeX-mode-map (kbd "C-c C-u") (function ilya_insert-underscore))
+                               (define-key LaTeX-mode-map (kbd "C-c C-q") (function ilya_latex-indent-buffer))
+                               (define-key LaTeX-mode-map (kbd "C-c C-h") (function TeX-home-buffer))
+                               (define-key LaTeX-mode-map (kbd "C-x C-s") (function ilya_latex-save-buffer))))
  #+END_SRC
 ** colouring
 #+BEGIN_SRC emacs-lisp 
@@ -585,7 +611,10 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
 * Magit mode
 #+BEGIN_SRC emacs-lisp 
   (use-package magit
-    :ensure t)
+    :ensure t
+    ;; :init
+    ;; (global-set-key (kbd "C-x C-m") (function magit-status))
+  )
  #+END_SRC
 * Org mode
 **** get rid of anoying 'ding in table'
@@ -603,7 +632,8 @@ create tasks to do
 *** agenda file location
 #+BEGIN_SRC emacs-lisp 
   (setq org-agenda-files (list "~/creamy_seas/syncFiles/orgfiles/i.org"
-                               "~/creamy_seas/1488.org"))
+                               "~/creamy_seas/1488.org"
+                               "~/creamy_seas/antlers.org"))
   ;;(setq org-agenda-files
   ;;      (append
   ;;       (file-expand-wildcards "*.org")))
@@ -644,10 +674,11 @@ the nice bullets instead of multiplication symbols
 #+BEGIN_SRC emacs-lisp  
   (use-package org-ac
     :ensure t
-    :init (progn
-            (require 'org-ac)
-            (org-ac/config-default)
-            ))
+    :init
+    (progn
+      (require 'org-ac)
+      (org-ac/config-default))
+    )
  #+END_SRC
 ** export to nice html
 #+BEGIN_SRC emacs-lisp
@@ -663,6 +694,21 @@ the nice bullets instead of multiplication symbols
   ;;  :ensure t)
   ;;(setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
 #+END_SRC
+** table formulas
+#+BEGIN_SRC emacs-lisp 
+  (defmath gradeBand(score)
+    (if (< score 1)
+        "DNS"
+      (if (< score 40)
+          "Working"
+        (if (< score 50)
+            "3rd"
+          (if (< score 60)
+              "2:2"
+            (if (< score 70)
+                "2:1"
+              "1st"))))))
+ #+END_SRC
 ** keybindings
 #+BEGIN_SRC emacs-lisp 
   (define-key org-mode-map (kbd "C-c C-;") (function comment-line))
@@ -739,7 +785,7 @@ is activated
 *** setting the backend
 to control where the plots are sent to, set the backend to =Qt5Agg=
 *** creating styles
-- to print the available styles =plt.styles.available=
+- to print the available styles =plt.style.available=
 - to use styles =plt.style.use('ggplot')=
 - create a style document =example.mplstyle= in the =matplolib/stylelib= folder
 ** activate elpy and choose interpreter
@@ -768,6 +814,10 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
   ;;      python-shell-interpreter-args "-i --simple-prompt") 
  #+END_SRC
 ** elpy settings
+*** root directory
+#+BEGIN_SRC emacs-lisp 
+  (setq elpy-shell-use-project-root nil)
+ #+END_SRC
 *** syntax checking =jedi, flycheck=
 - deactivate flymake and use flycheck - syntax is checked ont the fly
 - uses jedi
@@ -829,13 +879,34 @@ remove a warming about native completion
     (diminish 'highlight-indentation-mode)
     )
 #+END_SRC
+** custom commands
+#+BEGIN_SRC emacs-lisp 
+  (defun ilya_python-interrupt ()
+    "Send an interrupt signal to python process"
+    (interactive)
+    (let ((proc (ignore-errors
+                  (python-shell-get-process-or-error))))
+      (when proc
+        (interrupt-process proc))))
+
+  (defun ilya_python-kill-all (args)
+    "Kill all without warning"
+    )
+
+ #+END_SRC
 ** key rebinding
 #+BEGIN_SRC emacs-lisp 
   (add-hook 'python-mode-hook (lambda ()
                                 (local-unset-key (kbd "C-c C-j")) ;imenu
-                                (local-unset-key (kbd "C-c C-f")) ;find file
+                                (local-unset-key (kbd "C-c C-f")) ;elpy-find-file
+                                (define-key elpy-mode-map (kbd "C-c C-b") nil) ;select current indentation
+
+                                (define-key elpy-mode-map (kbd "C-c C-k") (function ilya_python-interrupt))
+                                (define-key elpy-mode-map (kbd "C-c C-j") (function elpy-shell-kill-all))
                                 (define-key elpy-mode-map (kbd "C-c C-n") (function flycheck-next-error))
                                 (define-key elpy-mode-map (kbd "C-c C-p") (function flycheck-previous-error))
+                                (define-key elpy-mode-map (kbd "C-c C-f") (function elpy-nav-expand-to-indentation))
+                                (define-key elpy-mode-map (kbd "C-c C-r") (function elpy-rpc-restart))
                                 (define-key elpy-mode-map (kbd "C-c C-;") (function comment-line))))
  #+END_SRC
 * RSS mode
@@ -957,6 +1028,12 @@ remove a warming about native completion
 #+END_SRC
 ** image chaseup
    The problem is that the entry content only includes the tiny reddit-hosted thumbnail and Elfeed doesn't know to chase through the chain of links to get to the actual image that you care about. You could try assigning your own function to elfeed-show-refresh-function that treats reddit posts differently (and calling the default for everything else). You'd need to shr-insert an img element with the full size image as the src.
+** configuration
+#+BEGIN_SRC emacs-lisp 
+  ;; (setq elfeed-show-mode-hook
+  ;;       (lambda ()
+  ;; 	(set-face-attribute)))
+ #+END_SRC
 * SSH mode
 ** setting up trampXS
 #+BEGIN_SRC emacs-lisp
@@ -1018,14 +1095,13 @@ remove a warming about native completion
         :ensure t)
       (yas-reload-all))
 #+END_SRC
-* Autocomplete
 * Autocomplete Company                                         :company:mode:
 Autocomplete shoudl only run in certain environments
 #+BEGIN_SRC emacs-lisp
   (use-package company
     :ensure t
     :config
-    (add-hook 'org-mode-hook 'company-mode)
+    ;; (add-hook 'org-mode-hook 'company-mode)
     (add-hook 'emacs-lisp-mode-hook 'company-mode)
     (add-hook 'text-mode-hook 'company-mode)
     (add-hook 'inferior-python-mode-hook 'company-mode)
@@ -1075,8 +1151,59 @@ Autocomplete shoudl only run in certain environments
 ** enable ibuffer
 ibuffer will mean that new buffer is opened in the window that the command was called from
 #+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-x b") 'ibuffer)
+    (global-set-key (kbd "C-x b") 'ibuffer)
+    (setq ibuffer-saved-filter-groups
+          (quote (("default"
+                   ("卍 Horter 卍" (or
+                                    (name . "^\\*dashboard\\*$")
+                                    (mode . emacs-lisp-mode)))
+                   ("ᚸ Org ᚸ"(or
+                              (name . "^.*org")
+                              (name . "^.*org.*$")))
+                   ("ᚧ Python ᚧ" (or
+                                   (mode . python-mode)
+                                   (mode . inferior-python-mode)
+                                   (name . "^\\*Python Doc\\*$")
+                                   (name . "^matplotlibrc$")
+                                   (name . "^.*mplstyle$")
+                                   (name . "^\\*Flycheck error messages\\*$")))
+                   ("ᛋᛋ Latex ᛋᛋ" (or
+                             (name . "^.*tex$")
+                             (name . "^.*bib$")
+                             (mode . comint-mode)))
+                   ("ᚶ Emacs ᚶ" (or
+                             (name . "^\\*scratch\\*$")
+                             (name . "^\\*Messages\\*$")
+                             (name . "^\\*Backtrace\\*$")))
+                   ("⍫ Magit"
+                    (name . "^magit-.*$"))
+                   ))))
+    (add-hook 'ibuffer-mode-hook
+              (lambda ()
+                (ibuffer-auto-mode 1)
+                (ibuffer-switch-to-saved-filter-groups "default")))
+
+    ;;(add-to-list `ibuffer-never-show-predicates "*Completions*")
+  ;;  (add-to-list `ibuffer-never-show-predicates "*Help*")
+    ;; (add-to-list `ibuffer-never-show-predicates "*elfeed-log*")
 #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq ibuffer-formats 
+        '((mark modified read-only " "
+                (name 50 50 :left :elide) ; change: 30s were originally 18s
+                " "
+                (size 9 -1 :right)
+                " "
+                (mode 16 16 :left :elide)
+                " " filename-and-process)
+          (mark " "
+                (name 16 -1)
+                " " filename)))
+  ;; minimize bugger when it loads
+  ;; (custom-set-variables
+  ;;  '(ibuffer-default-shrink-to-minimum-size t))
+#+END_SRC
+
 ** IDO 
 buffer with better representation.
 *** enable ido mode
@@ -1295,8 +1422,8 @@ the superior search mode to the original
 * Numbering
 ** line and column numbering
 #+BEGIN_SRC emacs-lisp
-  (column-number-mode 1)
-  (global-hl-line-mode 1)
+  ;; (column-number-mode 1)
+  ;; (global-hl-line-mode 1)
 #+END_SRC  
 ** relative line numbering
 #+BEGIN_SRC emacs-lisp
@@ -1373,23 +1500,74 @@ to access the inconsolata font you need to
 **** run =M-x customize= go to =faces= then =defaults= and type =Inconsolata=
 ** bottoms bar
 #+BEGIN_SRC emacs-lisp
-  (if (file-exists-p "~/.macbook_localiser")
-      (progn
-        (use-package powerline			
-          :ensure t
-          :init
-          (powerline-center-theme)
-          (setq ns-use-srgb-colorspace nil))
-        (setq powerline-default-separator 'wave))
-    (progn
-      (use-package spaceline
-        :ensure t
-        :config
-        (require 'spaceline-config)
-        (setq powerline-default-separator (quote arrow))
-        (setq ns-use-srgb-colorspace nil)
-        (spaceline-spacemacs-theme))))
+  ;; (if (file-exists-p "~/.macbook_localiser")
+  ;;     (progn
+  ;;       (use-package powerline			
+  ;;         :ensure t
+  ;;         :init
+  ;;         (powerline-center-theme)
+  ;;         (setq ns-use-srgb-colorspace nil)
+  ;;         )
+  ;;       (setq powerline-default-separator 'wave)
+  ;;       )
+  ;;   (progn
+  ;;     (use-package spaceline
+  ;;       :ensure t
+  ;;       :config
+  ;;       (require 'spaceline-config)
+  ;;       (setq powerline-default-separator (quote arrow))
+  ;;       (setq ns-use-srgb-colorspace nil)
+  ;;       (spaceline-spacemacs-theme))))
 #+END_SRC
+** sml
+#+BEGIN_SRC emacs-lisp 
+  (use-package smart-mode-line
+    :ensure t
+    :init
+    ;; (use-package smart-mode-line-powerline-theme
+    ;;   :ensure t)
+    (setq size-indication-mode t)
+    (setq sml/shorten-directory t)
+    (setq sml/no-confirm-load-theme t)
+    (setq sml/shorten-modes t)
+    (sml/setup))
+
+  (add-to-list 'sml/replacer-regexp-list '("^.*config.*$" ":ED:") t)
+  (add-to-list 'sml/replacer-regexp-list '("^.*config\\.org$" ":ED:") t)
+  (custom-set-variables
+   '(sml/col-number-format "")
+   '(sml/extra-filler 0)
+   '(sml/line-number-format "")
+   '(sml/mule-info "")
+   '(sml/modified-char "☦︎")
+   '(sml/name-width (quote (30 . 60)))
+   '(sml/read-only-char "☧")
+   '(sml/pos-minor-modes-separator " ᛋᛋ")
+   '(sml/pre-minor-modes-separator "ᛋᛋ")
+   )
+
+  (custom-set-faces
+  ;;   '(sml/charging ((t (:inherit s
+  ;;                               ml/global :foreground "ForestGreen" :underline t))))
+  ;; '(sml/client ((t (:inherit sml/prefix :underline t))))
+  ;; '(sml/col-number ((t (:inherit sml/global :underline t))))
+  ;; '(sml/discharging ((t (:inherit sml/global :foreground "Red" :underline t))))
+   '(sml/filename ((t (:inherit mode-line-buffer-id :foreground "#eab700" :weight bold)))) ;file name
+   '(sml/prefix ((t (:foreground "#eab700")))) ;shortennings
+  '(sml/folder ((t (:foreground "#505040" :weight normal)))) ;folder
+  '(sml/global ((t (:foreground "white")))) ;most things on line
+  '(sml/position-percentage ((t (:foreground "white")))) ;percentageof buffer
+  '(sml/remote ((t (:foreground "red")))) ;local or remote load
+  '(sml/git ((t (:foreground "white"))))	;github
+  '(sml/vc-edited ((t (:foreground "white")))) ;github
+  '(sml/modes ((t (:foreground "#1eafe1" :weight bold :box (:line-width 1 :color "#2d379a" :style pressed-button))))) ;major mode
+  '(sml/minor-modes ((t (:foreground "#1eafe1")))) ;major mode
+  '(sml/process ((t (:foreground "red")))) ;github
+  ;; '(sml/global ((t (:inherit font-lock-preprocessor-face))))
+  '(mode-line ((t (:background "#2d379a" :foreground "#1eafe1" :box nil))))
+    '(mode-line-inactive ((t (:foreground "#1eafe1" :background "#1d679a" :box nil))))
+   )
+ #+END_SRC
 ** theme
 #+BEGIN_SRC emacs-lisp
   (if (file-exists-p "~/.macbook_localiser")
@@ -1417,7 +1595,9 @@ to access the inconsolata font you need to
   (use-package rainbow-mode
     :ensure t
     :init
-    (add-hook 'prog-mode-hook 'rainbow-mode))
+    (add-hook 'prog-mode-hook 'rainbow-mode)
+    (add-hook 'fundamental-mode-hook 'rainbow-mode)
+    )
 #+END_SRC
 ** colouring
 #+BEGIN_SRC emacs-lisp 
