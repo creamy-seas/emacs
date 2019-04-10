@@ -2,4 +2,4 @@
 # name: ilya-unit-mixed
 # key: ium
 # --
-\iunitMixed{${1:math-unit}}{${2:text-unit}}$0
+\iunitMixed{${1:number}}{${2:math-unit}}{${3:text-unit}}$0

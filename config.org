@@ -262,7 +262,7 @@ Indenting environment
           (command-script (ilya_expand-latex-command "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/pdf_engine.sh %s")))
 
       ;; 2 - prepare for compilation buffer
-      (ilya_latex-compilation-prepare "generate-zoomer-pdf")
+      (ilya_latex-compilation-prepare "BuildPDF")
 
       ;; 3 - launch compilation
       (ignore-errors
@@ -273,7 +273,6 @@ Indenting environment
 
   (add-hook 'LaTeX-mode-hook (lambda ()
                                (define-key LaTeX-mode-map (kbd "C-c C-c") (function ilya_gen-key))))
-                               ;; (local-set-key (kbd "C-c C-m") (function ilya_gen-key))))
  #+END_SRC
 *** exterminate files =C-c C-j=
 1 - kill any running processes on this master files
@@ -289,7 +288,7 @@ Indenting environment
 
 
         ;; 1 - get the buffer names and variables of running process
-        (ilya_latex-compilation-prepare "generate-zoomer-pdf")
+        (ilya_latex-compilation-prepare "BuildPDF")
 
         ;; 2 - delete the "genPDF" process for the current master file
         (ignore-errors
@@ -344,7 +343,7 @@ Indenting environment
 
     (progn
       ;;1) pdf generation case
-      (if (string-equal ilya_latex-compilation-process-type "generate-zoomer-pdf")
+      (if (string-equal ilya_latex-compilation-process-type "BuildPDF")
           (progn
             (ignore-errors (rename-buffer ilya_latex-compilation-buffer-name))
             (setq compilation-window-name (get-buffer-window ilya_latex-compilation-buffer-name))
@@ -362,12 +361,12 @@ Indenting environment
     (setq temp-master-file (ilya_get-master-file-name))
 
     ;; 2 - generate further variables
-    (setq ilya_latex-compilation-process-id (concat process-type "_" temp-master-file))
+    (setq ilya_latex-compilation-process-id (concat process-type ":" temp-master-file))
     (setq ilya_latex-compilation-process-type process-type)
     (setq ilya_latex-compilation-master-file temp-master-file)
 
     ;; 3 - generate buffer name
-    (if (string-equal process-type "generate-zoomer-pdf")
+    (if (string-equal process-type "BuildPDF")
         (setq ilya_latex-compilation-buffer-name (concat "ᛋᛋ Compiling [" temp-master-file "] ᛋᛋ")))
     (if (string-equal process-type "jewGas")
         (setq ilya_latex-compilation-buffer-name "卍 Exterminating 卍")))
@@ -677,7 +676,8 @@ the nice bullets instead of multiplication symbols
     :init
     (progn
       (require 'org-ac)
-      (org-ac/config-default))
+      (org-ac/config-default)
+      (setq org-ac/ac-trigger-command-keys (quote ("\\" "SPC" ":" "[" "+"))))
     )
  #+END_SRC
 ** export to nice html
@@ -1105,6 +1105,7 @@ Autocomplete shoudl only run in certain environments
     (add-hook 'emacs-lisp-mode-hook 'company-mode)
     (add-hook 'text-mode-hook 'company-mode)
     (add-hook 'inferior-python-mode-hook 'company-mode)
+    (add-hook 'LaTeX-mode-hook 'company-mode)
     (setq company-idle-delay 0)
     (setq company-minimum-prefix-length 3))
 #+END_SRC
@@ -1150,6 +1151,7 @@ Autocomplete shoudl only run in certain environments
 #+END_SRC
 ** enable ibuffer
 ibuffer will mean that new buffer is opened in the window that the command was called from
+*** config
 #+BEGIN_SRC emacs-lisp
     (global-set-key (kbd "C-x b") 'ibuffer)
     (setq ibuffer-saved-filter-groups
@@ -1170,6 +1172,7 @@ ibuffer will mean that new buffer is opened in the window that the command was c
                    ("ᛋᛋ Latex ᛋᛋ" (or
                              (name . "^.*tex$")
                              (name . "^.*bib$")
+                             (name . "^.*log$")
                              (mode . comint-mode)))
                    ("ᚶ Emacs ᚶ" (or
                              (name . "^\\*scratch\\*$")
@@ -1187,22 +1190,46 @@ ibuffer will mean that new buffer is opened in the window that the command was c
   ;;  (add-to-list `ibuffer-never-show-predicates "*Help*")
     ;; (add-to-list `ibuffer-never-show-predicates "*elfeed-log*")
 #+END_SRC
+*** column lengths
 #+BEGIN_SRC emacs-lisp
   (setq ibuffer-formats 
-        '((mark modified read-only " "
-                (name 50 50 :left :elide) ; change: 30s were originally 18s
-                " "
-                (size 9 -1 :right)
-                " "
-                (mode 16 16 :left :elide)
-                " " filename-and-process)
-          (mark " "
-                (name 16 -1)
-                " " filename)))
-  ;; minimize bugger when it loads
-  ;; (custom-set-variables
-  ;;  '(ibuffer-default-shrink-to-minimum-size t))
+        '((mark
+           modified
+           "   "
+           (mode 20 -1 :left)
+           "   "
+           ;; (size 9 -1 :right)
+           (name 50 50 :left :elide)
+           "   "
+           )
+                ;; " "
+                ;; (mode 50 50 :left :elide)
+                ;; " " filename-and-process)
+          ;; (mark " "
+                ;; (name 16 -1)
+                ;; " " filename)
+        ))
 #+END_SRC
+*** collapse by Default
+#+BEGIN_SRC emacs-lisp 
+  (setq mp/ibuffer-collapsed-groups (list "Default" "*Internal*"))
+
+  (defadvice ibuffer (after collapse-helm)
+    (dolist (group mp/ibuffer-collapsed-groups)
+            (progn
+              (goto-char 1)
+              (when (search-forward (concat "[ " group " ]") (point-max) t)
+                (progn
+                  (move-beginning-of-line nil)
+                  (ibuffer-toggle-filter-group)
+                  )
+                )
+              )
+            )
+      (goto-char 1)
+      (search-forward "[ " (point-max) t)
+    )
+ #+END_SRC
 
 ** IDO 
 buffer with better representation.
@@ -1308,6 +1335,20 @@ nice popup menu when pasting of the past history
     (setq dashboard-items '((recents . 20)))
     (setq dashboard-banner-logo-title "Привет от Леонта!"))
 #+END_SRC
+* Dumb jump (programming)
+- Have either a =.git= or =.dumbjump= file in the main project directory
+** activating and remapping
+#+BEGIN_SRC emacs-lisp 
+  (use-package dumb-jump
+    :bind (("M-g o" . dumb-jump-go-other-window)
+           ("M-g j" . dumb-jump-go)
+           ("M-g i" . dumb-jump-go-prompt)
+           ("M-g x" . dumb-jump-go-prefer-external)
+           ("M-g p" . dumb-jump-back)
+           ("M-g z" . dumb-jump-go-prefer-external-other-window))
+    :config (setq dumb-jump-selector 'ivy) ;;
+    :ensure t)
+ #+END_SRC
 * Essential autism
 This stuff should be there by default, but >muh autism prevents this from being so
 ** toggling fullscreen
@@ -1437,6 +1478,17 @@ the superior search mode to the original
 
 #+END_SRC
 
+* Projectile
+Navigation around a set of project files. There's tons of shortcuts to explore
+#+BEGIN_SRC emacs-lisp 
+  ;; (use-package projectile
+  ;;   :ensure t
+  ;;   :init
+  ;;   (projectile-mode +1)
+  ;;   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+  ;;   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+ #+END_SRC
+
 * Shortcuts
 ** function to open up the config file for editing
 #+BEGIN_SRC emacs-lisp
@@ -1536,11 +1588,11 @@ to access the inconsolata font you need to
   (add-to-list 'sml/replacer-regexp-list '("^.*config\\.org$" ":ED:") t)
   (custom-set-variables
    '(sml/col-number-format "")
-   '(sml/extra-filler 0)
+   '(sml/extra-filler -2)
    '(sml/line-number-format "")
    '(sml/mule-info "")
    '(sml/modified-char "☦︎")
-   '(sml/name-width (quote (30 . 60)))
+   '(sml/name-width (quote (20 . 40)))
    '(sml/read-only-char "☧")
    '(sml/pos-minor-modes-separator " ᛋᛋ")
    '(sml/pre-minor-modes-separator "ᛋᛋ")
