@@ -241,7 +241,7 @@ Indenting environment
     (LaTeX-mode-hook . font-lock-mode);; font highlighting
     )
 
-  (server-start)
+  ;; (server-start)
  #+END_SRC
 ** tailored commands
 *Some important AucTex commands and variables*
@@ -721,13 +721,17 @@ the nice bullets instead of multiplication symbols
 ** external setup
 *** install =virtualenvwrapper=
 **** mac
-=pip install virtualenvwrapper= 
+- install with pip3
+=pip3 install virtualenv=
+=pip3 install virtualenvwrapper=
+=pip3 install virtualfish=
 
-add the following to the =~/.bashrc= file to tell where the environment will be located
-#+BEGIN_SRC sh
-  export WORKON_HOME=~/creamy_seas/syncFiles/python_vi
-  source /usr/local/bin/virtualenvwrapper.sh
-#+END_SRC
+- load up to fish shell (put it in =config.fish= file)
+=eval (python3 -m virtualfish)=
+
+- craete env 
+=vf new mac_vi=
+
 
 **** arch
 =sudo pacman -S python-virtualenvwrapper=
@@ -798,7 +802,7 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
 *** python3 (the way to handle long scripts)
 #+BEGIN_SRC emacs-lisp
   (setq python-shell-interpreter "python3"
-      python-shell-interpreter-args "-i")
+        python-shell-interpreter-args "-i")
 #+END_SRC
 *** jupyter notebook
 #+BEGIN_SRC emacs-lisp 
@@ -1061,6 +1065,11 @@ remove a warming about native completion
    ;;  :ensure t
    ;;  :config
    ;;  (customize-set-variable 'auth-sources "~/.authinfo"))
+* Shell mode
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'sh-mode-hook (lambda ()
+                                (define-key sh-mode-map (kbd "C-c C-;") (function comment-line))))
+ #+END_SRC
 * Alternative keybindings
 ** zoom in and out
 #+BEGIN_SRC emacs-lisp
@@ -1179,7 +1188,7 @@ ibuffer will mean that new buffer is opened in the window that the command was c
                              (name . "^\\*Messages\\*$")
                              (name . "^\\*Backtrace\\*$")))
                    ("⍫ Magit"
-                    (name . "^magit-.*$"))
+                    (name . "^magit.*$"))
                    ))))
     (add-hook 'ibuffer-mode-hook
               (lambda ()

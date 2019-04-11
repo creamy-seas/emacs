@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: nanometers
+# key: nm
+# --
+\,nm $0
