@@ -241,7 +241,7 @@ Indenting environment
     (LaTeX-mode-hook . font-lock-mode);; font highlighting
     )
 
-  ;; (server-start)
+  (server-start)
  #+END_SRC
 ** tailored commands
 *Some important AucTex commands and variables*
@@ -266,9 +266,13 @@ Indenting environment
 
       ;; 3 - launch compilation
       (ignore-errors
-        (TeX-run-TeX ilya_latex-compilation-process-id command-script (TeX-master-file))))
+        (TeX-run-TeX ilya_latex-compilation-process-id command-script (TeX-master-file)))
+    
+      ;; 4 - change number of running processes and colour in the modeline
+      (setq ilya_LaTeX-running-compilations (+ ilya_LaTeX-running-compilations 1))
+    
     (custom-set-faces
-     '(mode-line ((t (:background "#2d379a" :foreground "#1eafe1" :box (:line-width -1 :color "red"))))))
+     '(mode-line ((t (:background "#2d379a" :foreground "#1eafe1" :box (:line-width 2 :color "red")))))))
     )
 
   (add-hook 'LaTeX-mode-hook (lambda ()
@@ -302,13 +306,19 @@ Indenting environment
         ;; 4 - prepare variables for the gassing
         (ilya_latex-compilation-prepare "jewGas")
 
+        ;; 5 - the gassing itself
         (ignore-errors 
           (TeX-run-TeX "jew_process" command-script (TeX-master-file))
           )
 
-        (custom-set-faces
-         '(mode-line ((t (:background "#2d379a" :foreground "#1eafe1")))))
+        ;; 6 - change number of running processes and recolour bar if required
+        (setq ilya_LaTeX-running-compilations (- ilya_LaTeX-running-compilations 1))
+
+        (if (eq ilya_LaTeX-running-compilations 0)
+            (custom-set-faces
+             '(mode-line ((t (:background "#2d379a" :foreground "#1eafe1"))))))
         (sleep-for 2)
+      
         ;; 5 - close this buffer window
         (kill-buffer (get-buffer "卍 Exterminating 卍"))
         (minibuffer-message "===> 卍 Extermination complete 卍 - heil!")))
@@ -336,8 +346,10 @@ Indenting environment
 
   (setq TeX-view-program-selection '((output-pdf "SkimViewer")))
  #+END_SRC
-*** supporting functions
+*** supporting functions and varibles
 #+BEGIN_SRC emacs-lisp
+  (setq ilya_LaTeX-running-compilations 0)
+
   (defun ilya_LaTeX-compilation-buffer-size ()
     "Resize the latex compilation buffer when it launches because it is seriosuly bloat"
 
@@ -353,7 +365,7 @@ Indenting environment
           (progn
             (ignore-errors (rename-buffer ilya_compilation-name))))))
 
-;;  (add-hook 'comint-mode-hook (function ilya_LaTeX-compilation-buffer-size))
+  ;;  (add-hook 'comint-mode-hook (function ilya_LaTeX-compilation-buffer-size))
 
   (defun ilya_latex-compilation-prepare (process-type)
     "Set variables that the latex compilation buffer will use"
