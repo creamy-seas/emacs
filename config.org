@@ -72,11 +72,11 @@ dfsfdsa and that is that. come on. why doesnt it work? do i. dsfds. dsfdsdsaaaa.
       (exec-path-from-shell-initialize))
     )
 
-  (defun ilya_fire-up-from-emacs(relative-path)
-    "Create a string that appends onto the systems .emacs.d directory. EMACS_HOME must be specified in .profile"
-    (setq path (exec-path-from-shell-copy-env "EMACS_HOME"))
-    (concat path "/" relative-path)
-    )
+  ;; (defun ilya_fire-up-from-emacs(relative-path)
+  ;;   "Create a string that appends onto the systems .emacs.d directory. EMACS_HOME must be specified in .profile"
+  ;;   (setq path (exec-path-from-shell-copy-env "EMACS_HOME"))
+  ;;   (concat path "/" relative-path)
+  ;;   )
  #+END_SRC
 ** do not ask for kill confirmation
 #+BEGIN_SRC emacs-lisp 
@@ -285,49 +285,48 @@ Indenting environment
 4 - close this buffer as well
 
 #+BEGIN_SRC emacs-lisp
-    (defun ilya_jew-key()
-      (interactive)
-      (minibuffer-message (concat "卍 Exterminating \"" (ilya_get-master-file-name) "\" 卍"))
-      (let ((command-script (ilya_expand-latex-command "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/jew_engine.sh %s")))
+  (defun ilya_jew-key()
+    (interactive)
 
+    (minibuffer-message (concat "===> 卍 Exterminating \"" (ilya_get-master-file-name) "\" 卍"))
 
-        ;; 1 - get the buffer names and variables of running process
-        (ilya_latex-compilation-prepare "BuildPDF")
+    (let ((command-script (ilya_expand-latex-command "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/jew_engine.sh %s")))
 
-        ;; 2 - delete the "genPDF" process for the current master file
-        (ignore-errors
-          (set-process-query-on-exit-flag (get-process ilya_latex-compilation-process-id) nil)
-          (delete-process (get-process ilya_latex-compilation-process-id)))
+      ;; 1 - get the buffer names and variables of running process
+      (ilya_latex-compilation-prepare "BuildPDF")
 
-        ;; 3 - delete the buffer the process was in (reset the buffer name)
-  ;;      (ignore-errors (kill-buffer (TeX-active-buffer)))
-        (ignore-errors (kill-buffer "*TeX Help*"))
+      ;; 2 - delete the "genPDF" process for the current master file
+      ;; (ignore-errors
+      (set-process-query-on-exit-flag (get-process ilya_latex-compilation-process-id) nil)
+      (delete-process (get-process ilya_latex-compilation-process-id))
+        ;; )
 
-        ;; 4 - prepare variables for the gassing
-        (ilya_latex-compilation-prepare "jewGas")
+      ;; 3 - delete the buffer the process was in (reset the buffer name)
+      ;; (ignore-errors (kill-buffer (TeX-active-buffer)))
+      (ignore-errors (kill-buffer "*TeX Help*"))
 
-        ;; 5 - the gassing itself
-        (ignore-errors 
-          (TeX-run-TeX "jew_process" command-script (TeX-master-file))
-          )
+      ;; 4 - prepare variables for the gassing
+      (ilya_latex-compilation-prepare "jewGas")
 
-        ;; 6 - change number of running processes and recolour bar if required
-        (setq ilya_LaTeX-running-compilations (- ilya_LaTeX-running-compilations 1))
+      ;; 5 - the gassing itself
+      (ignore-errors 
+        (TeX-run-TeX "jew_process" command-script (TeX-master-file))
+        )
 
-        (if (eq ilya_LaTeX-running-compilations 0)
-            (custom-set-faces
-             '(mode-line ((t (:background "#2d379a" :foreground "#1eafe1"))))))
-        (sleep-for 2)
-      
-        ;; 5 - close this buffer window
-        (kill-buffer (get-buffer "卍 Exterminating 卍"))
-        (minibuffer-message "===> 卍 Extermination complete 卍 - heil!")))
+      ;; 6 - change number of running processes and recolour bar if required
+      (setq ilya_LaTeX-running-compilations (- ilya_LaTeX-running-compilations 1))
 
-    (add-hook 'LaTeX-mode-hook (lambda ()
-                                 (define-key LaTeX-mode-map (kbd "C-c C-j") nil)
-                                 (local-set-key (kbd "C-c C-j") (function ilya_jew-key))))
+      (if (eq ilya_LaTeX-running-compilations 0)
+          (custom-set-faces
+           '(mode-line ((t (:background "#2d379a" :foreground "#1eafe1"))))))
+      (sleep-for 2)
 
-    ;;actually, global is overkill, since local will take precendence. and define-key... should be replaced with local-set-key too
+      ;; 5 - close this buffer window
+      (kill-buffer (get-buffer "卍 Exterminating 卍"))
+      (minibuffer-message "===> 卍 Extermination complete 卍 - heil!")))
+
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (define-key LaTeX-mode-map (kbd "C-c C-j") (function ilya_jew-key))))
 #+END_SRC
 *** jump to pdf =C-c C-v=
 - skim is run, reading the current line in the emacs buffer and highlighting it in the pdf
@@ -625,7 +624,7 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
     :ensure t
     ;; :init
     ;; (global-set-key (kbd "C-x C-m") (function magit-status))
-  )
+)  
  #+END_SRC
 * Org mode
 **** get rid of anoying 'ding in table'
@@ -635,7 +634,6 @@ C-u C-c C-x !
   ;;(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 #+END_SRC
 ** agenda files
-create tasks to do
 *** keybinding =C-c c=
 #+BEGIN_SRC emacs-lisp 
 (global-set-key (kbd "C-c c") (function org-capture))
@@ -809,11 +807,12 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
   (use-package elpy
     :ensure t
     :config
-    (elpy-enable))
+    (elpy-enable)
+    (setq elpy-rpc-python-command "python3.7"))
  #+END_SRC
 *** python3 (the way to handle long scripts)
 #+BEGIN_SRC emacs-lisp
-  (setq python-shell-interpreter "python3"
+  (setq python-shell-interpreter "python3.7"
         python-shell-interpreter-args "-i")
 #+END_SRC
 *** jupyter notebook
@@ -887,9 +886,33 @@ remove a warming about native completion
 #+BEGIN_SRC emacs-lisp 
   (setq python-shell-completion-native-enable nil)
  #+END_SRC
-** minor modes
+** collapse blocks of text [hideshow]
+h j k l - hiding
+a s d g - showing
+#+BEGIN_SRC emacs-lisp 
+  (use-package hideshow-org
+    :ensure t
+    :config
+    (add-hook 'elpy-mode-hook 'hs-minor-mode))
+
+  (add-hook 'python-mode-hook (lambda ()
+                                (define-key elpy-mode-map (kbd "C-c C-h C-a") (function hs-hide-all))
+                                (define-key elpy-mode-map (kbd "C-c C-h C-s") (function hs-hide-level))
+                                (define-key elpy-mode-map (kbd "C-c C-h C-d") (function hs-hide-block))
+                                (define-key elpy-mode-map (kbd "C-c C-h C-t") (function hs-toggle-hiding))
+                                (define-key elpy-mode-map (kbd "C-c C-h C-h") (function hs-show-all))
+                                (define-key elpy-mode-map (kbd "C-c C-h C-j") (function hs-show-block))
+                                (define-key elpy-mode-map (kbd "C-c C-h a") (function hs-hide-all))
+                                (define-key elpy-mode-map (kbd "C-c C-h s") (function hs-hide-level))
+                                (define-key elpy-mode-map (kbd "C-c C-h d") (function hs-hide-block))
+                                (define-key elpy-mode-map (kbd "C-c C-h t") (function hs-toggle-hiding))
+                                (define-key elpy-mode-map (kbd "C-c C-h h") (function hs-show-all))
+                                (define-key elpy-mode-map (kbd "C-c C-h j") (function hs-show-block))
+                                ))
+ #+END_SRC
+** hide modes
 #+BEGIN_SRC emacs-lisp
-  (use-package diminish
+(use-package diminish
     :ensure t
     :init
     (diminish 'highlight-indentation-mode)
@@ -1128,7 +1151,7 @@ Autocomplete shoudl only run in certain environments
     (add-hook 'inferior-python-mode-hook 'company-mode)
     (add-hook 'LaTeX-mode-hook 'company-mode)
     (setq company-idle-delay 0)
-    (setq company-minimum-prefix-length 3))
+    (setq company-minimum-prefix-length 4))
 #+END_SRC
 ** company colours
 #+BEGIN_SRC emacs-lisp 
@@ -1174,42 +1197,43 @@ Autocomplete shoudl only run in certain environments
 ibuffer will mean that new buffer is opened in the window that the command was called from
 *** config
 #+BEGIN_SRC emacs-lisp
-    (global-set-key (kbd "C-x b") 'ibuffer)
-    (setq ibuffer-saved-filter-groups
-          (quote (("default"
-                   ("卍 Horter 卍" (or
-                                    (name . "^\\*dashboard\\*$")
-                                    (mode . emacs-lisp-mode)))
-                   ("ᚸ Org ᚸ"(or
-                              (name . "^.*org")
-                              (name . "^.*org.*$")))
-                   ("ᚧ Python ᚧ" (or
-                                   (mode . python-mode)
-                                   (mode . inferior-python-mode)
-                                   (name . "^\\*Python Doc\\*$")
-                                   (name . "^matplotlibrc$")
-                                   (name . "^.*mplstyle$")
-                                   (name . "^\\*Flycheck error messages\\*$")))
-                   ("ᛋᛋ Latex ᛋᛋ" (or
-                             (name . "^.*tex$")
-                             (name . "^.*bib$")
-                             (name . "^.*log$")
-                             (mode . comint-mode)))
-                   ("ᚶ Emacs ᚶ" (or
-                             (name . "^\\*scratch\\*$")
-                             (name . "^\\*Messages\\*$")
-                             (name . "^\\*Backtrace\\*$")))
-                   ("⍫ Magit"
-                    (name . "^magit.*$"))
-                   ))))
-    (add-hook 'ibuffer-mode-hook
-              (lambda ()
-                (ibuffer-auto-mode 1)
-                (ibuffer-switch-to-saved-filter-groups "default")))
+  (global-set-key (kbd "C-x b") 'ibuffer)
+  (setq ibuffer-saved-filter-groups
+        (quote (("default"
+                 ("卍 Horter 卍" (or
+                                  (name . "^\\*dashboard\\*$")
+                                  (mode . emacs-lisp-mode)))
+                 ("ᚸ Org ᚸ"(or
+                            (name . "^.*org")
+                            (name . "^.*org.*$")))
+                 ("ᚧ Python ᚧ" (or
+                                (mode . python-mode)
+                                (mode . inferior-python-mode)
+                                (name . "^\\*Python Doc\\*$")
+                                (name . "^matplotlibrc$")
+                                (name . "^.*mplstyle$")
+                                (name . "^\\*Flycheck error messages\\*$")))
+                 ("ᛋᛋ Latex ᛋᛋ" (or
+                                 (name . "^.*tex$")
+                                 (name . "^.*bib$")
+                                 (name . "^.*log$")
+                                 (mode . comint-mode)))
+                 ("ᚶ Emacs ᚶ" (or
+                               (name . "^\\*scratch\\*$")
+                               (name . "^\\*Messages\\*$")
+                               (name . "^\\*Backtrace\\*$")))
+                 ("⍫ Magit" (or
+                             (name . "^.*gitignore$")
+                             (name . "^magit.*$")))
+                 ))))
+  (add-hook 'ibuffer-mode-hook
+            (lambda ()
+              (ibuffer-auto-mode 1)
+              (ibuffer-switch-to-saved-filter-groups "default")))
 
-    ;;(add-to-list `ibuffer-never-show-predicates "*Completions*")
+  ;;(add-to-list `ibuffer-never-show-predicates "*Completions*")
   ;;  (add-to-list `ibuffer-never-show-predicates "*Help*")
-    ;; (add-to-list `ibuffer-never-show-predicates "*elfeed-log*")
+  ;; (add-to-list `ibuffer-never-show-predicates "*elfeed-log*")
 #+END_SRC
 *** column lengths
 #+BEGIN_SRC emacs-lisp
@@ -1233,7 +1257,8 @@ ibuffer will mean that new buffer is opened in the window that the command was c
 #+END_SRC
 *** collapse by Default
 #+BEGIN_SRC emacs-lisp 
-  (setq mp/ibuffer-collapsed-groups (list "Default" "*Internal*"))
+  ;; (setq mp/ibuffer-collapsed-groups (list "Default" "*Internal*"))
+  (setq mp/ibuffer-collapsed-groups (list "*Internal*"))
 
   (defadvice ibuffer (after collapse-helm)
     (dolist (group mp/ibuffer-collapsed-groups)

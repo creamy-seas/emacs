@@ -6,6 +6,6 @@
   \frametitle{\insertsection}
   \framesubtitle{\insertsubsection}
 
-  ${1:get-creative-here!}
+  ${1:get-creative-here!}$0
 
 \end{frame}
