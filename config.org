@@ -17,17 +17,18 @@ MAP is the keybinding map for the major or minor mode e.g. LaTeX-mode-map
 * Macros
 ** comment-org-mode
 #+BEGIN_SRC emacs-lisp 
-  (fset 'comment-orgmode
-        ";;\C-n\C-a")
+  ;; (fset 'comment-orgmode
+  ;;       ";;\C-n\C-a")
 
-  (add-hook 'org-mode-hook (lambda ()
-                             (local-set-key (kbd "C-c a") 'comment-orgmode)))
+  ;; (add-hook 'org-mode-hook (lambda ()
+  ;;                            (local-set-key (kbd "C-c a") 'comment-orgmode)))
 
-  (fset 'comment-python-mode
-     "\C-a\346\342# \C-b\C-b\C-n")
+  ;;   (fset 'comment-python-mode
+  ;;      "\C-a\346\342# \C-b\C-b\C-n")
 
-;;  (add-hook 'python-mode-hook (lambda ()
-;;                             (local-set-key (kbd "C-c a") 'comment-python-mode)))
+  ;; ;;
+  ;; (add-hook 'python-mode-hook (lambda ()
+  ;;                             (local-set-key (kbd "C-c a") 'comment-python-mode)))
  #+END_SRC
 * Global Unbindings
 #+BEGIN_SRC emacs-lisp 
@@ -636,16 +637,24 @@ C-u C-c C-x !
 ** agenda files
 *** keybinding =C-c c=
 #+BEGIN_SRC emacs-lisp 
-(global-set-key (kbd "C-c c") (function org-capture))
+  (global-set-key (kbd "C-c c") (function org-capture))
+  (global-set-key (kbd "C-c a") (function org-agenda))
  #+END_SRC
 *** agenda file location
 #+BEGIN_SRC emacs-lisp 
-  (setq org-agenda-files (list "~/creamy_seas/syncFiles/orgfiles/i.org"
-                               "~/creamy_seas/1488.org"
-                               "~/creamy_seas/antlers.org"))
-  ;;(setq org-agenda-files
+  (setq org-agenda-files (list "~/creamy_seas/antlers.org"))
+  ;;                              "~/creamy_seas/1488.org"))
+  ;; ;
+                                          ;(setq org-agenda-files
   ;;      (append
   ;;       (file-expand-wildcards "*.org")))
+ #+END_SRC
+*** agenda default layout
+#+BEGIN_SRC emacs-lisp 
+  (setq org-agenda-custom-commands
+        (quote (("c" "Simple agenda view"
+           ((agenda "")
+            (alltodo ""))))))
  #+END_SRC
 *** org-capture-templates
 #+BEGIN_SRC emacs-lisp 
@@ -963,7 +972,7 @@ a s d g - showing
     :ensure t
     :init
     (global-set-key (kbd "C-c f") 'elfeed)
-    (setq-default elfeed-search-filter "@2-year-ago +unread")
+    (setq-default elfeed-search-filter "+unread + boomer")
     (setq elfeed-db-directory "~/creamy_seas/syncFiles/emacs_config/elfeeddb")
     :bind     ;;once the package is loaded, bing some commands
     (:map elfeed-search-mode-map
@@ -981,12 +990,15 @@ a s d g - showing
 
   (defhydra hydra-elfeed (global-map "<f5>")
     ""
-    ("l" (elfeed-search-set-filter "@1-year-ago +boomer") "luke boomer")
-    ("s" (elfeed-search-set-filter "@1-year-ago +strat") "stratechery")
-    ("i" (elfeed-search-set-filter "@1-year-ago +starred") "shiny star")
+    ("b" (elfeed-search-set-filter "+prog") "programming")
+    ("l" (elfeed-search-set-filter "+boomer +unread") "luke boomer")
+    ("L" (elfeed-search-set-filter "+boomer") "luke boomer")
+    ("s" (elfeed-search-set-filter "+strat +unread") "stratechery")
+    ("S" (elfeed-search-set-filter "+strat") "stratechery")
+    ("i" (elfeed-search-set-filter "+starred") "shiny star")
     ("*" bjm/elfeed-star "star it" :color pink)
     ("8" bjm/elfeed-unstar "unstar it" :color pink)
-    ("a" (elfeed-search-set-filter "@1-year-ago") "all")
+    ("a" (elfeed-search-set-filter "@5-year-ago") "all")
     ("q" bjm/elfeed-save-db-and-bury "quit" :color blue)
     )
 
@@ -1065,6 +1077,11 @@ a s d g - showing
 
   (push '(starred elfeed-search-starred-title-face) elfeed-search-face-alist)
 #+END_SRC
+** tagging
+#+BEGIN_SRC emacs-lisp 
+  (setq elfeed-feeds
+        '(("http://tonsky.me/blog/atom.xml" prog)))
+ #+END_SRC
 ** image chaseup
    The problem is that the entry content only includes the tiny reddit-hosted thumbnail and Elfeed doesn't know to chase through the chain of links to get to the actual image that you care about. You could try assigning your own function to elfeed-show-refresh-function that treats reddit posts differently (and calling the default for everything else). You'd need to shr-insert an img element with the full size image as the src.
 ** configuration
@@ -1379,6 +1396,7 @@ nice popup menu when pasting of the past history
     :config
     (dashboard-setup-startup-hook)
     (setq dashboard-items '((recents . 20)))
+    (setq dashboard-startup-banner "~/creamy_seas/gallery_road/pepe/ree.png")
     (setq dashboard-banner-logo-title "Привет от Леонта!"))
 #+END_SRC
 * Dumb jump (programming)

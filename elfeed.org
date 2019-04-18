@@ -2,7 +2,6 @@
 ** [[https://lukesmith.xyz/rss.xml][Unaboomer Larbs]]                                                  :boomer:
 ** [[https://www.youtube.com/feeds/videos.xml?channel_id=UC2eYFnH61tmytImy1mTYvhA][Larbs on Youtube]]                                                 :boomer:
 ** [[http://stratechery.com/feed/][Stratechery]]                                                       :strat:
-
-
-
+** [[http://tonsky.me/blog/atom.xml][Bloated Programming]]                                                :prog:
+** [[http://josephg.com/blog/rss/][MuhElectrum]]                                                        :prog:
 
