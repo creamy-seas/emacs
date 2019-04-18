@@ -152,6 +152,7 @@ any changes of a file, will be automatically reloaded
     :ensure t
     :bind
     ("s-h" . symon-mode))
+
 #+END_SRC
 
 ** greek letters
@@ -1720,6 +1721,8 @@ to access the inconsolata font you need to
   (custom-set-faces
    '(default ((t (:inherit nil :stipple nil :background "#2d3743" :foreground "#e1e1e0" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 175 :width normal :foundry "nil" :family "Inconsolata"))))
    )
+  (set-default 'cursor-type 'hbar)
+  (set-cursor-color "#FF0")
  #+END_SRC
 * Emacs brackets
 ** autoclosing parantheses

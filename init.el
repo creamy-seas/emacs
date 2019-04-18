@@ -17,13 +17,6 @@
   (package-install 'use-package))
 
 ;;@@@@@@@@@@@@@@@@@@@@
-;; set the cursor colour
-;;@@@@@@@@@@@@@@@@@@@@
-(set-default 'cursor-type 'hbar)
-(set-cursor-color "#FF0")
-
-
-;;@@@@@@@@@@@@@@@@@@@@
 ;;load commands from the org file
 ;;@@@@@@@@@@@@@@@@@@@@
 (org-babel-load-file (expand-file-name "~/creamy_seas/syncFiles/emacs_config/config.org"))
@@ -36,36 +29,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   (quote
-    ("3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default)))
- '(org-agenda-files
-   (quote
-    ("~/creamy_seas/syncFiles/orgfiles/i.org" "~/creamy_seas/1488.org")))
  '(package-selected-packages
    (quote
-    (smart-mode-line-powerline-theme sml smart-mode-line webkit-color-picker helm-colors magit org-ac markdown-mode iedit exec-path-from-shell fill-column-indicator auto-complete-auctex preview-latex cdlatex pyenv-mode jedi htmlize org-reveal flycheck counsel ox-reveal elfeed-web hydra elfeed-goodies elfeed-org try yasnippet-snippets company-irony captain expand-region mark-multiple linum-relative popup-kill-ring swiper epa-file symon dmenu diminish spaceline company dashboard rainbow-delimiters sudo-edit hungry-delete avy ido-vertical-mode beacon f org-bullets spacemacs-theme which-key use-package auctex yasnippet w3 undo-tree switch-window smex ranger powerline nlinum-relative multiple-cursors minimap autopair auto-complete alpha ace-jump-mode)))
- '(symon-mode nil)
- '(tramp-default-host "192.168.0.5" nil (tramp))
- '(tramp-default-method "ssh" nil (tramp))
- '(tramp-default-user "antonov" nil (tramp)))
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#2d3743" :foreground "#e1e1e0" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 175 :width normal :foundry "nil" :family "Inconsolata"))))
- '(company-scrollbar-bg ((t (:background "#189a1e1224a2"))))
- '(company-scrollbar-fg ((t (:background "#41bf505b61e3"))))
- '(company-tooltip ((t (:inherit default :background "#41bf505b61e3"))))
- '(company-tooltip-annotation ((t (:foreground "#CFD0E3"))))
- '(company-tooltip-annotation-selection ((t (:foreground "#334676"))))
- '(company-tooltip-common ((t (:foreground "#33ccff"))))
- '(company-tooltip-common-selection ((t (:foreground "#3a3a6e" :weight bold))))
- '(company-tooltip-selection ((t (:background "orange2" :foreground "#090C42" :weight bold))))
- '(elfeed-search-date-face ((t :foreground "#11a" :weight bold)))
- '(font-latex-bold-face ((t (:inherit bold))))
- '(font-latex-italic-face ((t (:inherit italic))))
- '(font-latex-math-face ((t (:foreground "#99c616"))))
- '(font-latex-sedate-face ((t (:foreground "burlywood")))))
+    (hideshow-org smart-mode-line-powerline-theme sml smart-mode-line webkit-color-picker helm-colors magit org-ac markdown-mode iedit exec-path-from-shell fill-column-indicator auto-complete-auctex preview-latex cdlatex pyenv-mode jedi htmlize org-reveal flycheck counsel ox-reveal elfeed-web hydra elfeed-goodies elfeed-org try yasnippet-snippets company-irony captain expand-region mark-multiple linum-relative popup-kill-ring swiper epa-file symon dmenu diminish spaceline company dashboard rainbow-delimiters sudo-edit hungry-delete avy ido-vertical-mode beacon f org-bullets spacemacs-theme which-key use-package auctex yasnippet w3 undo-tree switch-window smex ranger powerline nlinum-relative multiple-cursors minimap autopair auto-complete alpha ace-jump-mode))))
