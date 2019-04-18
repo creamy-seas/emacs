@@ -1,3 +1,4 @@
+#+STARTUP: overview
 * Do not forget
 | =C-c C-h=          | list key bindings by mode     |
 | =C-h b=            | list key bindings             |
@@ -152,7 +153,6 @@ any changes of a file, will be automatically reloaded
     :ensure t
     :bind
     ("s-h" . symon-mode))
-
 #+END_SRC
 
 ** greek letters
@@ -635,8 +635,24 @@ C-u C-c C-x !
 #+BEGIN_SRC emacs-lisp
   ;;(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 #+END_SRC
+** TODO lists - how ironic
+#+BEGIN_SRC emacs-lisp 
+  (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d)")
+                            (sequence "FAILED(f)" "|" "GOOD(g)")
+                            (sequence "TUTORING(l)" "SCHOOLS(s)" "PHD(p)" "|" "BRYAN(b)")))
+
+  (setq org-todo-keyword-faces (quote (
+                                       ("STARTED" . "yellow")
+                                       ("PHD" . (:foreground "yellow" :background "#FF3333"))
+                                       ("SCHOOLS" . (:foreground "#090C42" :background "#9DFE9D"))
+                                       ("TUTORING" . (:foreground "#090C42" :background "#FFD700": weight bold))
+                                       ("BRYAN" . (:foreground "#090C42" :background "#33ccff" :weight bold)))))
+
+  (setq org-agenda-span 10)
+ #+END_SRC
+
 ** agenda files
-*** keybinding =C-c c=
+*** keybinding
 #+BEGIN_SRC emacs-lisp 
   (global-set-key (kbd "C-c c") (function org-capture))
   (global-set-key (kbd "C-c a") (function org-agenda))
@@ -650,7 +666,7 @@ C-u C-c C-x !
   ;;      (append
   ;;       (file-expand-wildcards "*.org")))
  #+END_SRC
-*** agenda default layout
+*** agenda layout prompt
 #+BEGIN_SRC emacs-lisp 
   (setq org-agenda-custom-commands
         (quote (("c" "Simple agenda view"
@@ -1376,10 +1392,40 @@ nice popup menu when pasting of the past history
     :ensure t
     :bind ("M-y" . popup-kill-ring))
 #+END_SRC
-** select all cases (iedit)
+** iedit (multiple replacements)
+mark and edit all copies of the marked region simultaniously. 
 #+BEGIN_SRC emacs-lisp 
   (use-package iedit
-    :ensure t)
+    :ensure t
+    :config
+    (global-set-key (kbd "C-:") (function iedit-mode)))
+ #+END_SRC
+** narrow and widen region
+#+BEGIN_SRC emacs-lisp 
+  (defun narrow-or-widen-dwim (p)
+    "If the buffer is narrowed, it widens. Otherwise, it narrows intelligently.
+  Intelligently means: region, org-src-block, org-subtree, or defun,
+  whichever applies first.
+  Narrowing to org-src-block actually calls `org-edit-src-code'.
+
+  With prefix P, don't widen, just narrow even if buffer is already
+  narrowed."
+    (interactive "P")
+    (declare (interactive-only))
+    (cond ((and (buffer-narrowed-p) (not p)) (widen))
+          ((region-active-p)
+           (narrow-to-region (region-beginning) (region-end)))
+          ((derived-mode-p 'org-mode)
+           ;; `org-edit-src-code' is not a real narrowing command.
+           ;; Remove this first conditional if you don't want it.
+           (cond ((ignore-errors (org-edit-src-code))
+                  (delete-other-windows))
+                 ((org-at-block-p)
+                  (org-narrow-to-block))
+                 (t (org-narrow-to-subtree))))
+          (t (narrow-to-defun))))
+
+  (global-set-key (kbd "C-x n") (function narrow-or-widen-dwim))
  #+END_SRC
 * Default loading screens
 ** do not show startup screen
@@ -1724,6 +1770,7 @@ to access the inconsolata font you need to
   (set-default 'cursor-type 'hbar)
   (set-cursor-color "#FF0")
  #+END_SRC
+
 * Emacs brackets
 ** autoclosing parantheses
 #+BEGIN_SRC emacs-lisp

@@ -4,6 +4,11 @@
 
 I've been creating this fully functional baby from scratch. The most useful commands are <kbd>Ctrl</kbd> and <kbd>Meta</kbd>.
 
+## Required installations ##
+- `ispell`
+- `latex` and `latexmk`
+- `python`
+
 ## Essential autism ##
 - ```init.el``` must be copied into the ```~/.emacs.d``` directory.
 - Install `inconsolata` fonts by downloading the `.ttf` file
