@@ -676,11 +676,57 @@ C-u C-c C-x !
 *** org-capture-templates
 #+BEGIN_SRC emacs-lisp 
   (setq org-capture-templates
-        '(("s" "Screencast" entry
-           (file "~/creamy_seas/syncFiles/orgfiles/i.org") "* %?\n%i\n")
-          ("l" "LukeSmith entry"
-           (file "~/creamy_seas/1488.org") "%?")))
+        '(
+          ("l" "Boomer Entry" item (file+headline "~/creamy_seas/1488.org" "Becoming a boomer") "%^{What did Luke say} %^G\n%?"
+           (file "~/creamy_seas/1488.org") "%?")
+          ("u" "Save URL" entry (file+headline "~/creamy_seas/1488.org" "URL too good to throw away")
+           "** %^L %? %^G"
+           :kill-buffer t)
+          ("t" "Tutoring lessons")
+          ("tw" "Nikhil Lesson (Winchester)" table-line (id "tutoring-nikhil-invoice")
+           "| # | %^u | %^{lesson summary} | 120%? | |"
+           :table-line-pos "III-1")
+          ("tn" "Nathan Lesson" table-line (id "tutoring-nathan-invoice")
+           "| # | %^u | %^{lesson summary} | 45%? | |"
+           :table-line-pos "III-1")
+          ("td" "Darrens Programming" table-line (id "tutoring-darren-invoice")
+           "| # | %^u | %^{lesson summary} | 50%? | |"
+           :table-line-pos "III-1")
+          ))
  #+END_SRC
+*** org capture frame
+capture frame can be called from any application - just map it
+#+BEGIN_SRC emacs-lisp 
+  (defadvice org-capture-finalize 
+      (after delete-capture-frame activate)  
+    "Advise capture-finalize to close the frame"  
+    (if (equal "capture" (frame-parameter nil 'name))  
+        (delete-frame)))
+
+  (defadvice org-capture-destroy 
+      (after delete-capture-frame activate)  
+    "Advise capture-destroy to close the frame"  
+    (if (equal "capture" (frame-parameter nil 'name))  
+        (delete-frame)))  
+
+  (use-package noflet
+    :ensure t )
+  (defun make-capture-frame ()
+    "Create a new frame and run org-capture."
+    (interactive)
+    (make-frame '((name . "capture")))
+    (select-frame-by-name "capture")
+    (delete-other-windows)
+    (noflet ((switch-to-buffer-other-window (buf) (switch-to-buffer buf)))
+      (org-capture)))
+ #+END_SRC
+*** org capture frame supplementary installed
+- =brew install coreutils=
+- Automator -> new shell script
+#+BEGIN_SRC sh
+  socketfile=$(lsof -c Emacs | grep server | tr -s " " | cut -d' ' -f 8); /usr/local/bin/emacsclient -ne "(make-capture-frame)" -s $socketfile
+#+END_SRC
+
 ** bullets
 the nice bullets instead of multiplication symbols
 #+BEGIN_SRC emacs-lisp
