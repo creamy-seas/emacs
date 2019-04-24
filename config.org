@@ -34,6 +34,8 @@ MAP is the keybinding map for the major or minor mode e.g. LaTeX-mode-map
 * Global Unbindings
 #+BEGIN_SRC emacs-lisp 
   (global-unset-key (kbd "C-c q"))
+  (global-unset-key (kbd "C-x #"))
+  (global-set-key (kbd "C-x C-i") (function server-edit))
  #+END_SRC
 * Passwords (MUST HAVE gpg installed)                           :nnot_working:
 ** enable the encrypting password package
@@ -188,7 +190,7 @@ any changes of a file, will be automatically reloaded
   (with-eval-after-load 'company
     (add-hook 'c++-mode-hook 'company-mode))
  #+END_SRC
-* LaTeX mode (AUCTex LaTeX mode)                          :emacs_home:ispell:
+* LaTeX mode (AUCTex LaTeX mode)                                     :ispell:
 ** latex commands                                           :listOfCommands:
 I will most be using CDLaTeX to type in a command and then autocomplete it
 Yasnippet to add stuff once I am there (like and an extra item) and create own tab commands
@@ -220,6 +222,8 @@ Indenting environment
 |-----------------+------------------------------------------+----------------------------------|
 
 ** general setup
+- install =.sty= packages in =/usr/local/texlive/2018/texmf-dist/tex/latex/base=
+- run =sudo -s texhash= to load it up
 - =flyspell= requires ispell to be installed on computer
 #+BEGIN_SRC emacs-lisp
   (use-package latex
@@ -541,6 +545,12 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
   (global-set-key (kbd "C-c l") (function ilya_buffer-fill-column))
  #+END_SRC
  
+** cdlatex custom variables
+#+BEGIN_SRC emacs-lisp 
+  (setq cdlatex-math-symbol-alist
+        `(
+          (?F ("\\Phi"))))
+ #+END_SRC
 ** key bindings
 #+BEGIN_SRC emacs-lisp 
     (add-hook 'LaTeX-mode-hook (lambda ()
@@ -670,8 +680,8 @@ C-u C-c C-x !
 #+BEGIN_SRC emacs-lisp 
   (setq org-agenda-custom-commands
         (quote (("c" "Simple agenda view"
-           ((agenda "")
-            (alltodo ""))))))
+           ((agenda ""))))))
+            ;; (alltodo ""))))))
  #+END_SRC
 *** org-capture-templates
 #+BEGIN_SRC emacs-lisp 
@@ -692,6 +702,12 @@ C-u C-c C-x !
           ("td" "Darrens Programming" table-line (id "tutoring-darren-invoice")
            "| # | %^u | %^{lesson summary} | 50%? | |"
            :table-line-pos "III-1")
+          ("f" "Future Lesson")
+          ("fw" "Nikhil Lesson (Winchester)" entry (id "tutoring-nikhil-lesson")
+           "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
+          ("fn" "Nathan Lesson" entry (id "tutoring-nathan-lesson")
+           "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
+          ("s" "Stories" entry (id "stories") "** %^{Title} %t\n%?")
           ))
  #+END_SRC
 *** org capture frame
@@ -813,8 +829,6 @@ the nice bullets instead of multiplication symbols
 
 - craete env 
 =vf new mac_vi=
-
-
 **** arch
 =sudo pacman -S python-virtualenvwrapper=
 
@@ -1196,7 +1210,7 @@ a s d g - showing
       ("g" text-scale-increase "in")
       ("l" text-scale-decrease "out")))
 #+END_SRC
-* Autocomplete Yasnippet                                           :yas_mode:
+* Autocomplete Yasnippet
 - Autocompletion by typing in first part of word and tabbing to insert a template
 - yasnippet is the framework
 - yasnippet-snippets is the official collection of snippets
@@ -1219,7 +1233,7 @@ a s d g - showing
         :ensure t)
       (yas-reload-all))
 #+END_SRC
-* Autocomplete Company                                         :company:mode:
+* Autocomplete Company                                               :darren:
 Autocomplete shoudl only run in certain environments
 #+BEGIN_SRC emacs-lisp
   (use-package company
@@ -1273,38 +1287,42 @@ Autocomplete shoudl only run in certain environments
     (mapc 'kill-buffer (buffer-list))) ;;mapc is a for loop, running 'function to the supplied (list)
   (global-set-key (kbd "C-x a b") 'kill-all-buffers)
 #+END_SRC
-** enable ibuffer
+** ibuffer
 ibuffer will mean that new buffer is opened in the window that the command was called from
 *** config
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-x b") 'ibuffer)
   (setq ibuffer-saved-filter-groups
         (quote (("default"
-                 ("卍 Horter 卍" (or
-                                  (name . "^\\*dashboard\\*$")
-                                  (mode . emacs-lisp-mode)))
-                 ("ᚸ Org ᚸ"(or
-                            (name . "^.*org")
-                            (name . "^.*org.*$")))
-                 ("ᚧ Python ᚧ" (or
-                                (mode . python-mode)
-                                (mode . inferior-python-mode)
-                                (name . "^\\*Python Doc\\*$")
-                                (name . "^matplotlibrc$")
-                                (name . "^.*mplstyle$")
-                                (name . "^\\*Flycheck error messages\\*$")))
-                 ("ᛋᛋ Latex ᛋᛋ" (or
-                                 (name . "^.*tex$")
-                                 (name . "^.*bib$")
-                                 (name . "^.*log$")
-                                 (mode . comint-mode)))
-                 ("ᚶ Emacs ᚶ" (or
-                               (name . "^\\*scratch\\*$")
-                               (name . "^\\*Messages\\*$")
-                               (name . "^\\*Backtrace\\*$")))
+                 ("ᚧ Python" (or
+                              (mode . python-mode)
+                              (mode . inferior-python-mode)
+                              (name . "^\\*Python Doc\\*$")
+                              (name . "^matplotlibrc$")
+                              (name . "^.*mplstyle$")
+                              (name . "^\\*Flycheck error messages\\*$")))
+                 ("ᛋᛋ Latex" (or
+                              (name . "^.*tex$")
+                              (name . "^.*bib$")
+                              (name . "^.*log$")
+                              (mode . comint-mode)))
+                 ("ᚸ Org"(or
+                          (name . "^.*org")
+                          (name . "^.*org.*$")))
+                 ("卍 Config" (name . "^\\..*$"))
+                 ;; (" Emacs" (or
+                 ;;               (name . "^\\*scratch\\*$")
+                 ;;               (name . "^\\*Messages\\*$")
+                 ;;               (name . "^\\*Backtrace\\*$")))
+                 ;; ("卍 Horter" (or
+                 ;;               (name . "^\\*dashboard\\*$")
+                 ;;               (mode . emacs-lisp-mode)))
                  ("⍫ Magit" (or
                              (name . "^.*gitignore$")
                              (name . "^magit.*$")))
+                 ("ᛓ Elfeed" (or
+                              (name . "^\\*elfeed-log\\*$")
+                              (name . "^ef.*$")))
                  ))))
   (add-hook 'ibuffer-mode-hook
             (lambda ()
@@ -1321,10 +1339,10 @@ ibuffer will mean that new buffer is opened in the window that the command was c
         '((mark
            modified
            "   "
-           (mode 20 -1 :left)
+           (mode 20 30 :left)
            "   "
            ;; (size 9 -1 :right)
-           (name 50 50 :left :elide)
+           (name 50 60 :left);; :elide)
            "   "
            )
                 ;; " "
@@ -1337,8 +1355,8 @@ ibuffer will mean that new buffer is opened in the window that the command was c
 #+END_SRC
 *** collapse by Default
 #+BEGIN_SRC emacs-lisp 
-  ;; (setq mp/ibuffer-collapsed-groups (list "Default" "*Internal*"))
-  (setq mp/ibuffer-collapsed-groups (list "*Internal*"))
+  (setq mp/ibuffer-collapsed-groups (list "Default" "*Internal*" "ᛓ Elfeed"))
+  ;; (setq mp/ibuffer-collapsed-groups (list "*Internal*"))
 
   (defadvice ibuffer (after collapse-helm)
     (dolist (group mp/ibuffer-collapsed-groups)
@@ -1357,13 +1375,12 @@ ibuffer will mean that new buffer is opened in the window that the command was c
     )
  #+END_SRC
 
-** IDO 
-buffer with better representation.
-*** enable ido mode
+** IDO                                                              :darren:
 buffer suggestion is given as a list in the terminal command (after C-x b)
+*** enable ido mode
  #+BEGIN_SRC emacs-lisp
    (setq ido-enable-flex-matching nil)
-   (setq ido-create-new-biffer 'always)
+   (setq ido-create-new-bffer 'always)
    (setq ido-everywhere t)
    (ido-mode 1)
  #+END_SRC
@@ -1380,21 +1397,21 @@ buffer suggestion is given as a list in the terminal command (after C-x b)
    (global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
  #+END_SRC
 
-** always kill the current buffer
+** always kill the current buffer                                   :darren:
 #+BEGIN_SRC emacs-lisp
   (defun kill-curr-buffer ()
     (interactive)
     (kill-buffer (current-buffer)))
   (global-set-key (kbd "C-x k") 'kill-curr-buffer)
 #+END_SRC
-* Copying and killing
+* Copying and killing                                                :darren:
 ** select same element
 #+BEGIN_SRC emacs-lisp
   (use-package mark-multiple
     :ensure t
     :bind ("C-c q" . 'mark-next-line-this))
 #+END_SRC
-** copy within region
+** copy within region                                               :darren:
 this will copy within the first brackets, then second, third, etc
 #+BEGIN_SRC emacs-lisp
   (use-package expand-region
@@ -1412,7 +1429,7 @@ when the cursor is in the middle of a word, go to its start and kill it.
   (global-set-key (kbd "C-c w w") 'kill-whole-word)
 #+END_SRC
 
-** hungry delete                                         :hungry:delete:mode:
+** hungry delete                                                    :darren:
 hungry delete deletes all white space between cursor and the next character
 #+BEGIN_SRC emacs-lisp
   (use-package hungry-delete
@@ -1431,7 +1448,7 @@ hungry delete deletes all white space between cursor and the next character
   (global-set-key (kbd "C-c w l") 'copy-whole-line)
 #+END_SRC
 
-** kill ring
+** kill ring                                                        :darren:
 nice popup menu when pasting of the past history
 #+BEGIN_SRC emacs-lisp
   (use-package popup-kill-ring
@@ -1474,7 +1491,7 @@ mark and edit all copies of the marked region simultaniously.
   (global-set-key (kbd "C-x n") (function narrow-or-widen-dwim))
  #+END_SRC
 * Default loading screens
-** do not show startup screen
+** do not show startup screen                                       :darren:
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-screen t)
 #+END_SRC
@@ -1482,7 +1499,7 @@ mark and edit all copies of the marked region simultaniously.
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
 #+END_SRC
-** startup dashboard
+** startup dashboard                                                :darren:
 #+BEGIN_SRC emacs-lisp
   (use-package dashboard
     :ensure t
@@ -1506,7 +1523,7 @@ mark and edit all copies of the marked region simultaniously.
     :config (setq dumb-jump-selector 'ivy) ;;
     :ensure t)
  #+END_SRC
-* Essential autism
+* Essential autism                                                   :darren:
 This stuff should be there by default, but >muh autism prevents this from being so
 ** toggling fullscreen
 #+BEGIN_SRC emacs-lisp 
@@ -1530,7 +1547,7 @@ for this to work, you *must* install ispell
   (global-visual-line-mode t)
 #+END_SRC
 
-** key suggestions                                           :which:key:mode:
+** key suggestions                                                  :darren:
 #+BEGIN_SRC emacs-lisp
   (use-package which-key
     :ensure t
@@ -1545,7 +1562,7 @@ for this to work, you *must* install ispell
     :bind
     ("M-x" . smex ))
 #+END_SRC
-** yes and no alias
+** yes and no alias                                                 :darren:
 #+BEGIN_SRC emacs-lisp
   (defalias 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
@@ -1587,7 +1604,7 @@ becuase initially emacs keeps it in the original window
     (other-window 1))
   (global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
 #+END_SRC
-** jump using highlighted syntax
+** jump using highlighted syntax                                    :darren:
 the superior search method
 #+BEGIN_SRC emacs-lisp
   (use-package avy
@@ -1598,7 +1615,7 @@ the superior search method
   ;;(global-set-key (kbd "M-s") 'ace-jump-mode)
 #+END_SRC
 
-** searching
+** searching                                                        :darren:
 the superior search mode to the original
 #+BEGIN_SRC emacs-lisp
   (use-package swiper
@@ -1606,7 +1623,7 @@ the superior search mode to the original
     :config
     (global-set-key (kbd "C-s") 'swiper))
 #+END_SRC
-** moving in subwords                                          :subword:mode:
+** moving in subwords
 #+BEGIN_SRC emacs-lisp
   (global-subword-mode 1)
 #+END_SRC
@@ -1617,13 +1634,7 @@ the superior search mode to the original
 ;;  (display-time-mode 1)
 #+END_SRC
 
-* Numbering
-** line and column numbering
-#+BEGIN_SRC emacs-lisp
-  ;; (column-number-mode 1)
-  ;; (global-hl-line-mode 1)
-#+END_SRC  
-** relative line numbering
+* Numbering                                                          :darren:
 #+BEGIN_SRC emacs-lisp
   (use-package linum-relative
     :ensure t
@@ -1631,22 +1642,20 @@ the superior search mode to the original
     (setq linum-relative-backend 'display-line-numbers-mode))
 
   (linum-relative-global-mode)
-
-
 #+END_SRC
 
 * Projectile
 Navigation around a set of project files. There's tons of shortcuts to explore
 #+BEGIN_SRC emacs-lisp 
-  ;; (use-package projectile
-  ;;   :ensure t
-  ;;   :init
-  ;;   (projectile-mode +1)
-  ;;   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-  ;;   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+  (use-package projectile
+    :ensure t
+    :init
+    (projectile-mode +1)
+    (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
  #+END_SRC
 
-* Shortcuts
+* Shortcuts                                                          :darren:
 ** function to open up the config file for editing
 #+BEGIN_SRC emacs-lisp
   (defun config-visit()                       ;;no arguments
@@ -1661,7 +1670,46 @@ Navigation around a set of project files. There's tons of shortcuts to explore
     (org-babel-load-file (expand-file-name "~/creamy_seas/syncFiles/emacs_config/config.org")))
   (global-set-key (kbd "C-c r") 'reload-config)
 #+END_SRC
+* Treemacs                                                      :not_working:
+#+BEGIN_SRC emacs-lisp 
+  ;; (use-package treemacs
+  ;;   :ensure t
+  ;;   :defer t
+  ;;   :config
+  ;;   (progn
+  ;;     (setq treemacs-follow-after-init          t
+  ;;           treemacs-width                      35
+  ;;           treemacs-indentation                2
+  ;;           treemacs-git-integration            t
+  ;;           treemacs-collapse-dirs              3
+  ;;           treemacs-silent-refresh             nil
+  ;;           treemacs-change-root-without-asking nil
+  ;;           treemacs-sorting                    'alphabetic-desc
+  ;;           treemacs-show-hidden-files          t
+  ;;           treemacs-never-persist              nil
+  ;;           treemacs-is-never-other-window      nil
+  ;;           treemacs-goto-tag-strategy          'refetch-index)
 
+  ;;     (treemacs-follow-mode t)
+  ;;     (treemacs-filewatch-mode t))
+  ;;   :bind
+  ;;   (:map global-map
+  ;;         ([f8]        . treemacs-toggle)
+  ;;         ([f9]        . treemacs-projectile-toggle)
+  ;;         ("<C-M-tab>" . treemacs-toggle)
+  ;;         ("M-0"       . treemacs-select-window)
+  ;;         ("C-c 1"     . treemacs-delete-other-windows)
+  ;;   )
+  ;; )
+
+  ;; ;; (use-package treemacs-projectile
+  ;; ;; ;
+                                          ;   :defer t
+  ;;   :ensure t
+  ;;   :config
+  ;;   (setq treemacs-header-function #'treemacs-projectile-create-header)
+  ;;   )
+ #+END_SRC
 * Reverting
 ** undo tree                                                 :undo:tree:mode:
 spawns a tree of all the undos that you have ever made
@@ -1847,6 +1895,7 @@ to access the inconsolata font you need to
     (rainbow-delimiters-mode 1)
     (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
     (add-hook 'org-mode-hook #'rainbow-delimiters-mode)
+    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
     )
 #+END_SRC
 * Hide minor modes                                             :must_be_last:

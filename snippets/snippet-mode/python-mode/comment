@@ -10,7 +10,5 @@ __ Description __
 ${2:what führer does}
 
 __ Return __
-${3:any return values}
+${3:any return values}$0
 """
-
-$0
