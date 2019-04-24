@@ -550,6 +550,8 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
   (setq cdlatex-math-symbol-alist
         `(
           (?F ("\\Phi"))))
+  (setq cdlatex-math-modify-alist
+        `((?s ("\\sum"))))
  #+END_SRC
 ** key bindings
 #+BEGIN_SRC emacs-lisp 
@@ -634,8 +636,6 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
 #+BEGIN_SRC emacs-lisp 
   (use-package magit
     :ensure t
-    ;; :init
-    ;; (global-set-key (kbd "C-x C-m") (function magit-status))
 )  
  #+END_SRC
 * Org mode
@@ -972,30 +972,6 @@ remove a warming about native completion
 #+BEGIN_SRC emacs-lisp 
   (setq python-shell-completion-native-enable nil)
  #+END_SRC
-** collapse blocks of text [hideshow]
-h j k l - hiding
-a s d g - showing
-#+BEGIN_SRC emacs-lisp 
-  (use-package hideshow-org
-    :ensure t
-    :config
-    (add-hook 'elpy-mode-hook 'hs-minor-mode))
-
-  (add-hook 'python-mode-hook (lambda ()
-                                (define-key elpy-mode-map (kbd "C-c C-h C-a") (function hs-hide-all))
-                                (define-key elpy-mode-map (kbd "C-c C-h C-s") (function hs-hide-level))
-                                (define-key elpy-mode-map (kbd "C-c C-h C-d") (function hs-hide-block))
-                                (define-key elpy-mode-map (kbd "C-c C-h C-t") (function hs-toggle-hiding))
-                                (define-key elpy-mode-map (kbd "C-c C-h C-h") (function hs-show-all))
-                                (define-key elpy-mode-map (kbd "C-c C-h C-j") (function hs-show-block))
-                                (define-key elpy-mode-map (kbd "C-c C-h a") (function hs-hide-all))
-                                (define-key elpy-mode-map (kbd "C-c C-h s") (function hs-hide-level))
-                                (define-key elpy-mode-map (kbd "C-c C-h d") (function hs-hide-block))
-                                (define-key elpy-mode-map (kbd "C-c C-h t") (function hs-toggle-hiding))
-                                (define-key elpy-mode-map (kbd "C-c C-h h") (function hs-show-all))
-                                (define-key elpy-mode-map (kbd "C-c C-h j") (function hs-show-block))
-                                ))
- #+END_SRC
 ** hide modes
 #+BEGIN_SRC emacs-lisp
 (use-package diminish
@@ -1079,7 +1055,7 @@ a s d g - showing
     ("q" bjm/elfeed-save-db-and-bury "quit" :color blue)
     )
 
-  ;;functiont that is associated with "H" keybinding in elfeed mode
+  ;;function that is associated with "H" keybinding in elfeed mode
   (defun make-hydra-elfeed ()
     ""
     (interactive)
@@ -1199,17 +1175,6 @@ a s d g - showing
   (add-hook 'sh-mode-hook (lambda ()
                                 (define-key sh-mode-map (kbd "C-c C-;") (function comment-line))))
  #+END_SRC
-* Alternative keybindings
-** zoom in and out
-#+BEGIN_SRC emacs-lisp
-  (use-package hydra
-    :ensure t
-    :init
-    (defhydra hydra-zoom (global-map "<f9>")
-      "zoom"
-      ("g" text-scale-increase "in")
-      ("l" text-scale-decrease "out")))
-#+END_SRC
 * Autocomplete Yasnippet
 - Autocompletion by typing in first part of word and tabbing to insert a template
 - yasnippet is the framework
@@ -1566,6 +1531,46 @@ for this to work, you *must* install ispell
 #+BEGIN_SRC emacs-lisp
   (defalias 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
+* Hydra
+#+BEGIN_SRC emacs-lisp 
+  (use-package hydra
+    :ensure t)
+
+  (use-package hideshow-org
+      :ensure t
+      :config
+      (add-hook 'elpy-mode-hook 'hs-minor-mode))
+
+  (defhydra hydra-python-collapse
+    (:color pink				;all colors pink by default
+            :timeout 14
+            :hint nil
+            :foreign-keys run		;when non hydra keys are pressed, keep it open
+            :pre (progn(			;what to do when hydra is on
+                        set-cursor-color "#40e0d0"))
+            :post (progn			;hydro turned off
+                    (set-cursor-color "#ffd700")
+                    (message
+                     "↪ 13 percent of the population accounts for 50 percent of the crime rate")))
+    "
+  ^Hide^                        ^Show^         
+  ^^^^^^^^------------------------------------ 
+  _a_: all                      _A_: all	     
+  _b_: block                    _B_: block     
+  _l_: level                                   
+
+  "
+    ("a" hs-hide-all)
+    ("A" hs-show-all)
+    ("l" hs-hide-level)
+    ("b" hs-hide-block)
+    ("B" hs-show-block)
+    ("t" hs-toggle-hiding "toggle hiding")
+    ("q" nil "quit")
+    )
+
+  (define-key elpy-mode-map (kbd "<f7>") (function hydra-python-collapse/body))
+ #+END_SRC
 * Navigation
 ** transfer using shift keys
 #+BEGIN_SRC emacs-lisp
