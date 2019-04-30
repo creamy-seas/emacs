@@ -141,7 +141,7 @@ path for emacs executables to
 any changes of a file, will be automatically reloaded
 #+BEGIN_SRC emacs-lisp 
   (global-auto-revert-mode 1)
-  (setq auto-revert-mode nil)
+  ;; (setq auto-revert-mode nil)
  #+END_SRC
 ** multiple cursors
 #+BEGIN_SRC emacs-lisp
@@ -550,8 +550,8 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
   (setq cdlatex-math-symbol-alist
         `(
           (?F ("\\Phi"))))
-  (setq cdlatex-math-modify-alist
-        `((?s ("\\sum"))))
+  ;; (setq cdlatex-math-modify-alist
+  ;;       `((?s ("\\mathbf"))))
  #+END_SRC
 ** key bindings
 #+BEGIN_SRC emacs-lisp 
@@ -649,12 +649,13 @@ C-u C-c C-x !
 #+BEGIN_SRC emacs-lisp 
   (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d)")
                             (sequence "FAILED(f)" "|" "GOOD(g)")
-                            (sequence "TUTORING(l)" "SCHOOLS(s)" "PHD(p)" "|" "BRYAN(b)")))
+                            (sequence "TUTORING(l)" "SCHOOLS(s)" "PHD(p)" "BRYAN(b)" "|" "Dominated(D)")))
 
   (setq org-todo-keyword-faces (quote (
                                        ("STARTED" . "yellow")
                                        ("PHD" . (:foreground "yellow" :background "#FF3333"))
                                        ("SCHOOLS" . (:foreground "#090C42" :background "#9DFE9D"))
+                                       ("Dominated" . (:foreground "#9DFE9D" :wight bold))
                                        ("TUTORING" . (:foreground "#090C42" :background "#FFD700": weight bold))
                                        ("BRYAN" . (:foreground "#090C42" :background "#33ccff" :weight bold)))))
 
@@ -692,6 +693,14 @@ C-u C-c C-x !
           ("u" "Save URL" entry (file+headline "~/creamy_seas/1488.org" "URL too good to throw away")
            "** %^L %? %^G"
            :kill-buffer t)
+          ("d" "Draft" plain (file "~/creamy_seas/Desktop/.temp.org")
+           "%?")
+          ("e" "East-India Data Company")
+          ("e2" "2am session" entry (id "bryan-plan")
+           "** BRYAN %^{project}: %^{stuff-to-be-done}\n%^T")
+          ("et" "Time log" table-line (id "bryan-done")
+           "| %^u | %^{task-summary} | %^{hours-worked} hours | |"
+           :table-line-pos "@<-1")
           ("t" "Tutoring lessons")
           ("tw" "Nikhil Lesson (Winchester)" table-line (id "tutoring-nikhil-invoice")
            "| # | %^u | %^{lesson summary} | 120%? | |"
@@ -813,10 +822,7 @@ the nice bullets instead of multiplication symbols
   (define-key emacs-lisp-mode-map (kbd "C-c C-;") (function comment-line))
  #+END_SRC
 * Python mode
-** commands
-| =C-c C-e=   | edit all occurunces of this symbol in the file |
-| =C-C C-r r= | refactor the code (needs rope)                 |
-** external setup
+** external setup of python
 *** install =virtualenvwrapper=
 **** mac
 - install with pip3
@@ -867,57 +873,18 @@ make virtual end with =mkvirtualenv NAME=
 
 *** configuration files
 the flake8 (used for syntax checking) has configuration file =~/.config/flake8=
-*** tell emacs to use the specific virtual environment
+** activate elpy and choose interpreter
 a check is run to see if the =macbook_localiser= file exists and the corresponding environment
 is activated
-#+BEGIN_SRC emacs-lisp
-  (use-package pyenv-mode
-    :ensure t
-    :config
-    (if (file-exists-p "~/.macbook_localiser")
-        (pyvenv-activate "~/creamy_seas/syncFiles/python_vi/mac_vi")
-      (pyvenv-activate "~/creamy_seas/syncFiles/python_vi/arch_vi")))
-#+END_SRC
-** matplotlib setup
-- put the =matplotlibrc= files into either =.config/matplotlib= or =.matplotlib=
-- check location with =matplotlib.matplotlib_fname()= or =matplotlib.get_configdir()=
-
-*** setting the backend
-to control where the plots are sent to, set the backend to =Qt5Agg=
-*** creating styles
-- to print the available styles =plt.style.available=
-- to use styles =plt.style.use('ggplot')=
-- create a style document =example.mplstyle= in the =matplolib/stylelib= folder
-** activate elpy and choose interpreter
+*** elpy
 #+BEGIN_SRC emacs-lisp 
-  (use-package elpy
-    :ensure t
-    :config
-    (elpy-enable)
-    (setq elpy-rpc-python-command "python3.7"))
- #+END_SRC
-*** python3 (the way to handle long scripts)
-#+BEGIN_SRC emacs-lisp
-  (setq python-shell-interpreter "python3.7"
-        python-shell-interpreter-args "-i")
-#+END_SRC
-*** jupyter notebook
-#+BEGIN_SRC emacs-lisp 
-  ;;(setq python-shell-interpreter "jupyter"
-  ;;      python-shell-interpreter-args "console --simple-prompt"
-  ;;      python-shell-prompt-detect-failure-warning nil)
-  ;;(add-to-list 'python-shell-completion-native-disabled-interpreters
-  ;;             "jupyter")
- #+END_SRC
-*** ipython (do not use - buggy)
-#+BEGIN_SRC emacs-lisp 
-  ;;(setq python-shell-interpreter "ipython"
-  ;;      python-shell-interpreter-args "-i --simple-prompt") 
- #+END_SRC
-** elpy settings
-*** root directory
-#+BEGIN_SRC emacs-lisp 
-  (setq elpy-shell-use-project-root nil)
+    (use-package elpy
+      :ensure t
+      :config
+      (elpy-enable)
+      (setq elpy-shell-use-project-root nil)
+      (setq python-shell-completion-native-enable nil) ;remove a warming about native completion
+  )
  #+END_SRC
 *** syntax checking =jedi, flycheck=
 - deactivate flymake and use flycheck - syntax is checked ont the fly
@@ -937,6 +904,88 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
     :init
     (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))  
  #+END_SRC
+*** different virtual environments
+#+BEGIN_SRC emacs-lisp 
+  (defun ilya-pyenv-nn ()
+    "Activate the neural network environment"
+    (interactive)
+    (progn
+      (pyvenv-activate "~/creamy_seas/syncFiles/python_vi/nn_vi")
+      (setq elpy-rpc-python-command "python3.7")
+      (setq python-shell-interpreter "python3.7"
+            python-shell-interpreter-args "-i")
+      (pyvenv-restart-python))
+    )
+
+  (defun ilya-pyenv-mac ()
+    "Activate the phd environment"
+    (interactive)
+    (progn
+      (pyvenv-activate "~/creamy_seas/syncFiles/python_vi/mac_vi")
+      (setq elpy-rpc-python-command "python3.7")
+      (setq python-shell-interpreter "python3.7"
+            python-shell-interpreter-args "-i")
+      (pyvenv-restart-python))
+    )
+ #+END_SRC
+*** default startup
+#+BEGIN_SRC emacs-lisp
+  (use-package pyenv-mode
+    :ensure t
+    :config
+    (if (file-exists-p "~/.macbook_localiser")
+        (ilya-pyenv-mac)
+      (pyvenv-activate "~/creamy_seas/syncFiles/python_vi/arch_vi")))
+#+END_SRC
+
+*** DONE python3 (the way to handle long scripts)
+#+BEGIN_SRC emacs-lisp
+  ;; (setq python-shell-interpreter "python3.7"
+  ;;       python-shell-interpreter-args "-i")
+#+END_SRC
+*** DONE jupyter notebook
+#+BEGIN_SRC emacs-lisp 
+  ;;(setq python-shell-interpreter "jupyter"
+  ;;      python-shell-interpreter-args "console --simple-prompt"
+  ;;      python-shell-prompt-detect-failure-warning nil)
+  ;;(add-to-list 'python-shell-completion-native-disabled-interpreters
+  ;;             "jupyter")
+ #+END_SRC
+*** DONE ipython (do not use - buggy)
+#+BEGIN_SRC emacs-lisp 
+  ;;(setq python-shell-interpreter "ipython"
+  ;;      python-shell-interpreter-args "-i --simple-prompt") 
+ #+END_SRC
+** hydra
+#+BEGIN_SRC emacs-lisp
+  (require 'hydra)
+  (defhydra hydra-python-vi (:color teal
+                              :hint nil)
+    "
+       PYTHON ENVIRONMENT SELECTION
+  ^^^^^------------------------------------------------------------------------------------------
+  _m_: mac-vi                _r_: restart
+  _n_: neural-network-vi
+  ^^
+  ^^
+  "
+    ("m"   ilya-pyenv-mac)
+    ("n"   ilya-pyenv-nn)
+    ("r"   pyvenv-restart-python)
+    ("q"   nil "cancel" :color blue))
+
+  (global-set-key (kbd "<f9>") (function hydra-python-vi/body))
+ #+END_SRC
+
+** matplotlib setup
+- put the =matplotlibrc= files into either =.config/matplotlib= or =.matplotlib=
+- check location with =matplotlib.matplotlib_fname()= or =matplotlib.get_configdir()=
+*** setting the backend
+to control where the plots are sent to, set the backend to =Qt5Agg=
+*** creating styles
+- to print the available styles =plt.style.available=
+- to use styles =plt.style.use('ggplot')=
+- create a style document =example.mplstyle= in the =matplolib/stylelib= folder
 ** ein (jupyter notebook server in emacs)
 #+BEGIN_SRC emacs-lisp 
   (use-package ein
@@ -967,19 +1016,6 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
 ;;  (defadvice elpy-shell-send-region-or-buffer (after ilya-resize-python-buffer activate)
 ;;    (window-resize-no-error (get-buffer-window "*Python*") (- 10 (window-height ;;(get-buffer-window "*Python*") "floor"))))
  #+END_SRC
-** debugging
-remove a warming about native completion
-#+BEGIN_SRC emacs-lisp 
-  (setq python-shell-completion-native-enable nil)
- #+END_SRC
-** hide modes
-#+BEGIN_SRC emacs-lisp
-(use-package diminish
-    :ensure t
-    :init
-    (diminish 'highlight-indentation-mode)
-    )
-#+END_SRC
 ** custom commands
 #+BEGIN_SRC emacs-lisp 
   (defun ilya_python-interrupt ()
@@ -1051,7 +1087,8 @@ remove a warming about native completion
     ("i" (elfeed-search-set-filter "+starred") "shiny star")
     ("*" bjm/elfeed-star "star it" :color pink)
     ("8" bjm/elfeed-unstar "unstar it" :color pink)
-    ("a" (elfeed-search-set-filter "@5-year-ago") "all")
+    ("A" (elfeed-search-set-filter "@5-year-ago") "all")
+    ("a" (elfeed-search-set-filter "+unread") "unread")
     ("q" bjm/elfeed-save-db-and-bury "quit" :color blue)
     )
 
@@ -1259,6 +1296,9 @@ ibuffer will mean that new buffer is opened in the window that the command was c
   (global-set-key (kbd "C-x b") 'ibuffer)
   (setq ibuffer-saved-filter-groups
         (quote (("default"
+                 ("⍫ Magit" (or
+                             (name . "^.*gitignore$")
+                             (name . "^magit.*$")))
                  ("ᚧ Python" (or
                               (mode . python-mode)
                               (mode . inferior-python-mode)
@@ -1271,22 +1311,10 @@ ibuffer will mean that new buffer is opened in the window that the command was c
                               (name . "^.*bib$")
                               (name . "^.*log$")
                               (mode . comint-mode)))
-                 ("ᚸ Org"(or
-                          (name . "^.*org")
-                          (name . "^.*org.*$")))
+                 ("ᚸ Org" (name . "(.*)"))
                  ("卍 Config" (name . "^\\..*$"))
-                 ;; (" Emacs" (or
-                 ;;               (name . "^\\*scratch\\*$")
-                 ;;               (name . "^\\*Messages\\*$")
-                 ;;               (name . "^\\*Backtrace\\*$")))
-                 ;; ("卍 Horter" (or
-                 ;;               (name . "^\\*dashboard\\*$")
-                 ;;               (mode . emacs-lisp-mode)))
-                 ("⍫ Magit" (or
-                             (name . "^.*gitignore$")
-                             (name . "^magit.*$")))
                  ("ᛓ Elfeed" (or
-                              (name . "^\\*elfeed-log\\*$")
+                              (name . "\\*elfeed.*\\*")
                               (name . "^ef.*$")))
                  ))))
   (add-hook 'ibuffer-mode-hook
@@ -1294,6 +1322,13 @@ ibuffer will mean that new buffer is opened in the window that the command was c
               (ibuffer-auto-mode 1)
               (ibuffer-switch-to-saved-filter-groups "default")))
 
+  ;; (" Emacs" (or
+  ;;               (name . "^\\*scratch\\*$")
+  ;;               (name . "^\\*Messages\\*$")
+  ;;               (name . "^\\*Backtrace\\*$")))
+  ;; ("卍 Horter" (or
+  ;;               (name . "^\\*dashboard\\*$")
+  ;;               (mode . emacs-lisp-mode)))
   ;;(add-to-list `ibuffer-never-show-predicates "*Completions*")
   ;;  (add-to-list `ibuffer-never-show-predicates "*Help*")
   ;; (add-to-list `ibuffer-never-show-predicates "*elfeed-log*")
@@ -1543,7 +1578,7 @@ for this to work, you *must* install ispell
 
   (defhydra hydra-python-collapse
     (:color pink				;all colors pink by default
-            :timeout 14
+            :timeout 1488
             :hint nil
             :foreign-keys run		;when non hydra keys are pressed, keep it open
             :pre (progn(			;what to do when hydra is on
@@ -1555,8 +1590,8 @@ for this to work, you *must* install ispell
     "
   ^Hide^                        ^Show^         
   ^^^^^^^^------------------------------------ 
-  _a_: all                      _A_: all	     
-  _b_: block                    _B_: block     
+  _a_: all                      _A_: All
+  _b_: block                    _B_: Block
   _l_: level                                   
 
   "
@@ -1565,11 +1600,12 @@ for this to work, you *must* install ispell
     ("l" hs-hide-level)
     ("b" hs-hide-block)
     ("B" hs-show-block)
+    ;; ("[TAB]" hs-toggle-hiding "toggle hiding")
     ("t" hs-toggle-hiding "toggle hiding")
     ("q" nil "quit")
     )
 
-  (define-key elpy-mode-map (kbd "<f7>") (function hydra-python-collapse/body))
+  (define-key elpy-mode-map (kbd "C-c C-h") (function hydra-python-collapse/body))
  #+END_SRC
 * Navigation
 ** transfer using shift keys
@@ -1655,9 +1691,59 @@ Navigation around a set of project files. There's tons of shortcuts to explore
   (use-package projectile
     :ensure t
     :init
-    (projectile-mode +1)
-    (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+    (projectile-mode +1))
+    ;; (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+    ;; (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+ #+END_SRC
+** Hydra
+#+BEGIN_SRC emacs-lisp 
+  (defhydra hydra-projectile-other-window (:color teal)
+    "projectile-other-window"
+    ("f"  projectile-find-file-other-window        "file")
+    ("g"  projectile-find-file-dwim-other-window   "file dwim")
+    ("d"  projectile-find-dir-other-window         "dir")
+    ("b"  projectile-switch-to-buffer-other-window "buffer")
+    ("q"  nil                                      "cancel" :color blue))
+
+  (defhydra hydra-projectile (:color teal
+                              :hint nil)
+    "
+       PROJECTILE: %(projectile-project-root)
+
+       Find File            Search/Tags          Buffers                Cache
+  ------------------------------------------------------------------------------------------
+  _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache clear
+   _ff_: file dwim       _g_: update gtags      _b_: switch to buffer  _x_: remove known project
+   _fd_: file curr dir   _o_: multi-occur     _s-k_: Kill all buffers  _X_: cleanup non-existing
+    _r_: recent file                                               ^^^^_z_: cache current
+    _d_: dir
+
+  "
+    ("a"   projectile-ag)
+    ("b"   projectile-switch-to-buffer)
+    ("c"   projectile-invalidate-cache)
+    ("d"   projectile-find-dir)
+    ("s-f" projectile-find-file)
+    ("ff"  projectile-find-file-dwim)
+    ("fd"  projectile-find-file-in-directory)
+    ("g"   ggtags-update-tags)
+    ("s-g" ggtags-update-tags)
+    ("i"   projectile-ibuffer)
+    ("K"   projectile-kill-buffers)
+    ("s-k" projectile-kill-buffers)
+    ("m"   projectile-multi-occur)
+    ("o"   projectile-multi-occur)
+    ("s-p" projectile-switch-project "switch project")
+    ("p"   projectile-switch-project)
+    ("s"   projectile-switch-project)
+    ("r"   projectile-recentf)
+    ("x"   projectile-remove-known-project)
+    ("X"   projectile-cleanup-known-projects)
+    ("z"   projectile-cache-current-file)
+    ("`"   hydra-projectile-other-window/body "other window")
+    ("q"   nil "cancel" :color blue))
+
+  (global-set-key (kbd "C-x p") (function hydra-projectile/body))
  #+END_SRC
 
 * Shortcuts                                                          :darren:
@@ -1867,7 +1953,7 @@ to access the inconsolata font you need to
    '(default ((t (:inherit nil :stipple nil :background "#2d3743" :foreground "#e1e1e0" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 175 :width normal :foundry "nil" :family "Inconsolata"))))
    )
   (set-default 'cursor-type 'hbar)
-  (set-cursor-color "#FF0")
+  (set-cursor-color "#ffd700")
  #+END_SRC
 
 * Emacs brackets
