@@ -1,6 +1,61 @@
 #+STARTUP: overview
-#+BEGIN_SRC python 
-  
+
+* ggtags
+#+BEGIN_SRC emacs-lisp 
+  (use-package ggtags
+  :ensure t
+  :config 
+  (add-hook 'c++-mode 
+            (lambda ()
+              (ggtags-mode 1))))
+ #+END_SRC
+* ivy and counsel
+** counsel
+imports ivy (autocompletion) and swiper
+*** external setup
+=ripgrep=
+*** setup and activation
+#+BEGIN_SRC emacs-lisp 
+  (use-package counsel
+    :ensure t)
+
+  (use-package counsel-projectile
+    :ensure t
+    :config
+    (counsel-projectile-mode))
+ #+END_SRC
+*** cool functions
+| counsel-ag | search full project            |
+| counsel-rg | search regular expression      |
+|            | =C-c C-o= put above in buffer  |
+|            | =w= to edit the created buffer |
+** wgrep
+required to edit searches made by counsel
+#+BEGIN_SRC emacs-lisp 
+  (use-package wgrep
+    :ensure t)
+ #+END_SRC
+** ivy
+- a way to interact with searches
+#+BEGIN_SRC emacs-lisp 
+  (use-package ivy
+   :ensure t
+   :diminish
+   (ivy-mode)
+   :init
+   (ivy-mode 1)
+   :config
+   (setq ivy-use-virtual-buffers t
+              ivy-count-format "%d/%d "))
+ #+END_SRC
+* import environment variables
+#+BEGIN_SRC emacs-lisp 
+  (use-package exec-path-from-shell
+    :ensure t
+    :init
+    (when (memq window-system '(mac ns x))
+      (exec-path-from-shell-initialize))
+    )
  #+END_SRC
 * gpg encryption via emacs
 - make emacs prompt for password in the minibuffer
@@ -9,16 +64,11 @@
  #+END_SRC
 * mu4e
 - bound with [[global_bindings]]
-** supporting macro
-#+BEGIN_SRC emacs-lisp 
-  (defmacro csetq (variable value)
-    `(funcall (or (get ',variable 'custom-set)
-                  'set-default)
-              ',variable ,value))
- #+END_SRC
+- =C-c C-a= for attachments
 ** external setup
 - =offlineimap=
 - =w3m=
+- =mu=
 *** location of binariesa
 #+BEGIN_SRC emacs-lisp
   ;; add location of lisp files for me4e
@@ -334,6 +384,17 @@ path for emacs executables to
   "
     (string-match regexp string)
     (match-string index string))
+
+  (defun ilya-file-name-from-line (prefix suffix)
+    "Copies the current line and elinates all spaces"
+    (interactive)
+    (let* (
+           (file-name (ilya-copy-line))
+           (file-name (replace-regexp-in-string "^\s*" "" file-name))
+           (file-name (downcase file-name))
+           (file-name (replace-regexp-in-string " " "_" file-name))
+           (file-name (concat prefix file-name suffix)))
+      (message file-name)))
  #+END_SRC
 ** load path
 add folder with some =.el= files that could not be resolved by emacs
@@ -503,50 +564,11 @@ smart mode line allows infinite customization
     (interactive)
     (org-babel-load-file (expand-file-name "~/creamy_seas/sync_files/emacs_config/config.org")))
 #+END_SRC
-* Terminal and Bash
-** import bash variables
-#+BEGIN_SRC emacs-lisp 
-  (use-package exec-path-from-shell
-    :ensure t
-    :init
-    (when (memq window-system '(mac ns x))
-      (exec-path-from-shell-initialize))
-    )
- #+END_SRC
-** do not ask for kill confirmation
-#+BEGIN_SRC emacs-lisp 
-  (setq kill-buffer-query-functions nil)
- #+END_SRC
-** shell mode source in org mode
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'org-structure-template-alist
-	       '("sh" "#+BEGIN_SRC sh\n?\n#+END_SRC"))
-#+END_SRC
-** setting default shell to Bash
-#+BEGIN_SRC emacs-lisp
-  (defvar my-term-shell "/bin/bash")
-  (defadvice ansi-term (before force-bash)
-    (interactive (list my-term-shell)))
-  (ad-activate 'ansi-term)
-#+END_SRC
-
-** shortcut
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "<s-return>") 'ansi-term)
-#+END_SRC
-
-** sudo edit (root editing of files)
+* sudo edit (root editing of files)
 #+BEGIN_SRC emacs-lisp
   (use-package sudo-edit
     :ensure t
     :bind ("s-e" . sudo-edit))
-#+END_SRC
-** dmenu (file browsing)                                              :fixup:
-#+BEGIN_SRC emacs-lisp
-  (use-package dmenu
-    :ensure t
-    :bind
-    ("s-SPC" . 'dmenu))
 #+END_SRC
 * Very cool benis
 ** reload file on the go
@@ -594,18 +616,15 @@ any changes of a file, will be automatically reloaded
 
   (global-set-key (kbd "C-x n") (function narrow-or-widen-dwim))
  #+END_SRC
-* Arsist mode
+* AUCTEX mode
+** generate file
 #+BEGIN_SRC emacs-lisp 
-  (add-hook 'artist-mode-hook
-            (lambda ()
-              (local-set-key (kbd "<f1>") 'org-mode)
-              (local-set-key (kbd "<f2>") 'artist-select-op-pen-line) ; f2 = pen mode
-              (local-set-key (kbd "<f3>") 'artist-select-op-line)     ; f3 = line
-              (local-set-key (kbd "<f4>") 'artist-select-op-square)   ; f4 = rectangle
-              (local-set-key (kbd "<f5>") 'artist-select-op-ellipse)  ; f5 = ellipse
-  ))
+  (defun ilya-generate-texfile ()
+    "Generates a latex files, placing it in texfiles folder of the current project"
+    (interactive)
+    (setq temp-file-name-for-snippet (ilya-file-name-from-line "texfiles/" ".tex"))
+    (delete-region (line-beginning-position) (line-end-position)))
  #+END_SRC
-* AUCTex mode                                                        :ispell:
 ** latex commands                                           :listOfCommands:
 I will most be using CDLaTeX to type in a command and then autocomplete it
 Yasnippet to add stuff once I am there (like and an extra item) and create own tab commands
@@ -646,7 +665,7 @@ Indenting environment
     :ensure auctex
     :init
     (setq TeX-auto-save t)
-    (setq TeX-parse-self t)			;;access imported packages
+    ;; (setq TeX-parse-self t)			;;access imported packages
     (setq TeX-save-query nil)			;;don't prompt file save
     (setq-default TeX-show-compilation t)		;;display compulation in a parrallel window
     (setq TeX-interactive-mode t)
@@ -669,7 +688,7 @@ Indenting environment
 
     ;; font highlighting
     (LaTeX-mode-hook . font-lock-mode))
- #+END_SRC
+ #+END_SRC 
 ** reftex
 #+BEGIN_SRC emacs-lisp 
   (use-package reftex
@@ -681,11 +700,35 @@ Indenting environment
 ** cdlatex (autcompletion)
 #+BEGIN_SRC emacs-lisp 
   (use-package cdlatex
-   :ensure t
-   :config
-   (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex))
- #+END_SRC
+    :ensure t
+    :config
+    (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex))
 
+  (setq cdlatex-math-modify-alist
+        '(
+          (82 "\\red" "\\red" t nil nil)))
+
+  (setq cdlatex-math-symbol-alist
+        `(
+          (?F ("\\Phi"))))
+
+  (setq cdlatex-env-alist
+        '(("cases" "\\begin{cases}\nAUTOLABEL\n?\n\\end{cases}" nil)
+          ("big-left-right" "\\big(?\\big)" nil)
+          ("left-right-bar" "\\left|?\\right|" nil)
+          ("bigg-left-right" "\\bigg(?\\bigg)" nil)
+          ("left-right-brace" "\\left\\lbrace?\\right\\rbrace" nil)
+          ("theorem" "\\begin{theorem}\nLABEL\n?\n\\end{theorem}\n" nil)))
+
+  ;; last 2 t/nil is whether to activate in text and math modes
+  (setq cdlatex-command-alist
+        '(("blr(" "Insert big left-right brackets"   "" cdlatex-environment ("big-left-right") t t)
+          ("bblr(" "Insert bigg-left-right brackets"   "" cdlatex-environment ("bigg-left-right") t t)
+          ("lr{" "Inserts brace" "" cdlatex-environment ("left-right-brace") t t)
+          ("lr|" "Inserts left and right bars 卍" "" cdlatex-environment ("left-right-bar") t t)
+          ("cases" "Insert case environment"   "" cdlatex-environment ("cases") t t)
+          ("thr" "Insert theorem env" "" cdlatex-environment ("theorem") t nil)))
+ #+END_SRC
 ** tailored commands
 *Some important AucTex commands and variables*
 | =TeX-expand-list-builtin= | pair list tying command with a % expression e.g. =%s= -> master latex file |
@@ -702,7 +745,7 @@ Indenting environment
     (minibuffer-message (concat "ᛋᛋ Generating \"" (TeX-master-file) "\" ᛋᛋ"))
     (let (
           ;; 1 - variable definition
-          (command-script (ilya_expand-latex-command "~/creamy_seas/sync_files/emacs_config/ilya_scripts/pdf_engine.sh %s")))
+          (command-script (ilya_expand-latex-command "~/creamy_seas/sync_files/emacs_config/ilya_scripts/latex/pdf_engine.sh %s")))
 
       ;; 2 - prepare for compilation buffer
       (ilya_latex-compilation-prepare "BuildPDF")
@@ -733,7 +776,7 @@ Indenting environment
 
     (minibuffer-message (concat "===> 卍 Exterminating \"" (ilya_get-master-file-name) "\" 卍"))
 
-    (let ((command-script (ilya_expand-latex-command "~/creamy_seas/sync_files/emacs_config/ilya_scripts/jew_engine.sh %s")))
+    (let ((command-script (ilya_expand-latex-command "~/creamy_seas/sync_files/emacs_config/ilya_scripts/latex/jew_engine.sh %s")))
 
       ;; 1 - get the buffer names and variables of running process
       (ilya_latex-compilation-prepare "BuildPDF")
@@ -784,7 +827,7 @@ Indenting environment
 
 #+BEGIN_SRC emacs-lisp
   (setq TeX-view-program-list
-        '(("SkimViewer" "~/creamy_seas/sync_files/emacs_config/ilya_scripts/search_engine.sh %s %n %o %b")))
+        '(("SkimViewer" "~/creamy_seas/sync_files/emacs_config/ilya_scripts/latex/search_engine.sh %s %n %o %b")))
 
   (setq TeX-view-program-selection '((output-pdf "SkimViewer")))
  #+END_SRC
@@ -879,7 +922,7 @@ here we make it do it explictly
              (switch-to-buffer ,old-buff))
            (goto-char ,old-point)))))
  #+END_SRC
-** minor modes
+
 ** latex expand text
 #+BEGIN_SRC emacs-lisp 
   (use-package fill-column-indicator
@@ -900,9 +943,7 @@ here we make it do it explictly
     (if (> 94 temp-fill-width)
         (set-fill-column temp-fill-width)
       (set-fill-column 94)))
-
  #+END_SRC
- 
 ** =hyperref=
 #+BEGIN_SRC emacs-lisp 
   (defun ilya-reftex-reference (&optional type no-insert cut)
@@ -1018,83 +1059,14 @@ here we make it do it explictly
         (message "")
         label))))
  #+END_SRC
-** cdlatex custom variables
+ 
+** colouring
 #+BEGIN_SRC emacs-lisp 
-  (setq cdlatex-math-symbol-alist
-        `(
-          (?F ("\\Phi"))))
-
-  (setq cdlatex-env-alist
-        '(("cases" "\\begin{cases}\nAUTOLABEL\n?\n\\end{cases}" nil)
-          ("big-left-right" "\\big(?\\big)" nil)
-          ("bigg-left-right" "\\bigg(?\\bigg)" nil)
-         ("theorem" "\\begin{theorem}\nLABEL\n?\n\\end{theorem}\n" nil)))
-
-  ;; last 2 t/nil is whether to activate in text and math modes
-  (setq cdlatex-command-alist
-        '(("glr(" "Insert big left-right brackets"   "" cdlatex-environment ("big-left-right") t t)
-          ("gglr(" "Insert bigg-left-right brackets"   "" cdlatex-environment ("bigg-left-right") t t)
-          ("cases" "Insert case environment"   "" cdlatex-environment ("cases") t t)
-          ("thr" "Insert theorem env" "" cdlatex-environment ("theorem") t nil)))
- #+END_SRC
-** key bindings
-#+BEGIN_SRC emacs-lisp 
-    (add-hook 'LaTeX-mode-hook (lambda ()
-                                 (local-unset-key (kbd "C-c C-a"))
-                                 (local-unset-key (kbd "C-c C-b"))
-                                 (local-unset-key (kbd "C-c C-d"))
-                                 (local-unset-key (kbd "C-c C-k"))
-                                 (local-unset-key (kbd "C-c C-r"))
-                                 (local-unset-key (kbd "C-c C-z"))
-                                 (local-unset-key (kbd "C-c ESC"))
-                                 (local-unset-key (kbd "C-c C-t"))
-                                 (local-unset-key (kbd "C-c <")) ;;index and glossary
-                                 (local-unset-key (kbd "C-c /")) ;;index
-                                 (local-unset-key (kbd "C-c \\")) ;;index
-                                 (local-unset-key (kbd "C-c >")) ;;index
-                                 (local-unset-key (kbd "C-c _")) ;;set master file
-                                 (local-unset-key (kbd "C-c C-n")) ;;normal mode (use C-c #)
-                                 (local-unset-key (kbd "C-c ~")) ;;math mode
-                                 (local-unset-key (kbd "C-c }")) ;;up list
-                                 (local-unset-key (kbd "C-c `")) ;TeX-next-error
-                                 (local-unset-key (kbd "C-c ^")) ;TeX-home-buffer
-                                 (local-unset-key (kbd "C-x `")) ;next-error
-                                 ))
-
-    (defun ilya_latex-save-buffer ()
-      "Save the current buffer and performs indent"
-      (interactive)
-      ;; 1 - fill colum
-      (setq justify-width (ilya_buffer-fill-column))
-
-      ;; 3 - perform fill
-      (ignore-errors (LaTeX-fill-environment justify-width))
-
-      ;; 2 - save file
-      (save-buffer))
-
-    (defun ilya_latex-indent-buffer (args)
-      "Indents the full buffer"
-      (interactive "P")
-      ;; 1 - fill the column
-      (setq justify-width (ilya_buffer-fill-column))
-
-      ;; 3 - perform fill
-      (ignore-errors (LaTeX-fill-buffer justify-width))
-      )
-
-    (defun ilya_insert-underscore (args)
-      "Inserts an underscore, because the jews put in dollars around it"
-      (interactive "P")
-      (insert "_"))
-
-  (add-hook 'LaTeX-mode-hook (lambda ()
-                               (define-key LaTeX-mode-map (kbd "C-c C-n") (function next-error))
-                               (define-key LaTeX-mode-map (kbd "C-c C-;") (function comment-line))
-                               (define-key LaTeX-mode-map (kbd "C-c C-u") (function ilya_insert-underscore))
-                               (define-key LaTeX-mode-map (kbd "C-c C-q") (function ilya_latex-indent-buffer))
-                               (define-key LaTeX-mode-map (kbd "C-c C-h") (function TeX-home-buffer))
-                               (define-key LaTeX-mode-map (kbd "C-x C-s") (function ilya_latex-save-buffer))))
+  (custom-set-faces
+   '(font-latex-bold-face ((t (:inherit bold))))
+   '(font-latex-italic-face ((t (:inherit italic))))
+   '(font-latex-math-face ((t (:foreground "#99c616"))))
+   '(font-latex-sedate-face ((t (:foreground "burlywood")))))
  #+END_SRC
 ** regexp colouring
 *** theory
@@ -1150,39 +1122,97 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
  #+END_SRC
 *** matching colour
 #+BEGIN_SRC emacs-lisp 
-  (font-lock-add-keywords 'latex-mode
-                          '(("\\(\\\\red\{\\)\\(\\(.\\|\\Ca\\)*?\\)\\(\}\\\\ec\\)"
-                             (1 'ilya_face-latex-red t)
-                             (4 'ilya_face-latex-red t))))
+    ;; (font-lock-add-keywords 'latex-mode
+    ;;                         '(("\\(\\\\red\{\\)\\(\\(.\\|\\Ca\\)*?\\)\\(\}\\\\ec\\)"
+    ;;                            (1 'ilya_face-latex-red t)
+    ;;                            (4 'ilya_face-latex-red t))))
 
-  (font-lock-add-keywords 'latex-mode
-                          '(("\\(\\\\blue\{\\)\\(\\(.\\|\\Ca\\)*?\\)\\(\}\\\\ec\\)"
-                             (1 'ilya_face-latex-blue t)
-                             (4 'ilya_face-latex-blue t))))
+    ;; (font-lock-add-keywords 'latex-mode
+    ;;                         '(("\\(\\\\blue\{\\)\\(\\(.\\|\\Ca\\)*?\\)\\(\}\\\\ec\\)"
+    ;;                            (1 'ilya_face-latex-blue t)
+    ;;                            (4 'ilya_face-latex-blue t))))
 
-  (font-lock-add-keywords 'latex-mode
-                          '(("\\(\\\\gold\{\\)\\(\\(.\\|\\Ca\\)*?\\)\\(\}\\\\ec\\)"
-                             (1 'ilya_face-latex-gold t)
-                             (4 'ilya_face-latex-gold t))))
+    ;; (font-lock-add-keywords 'latex-mode
+    ;;                         '(("\\(\\\\gold\{\\)\\(\\(.\\|\\Ca\\)*?\\)\\(\}\\\\ec\\)"
+    ;;                            (1 'ilya_face-latex-gold t)
+    ;;                            (4 'ilya_face-latex-gold t))))
 
-  ;; %% Comment
+    ;; ;; %% Comment
   (font-lock-add-keywords 'latex-mode
-                           '(("\\(%\\{2,\\}\\)\\(\s.*\\)\\($\\)"
-                              (1 'ilya_face-latex-title t)
-                              (2 'ilya_face-latex-title t))))
+			     '(("\\(%\\{2,\\}\\)\\(\s.*\\)\\($\\)"
+				(1 'ilya_face-latex-title t)
+				(2 'ilya_face-latex-title t))))
  #+END_SRC
-** colouring
+** key bindings
 #+BEGIN_SRC emacs-lisp 
-  (custom-set-faces
-   '(font-latex-bold-face ((t (:inherit bold))))
-   '(font-latex-italic-face ((t (:inherit italic))))
-   '(font-latex-math-face ((t (:foreground "#99c616"))))
-   '(font-latex-sedate-face ((t (:foreground "burlywood")))))
+    (add-hook 'LaTeX-mode-hook (lambda ()
+                                 (local-unset-key (kbd "C-c C-a"))
+                                 (local-unset-key (kbd "C-c C-b"))
+                                 (local-unset-key (kbd "C-c C-d"))
+                                 (local-unset-key (kbd "C-c C-k"))
+                                 (local-unset-key (kbd "C-c C-r"))
+                                 (local-unset-key (kbd "C-c C-z"))
+                                 (local-unset-key (kbd "C-c ESC"))
+                                 (local-unset-key (kbd "C-c C-t"))
+                                 (local-unset-key (kbd "C-c <")) ;;index and glossary
+                                 (local-unset-key (kbd "C-c /")) ;;index
+                                 (local-unset-key (kbd "C-c \\")) ;;index
+                                 (local-unset-key (kbd "C-c >")) ;;index
+                                 (local-unset-key (kbd "C-c _")) ;;set master file
+                                 (local-unset-key (kbd "C-c C-n")) ;;normal mode (use C-c #)
+                                 (local-unset-key (kbd "C-c ~")) ;;math mode
+                                 (local-unset-key (kbd "C-c }")) ;;up list
+                                 (local-unset-key (kbd "C-c `")) ;TeX-next-error
+                                 (local-unset-key (kbd "C-c ^")) ;TeX-home-buffer
+                                 (local-unset-key (kbd "C-x `")) ;next-error
+                                 ))
+
+    (defun ilya_latex-save-buffer ()
+      "Save the current buffer and performs indent"
+      (interactive)
+      ;; 1 - fill colum
+      (setq justify-width (ilya_buffer-fill-column))
+    
+
+      ;; 3 - perform fill
+      ;; (ignore-errors (LaTeX-fill-environment justify-width))
+
+      ;; 2 - save file
+      (save-buffer))
+
+    (defun ilya_latex-indent-buffer (args)
+      "Indents the full buffer"
+      (interactive "P")
+      ;; 1 - fill the column
+      (setq justify-width (ilya_buffer-fill-column))
+
+      ;; 3 - perform fill
+      (ignore-errors (LaTeX-fill-buffer justify-width))
+      )
+
+    (defun ilya_insert-underscore (args)
+      "Inserts an underscore, because the jews put in dollars around it"
+      (interactive "P")
+      (insert "_"))
+
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (define-key LaTeX-mode-map (kbd "C-c C-n") (function next-error))
+                               (define-key LaTeX-mode-map (kbd "C-c C-;") (function comment-line))
+                               (define-key LaTeX-mode-map (kbd "C-c C-u") (function ilya_insert-underscore))
+                               (define-key LaTeX-mode-map (kbd "C-c C-q") (function ilya_latex-indent-buffer))
+                               (define-key LaTeX-mode-map (kbd "C-c C-h") (function TeX-home-buffer))
+                               (define-key LaTeX-mode-map (kbd "C-x C-s") (function ilya_latex-save-buffer))))
  #+END_SRC
-** allow narrowing and widening
-#+BEGIN_SRC emacs-lisp
-(put 'TeX-narrow-to-group 'disabled nil)
-(put 'LaTeX-narrow-to-environment 'disabled nil) 
+* Arsist mode
+#+BEGIN_SRC emacs-lisp 
+  (add-hook 'artist-mode-hook
+            (lambda ()
+              (local-set-key (kbd "<f1>") 'org-mode)
+              (local-set-key (kbd "<f2>") 'artist-select-op-pen-line) ; f2 = pen mode
+              (local-set-key (kbd "<f3>") 'artist-select-op-line)     ; f3 = line
+              (local-set-key (kbd "<f4>") 'artist-select-op-square)   ; f4 = rectangle
+              (local-set-key (kbd "<f5>") 'artist-select-op-ellipse)  ; f5 = ellipse
+  ))
  #+END_SRC
 * C++ mode
 ** Preliminary instructions
@@ -1194,17 +1224,6 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
   /usr/local/bin/cmake -DCMAKE_INSTALL_PREFIX\=/Users/CCCP/.emacs.d/irony/  /Users/CCCP/.emacs.d/elpa/irony-20190516.2348/server && /usr/local/bin/cmake --build . --use-stderr --config Release --target install
 #+END_SRC
 5) *copy this into terminal and evalute. Then it chould be working*
-** tags file [[https://github.com/leoliu/ggtags][read about it here]]
-#+BEGIN_SRC emacs-lisp 
-  (use-package ggtags
-    :ensure t
-    :config 
-    (add-hook 'c-mode-common-hook
-              (lambda ()
-                (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
-                  (ggtags-mode 1))))
-    )
- #+END_SRC
 ** habr
 #+BEGIN_SRC emacs-lisp 
   ;; (require 'cedet) ;; использую "вшитую" версию CEDET. Мне хватает...
@@ -1557,11 +1576,13 @@ is activated
   ^^^^^------------------------------------------------------------------------------------------
   _p_: phd-vi                _r_: restart
   _n_: neural-network-vi
+  _o_: pro_vi
   _l_: linux_vi
   ^^
   ^^
   "
     ("p"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/phd_vi"))
+    ("o"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/pro_vi"))
     ("n"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/nn_vi"))
     ("l"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/linux"))
     ("r"   pyvenv-restart-python)
@@ -1639,7 +1660,6 @@ is activated
 #+BEGIN_SRC emacs-lisp 
   (use-package git-timemachine
     :ensure t)
-
  #+END_SRC
 ** Hydra
 #+BEGIN_SRC emacs-lisp
@@ -2049,7 +2069,6 @@ the nice bullets instead of multiplication symbols
  #+END_SRC
 ** keybindings
 #+BEGIN_SRC emacs-lisp
-  (define-key cdlatex-mode-map (kbd "<C-return>") nil)
   (define-key org-mode-map (kbd "<C-return>") (function org-insert-heading))
   (define-key org-mode-map (kbd "C-x RET") (function org-insert-subheading))
   (define-key org-mode-map (kbd "C-c C-;") (function comment-line))
@@ -2061,7 +2080,7 @@ the nice bullets instead of multiplication symbols
 - call function with "base-directory argument supplied"
 
 #+BEGIN_SRC emacs-lisp 
-  (setq inkscape-generate-location "/Users/CCCP/.local/bin/inkscape/inkscape_generate.sh")
+  (setq inkscape-generate-location "~/creamy_seas/sync_files/emacs_config/ilya_scripts/inkscape/inkscape_generate.sh")
 
   (defun inkscape-generate (base-directory)
     "Reads the current line and launches an inkscape document under this name. Base directory must end in /"
@@ -2216,7 +2235,7 @@ the nice bullets instead of multiplication symbols
     :ensure t
     :config
     (elfeed-goodies/setup))
-
+  elfeed-search-header-function
   (custom-set-faces
    '(elfeed-search-date-face
      ((t :foreground "#11a"
@@ -2939,12 +2958,12 @@ the superior search mode to the original
 * Projectile
 Navigation around a set of project files. There's tons of shortcuts to explore
 #+BEGIN_SRC emacs-lisp 
-;;  (use-package projectile
-;;    :ensure t
-;;    :init
-;;    (projectile-mode +1))
-    ;; (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-    ;; (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+  (use-package projectile
+    :ensure t
+    :config
+    (projectile-global-mode))
+     ;; (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+     ;; (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
  #+END_SRC
 ** Hydra
 #+BEGIN_SRC emacs-lisp 
@@ -2998,9 +3017,24 @@ Navigation around a set of project files. There's tons of shortcuts to explore
  #+END_SRC
 * Smartparens
 #+BEGIN_SRC emacs-lisp 
+  ;; (use-package smartparens
+  ;;   :ensure t
+  ;;   :hook (prog-mode . smartparens-mode)
+  ;;   :config
+  ;;   (require 'smartparens-config)
+  ;;   :bind
+  ;;   (("C-<down>" . sp-down-sexp)
+  ;;    ("C-<up>" . sp-up-sexp)
+  ;;    ("M-<down>" . sp-backward-down-sexp)
+  ;;    ("M-<up>" . sp-backward-up-sexp)))
+
+  ;; ;; highlight brackets
+  ;; (show-paren-mode)
+
+  ;; ;; remap delete-char → sp-delete-char to always preserve brackets
+  ;; (smartparens-global-strict-mode)
   (use-package smartparens
     :ensure t
-    :hook (prog-mode . smartparens-mode)
     :config
     (require 'smartparens-config)
     :bind
@@ -3009,11 +3043,8 @@ Navigation around a set of project files. There's tons of shortcuts to explore
      ("M-<down>" . sp-backward-down-sexp)
      ("M-<up>" . sp-backward-up-sexp)))
 
-  ;; highlight brackets
-  (show-paren-mode)
-
-  ;; remap delete-char → sp-delete-char to always preserve brackets
-  (smartparens-global-strict-mode)
+  (add-hook 'LaTeX-mode-hook 'smartparens-strict-mode)
+  (add-hook 'prog-mode-hook 'smartparens-strict-mode)
  #+END_SRC
 * Reverting                                                          :darren:
 ** undo tree                                                        :darren:
@@ -3156,3 +3187,22 @@ hides the minor modes that are trivial
 | =C-c C-t=   | change cell format                |
 | =C-c C-w/y= | copy/yank cell                    |
 | =C-c C-z=   | interrupt kernel                  |
+** Terminal and Bash
+*** do not ask for kill confirmation
+#+BEGIN_SRC emacs-lisp 
+  ;; (setq kill-buffer-query-functions nil)
+ #+END_SRC
+*** default shell
+#+BEGIN_SRC emacs-lisp
+  ;; (defvar my-term-shell "/bin/bash")
+  ;; (defadvice ansi-term (before force-bash)
+  ;;   (interactive (list my-term-shell)))
+  ;; (ad-activate 'ansi-term)
+#+END_SRC
+** dmenu (file browsing)                                              :fixup:
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package dmenu
+  ;;   :ensure t
+  ;;   :bind
+  ;;   ("s-SPC" . 'dmenu))
+#+END_SRC
