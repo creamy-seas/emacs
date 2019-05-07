@@ -1129,7 +1129,7 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
 * Org mode                                                           :darren:
 ** get rid of anoying 'ding in table'
 C-u C-c C-x !
-** TODO lists - how ironic
+** todo lists
 #+BEGIN_SRC emacs-lisp 
   (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d)")
                             (sequence "BLOAT(B)" "|" "GOOD(g)")
@@ -1267,6 +1267,7 @@ the nice bullets instead of multiplication symbols
   (use-package org-ac
     :ensure t
     :init
+  
     (progn
       (require 'org-ac)
       (org-ac/config-default)
@@ -1507,14 +1508,14 @@ u: mark selected entries as unread
     (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
     (add-hook 'python-mode-hook 'yas-minor-mode)
     ;; (add-hook 'ein:notebook-mode-hook 'function)
-    (global-set-key (kbd "C-c C-n") 'yas-new-snippet)
+    ;; (global-set-key (kbd "C-c C-n") 'yas-new-snippet)
 
     :config
     (add-to-list 'yas-snippet-dirs "~/creamy_seas/syncFiles/emacs_config/snippets/snippet-mode")
-  
+
     (use-package yasnippet-snippets
       :ensure t)
-  
+
     (yas-reload-all))
 #+END_SRC
 * Autocomplete Company                                               :darren:
@@ -2045,8 +2046,8 @@ Navigation around a set of project files. There's tons of shortcuts to explore
   ;;   )
   ;; )
 
-  ;; ;; (use-package treemacs-projectile
-  ;; ;; ;
+  ;; (use-package treemacs-projectile
+  ;; ;
                                           ;   :defer t
   ;;   :ensure t
   ;;   :config
