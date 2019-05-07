@@ -648,14 +648,15 @@ C-u C-c C-x !
 ** TODO lists - how ironic
 #+BEGIN_SRC emacs-lisp 
   (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d)")
-                            (sequence "FAILED(f)" "|" "GOOD(g)")
+                            (sequence "BLOAT(B)" "|" "GOOD(g)")
                             (sequence "TUTORING(l)" "SCHOOLS(s)" "PHD(p)" "BRYAN(b)" "|" "Dominated(D)")))
 
   (setq org-todo-keyword-faces (quote (
                                        ("STARTED" . "yellow")
                                        ("PHD" . (:foreground "yellow" :background "#FF3333"))
                                        ("SCHOOLS" . (:foreground "#090C42" :background "#9DFE9D"))
-                                       ("Dominated" . (:foreground "#9DFE9D" :wight bold))
+                                       ("Dominated" . (:foreground "#9DFE9D" :weight bold))
+                                       ("BLOAT" . (:foreground "#000001" :background "#ffffff"))
                                        ("TUTORING" . (:foreground "#090C42" :background "#FFD700": weight bold))
                                        ("BRYAN" . (:foreground "#090C42" :background "#33ccff" :weight bold)))))
 
@@ -993,15 +994,13 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
 #+BEGIN_SRC emacs-lisp 
   (use-package ein
     :ensure t
-    :init)
+    :init
+    (setq ein:completion-backend 'ein:use-ac-jedi-backend))
 
   (custom-set-variables
-   '(ein:polymode t))
-    ;; (setq ein:completion-backend 'ein:use-ac-jedi-backend))
-  ;; (use-package ein-notebook
-    ;; :ensure t)
-  ;; (use-package ein-subpackages
-    ;; :ensure t)
+    '(ein:jupyter-default-notebook-directory "/Users/CCCP/creamy_seas/2am/adv3_video/python")
+    '(ein:polymode t))
+
 
   (add-hook 'ein:notebook-multilang-mode
             (lambda ()
@@ -1244,20 +1243,19 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
     :ensure t
-  
     :init
     (add-hook 'emacs-lisp-mode-hook 'yas-minor-mode)
     (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
     (add-hook 'python-mode-hook 'yas-minor-mode)
-    (add-hook 'ein:notebook-mode-hook 'function)
-
-
+    ;; (add-hook 'ein:notebook-mode-hook 'function)
     (global-set-key (kbd "C-c C-n") 'yas-new-snippet)
-    ;;(yas-global-mode)
+
     :config
     (add-to-list 'yas-snippet-dirs "~/creamy_seas/syncFiles/emacs_config/snippets/snippet-mode")
+  
     (use-package yasnippet-snippets
       :ensure t)
+  
     (yas-reload-all))
 #+END_SRC
 * Autocomplete Company                                               :darren:
