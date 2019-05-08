@@ -36,6 +36,7 @@ MAP is the keybinding map for the major or minor mode e.g. LaTeX-mode-map
   (global-unset-key (kbd "C-c q"))
   (global-unset-key (kbd "C-x #"))
   (global-set-key (kbd "C-x C-i") (function server-edit))
+  (global-set-key (kbd "C-x C-j") (function ein:run))
  #+END_SRC
 * Passwords (MUST HAVE gpg installed)                           :nnot_working:
 ** enable the encrypting password package
@@ -991,22 +992,37 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
 - to use styles =plt.style.use('ggplot')=
 - create a style document =example.mplstyle= in the =matplolib/stylelib= folder
 ** ein (jupyter notebook server in emacs)
+*** coloring
+#+BEGIN_SRC emacs-lisp 
+  (custom-set-faces
+   '(ein:cell-input-prompt ((t (:foreground "azure4" :background "#2d3743"))))
+   '(header-line ((t (:foreground "aquamarine2" :background "#2d3743"))))
+   '(ein:notification-tab-normal ((t (:inhert header-line))))
+    '(ein:notification-tab-selected ((t (:inhert header-line :foreground "tan1"))))
+   '(ein:cell-heading-1 ((t (:inherit ein:cell-heading-2 :foreground "cornflower blue" :weight bold :height 1.1))))
+   '(ein:cell-heading-2 ((t (:inherit ein:cell-heading-3 :foreground "MediumPurple2" :weight bold :height 1.1))))
+   '(ein:cell-heading-6 ((t (:inherit variable-pitch :foreground "MediumPurple3" :weight bold)))))
+ #+END_SRC
+*** geneal
 #+BEGIN_SRC emacs-lisp 
   (use-package ein
     :ensure t
     :init
-    (setq ein:completion-backend 'ein:use-ac-jedi-backend))
+    (setq ein:completion-backend 'ein:use-ac-jedi-backend)
+    (custom-set-variables
+     '(ein:jupyter-default-notebook-directory "/Users/CCCP/creamy_seas/2am/adv3_video/python"))
+     ;; '(ein:polymode t))
+    :config
+    (define-key ein:notebook-mode-map (kbd "C-:") (function iedit-mode))
+    (define-key ein:notebook-mode-map (kbd "TAB") (function ein:completer-complete)))
 
-  (custom-set-variables
-    '(ein:jupyter-default-notebook-directory "/Users/CCCP/creamy_seas/2am/adv3_video/python")
-    '(ein:polymode t))
 
+  (defun ilya-no-relative-numbering ()
+    "turn off relative numbering"
+    (linum-relative-global-mode -1)
+    )
 
-  (add-hook 'ein:notebook-multilang-mode
-            (lambda ()
-              (local-unset-key (kbd "C-c C-u"))
-              (local-unset-key (kbd "C-c C-d"))
-              (local-unset-key (kbd "C-c C-j"))))
+  (add-hook 'ein:notebook-mode-hook (function ilya-no-relative-numbering))
  #+END_SRC
 *** common commands
 | =C-c C-a/b= | create cell above/below           |
@@ -1022,11 +1038,7 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
 | =C-c C-t=   | change cell format                |
 | =C-c C-w/y= | copy/yank cell                    |
 | =C-c C-z=   | interrupt kernel                  |
-** window splitting
-#+BEGIN_SRC emacs-lisp 
-;;  (defadvice elpy-shell-send-region-or-buffer (after ilya-resize-python-buffer activate)
-;;    (window-resize-no-error (get-buffer-window "*Python*") (- 10 (window-height ;;(get-buffer-window "*Python*") "floor"))))
- #+END_SRC
+
 ** custom commands
 #+BEGIN_SRC emacs-lisp 
   (defun ilya_python-interrupt ()
@@ -1322,6 +1334,10 @@ ibuffer will mean that new buffer is opened in the window that the command was c
                  ("⍫ Magit" (or
                              (name . "^.*gitignore$")
                              (name . "^magit.*$")))
+                 ("ᛔ Jupyter" (or
+                               (mode . "ein:notebooklist-mode")
+                               (name . "\\*ein:.*")
+                               ))
                  ("ᚧ Python" (or
                               (mode . python-mode)
                               (mode . inferior-python-mode)
@@ -1329,10 +1345,6 @@ ibuffer will mean that new buffer is opened in the window that the command was c
                               (name . "^matplotlibrc$")
                               (name . "^.*mplstyle$")
                               (name . "^\\*Flycheck error messages\\*$")))
-                 ("ᛔ Jupyter" (or
-                               (mode . "ein:notebooklist-mode")
-                               (name . "\\*ein:.*\\*")
-                               ))
                  ("ᛋᛋ Latex" (or
                               (name . "^.*tex$")
                               (name . "^.*bib$")
@@ -1708,9 +1720,9 @@ the superior search mode to the original
   (use-package linum-relative
     :ensure t
     :init
-    (setq linum-relative-backend 'display-line-numbers-mode))
-
-  (linum-relative-global-mode)
+    (setq linum-relative-backend 'display-line-numbers-mode)
+    (add-hook 'python-mode-hook 'linum-relative-mode)
+    (add-hook 'LaTeX-mode-hook 'linum-relative-mode))
 #+END_SRC
 
 * Projectile
@@ -1953,6 +1965,11 @@ to access the inconsolata font you need to
       :ensure t
       :config (load-theme 'spacemacs-dark)))
 #+END_SRC
+** window splitting
+#+BEGIN_SRC emacs-lisp 
+  (setq split-height-threshold nil)
+  (setq split-width-threshold 30)
+ #+END_SRC
 ** line highlight                                                   :darren:
 #+BEGIN_SRC emacs-lisp
   (global-hl-line-mode 1)
