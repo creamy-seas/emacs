@@ -1020,18 +1020,15 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
                                 (define-key elpy-mode-map (kbd "C-c C-;") (function comment-line))))
  #+END_SRC
 * EIN mode
-- jupyter notebook server in emacs 
-
+- jupyter notebook server in emacs
 ** setup
 #+BEGIN_SRC emacs-lisp 
   (use-package ein
     :ensure t
     :init
-    ;; (setq ein:completion-backend 'ein:use-ac-jedi-backend)
     (setq ein:completion-backend 'ein:use-company-backend)
     (custom-set-variables
      '(ein:jupyter-default-notebook-directory "/Users/CCCP/creamy_seas/2am/adv3_video/python"))
-     ;; '(ein:polymode t))
     :config
     (define-key ein:notebook-mode-map (kbd "C-:") (function iedit-mode))
     (define-key ein:notebook-mode-map (kbd "C-c C-;") (function comment-line))
