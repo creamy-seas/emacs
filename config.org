@@ -576,7 +576,6 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
                                  (local-unset-key (kbd "C-c `")) ;TeX-next-error
                                  (local-unset-key (kbd "C-c ^")) ;TeX-home-buffer
                                  (local-unset-key (kbd "C-x `")) ;next-error
-                                 (local-unset-key (kbd "C-c C-n")) ;yasnippet
                                  ))
 
     (defun ilya_latex-save-buffer ()
@@ -608,7 +607,6 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
 
   (add-hook 'LaTeX-mode-hook (lambda ()
                                (define-key LaTeX-mode-map (kbd "C-c C-n") (function next-error))
-                               ;; (define-key LaTeX-mode-map (kbd "C-c C-p") (function previous-error))
                                (define-key LaTeX-mode-map (kbd "C-c C-;") (function comment-line))
                                (define-key LaTeX-mode-map (kbd "C-c C-u") (function ilya_insert-underscore))
                                (define-key LaTeX-mode-map (kbd "C-c C-q") (function ilya_latex-indent-buffer))
@@ -991,54 +989,6 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
 - to print the available styles =plt.style.available=
 - to use styles =plt.style.use('ggplot')=
 - create a style document =example.mplstyle= in the =matplolib/stylelib= folder
-** ein (jupyter notebook server in emacs)
-*** coloring
-#+BEGIN_SRC emacs-lisp 
-  (custom-set-faces
-   '(ein:cell-input-prompt ((t (:foreground "azure4" :background "#2d3743"))))
-   '(header-line ((t (:foreground "aquamarine2" :background "#2d3743"))))
-   '(ein:notification-tab-normal ((t (:inhert header-line))))
-    '(ein:notification-tab-selected ((t (:inhert header-line :foreground "tan1"))))
-   '(ein:cell-heading-1 ((t (:inherit ein:cell-heading-2 :foreground "cornflower blue" :weight bold :height 1.1))))
-   '(ein:cell-heading-2 ((t (:inherit ein:cell-heading-3 :foreground "MediumPurple2" :weight bold :height 1.1))))
-   '(ein:cell-heading-6 ((t (:inherit variable-pitch :foreground "MediumPurple3" :weight bold)))))
- #+END_SRC
-*** geneal
-#+BEGIN_SRC emacs-lisp 
-  (use-package ein
-    :ensure t
-    :init
-    (setq ein:completion-backend 'ein:use-ac-jedi-backend)
-    (custom-set-variables
-     '(ein:jupyter-default-notebook-directory "/Users/CCCP/creamy_seas/2am/adv3_video/python"))
-     ;; '(ein:polymode t))
-    :config
-    (define-key ein:notebook-mode-map (kbd "C-:") (function iedit-mode))
-    (define-key ein:notebook-mode-map (kbd "TAB") (function ein:completer-complete)))
-
-
-  (defun ilya-no-relative-numbering ()
-    "turn off relative numbering"
-    (linum-relative-global-mode -1)
-    )
-
-  (add-hook 'ein:notebook-mode-hook (function ilya-no-relative-numbering))
- #+END_SRC
-*** common commands
-| =C-c C-a/b= | create cell above/below           |
-| =C-c C-c=   | evalute cell                      |
-| =C-c C-e=   | hide evaluation                   |
-| =C-c C-h=   | get python documentation at point |
-| =C-c C-TAB= | autocmplete                       |
-| =C-c C-k=   | kill cell                         |
-| =C-c C-m/s= | merge or split cell               |
-| =C-c C-n/p= | next/previous cell                |
-| =C-c C-o=   | open notebook                     |
-| =C-c C-q=   | close ntebook                     |
-| =C-c C-t=   | change cell format                |
-| =C-c C-w/y= | copy/yank cell                    |
-| =C-c C-z=   | interrupt kernel                  |
-
 ** custom commands
 #+BEGIN_SRC emacs-lisp 
   (defun ilya_python-interrupt ()
@@ -1069,6 +1019,62 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
                                 (define-key elpy-mode-map (kbd "C-c C-r") (function elpy-rpc-restart))
                                 (define-key elpy-mode-map (kbd "C-c C-;") (function comment-line))))
  #+END_SRC
+* EIN mode
+- jupyter notebook server in emacs 
+
+** setup
+#+BEGIN_SRC emacs-lisp 
+  (use-package ein
+    :ensure t
+    :init
+    ;; (setq ein:completion-backend 'ein:use-ac-jedi-backend)
+    (setq ein:completion-backend 'ein:use-company-backend)
+    (custom-set-variables
+     '(ein:jupyter-default-notebook-directory "/Users/CCCP/creamy_seas/2am/adv3_video/python"))
+     ;; '(ein:polymode t))
+    :config
+    (define-key ein:notebook-mode-map (kbd "C-:") (function iedit-mode))
+    (define-key ein:notebook-mode-map (kbd "C-c C-;") (function comment-line))
+    (define-key ein:notebook-mode-map (kbd "TAB") (function ein:completer-complete)))
+
+
+  (defun ilya-no-relative-numbering ()
+    "turn off relative numbering"
+    (linum-relative-global-mode -1)
+    )
+
+  (add-hook 'ein:notebook-mode-hook (function ilya-no-relative-numbering))
+ #+END_SRC
+** coloring
+#+BEGIN_SRC emacs-lisp 
+  (custom-set-faces
+   '(ein:cell-output-area ((t (:foreground "cornsilk4" :background "#2d3743"))))
+   '(ein:cell-input-prompt ((t (:foreground "azure4" :background "#2d3743"))))
+   '(header-line ((t (:foreground "dark slate gray" :background "#2d3743"))))
+   '(ein:notification-tab-normal ((t (:inhert header-line))))
+    '(ein:notification-tab-selected ((t (:inhert header-line :weight bold :foreground "cadet blue"))))
+   '(ein:cell-heading-1 ((t (:inherit ein:cell-heading-3 :foreground "cornflower blue" :weight bold :height 1.1))))
+   '(ein:cell-heading-2 ((t (:foreground "cornflower blue" :weight bold :height 1))))
+   '(ein:cell-heading-6 ((t (:inherit variable-pitch :foreground "MediumPurple3" :weight bold)))))
+
+ #+END_SRC
+** common commands
+| =C-c C-a/b= | create cell above/below           |
+| =C-c C-c=   | evalute cell                      |
+| =C-c C-e=   | hide evaluation                   |
+| =C-c C-h=   | get python documentation at point |
+| =C-c C-TAB= | autocmplete                       |
+| =C-c C-k=   | kill cell                         |
+| =C-c C-m/s= | merge or split cell               |
+| =C-c C-n/p= | next/previous cell                |
+| =C-c C-o=   | open notebook                     |
+| =C-c C-q=   | close ntebook                     |
+| =C-c C-t=   | change cell format                |
+| =C-c C-w/y= | copy/yank cell                    |
+| =C-c C-z=   | interrupt kernel                  |
+** html setup
+- run command =jt= to set html variables*
+- run =jt notebook password= to set a password
 * RSS mode
 ** location of configuration file
 #+BEGIN_SRC emacs-lisp
@@ -1352,6 +1358,7 @@ ibuffer will mean that new buffer is opened in the window that the command was c
                               (name . "\\*RefTeX Select\\*")
                               (mode . comint-mode)))
                  ("ᚸ Org" (name . "\\.org"))
+                 ("⚓ Shell" (name . "\\.sh"))
                  ("卍 Config" (name . "^\\..*$"))
                  ("ᛓ Elfeed" (or
                               (name . "\\*elfeed.*\\*")
@@ -1968,7 +1975,7 @@ to access the inconsolata font you need to
 ** window splitting
 #+BEGIN_SRC emacs-lisp 
   (setq split-height-threshold nil)
-  (setq split-width-threshold 30)
+  (setq split-width-threshold 120)
  #+END_SRC
 ** line highlight                                                   :darren:
 #+BEGIN_SRC emacs-lisp
@@ -1996,12 +2003,18 @@ to access the inconsolata font you need to
 #+BEGIN_SRC emacs-lisp 
   (custom-set-faces
    '(default ((t (:family "Inconsolata" :height 170))))
-   ;; '(default ((t (:inherit nil :stipple nil :background "#2d3743" :foreground "#e1e1e0" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 175 :width normal :foundry "nil" :family "Inconsolata"))))
+   `(popup-scroll-bar-background-face ((t (:background "#189a1e1224a2"))))
+   `(popup-scroll-bar-foreground-face ((t (:background "#41bf505b61e3"))))
+   ;; selection on autocomplete
+   `(popup-menu-selection-face ((t (:background "orange2" :foreground "#090C42" :weight bold))))
+   ;; rest of autocomplete
+   `(popup-menu-face ((t (:inherit default :background "#41bf505b61e3"))))
+   `(popup-menu-summary-face ((t (:inherit default :background "#41bf505b61e3"))))
    )
   (set-default 'cursor-type 'hbar)
   (set-cursor-color "#ffd700")
- #+END_SRC
 
+ #+END_SRC
 * Emacs brackets                                                     :darren:
 ** autoclosing parantheses
 #+BEGIN_SRC emacs-lisp
