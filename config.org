@@ -162,6 +162,33 @@ any changes of a file, will be automatically reloaded
 #+BEGIN_SRC emacs-lisp
   (when window-system (global-prettify-symbols-mode t))
 #+END_SRC
+** narrow and widen region
+#+BEGIN_SRC emacs-lisp 
+  (defun narrow-or-widen-dwim (p)
+    "If the buffer is narrowed, it widens. Otherwise, it narrows intelligently.
+  Intelligently means: region, org-src-block, org-subtree, or defun,
+  whichever applies first.
+  Narrowing to org-src-block actually calls `org-edit-src-code'.
+
+  With prefix P, don't widen, just narrow even if buffer is already
+  narrowed."
+    (interactive "P")
+    (declare (interactive-only))
+    (cond ((and (buffer-narrowed-p) (not p)) (widen))
+          ((region-active-p)
+           (narrow-to-region (region-beginning) (region-end)))
+          ((derived-mode-p 'org-mode)
+           ;; `org-edit-src-code' is not a real narrowing command.
+           ;; Remove this first conditional if you don't want it.
+           (cond ((ignore-errors (org-edit-src-code))
+                  (delete-other-windows))
+                 ((org-at-block-p)
+                  (org-narrow-to-block))
+                 (t (org-narrow-to-subtree))))
+          (t (narrow-to-defun))))
+
+  (global-set-key (kbd "C-x n") (function narrow-or-widen-dwim))
+ #+END_SRC
 * C++ mode
 *** Preliminary instructions
 1) you need to first check that clang is on computer =clang --version=
@@ -190,6 +217,67 @@ any changes of a file, will be automatically reloaded
   ;;finally ensure that c++-mode-hook is activated when company mode is on
   (with-eval-after-load 'company
     (add-hook 'c++-mode-hook 'company-mode))
+ #+END_SRC
+* EIN mode
+- jupyter notebook server in emacs
+** setup
+#+BEGIN_SRC emacs-lisp 
+  (use-package ein
+    :ensure t
+    :init
+    (setq ein:completion-backend 'ein:use-company-backend)
+    (custom-set-variables
+     '(ein:jupyter-default-notebook-directory
+       "/Users/CCCP/creamy_seas/2am/adv4_bot/python")))
+
+  (defun ilya-no-relative-numbering ()
+    "turn off relative numbering"
+    (linum-relative-global-mode -1))
+
+  (add-hook 'ein:notebook-mode-hook (function ilya-no-relative-numbering))
+ #+END_SRC
+** coloring
+#+BEGIN_SRC emacs-lisp 
+  (custom-set-faces
+   '(ein:cell-output-area ((t (:foreground "cornsilk4" :background "#2d3743"))))
+   '(ein:cell-input-prompt ((t (:foreground "azure4" :background "#2d3743"))))
+   '(header-line ((t (:foreground "dark slate gray" :background "#2d3743"))))
+   '(ein:notification-tab-normal ((t (:inhert header-line))))
+    '(ein:notification-tab-selected ((t (:inhert header-line :weight bold :foreground "cadet blue"))))
+   '(ein:cell-heading-1 ((t (:inherit ein:cell-heading-3 :foreground "cornflower blue" :weight bold :height 1.1))))
+   '(ein:cell-heading-2 ((t (:foreground "cornflower blue" :weight bold :height 1))))
+   '(ein:cell-heading-6 ((t (:inherit variable-pitch :foreground "MediumPurple3" :weight bold)))))
+
+ #+END_SRC
+** common commands
+| =C-c C-a/b= | create cell above/below           |
+| =C-c C-c=   | evalute cell                      |
+| =C-c C-e=   | hide evaluation                   |
+| =C-c C-h=   | get python documentation at point |
+| =C-c C-TAB= | autocmplete                       |
+| =C-c C-k=   | kill cell                         |
+| =C-c C-m/s= | merge or split cell               |
+| =C-c C-n/p= | next/previous cell                |
+| =C-c C-o=   | open notebook                     |
+| =C-c C-q=   | close ntebook                     |
+| =C-c C-t=   | change cell format                |
+| =C-c C-w/y= | copy/yank cell                    |
+| =C-c C-z=   | interrupt kernel                  |
+** html setup
+- run command =jt= to set html variables*
+- run =jt notebook password= to set a password
+** key bindings
+#+BEGIN_SRC emacs-lisp 
+  (with-eval-after-load "ein-notebook"
+    (define-key ein:notebook-mode-map (kbd "C-:") (function iedit-mode))
+    (define-key ein:notebook-mode-map (kbd "C-c C-;") (function comment-line))
+    (define-key ein:notebook-mode-map (kbd "C-c TAB") (function ein:completer-complete)))
+
+ #+END_SRC
+#+BEGIN_SRC emacs-lisp 
+  ;; (add-hook 'ein-notebook-mode-hook (lambda()
+                                      ;; (define-key ein:notebook-mode-map (kbd "C-c") )))
+
  #+END_SRC
 * LaTeX mode (AUCTex LaTeX mode)                                     :ispell:
 ** latex commands                                           :listOfCommands:
@@ -1019,59 +1107,6 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
                                 (define-key elpy-mode-map (kbd "C-c C-r") (function elpy-rpc-restart))
                                 (define-key elpy-mode-map (kbd "C-c C-;") (function comment-line))))
  #+END_SRC
-* EIN mode
-- jupyter notebook server in emacs
-** setup
-#+BEGIN_SRC emacs-lisp 
-  (use-package ein
-    :ensure t
-    :init
-    (setq ein:completion-backend 'ein:use-company-backend)
-    (custom-set-variables
-     '(ein:jupyter-default-notebook-directory "/Users/CCCP/creamy_seas/2am/adv3_video/python"))
-    :config
-    (define-key ein:notebook-mode-map (kbd "C-:") (function iedit-mode))
-    (define-key ein:notebook-mode-map (kbd "C-c C-;") (function comment-line))
-    (define-key ein:notebook-mode-map (kbd "TAB") (function ein:completer-complete)))
-
-
-  (defun ilya-no-relative-numbering ()
-    "turn off relative numbering"
-    (linum-relative-global-mode -1)
-    )
-
-  (add-hook 'ein:notebook-mode-hook (function ilya-no-relative-numbering))
- #+END_SRC
-** coloring
-#+BEGIN_SRC emacs-lisp 
-  (custom-set-faces
-   '(ein:cell-output-area ((t (:foreground "cornsilk4" :background "#2d3743"))))
-   '(ein:cell-input-prompt ((t (:foreground "azure4" :background "#2d3743"))))
-   '(header-line ((t (:foreground "dark slate gray" :background "#2d3743"))))
-   '(ein:notification-tab-normal ((t (:inhert header-line))))
-    '(ein:notification-tab-selected ((t (:inhert header-line :weight bold :foreground "cadet blue"))))
-   '(ein:cell-heading-1 ((t (:inherit ein:cell-heading-3 :foreground "cornflower blue" :weight bold :height 1.1))))
-   '(ein:cell-heading-2 ((t (:foreground "cornflower blue" :weight bold :height 1))))
-   '(ein:cell-heading-6 ((t (:inherit variable-pitch :foreground "MediumPurple3" :weight bold)))))
-
- #+END_SRC
-** common commands
-| =C-c C-a/b= | create cell above/below           |
-| =C-c C-c=   | evalute cell                      |
-| =C-c C-e=   | hide evaluation                   |
-| =C-c C-h=   | get python documentation at point |
-| =C-c C-TAB= | autocmplete                       |
-| =C-c C-k=   | kill cell                         |
-| =C-c C-m/s= | merge or split cell               |
-| =C-c C-n/p= | next/previous cell                |
-| =C-c C-o=   | open notebook                     |
-| =C-c C-q=   | close ntebook                     |
-| =C-c C-t=   | change cell format                |
-| =C-c C-w/y= | copy/yank cell                    |
-| =C-c C-z=   | interrupt kernel                  |
-** html setup
-- run command =jt= to set html variables*
-- run =jt notebook password= to set a password
 * RSS mode
 ** location of configuration file
 #+BEGIN_SRC emacs-lisp
@@ -1087,8 +1122,8 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
     :ensure t
     :init
     (global-set-key (kbd "C-c f") 'elfeed)
-    (setq-default elfeed-search-filter "+unread + boomer")
     (setq elfeed-db-directory "~/creamy_seas/syncFiles/emacs_config/elfeeddb")
+    (setq-default elfeed-search-filter "+unread")
     :bind     ;;once the package is loaded, bing some commands
     (:map elfeed-search-mode-map
           ("*" . bjm/elfeed-star)
@@ -1105,16 +1140,16 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
 
   (defhydra hydra-elfeed (global-map "<f5>")
     ""
-    ("b" (elfeed-search-set-filter "+prog") "programming")
-    ("l" (elfeed-search-set-filter "+boomer +unread") "luke boomer")
-    ("L" (elfeed-search-set-filter "+boomer") "luke boomer")
-    ("s" (elfeed-search-set-filter "+strat +unread") "stratechery")
-    ("S" (elfeed-search-set-filter "+strat") "stratechery")
+    ("p" (elfeed-search-set-filter "+prog") "programming")
+    ;; ("l" (elfeed-search-set-filter "+boomer +unread") "luke boomer")
+    ("l" (elfeed-search-set-filter "+boomer") "luke boomer")
+    ;; ("s" (elfeed-search-set-filter "+strat +unread") "stratechery")
+    ("s" (elfeed-search-set-filter "+strat") "stratechery")
     ("i" (elfeed-search-set-filter "+starred") "shiny star")
     ("*" bjm/elfeed-star "star it" :color pink)
     ("8" bjm/elfeed-unstar "unstar it" :color pink)
-    ("A" (elfeed-search-set-filter "@5-year-ago") "all")
-    ("a" (elfeed-search-set-filter "+unread") "unread")
+    ("a" (elfeed-search-set-filter "@5-year-ago") "all")
+    ("u" (elfeed-search-set-filter "+unread") "unread")
     ("q" bjm/elfeed-save-db-and-bury "quit" :color blue)
     )
 
@@ -1200,22 +1235,16 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
  #+END_SRC
 ** image chaseup
    The problem is that the entry content only includes the tiny reddit-hosted thumbnail and Elfeed doesn't know to chase through the chain of links to get to the actual image that you care about. You could try assigning your own function to elfeed-show-refresh-function that treats reddit posts differently (and calling the default for everything else). You'd need to shr-insert an img element with the full size image as the src.
-** configuration
-#+BEGIN_SRC emacs-lisp 
-  ;; (setq elfeed-show-mode-hook
-  ;;       (lambda ()
-  ;; 	(set-face-attribute)))
- #+END_SRC
 ** keybinding
 #+BEGIN_SRC emacs-lisp 
-  (add-hook 'elfeed-new-entry-hook (lambda ()
-                                     (define-key elfeed-show-mode-map (kbd "M-v") (function scroll-down-command))))
-  (add-hook 'elfeed-org-new-entry-hook (lambda ()
-                                         (define-key elfeed-show-mode-map (kbd "M-v") (function scroll-down-command))))
-  (add-hook 'elfeed-goodies-new-entry-hooks (lambda ()
-                                              (define-key elfeed-show-mode-map (kbd "M-v") (function scroll-down-command))))
-  (add-hook 'elfeed-new-entry-parse-hook (lambda ()
-                                     (define-key elfeed-show-mode-map (kbd "M-v") (function scroll-down-command))))
+  ;;(add-hook 'elfeed-new-entry-hook (lambda ()
+  ;;                                    (define-key elfeed-show-mode-map (kbd "M-v") (function scroll-down-command))))
+  ;; (add-hook 'elfeed-org-new-entry-hook (lambda ()
+  ;;                                        (define-key elfeed-show-mode-map (kbd "M-v") (function scroll-down-command))))
+  ;; (add-hook 'elfeed-goodies-new-entry-hooks (lambda ()
+  ;;                                             (define-key elfeed-show-mode-map (kbd "M-v") (function scroll-down-command))))
+  ;; (add-hook 'elfeed-new-entry-parse-hook (lambda ()
+  ;;                                    (define-key elfeed-show-mode-map (kbd "M-v") (function scroll-down-command))))
  #+END_SRC
 * SSH mode
 ** setting up trampXS
@@ -1507,33 +1536,7 @@ mark and edit all copies of the marked region simultaniously.
     :config
     (global-set-key (kbd "C-:") (function iedit-mode)))
  #+END_SRC
-** narrow and widen region
-#+BEGIN_SRC emacs-lisp 
-  (defun narrow-or-widen-dwim (p)
-    "If the buffer is narrowed, it widens. Otherwise, it narrows intelligently.
-  Intelligently means: region, org-src-block, org-subtree, or defun,
-  whichever applies first.
-  Narrowing to org-src-block actually calls `org-edit-src-code'.
 
-  With prefix P, don't widen, just narrow even if buffer is already
-  narrowed."
-    (interactive "P")
-    (declare (interactive-only))
-    (cond ((and (buffer-narrowed-p) (not p)) (widen))
-          ((region-active-p)
-           (narrow-to-region (region-beginning) (region-end)))
-          ((derived-mode-p 'org-mode)
-           ;; `org-edit-src-code' is not a real narrowing command.
-           ;; Remove this first conditional if you don't want it.
-           (cond ((ignore-errors (org-edit-src-code))
-                  (delete-other-windows))
-                 ((org-at-block-p)
-                  (org-narrow-to-block))
-                 (t (org-narrow-to-subtree))))
-          (t (narrow-to-defun))))
-
-  (global-set-key (kbd "C-x n") (function narrow-or-widen-dwim))
- #+END_SRC
 * Default loading screens                                            :darren:
 ** do not show startup screen                                       :darren:
 #+BEGIN_SRC emacs-lisp

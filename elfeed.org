@@ -1,7 +1,6 @@
 * quality feeds                                                      :elfeed:
-** [[https://lukesmith.xyz/rss.xml][Unaboomer Larbs]]                                                  :boomer:
-** [[https://www.youtube.com/feeds/videos.xml?channel_id=UC2eYFnH61tmytImy1mTYvhA][Larbs on Youtube]]                                                 :boomer:
+** [[https://lukesmith.xyz/rss.xml][Unaboomer]]                                                  :boomer:
 ** [[http://stratechery.com/feed/][Stratechery]]                                                       :strat:
-** [[http://tonsky.me/blog/atom.xml][Bloated Programming]]                                                :prog:
+** [[http://tonsky.me/blog/atom.xml][Tonsky]]                                                             :prog:
 ** [[http://josephg.com/blog/rss/][MuhElectrum]]                                                        :prog:
 

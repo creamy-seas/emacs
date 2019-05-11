@@ -1,0 +1,28 @@
+<p>I spent the last couple of days making some under-the-hood improvements to boilerplate. If I did my job right, you shouldn't notice the change at all.</p>
+
+<p><strong>I rewrote part of the graphics engine to use OpenGL</strong>. Previously rendering time was evenly split between rendering the background cells, pressure shading and drawing the shuttles. Now rendering the background is basically instant (thanks webgl), and updating pressure is only slow when the simulation steps (like below), which only happen once every 200ms. The aggregate result is about a 3x framerate improvement. Rendering the CPU I'm working on went from 7fps up to 20fps - which is a big jump, but there's plenty of room left for improvement. There's no reason it shouldn't be a smooth 60fps all the time. The slow parts now are updating pressure (2) and rendering shuttles (3). The next optimisation target will be the shuttle drawing code. Its currently implemented by a <a href="https://github.com/josephg/boilerplate/blob/64832f9f53d916b16dc0068d9906c8ccf6de5fbd/lib/boilerplate.coffee#L739-L867">hairy lump of canvas</a>. I'm tossing up between using SVG or rendering that in webgl as well.</p>
+
+<p><img src="http://josephg.com/blog/content/images/2016/01/optimise-after.png" alt=""></p>
+
+<p>This is what simulation step frames look like now. Normal frames only have the shuttle drawing(3) visible in the trace. Rendering the background and the pressure is so fast it doesn't show up at all.</p>
+
+<p><strong>I'm using PNG instead of JSON to save data on disk.</strong> It turns out PNGs are very efficient at losslessly storing 2d grids of information (!! who knew). The result is a 50x decrease in file size.</p>
+
+<p>Before (500k): <br>
+<img src="http://josephg.com/blog/content/images/2016/01/Screen-Shot-2016-01-08-at-1-36-05-PM.png" alt="a mess of json"></p>
+
+<p>After (9k): <br>
+<img src="http://josephg.com/blog/content/images/2016/01/data--32-.png" alt="a compact image"></p>
+
+<hr>
+
+<h4 id="otherfunfacts">Other fun facts:</h4>
+
+<ul>
+<li><p>I also <strong>installed Windows 10</strong> the other day, and boilerplate worked straight out of the box. That was shocking and delightful. Everything stopped working again when I moved to webgl because its still behind the <em>experimental-webgl</em> flag (fixed now). But other than that, great work MS. I might keep using Edge as my default browser in windows.</p></li>
+<li><p>Now that I've spent a couple of years teaching graphics programming, I understand linear algebra enough to write my matricies out directly.</p></li>
+</ul>
+
+<p><img src="http://josephg.com/blog/content/images/2016/01/Screen-Shot-2016-01-08-at-2-15-24-PM.png" alt="matrix code"></p>
+
+<p>I know its unreadable but I don't care. I did the calculations myself using pen &amp; paper. I know matricies well enough that I'm capable of that now. (It almost worked first time, too.)</p>

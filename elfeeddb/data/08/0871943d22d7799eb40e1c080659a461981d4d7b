@@ -1,0 +1,105 @@
+
+        
+        
+        
+        
+        
+        <p>Let’s talk about one overlooked aspect of dependency management.  I know what you would say, wait a minute, dependency management, the whole domain is a trivial problem that tricks everybody into overthinking overcomplicated solutions.</p>
+
+<p>And I’d agree with you. Not.</p>
+
+<p>But that’s not the point. What worries me is that while a lot of effort goes into fetching the right version of a library, close to none is spent on convincing me <em>why</em> I should want it in the first place.</p>
+
+<p>Some tools fail to even fulfill the first part of the promise and will only fetch you <em>some</em> version, effectively removing the second problem for you (if you don’t control what version you are getting you won’t be troubled choosing one).</p>
+
+<p>Yet, some of us have slightly higher standards than that. Let’s assume that our tool is smart enough to fetch exactly what we’ve told it to. All is fine for a while, until, two years in a project, you ask yourself if something positive has happened with the libraries you started using back then. Maybe you’re lucky and your tool can even compile a list of outdated versions for you:</p>
+
+<figure class="window"><img src="http://tonsky.me/blog/blind-spot-in-dependency/rss/lein_ancient.png" /></figure>
+
+<p>But that’s not the problem. How do you decide, in each particular case, if you should type “yes” or “no” there? Guessing? Hard guessing? Is there a threshold? If you’re more than 3 minor versions behind, you upgrade, otherwise, you let it be? Scientifically controlled and totally fair coin toss?</p>
+
+<p>Sometimes it’s easy. Don’t touch what’s working, they say. But you only think it is.</p>
+
+<p>Say, you need a specific bug fixed, and people behind the library use an issue tracker, and you even happen to know the ticket id. Now, if that issue tracker is something punk and unpopular, like Github, strangely, it won’t help you at all. You can’t figure out in which version it was fixed given an issue or pull request id. Even if you’re a very responsible maintainer and do everything right. Lesson #1: don’t host your libraries on Github, kids.<a id="f1" href="#fn1" class="footnote">1</a></p>
+
+<p>Luckily, solid time-tested full-package solutions like JIRA give you a “fix version” number (if you can find it on issue page). Problem is, you can’t <em>just</em> upgrade to that version. You bug was fixed in 4.7.8, you’re on 4.3.2, god knows <em>what else</em> will that upgrade bring.<a id="f2" href="#fn2" class="footnote">2</a> If I were you, I’d pass on that. I once tried to bump AWS client from 1.8 to 1.10, and they renamed, like, every class inside. I’d rather start a new project from scratch than upgrade my libraries.</p>
+
+<p>“That’s why JIRA can generate you a changelog!”</p>
+
+<p>Can it?</p>
+
+<figure><img src="http://tonsky.me/blog/blind-spot-in-dependency/rss/jira.jpg" /></figure>
+
+<p>Sure it can. Good luck drilling through it. Also good luck finding out about changes people made outside of tickets.</p>
+
+<p>“That’s why there’s a commit log!”</p>
+
+<p>Is there?</p>
+
+<figure><img src="http://tonsky.me/blog/blind-spot-in-dependency/rss/github.jpg" /></figure>
+
+<p>It’d be better if there wasn’t. Thing is, many people treat commit log as an actual log. A diary of theirs. They will write down their life events, current mood, messages to team members, emoticons in there.<a id="f3" href="#fn3" class="footnote">3</a> You’ll be reading about all the wrong paths taken, bad merges and attempts to fix them (no, you don’t want to see a visual tree of git commits in an actively developed project), and, best of all, typos. It also appears they can’t hold it, and their commit rate might approach several commits per minute. Good luck filtering the noise out.<a id="f4" href="#fn4" class="footnote">4</a></p>
+
+<p>Which leads us to the obvious answer: <em>Changelog!</em> Changelog. Pause right there and think for a second. What if there was a place specifically designed to communicate what has changed between releases? A changelog. The changelog.</p>
+
+<p>I like reading changelogs! It’s like opening a present. Except when it’s a new version of OS X where biggest change is a new name and rest of the stuff I don’t use anyways. What’s the point of all that effort if my trackpad would reconnect to my macbook only after a hard reboot since 10.7? At least they used to freshen up UI before.</p>
+
+<p>So changelogs are a good thing. And they already exist. People are doing them, right? Except when they aren’t.</p>
+
+<p>That’s what concerns me. The lack of changelogs, and the lack of discussions about the lack of changelogs. I want to make conscious decisions about my project’s dependencies. I don’t want a pig in a poke. With my luck, I can’t rely on luck either.  I want to read, understand, track and evaluate every change until I’m like through 30 of them. Then I’ll blindly update rest of the libs and hope for the best anyways. But these 30, they are important. I want them to be quality changes. Is it too much to ask?</p>
+
+<p>Sorry for so much ranting so far. Let me try to add some utility to this article and give an advice on good changeloggin:</p>
+
+<p><em>Rule 1.</em> Good changelog is not a JIRA search page.</p>
+
+<p><em>Rule 2.</em> Good changelog is not a commit log.</p>
+
+<p><em>Rule 3.</em> It’s not a commit log on Github. Did I mention that Github is terrible for that kind of stuff?</p>
+
+<p>Ok, all kidding aside.</p>
+
+<p><em>Rule 4.</em> Put all the useful stuff in there. I know, sounds obvious, but you’d be surprised how often people don’t do that.</p>
+
+<p><em>Rule 5.</em> Don’t put any useless stuff in there (also see Rule 4).</p>
+
+<p><em>Rule 6.</em> If you move fast and break things, put breaking changes in the changelog and fix them in the next version (or not).</p>
+
+<p><em>Rule 7.</em> Draw in bold strokes. Give a high-level overview. Put that in changelog too.</p>
+
+<p><em>Rule 8.</em> Prioritize. Highlight important changes (hint: you can’t highlight every change). Do you know where you should put it?</p>
+
+<p><em>Rule 9.</em> Have mercy. If you put people in a complicated situation with your changes, help them out. Provide a clear migration path.</p>
+
+<p><em>Rule 10.</em> For controversy, explain your reasons (if you have them).</p>
+
+<p><em>Rule 11.</em> Don’t overwhelm the reader. Imagine they have to upgrade from three-years-old version to the latest one (because it took you three years to fix that issue). Think about them, and cross your fingers they won’t find your email address.</p>
+
+<p><em>Rule 12.</em> Advanced use only: give them reasons <em>not</em> to upgrade to that version.</p>
+
+<p><em>Rule 13.</em> If you forget something, so be it. It comes without warranties, right?</p>
+
+<p><em>Rule 14.</em> Have a changelog. This is probably the most important rule of them all. I just realized all other rules are meaningless without this one.</p>
+
+<p><em>Rule 15.</em> Put it in your repo. Don’t post it in user group. Well, you can, but don’t <em>just</em> post it in user group. Three-years-old bug, remember?</p>
+
+<p><em>Rule 16.</em> Call it <code class="highlighter-rouge">CHANGELOG</code> so people will know it’s important.</p>
+
+<p>That’s it. Simple, right?</p>
+
+<p>Dependency management software is pretty good. It is. You need to understand it (I know, totally unfair), but most of the time it gets the job done. Inside a single technology, people usually agree on version numbers, central repo, build tools—most of the technicalities.</p>
+
+<p>What people don’t agree on is that every new version should come with a human-readable list of changes. Upgrading your stack shouldn’t be a blind game of luck. Maybe one day we’ll see a tool like <code class="highlighter-rouge">lein ancient</code> that will print you all the changes before asking you if you want to upgrade.<a id="f5" href="#fn5" class="footnote">5</a> And that list would be short, precise, well-written piece of poetry.</p>
+
+<p>Not.</p>
+
+<div class="footnotes-br"></div>
+
+<ol class="footnotes">
+<li id="fn1">Seriously, Github. Please figure that out. People try to use you for work stuff. People use versions. People need versions (except for Go folks, they gave up on them. They’re more than welcome to host on Github) <a href="#f1" class="">↩︎</a></li>
+<li id="fn2">Where is your semantic versioning now, huh? <a href="#f2" class="">↩︎</a></li>
+<li id="fn3">Nothing wrong with emoticons, of course. <a href="#f3" class="">↩︎</a></li>
+<li id="fn4">Did I mentioned that Github won’t show you tags on commits page? Good luck figuring out when that release happened. <a href="#f4" class="">↩︎</a></li>
+<li id="fn5">I know, I’m an idealist. People would never agree on a single format of anything, be it beer glass units, paper size or AC outlet. Unless it’s a cigarette lighter receptacle. Strangely enough, there’s only one standard for cigarette lighter receptacle in the world. <a href="#f5" class="">↩︎</a></li>
+</ol>
+
+      
