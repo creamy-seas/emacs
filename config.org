@@ -228,7 +228,7 @@ any changes of a file, will be automatically reloaded
     (setq ein:completion-backend 'ein:use-company-backend)
     (custom-set-variables
      '(ein:jupyter-default-notebook-directory
-       "/Users/CCCP/creamy_seas/2am/adv4_bot/python")))
+       "/Users/CCCP/creamy_seas/2am/python")))
 
   (defun ilya-no-relative-numbering ()
     "turn off relative numbering"
@@ -244,8 +244,8 @@ any changes of a file, will be automatically reloaded
    '(header-line ((t (:foreground "dark slate gray" :background "#2d3743"))))
    '(ein:notification-tab-normal ((t (:inhert header-line))))
     '(ein:notification-tab-selected ((t (:inhert header-line :weight bold :foreground "cadet blue"))))
-   '(ein:cell-heading-1 ((t (:inherit ein:cell-heading-3 :foreground "cornflower blue" :weight bold :height 1.1))))
-   '(ein:cell-heading-2 ((t (:foreground "cornflower blue" :weight bold :height 1))))
+   '(ein:cell-heading-1 ((t (:inherit ein:cell-heading-3 :foreground "cornflower blue" :weight bold :height 1.2))))
+   '(ein:cell-heading-2 ((t (:inherit ein:cell-heading-3 :foreground "SteelBlue2" :weight bold :height 1.05))))
    '(ein:cell-heading-6 ((t (:inherit variable-pitch :foreground "MediumPurple3" :weight bold)))))
 
  #+END_SRC
@@ -726,12 +726,8 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
 )  
  #+END_SRC
 * Org mode                                                           :darren:
-**** get rid of anoying 'ding in table'
+** get rid of anoying 'ding in table'
 C-u C-c C-x !
-** load up the updates version
-#+BEGIN_SRC emacs-lisp
-  ;;(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
-#+END_SRC
 ** TODO lists - how ironic
 #+BEGIN_SRC emacs-lisp 
   (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d)")
@@ -784,8 +780,8 @@ C-u C-c C-x !
           ("d" "Draft" plain (file "~/creamy_seas/Desktop/.temp.org")
            "%?")
           ("e" "East-India Data Company")
-          ("e2" "2am session" entry (id "bryan-plan")
-           "** BRYAN %^{project}: %^{stuff-to-be-done}\n%^T")
+          ("e2" "2am goals" entry (id "bryan-plan")
+           "** BRYAN %^{project|Bot|Neural Network|Database|Bloat}: %^{stuff-to-be-done}\nDEADLINE: %^T")
           ("et" "Time log" table-line (id "bryan-done")
            "| %^u | %^{task-summary} | %^{hours-worked} hours | |"
            :table-line-pos "@<-1")
@@ -1554,7 +1550,12 @@ mark and edit all copies of the marked region simultaniously.
     (dashboard-setup-startup-hook)
     (setq dashboard-items '((recents . 20)))
     (setq dashboard-startup-banner "~/creamy_seas/gallery_road/pepe/ree.png")
-    (setq dashboard-banner-logo-title "Привет от Леонта!"))
+    (setq dashboard-banner-length 300)
+    (setq dashboard-banner-logo-title "- Dinner is 2030. And dinner is first\n              - Respond with exact timings for commitments\n              - Understand that it is hard being pregnant"))
+  ;; (setq dashboard-banner-logo-title "Привет от Леонта!"))
+
+
+
 #+END_SRC
 * Dumb jump (programming)
 - Have either a =.git= or =.dumbjump= file in the main project directory
