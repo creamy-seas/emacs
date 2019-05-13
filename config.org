@@ -119,22 +119,21 @@ to access the inconsolata font you need to
     )
 #+END_SRC
 ** colouring
+buffe
 #+BEGIN_SRC emacs-lisp 
   (custom-set-faces
    '(default ((t (:family "Inconsolata" :height 170))))
    `(popup-scroll-bar-background-face ((t (:background "#189a1e1224a2"))))
    `(popup-scroll-bar-foreground-face ((t (:background "#41bf505b61e3"))))
+   `(popup-face ((t (:background "#41bf505b61e3" :foreground "white"))))
    ;; selection on autocomplete
-   `(popup-menu-selection-face ((t (:background "orange2" :foreground "#090C42" :weight bold))))
+   `(popup-menu-selection-face ((t (:background "orange2" :foreground "#3a3a6e" :weight semibold))))
    ;; rest of autocomplete
    `(popup-menu-face ((t (:inherit default :background "#41bf505b61e3"))))
-   `(popup-menu-summary-face ((t (:inherit default :background "#41bf505b61e3"))))
-   )
+   `(popup-menu-summary-face ((t (:inherit default :background "#41bf505b61e3")))))
   (set-default 'cursor-type 'hbar)
   (set-cursor-color "#ffd700")
-
  #+END_SRC
-
 * Emacs Shortcuts                                                    :darren:
 ** function to open up the config file for editing
 #+BEGIN_SRC emacs-lisp
@@ -1267,12 +1266,14 @@ the nice bullets instead of multiplication symbols
   (use-package org-ac
     :ensure t
     :init
-  
-    (progn
-      (require 'org-ac)
-      (org-ac/config-default)
-      (setq org-ac/ac-trigger-command-keys (quote ("\\" "SPC" ":" "[" "+"))))
-    )
+    (require 'org-ac)
+    (org-ac/config-default)
+    (setq org-ac/ac-trigger-command-keys (quote ("\\" "SPC" ":" "[" "+"))) ;keys that trigger autocomplete
+    ;bing the usual scrolling keys
+    (define-key ac-completing-map (kbd "C-n") (function ac-next))
+    (define-key ac-completing-map (kbd "C-p") (function ac-previous))
+    (define-key ac-completing-map (kbd "C-v") (function ac-quick-help-scroll-down))
+    (define-key ac-completing-map (kbd "M-v") (function ac-quick-help-scroll-up)))
  #+END_SRC
 ** export to nice html
 #+BEGIN_SRC emacs-lisp
