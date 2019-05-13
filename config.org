@@ -1,4 +1,155 @@
 #+STARTUP: overview
+
+* Emacs feel                                                         :darren:
+** menus
+#+BEGIN_SRC emacs-lisp
+  (setq frame-title-format "nsdap")
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+#+END_SRC
+** fonts                                                    :require_install:
+to access the inconsolata font you need to 
+**** download the .ttf file and put into the font directory
+**** run =M-x customize= go to =faces= then =defaults= and type =Inconsolata=
+** bottoms bar
+#+BEGIN_SRC emacs-lisp
+  ;; (if (file-exists-p "~/.macbook_localiser")
+  ;;     (progn
+  ;;       (use-package powerline			
+  ;;         :ensure t
+  ;;         :init
+  ;;         (powerline-center-theme)
+  ;;         (setq ns-use-srgb-colorspace nil)
+  ;;         )
+  ;;       (setq powerline-default-separator 'wave)
+  ;;       )
+  ;;   (progn
+  ;;     (use-package spaceline
+  ;;       :ensure t
+  ;;       :config
+  ;;       (require 'spaceline-config)
+  ;;       (setq powerline-default-separator (quote arrow))
+  ;;       (setq ns-use-srgb-colorspace nil)
+  ;;       (spaceline-spacemacs-theme))))
+#+END_SRC
+** sml
+#+BEGIN_SRC emacs-lisp 
+  (use-package smart-mode-line
+    :ensure t
+    :init
+    ;; (use-package smart-mode-line-powerline-theme
+    ;;   :ensure t)
+    (setq size-indication-mode t)
+    (setq sml/shorten-directory t)
+    (setq sml/no-confirm-load-theme t)
+    (setq sml/shorten-modes t)
+    (sml/setup))
+
+  (add-to-list 'sml/replacer-regexp-list '("^.*config.*$" ":ED:") t)
+  (add-to-list 'sml/replacer-regexp-list '("^.*config\\.org$" ":ED:") t)
+  (custom-set-variables
+   '(sml/col-number-format "")
+   '(sml/extra-filler -2)
+   '(sml/line-number-format "")
+   '(sml/mule-info "")
+   '(sml/modified-char "☦︎")
+   '(sml/name-width (quote (20 . 40)))
+   '(sml/read-only-char "☧")
+   '(sml/pos-minor-modes-separator " ᛋᛋ")
+   '(sml/pre-minor-modes-separator "ᛋᛋ")
+   )
+
+  (custom-set-faces
+  ;;   '(sml/charging ((t (:inherit s
+  ;;                               ml/global :foreground "ForestGreen" :underline t))))
+  ;; '(sml/client ((t (:inherit sml/prefix :underline t))))
+  ;; '(sml/col-number ((t (:inherit sml/global :underline t))))
+  ;; '(sml/discharging ((t (:inherit sml/global :foreground "Red" :underline t))))
+   '(sml/filename ((t (:inherit mode-line-buffer-id :foreground "#eab700" :weight bold)))) ;file name
+   '(sml/prefix ((t (:foreground "#eab700")))) ;shortennings
+  '(sml/folder ((t (:foreground "#505040" :weight normal)))) ;folder
+  '(sml/global ((t (:foreground "white")))) ;most things on line
+  '(sml/position-percentage ((t (:foreground "white")))) ;percentageof buffer
+  '(sml/remote ((t (:foreground "red")))) ;local or remote load
+  '(sml/git ((t (:foreground "white"))))	;github
+  '(sml/vc-edited ((t (:foreground "white")))) ;github
+  '(sml/modes ((t (:foreground "#1eafe1" :weight bold :box (:line-width 1 :color "#2d379a" :style pressed-button))))) ;major mode
+  '(sml/minor-modes ((t (:foreground "#1eafe1")))) ;major mode
+  '(sml/process ((t (:foreground "red")))) ;github
+  ;; '(sml/global ((t (:inherit font-lock-preprocessor-face))))
+  '(mode-line ((t (:background "#2d379a" :foreground "#1eafe1" :box nil))))
+    '(mode-line-inactive ((t (:foreground "#1eafe1" :background "#1d679a" :box nil))))
+   )
+ #+END_SRC
+** theme
+#+BEGIN_SRC emacs-lisp
+  (if (file-exists-p "~/.macbook_localiser")
+      (load-theme 'misterioso)
+    (use-package spacemacs-theme
+      :defer t
+      :ensure t
+      :config (load-theme 'spacemacs-dark)))
+#+END_SRC
+** window splitting
+#+BEGIN_SRC emacs-lisp 
+  (setq split-height-threshold nil)
+  (setq split-width-threshold 120)
+ #+END_SRC
+** line highlight                                                   :darren:
+#+BEGIN_SRC emacs-lisp
+  (global-hl-line-mode 1)
+  (set-face-background 'hl-line "#3e4446")
+  (set-cursor-color "yellow")
+#+END_SRC
+** current line fade                                                :darren:
+#+BEGIN_SRC emacs-lisp
+  (use-package beacon
+    :ensure t
+    :init
+    (beacon-mode 1))
+#+END_SRC
+** setting hexadecimal to the correct colour
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-mode
+    :ensure t
+    :init
+    (add-hook 'prog-mode-hook 'rainbow-mode)
+    (add-hook 'fundamental-mode-hook 'rainbow-mode)
+    )
+#+END_SRC
+** colouring
+#+BEGIN_SRC emacs-lisp 
+  (custom-set-faces
+   '(default ((t (:family "Inconsolata" :height 170))))
+   `(popup-scroll-bar-background-face ((t (:background "#189a1e1224a2"))))
+   `(popup-scroll-bar-foreground-face ((t (:background "#41bf505b61e3"))))
+   ;; selection on autocomplete
+   `(popup-menu-selection-face ((t (:background "orange2" :foreground "#090C42" :weight bold))))
+   ;; rest of autocomplete
+   `(popup-menu-face ((t (:inherit default :background "#41bf505b61e3"))))
+   `(popup-menu-summary-face ((t (:inherit default :background "#41bf505b61e3"))))
+   )
+  (set-default 'cursor-type 'hbar)
+  (set-cursor-color "#ffd700")
+
+ #+END_SRC
+
+* Emacs Shortcuts                                                    :darren:
+** function to open up the config file for editing
+#+BEGIN_SRC emacs-lisp
+  (defun config-visit()                       ;;no arguments
+    (interactive)                                 ;;function type
+    (find-file "~/creamy_seas/syncFiles/emacs_config/config.org"))
+  (global-set-key (kbd "C-c e") 'config-visit) ;;call the function defined above
+#+END_SRC
+** function to load the configuration into emacs
+#+BEGIN_SRC emacs-lisp
+  (defun reload-config()
+    (interactive)
+    (org-babel-load-file (expand-file-name "~/creamy_seas/syncFiles/emacs_config/config.org")))
+  (global-set-key (kbd "C-c r") 'reload-config)
+#+END_SRC
 * Do not forget
 | =C-c C-h=          | list key bindings by mode     |
 | =C-h b=            | list key bindings             |
@@ -220,6 +371,8 @@ any changes of a file, will be automatically reloaded
  #+END_SRC
 * EIN mode
 - jupyter notebook server in emacs
+- *do not set* =(setq ein:use-smartrep t)= or it doesn't work
+- =C-c C-f= for tooltip help
 ** setup
 #+BEGIN_SRC emacs-lisp 
   (use-package ein
@@ -229,6 +382,8 @@ any changes of a file, will be automatically reloaded
     (custom-set-variables
      '(ein:jupyter-default-notebook-directory
        "/Users/CCCP/creamy_seas/2am/python")))
+
+  ;; 
 
   (defun ilya-no-relative-numbering ()
     "turn off relative numbering"
@@ -266,9 +421,58 @@ any changes of a file, will be automatically reloaded
 ** html setup
 - run command =jt= to set html variables*
 - run =jt notebook password= to set a password
+** custom
+#+BEGIN_SRC emacs-lisp 
+  ;; (defun ilya_ein-header (ws cell type &optional level focus)
+  ;;   "Change the cell type of the current cell.
+  ;; Prompt will appear in the minibuffer.
+
+  ;; When used in as a Lisp function, TYPE (string) should be chose
+  ;; from \"code\", \"hy-code\", \"markdown\", \"raw\" and \"heading\".  LEVEL is
+  ;; an integer used only when the TYPE is \"heading\"."
+  ;;   (interactive
+  ;;    (let* ((ws (ein:worksheet--get-ws-or-error))
+  ;; 	  (cell (ein:worksheet-get-current-cell))
+  ;; 	  (choices (case (slot-value ws 'nbformat)
+  ;; 		     (2 "cm")
+  ;; 		     (3 "cmr123456")
+  ;; 		     (4 "chmr123456")))
+  ;; 	  (key (ein:ask-choice-char
+  ;; 		(format "Cell type [%s]: " choices) choices))
+  ;; 	  (type (case key
+  ;; 		  (?c "code")
+  ;; 		  (?h "hy-code")
+  ;; 		  (?m "markdown")
+  ;; 		  (?r "raw")
+  ;; 		  (t "heading")))
+  ;; 	  (level (when (equal type "heading")
+  ;; 		   (string-to-number (char-to-string key)))))
+  ;;      (list ws cell type level t)))
+
+  ;;   (let ((new (ein:cell-convert-inplace cell type)))
+  ;;     (when level
+  ;;       (ein:cell-change-level new level))
+  ;;     ))
+
+  ;; (let ((new (ein:cell-convert-inplace cell type)))
+  ;;   (when (ein:codecell-p new)
+  ;;     (setf (slot-value new 'kernel) (slot-value ws 'kernel)))
+  ;;   (when level
+  ;;     (ein:cell-change-level new level))
+  ;;   (ein:worksheet--unshift-undo-list cell)
+  ;; (when focus (ein:cell-goto new relpos)))
+
+
+  ;; (with-eval-after-load "ein-notebook"
+  ;;  (define-key ein:notebook-mode-map (kbd "C-c C-u") (function ilya_ein-header)))
+ #+END_SRC
 ** key bindings
 #+BEGIN_SRC emacs-lisp 
   (with-eval-after-load "ein-notebook"
+    (define-key ein:notebook-mode-map (kbd "C-c C-j") (function
+                                                       (prog
+                                                        (ein:notebook-kernel-interrupt-command)
+                                                        (ein:worksheet-clear-all-output))))
     (define-key ein:notebook-mode-map (kbd "C-:") (function iedit-mode))
     (define-key ein:notebook-mode-map (kbd "C-c C-;") (function comment-line))
     (define-key ein:notebook-mode-map (kbd "C-c TAB") (function ein:completer-complete)))
@@ -278,6 +482,203 @@ any changes of a file, will be automatically reloaded
   ;; (add-hook 'ein-notebook-mode-hook (lambda()
                                       ;; (define-key ein:notebook-mode-map (kbd "C-c") )))
 
+ #+END_SRC
+* Elpy mode
+** external setup of python
+*** install =virtualenvwrapper=
+**** mac
+- install with pip3
+=pip3 install virtualenv=
+=pip3 install virtualenvwrapper=
+=pip3 install virtualfish=
+
+- load up to fish shell (put it in =config.fish= file)
+=eval (python3 -m virtualfish)=
+
+- craete env 
+=vf new mac_vi=
+**** arch
+=sudo pacman -S python-virtualenvwrapper=
+
+add the following to =bashrc=
+#+BEGIN_SRC sh
+  export WORKON_HOME=~/creamy_seas/syncFiles/python_vi
+  source /usr/bin/virtualenvwrapper.sh
+#+END_SRC
+(** setup python virtual environment
+make virtual end with =mkvirtualenv NAME=
+|------------------------------------+----------------------------------------------|
+| =source NAMELOCATION/bin/activate= | activate an environment                      |
+| =deactivate=                       | deactivate an environement                   |
+| =workon NAME=                      | swtich environment                           |
+| =lssitepackages=                   | list everything that is installed            |
+| =pip install PACKAGENAME=          | install a package to the virtual environemnt |
+| =echo $VIRTUAL_ENV=                | the currently activate virtual environment   |
+|------------------------------------+----------------------------------------------|
+
+*** to install using pip (second part not required)
+|---------------+---------------------------------------------|
+| =jedi=        | autocompletion python (suggest names)       |
+| =autopep8=    | format the code (indent etc). uses =flake8= |
+| =flake8=      | linting (checks typos, syntax errors)       |
+| =importmagic= | automatic imports                           |
+| =matplotlib=  |                                             |
+| =qutip=       | needs =numpy= =Cython= =scipy=              |
+| =PyQt5=       | gui interface                               |
+|---------------+---------------------------------------------|
+| =ipython3=    | kernel                                      |
+| =yapf=        | code formatiing                             |
+| =rope=        | 'refactoring' library                       |
+| =jupyter=     | notebook                                    |
+|---------------+---------------------------------------------|
+#+TBLFM: $1=PyQt5
+
+*** configuration files
+the flake8 (used for syntax checking) has configuration file =~/.config/flake8=
+** activate elpy and choose interpreter
+a check is run to see if the =macbook_localiser= file exists and the corresponding environment
+is activated
+*** elpy
+#+BEGIN_SRC emacs-lisp 
+    (use-package elpy
+      :ensure t
+      :config
+      (elpy-enable)
+      (setq elpy-shell-use-project-root nil)
+      (setq python-shell-completion-native-enable nil) ;remove a warming about native completion
+  )
+ #+END_SRC
+*** syntax checking =jedi, flycheck=
+- deactivate flymake and use flycheck - syntax is checked ont the fly
+- uses jedi
+#+BEGIN_SRC emacs-lisp 
+  (use-package flycheck
+    :ensure t
+    :init
+    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+    (add-hook 'elpy-mode-hook 'flycheck-mode))  
+ #+END_SRC
+*** code formatting =autopep8=
+- automatically fix syntax errors upon saving
+#+BEGIN_SRC emacs-lisp 
+  (use-package py-autopep8
+    :ensure t
+    :init
+    (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))  
+ #+END_SRC
+*** different virtual environments
+#+BEGIN_SRC emacs-lisp 
+  (defun ilya-pyenv-nn ()
+    "Activate the neural network environment"
+    (interactive)
+    (progn
+      (pyvenv-activate "~/creamy_seas/syncFiles/python_vi/nn_vi")
+      (setq elpy-rpc-python-command "python3.7")
+      (setq python-shell-interpreter "python3.7"
+            python-shell-interpreter-args "-i")
+      (pyvenv-restart-python))
+    )
+
+  (defun ilya-pyenv-mac ()
+    "Activate the phd environment"
+    (interactive)
+    (progn
+      (pyvenv-activate "~/creamy_seas/syncFiles/python_vi/mac_vi")
+      (setq elpy-rpc-python-command "python3.7")
+      (setq python-shell-interpreter "python3.7"
+            python-shell-interpreter-args "-i")
+      (pyvenv-restart-python))
+    )
+ #+END_SRC
+*** default startup
+#+BEGIN_SRC emacs-lisp
+  (use-package pyenv-mode
+    :ensure t
+    :config
+    (if (file-exists-p "~/.macbook_localiser")
+        (ilya-pyenv-mac)
+      (pyvenv-activate "~/creamy_seas/syncFiles/python_vi/arch_vi")))
+#+END_SRC
+
+*** DONE python3 (the way to handle long scripts)
+#+BEGIN_SRC emacs-lisp
+  ;; (setq python-shell-interpreter "python3.7"
+  ;;       python-shell-interpreter-args "-i")
+#+END_SRC
+*** DONE jupyter notebook
+#+BEGIN_SRC emacs-lisp 
+  ;;(setq python-shell-interpreter "jupyter"
+  ;;      python-shell-interpreter-args "console --simple-prompt"
+  ;;      python-shell-prompt-detect-failure-warning nil)
+  ;;(add-to-list 'python-shell-completion-native-disabled-interpreters
+  ;;             "jupyter")
+ #+END_SRC
+*** DONE ipython (do not use - buggy)
+#+BEGIN_SRC emacs-lisp 
+  ;;(setq python-shell-interpreter "ipython"
+  ;;      python-shell-interpreter-args "-i --simple-prompt") 
+ #+END_SRC
+** hydra
+#+BEGIN_SRC emacs-lisp
+  (use-package hydra
+    :ensure t)
+
+  (defhydra hydra-python-vi (:color teal
+                              :hint nil)
+    "
+       PYTHON ENVIRONMENT SELECTION
+  ^^^^^------------------------------------------------------------------------------------------
+  _m_: mac-vi                _r_: restart
+  _n_: neural-network-vi
+  ^^
+  ^^
+  "
+    ("m"   ilya-pyenv-mac)
+    ("n"   ilya-pyenv-nn)
+    ("r"   pyvenv-restart-python)
+    ("q"   nil "cancel" :color blue))
+
+  (global-set-key (kbd "<f9>") (function hydra-python-vi/body))
+ #+END_SRC
+
+** matplotlib setup
+- put the =matplotlibrc= files into either =.config/matplotlib= or =.matplotlib=
+- check location with =matplotlib.matplotlib_fname()= or =matplotlib.get_configdir()=
+*** setting the backend
+to control where the plots are sent to, set the backend to =Qt5Agg=
+*** creating styles
+- to print the available styles =plt.style.available=
+- to use styles =plt.style.use('ggplot')=
+- create a style document =example.mplstyle= in the =matplolib/stylelib= folder
+** custom commands
+#+BEGIN_SRC emacs-lisp 
+  (defun ilya_python-interrupt ()
+    "Send an interrupt signal to python process"
+    (interactive)
+    (let ((proc (ignore-errors
+                  (python-shell-get-process-or-error))))
+      (when proc
+        (interrupt-process proc))))
+
+  (defun ilya_python-kill-all (args)
+    "Kill all without warning"
+    )
+
+ #+END_SRC
+** key rebinding
+#+BEGIN_SRC emacs-lisp 
+  (add-hook 'python-mode-hook (lambda ()
+                                (local-unset-key (kbd "C-c C-j")) ;imenu
+                                (local-unset-key (kbd "C-c C-f")) ;elpy-find-file
+                                (define-key elpy-mode-map (kbd "C-c C-b") nil) ;select current indentation
+
+                                (define-key elpy-mode-map (kbd "C-c C-k") (function ilya_python-interrupt))
+                                (define-key elpy-mode-map (kbd "C-c C-j") (function elpy-shell-kill-all))
+                                (define-key elpy-mode-map (kbd "C-c C-n") (function flycheck-next-error))
+                                (define-key elpy-mode-map (kbd "C-c C-p") (function flycheck-previous-error))
+                                (define-key elpy-mode-map (kbd "C-c C-f") (function elpy-nav-expand-to-indentation))
+                                (define-key elpy-mode-map (kbd "C-c C-r") (function elpy-rpc-restart))
+                                (define-key elpy-mode-map (kbd "C-c C-;") (function comment-line))))
  #+END_SRC
 * LaTeX mode (AUCTex LaTeX mode)                                     :ispell:
 ** latex commands                                           :listOfCommands:
@@ -906,203 +1307,6 @@ the nice bullets instead of multiplication symbols
   (define-key org-mode-map (kbd "C-c C-;") (function comment-line))
   (define-key emacs-lisp-mode-map (kbd "C-c C-;") (function comment-line))
  #+END_SRC
-* Python mode
-** external setup of python
-*** install =virtualenvwrapper=
-**** mac
-- install with pip3
-=pip3 install virtualenv=
-=pip3 install virtualenvwrapper=
-=pip3 install virtualfish=
-
-- load up to fish shell (put it in =config.fish= file)
-=eval (python3 -m virtualfish)=
-
-- craete env 
-=vf new mac_vi=
-**** arch
-=sudo pacman -S python-virtualenvwrapper=
-
-add the following to =bashrc=
-#+BEGIN_SRC sh
-  export WORKON_HOME=~/creamy_seas/syncFiles/python_vi
-  source /usr/bin/virtualenvwrapper.sh
-#+END_SRC
-(** setup python virtual environment
-make virtual end with =mkvirtualenv NAME=
-|------------------------------------+----------------------------------------------|
-| =source NAMELOCATION/bin/activate= | activate an environment                      |
-| =deactivate=                       | deactivate an environement                   |
-| =workon NAME=                      | swtich environment                           |
-| =lssitepackages=                   | list everything that is installed            |
-| =pip install PACKAGENAME=          | install a package to the virtual environemnt |
-| =echo $VIRTUAL_ENV=                | the currently activate virtual environment   |
-|------------------------------------+----------------------------------------------|
-
-*** to install using pip (second part not required)
-|---------------+---------------------------------------------|
-| =jedi=        | autocompletion python (suggest names)       |
-| =autopep8=    | format the code (indent etc). uses =flake8= |
-| =flake8=      | linting (checks typos, syntax errors)       |
-| =importmagic= | automatic imports                           |
-| =matplotlib=  |                                             |
-| =qutip=       | needs =numpy= =Cython= =scipy=              |
-| =PyQt5=       | gui interface                               |
-|---------------+---------------------------------------------|
-| =ipython3=    | kernel                                      |
-| =yapf=        | code formatiing                             |
-| =rope=        | 'refactoring' library                       |
-| =jupyter=     | notebook                                    |
-|---------------+---------------------------------------------|
-#+TBLFM: $1=PyQt5
-
-*** configuration files
-the flake8 (used for syntax checking) has configuration file =~/.config/flake8=
-** activate elpy and choose interpreter
-a check is run to see if the =macbook_localiser= file exists and the corresponding environment
-is activated
-*** elpy
-#+BEGIN_SRC emacs-lisp 
-    (use-package elpy
-      :ensure t
-      :config
-      (elpy-enable)
-      (setq elpy-shell-use-project-root nil)
-      (setq python-shell-completion-native-enable nil) ;remove a warming about native completion
-  )
- #+END_SRC
-*** syntax checking =jedi, flycheck=
-- deactivate flymake and use flycheck - syntax is checked ont the fly
-- uses jedi
-#+BEGIN_SRC emacs-lisp 
-  (use-package flycheck
-    :ensure t
-    :init
-    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-    (add-hook 'elpy-mode-hook 'flycheck-mode))  
- #+END_SRC
-*** code formatting =autopep8=
-- automatically fix syntax errors upon saving
-#+BEGIN_SRC emacs-lisp 
-  (use-package py-autopep8
-    :ensure t
-    :init
-    (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))  
- #+END_SRC
-*** different virtual environments
-#+BEGIN_SRC emacs-lisp 
-  (defun ilya-pyenv-nn ()
-    "Activate the neural network environment"
-    (interactive)
-    (progn
-      (pyvenv-activate "~/creamy_seas/syncFiles/python_vi/nn_vi")
-      (setq elpy-rpc-python-command "python3.7")
-      (setq python-shell-interpreter "python3.7"
-            python-shell-interpreter-args "-i")
-      (pyvenv-restart-python))
-    )
-
-  (defun ilya-pyenv-mac ()
-    "Activate the phd environment"
-    (interactive)
-    (progn
-      (pyvenv-activate "~/creamy_seas/syncFiles/python_vi/mac_vi")
-      (setq elpy-rpc-python-command "python3.7")
-      (setq python-shell-interpreter "python3.7"
-            python-shell-interpreter-args "-i")
-      (pyvenv-restart-python))
-    )
- #+END_SRC
-*** default startup
-#+BEGIN_SRC emacs-lisp
-  (use-package pyenv-mode
-    :ensure t
-    :config
-    (if (file-exists-p "~/.macbook_localiser")
-        (ilya-pyenv-mac)
-      (pyvenv-activate "~/creamy_seas/syncFiles/python_vi/arch_vi")))
-#+END_SRC
-
-*** DONE python3 (the way to handle long scripts)
-#+BEGIN_SRC emacs-lisp
-  ;; (setq python-shell-interpreter "python3.7"
-  ;;       python-shell-interpreter-args "-i")
-#+END_SRC
-*** DONE jupyter notebook
-#+BEGIN_SRC emacs-lisp 
-  ;;(setq python-shell-interpreter "jupyter"
-  ;;      python-shell-interpreter-args "console --simple-prompt"
-  ;;      python-shell-prompt-detect-failure-warning nil)
-  ;;(add-to-list 'python-shell-completion-native-disabled-interpreters
-  ;;             "jupyter")
- #+END_SRC
-*** DONE ipython (do not use - buggy)
-#+BEGIN_SRC emacs-lisp 
-  ;;(setq python-shell-interpreter "ipython"
-  ;;      python-shell-interpreter-args "-i --simple-prompt") 
- #+END_SRC
-** hydra
-#+BEGIN_SRC emacs-lisp
-  (use-package hydra
-    :ensure t)
-
-  (defhydra hydra-python-vi (:color teal
-                              :hint nil)
-    "
-       PYTHON ENVIRONMENT SELECTION
-  ^^^^^------------------------------------------------------------------------------------------
-  _m_: mac-vi                _r_: restart
-  _n_: neural-network-vi
-  ^^
-  ^^
-  "
-    ("m"   ilya-pyenv-mac)
-    ("n"   ilya-pyenv-nn)
-    ("r"   pyvenv-restart-python)
-    ("q"   nil "cancel" :color blue))
-
-  (global-set-key (kbd "<f9>") (function hydra-python-vi/body))
- #+END_SRC
-
-** matplotlib setup
-- put the =matplotlibrc= files into either =.config/matplotlib= or =.matplotlib=
-- check location with =matplotlib.matplotlib_fname()= or =matplotlib.get_configdir()=
-*** setting the backend
-to control where the plots are sent to, set the backend to =Qt5Agg=
-*** creating styles
-- to print the available styles =plt.style.available=
-- to use styles =plt.style.use('ggplot')=
-- create a style document =example.mplstyle= in the =matplolib/stylelib= folder
-** custom commands
-#+BEGIN_SRC emacs-lisp 
-  (defun ilya_python-interrupt ()
-    "Send an interrupt signal to python process"
-    (interactive)
-    (let ((proc (ignore-errors
-                  (python-shell-get-process-or-error))))
-      (when proc
-        (interrupt-process proc))))
-
-  (defun ilya_python-kill-all (args)
-    "Kill all without warning"
-    )
-
- #+END_SRC
-** key rebinding
-#+BEGIN_SRC emacs-lisp 
-  (add-hook 'python-mode-hook (lambda ()
-                                (local-unset-key (kbd "C-c C-j")) ;imenu
-                                (local-unset-key (kbd "C-c C-f")) ;elpy-find-file
-                                (define-key elpy-mode-map (kbd "C-c C-b") nil) ;select current indentation
-
-                                (define-key elpy-mode-map (kbd "C-c C-k") (function ilya_python-interrupt))
-                                (define-key elpy-mode-map (kbd "C-c C-j") (function elpy-shell-kill-all))
-                                (define-key elpy-mode-map (kbd "C-c C-n") (function flycheck-next-error))
-                                (define-key elpy-mode-map (kbd "C-c C-p") (function flycheck-previous-error))
-                                (define-key elpy-mode-map (kbd "C-c C-f") (function elpy-nav-expand-to-indentation))
-                                (define-key elpy-mode-map (kbd "C-c C-r") (function elpy-rpc-restart))
-                                (define-key elpy-mode-map (kbd "C-c C-;") (function comment-line))))
- #+END_SRC
 * RSS mode
 ** location of configuration file
 #+BEGIN_SRC emacs-lisp
@@ -1231,7 +1435,22 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
  #+END_SRC
 ** image chaseup
    The problem is that the entry content only includes the tiny reddit-hosted thumbnail and Elfeed doesn't know to chase through the chain of links to get to the actual image that you care about. You could try assigning your own function to elfeed-show-refresh-function that treats reddit posts differently (and calling the default for everything else). You'd need to shr-insert an img element with the full size image as the src.
+** new entry
+#+BEGIN_SRC emacs-lisp 
+  ;; (add-hook 'elfeed-new-entry-hook
+  ;;          (elfeed-make-tagger :feed-url "example\\.com"
+  ;;                              :entry-title '(not "something interesting")
+  ;;                              :add 'junk
+  ;;                              :remove 'unread)) 
+ #+END_SRC
 ** keybinding
+b: open selected entries in your browser (browse-url)
+y: copy selected entries URL to the clipboard
+r: mark selected entries as read
+u: mark selected entries as unread
++: add a specific tag to selected entries
+-: remove a specific tag from selected entries
+
 #+BEGIN_SRC emacs-lisp 
   ;;(add-hook 'elfeed-new-entry-hook (lambda ()
   ;;                                    (define-key elfeed-show-mode-map (kbd "M-v") (function scroll-down-command))))
@@ -1344,6 +1563,7 @@ Autocomplete shoudl only run in certain environments
     (define-key company-active-map (kbd "C-p") #'company-select-previous)
     )
  #+END_SRC
+* Brackets                                                     :darren
 * Buffers                                                            :darren:
 ** kill all buffers
 #+BEGIN_SRC emacs-lisp
@@ -1793,22 +2013,6 @@ Navigation around a set of project files. There's tons of shortcuts to explore
 
   (global-set-key (kbd "C-x p") (function hydra-projectile/body))
  #+END_SRC
-
-* Shortcuts                                                          :darren:
-** function to open up the config file for editing
-#+BEGIN_SRC emacs-lisp
-  (defun config-visit()                       ;;no arguments
-    (interactive)                                 ;;function type
-    (find-file "~/creamy_seas/syncFiles/emacs_config/config.org"))
-  (global-set-key (kbd "C-c e") 'config-visit) ;;call the function defined above
-#+END_SRC
-** function to load the configuration into emacs
-#+BEGIN_SRC emacs-lisp
-  (defun reload-config()
-    (interactive)
-    (org-babel-load-file (expand-file-name "~/creamy_seas/syncFiles/emacs_config/config.org")))
-  (global-set-key (kbd "C-c r") 'reload-config)
-#+END_SRC
 * Treemacs                                                      :not_working:
 #+BEGIN_SRC emacs-lisp 
   ;; (use-package treemacs
@@ -1864,7 +2068,6 @@ one can turn it off, or make the backups in a separate directory
 #+BEGIN_SRC emacs-lisp
   (setq make-backup-files nil)
 #+END_SRC
-
 * Renaming a currently opened file (C-c m)
 #+BEGIN_SRC emacs-lisp 
   (defun rename-file-and-buffer ()
@@ -1881,142 +2084,7 @@ one can turn it off, or make the backups in a separate directory
             (set-visited-file-name new-name t t)))))))
 
   (global-set-key (kbd "C-c m")  'rename-file-and-buffer)
- #+END_SRC
-* Emacs feel                                                         :darren:
-** menus
-#+BEGIN_SRC emacs-lisp
-  (setq frame-title-format "nsdap")
-  (menu-bar-mode -1)
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
-#+END_SRC
-** fonts                                                    :require_install:
-to access the inconsolata font you need to 
-**** download the .ttf file and put into the font directory
-**** run =M-x customize= go to =faces= then =defaults= and type =Inconsolata=
-** bottoms bar
-#+BEGIN_SRC emacs-lisp
-  ;; (if (file-exists-p "~/.macbook_localiser")
-  ;;     (progn
-  ;;       (use-package powerline			
-  ;;         :ensure t
-  ;;         :init
-  ;;         (powerline-center-theme)
-  ;;         (setq ns-use-srgb-colorspace nil)
-  ;;         )
-  ;;       (setq powerline-default-separator 'wave)
-  ;;       )
-  ;;   (progn
-  ;;     (use-package spaceline
-  ;;       :ensure t
-  ;;       :config
-  ;;       (require 'spaceline-config)
-  ;;       (setq powerline-default-separator (quote arrow))
-  ;;       (setq ns-use-srgb-colorspace nil)
-  ;;       (spaceline-spacemacs-theme))))
-#+END_SRC
-** sml
-#+BEGIN_SRC emacs-lisp 
-  (use-package smart-mode-line
-    :ensure t
-    :init
-    ;; (use-package smart-mode-line-powerline-theme
-    ;;   :ensure t)
-    (setq size-indication-mode t)
-    (setq sml/shorten-directory t)
-    (setq sml/no-confirm-load-theme t)
-    (setq sml/shorten-modes t)
-    (sml/setup))
-
-  (add-to-list 'sml/replacer-regexp-list '("^.*config.*$" ":ED:") t)
-  (add-to-list 'sml/replacer-regexp-list '("^.*config\\.org$" ":ED:") t)
-  (custom-set-variables
-   '(sml/col-number-format "")
-   '(sml/extra-filler -2)
-   '(sml/line-number-format "")
-   '(sml/mule-info "")
-   '(sml/modified-char "☦︎")
-   '(sml/name-width (quote (20 . 40)))
-   '(sml/read-only-char "☧")
-   '(sml/pos-minor-modes-separator " ᛋᛋ")
-   '(sml/pre-minor-modes-separator "ᛋᛋ")
-   )
-
-  (custom-set-faces
-  ;;   '(sml/charging ((t (:inherit s
-  ;;                               ml/global :foreground "ForestGreen" :underline t))))
-  ;; '(sml/client ((t (:inherit sml/prefix :underline t))))
-  ;; '(sml/col-number ((t (:inherit sml/global :underline t))))
-  ;; '(sml/discharging ((t (:inherit sml/global :foreground "Red" :underline t))))
-   '(sml/filename ((t (:inherit mode-line-buffer-id :foreground "#eab700" :weight bold)))) ;file name
-   '(sml/prefix ((t (:foreground "#eab700")))) ;shortennings
-  '(sml/folder ((t (:foreground "#505040" :weight normal)))) ;folder
-  '(sml/global ((t (:foreground "white")))) ;most things on line
-  '(sml/position-percentage ((t (:foreground "white")))) ;percentageof buffer
-  '(sml/remote ((t (:foreground "red")))) ;local or remote load
-  '(sml/git ((t (:foreground "white"))))	;github
-  '(sml/vc-edited ((t (:foreground "white")))) ;github
-  '(sml/modes ((t (:foreground "#1eafe1" :weight bold :box (:line-width 1 :color "#2d379a" :style pressed-button))))) ;major mode
-  '(sml/minor-modes ((t (:foreground "#1eafe1")))) ;major mode
-  '(sml/process ((t (:foreground "red")))) ;github
-  ;; '(sml/global ((t (:inherit font-lock-preprocessor-face))))
-  '(mode-line ((t (:background "#2d379a" :foreground "#1eafe1" :box nil))))
-    '(mode-line-inactive ((t (:foreground "#1eafe1" :background "#1d679a" :box nil))))
-   )
- #+END_SRC
-** theme
-#+BEGIN_SRC emacs-lisp
-  (if (file-exists-p "~/.macbook_localiser")
-      (load-theme 'misterioso)
-    (use-package spacemacs-theme
-      :defer t
-      :ensure t
-      :config (load-theme 'spacemacs-dark)))
-#+END_SRC
-** window splitting
-#+BEGIN_SRC emacs-lisp 
-  (setq split-height-threshold nil)
-  (setq split-width-threshold 120)
- #+END_SRC
-** line highlight                                                   :darren:
-#+BEGIN_SRC emacs-lisp
-  (global-hl-line-mode 1)
-  (set-face-background 'hl-line "#3e4446")
-  (set-cursor-color "yellow")
-#+END_SRC
-** current line fade                                                :darren:
-#+BEGIN_SRC emacs-lisp
-  (use-package beacon
-    :ensure t
-    :init
-    (beacon-mode 1))
-#+END_SRC
-** setting hexadecimal to the correct colour
-#+BEGIN_SRC emacs-lisp
-  (use-package rainbow-mode
-    :ensure t
-    :init
-    (add-hook 'prog-mode-hook 'rainbow-mode)
-    (add-hook 'fundamental-mode-hook 'rainbow-mode)
-    )
-#+END_SRC
-** colouring
-#+BEGIN_SRC emacs-lisp 
-  (custom-set-faces
-   '(default ((t (:family "Inconsolata" :height 170))))
-   `(popup-scroll-bar-background-face ((t (:background "#189a1e1224a2"))))
-   `(popup-scroll-bar-foreground-face ((t (:background "#41bf505b61e3"))))
-   ;; selection on autocomplete
-   `(popup-menu-selection-face ((t (:background "orange2" :foreground "#090C42" :weight bold))))
-   ;; rest of autocomplete
-   `(popup-menu-face ((t (:inherit default :background "#41bf505b61e3"))))
-   `(popup-menu-summary-face ((t (:inherit default :background "#41bf505b61e3"))))
-   )
-  (set-default 'cursor-type 'hbar)
-  (set-cursor-color "#ffd700")
-
- #+END_SRC
-* Emacs brackets                                                     :darren:
+ #+END_SRC:
 ** autoclosing parantheses
 #+BEGIN_SRC emacs-lisp
   (setq electric-pair-pairs '(
