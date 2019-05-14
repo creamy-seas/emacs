@@ -7,6 +7,12 @@
 	     '("melpa" . "http://melpa.milkbox.net/packages/")
 	     t)
 
+(add-to-list 'package-archives
+	     '("emacswiki" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/emacswiki/")
+	     t)
+
+
+
 (package-initialize)
 
 ;;@@@@@@@@@@@@@@@@@@@@

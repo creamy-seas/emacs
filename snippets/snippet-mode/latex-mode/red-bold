@@ -2,4 +2,4 @@
 # name: red-bold
 # key: redb
 # --
-\red{\textbf{${1:text-in-red}}}$0
+\red{\textbf{${1:text-in-red}}}\ec$0

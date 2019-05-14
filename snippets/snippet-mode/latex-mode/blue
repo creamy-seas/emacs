@@ -2,4 +2,4 @@
 # name: blue
 # key: blue
 # --
-\blue{${1:text-in-blue}}$0
+\blue{${1:text-in-blue}}\ec$0
