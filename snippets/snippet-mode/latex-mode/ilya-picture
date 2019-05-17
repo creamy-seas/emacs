@@ -1,10 +1,10 @@
 # -*- mode: snippet -*-
-# name: picture
+# name: ilya-picture
 # key: pic
 # --
 \begin{figure}[h]
   \centering
-  \includegraphics[height=${1:height}]{${2:image}}
+  \includegraphics[height=${1:height}]{${2:example-image-a}}
   \caption{\small ${3:caption-text}\label{fig:$2}}
 \end{figure}
 

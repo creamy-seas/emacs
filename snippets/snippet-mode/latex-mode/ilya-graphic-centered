@@ -3,7 +3,7 @@
 # key: igc
 # --
 \begin{center}
-   \includegraphics[height=${1:height}cm]{${2:image}}
+   \includegraphics[height=${1:height}cm]{${2:example-image-a}}
 \end{center}
 
 \noindent $0
