@@ -14,6 +14,7 @@
 ** load path
 #+BEGIN_SRC emacs-lisp 
   (add-to-list 'load-path "~/creamy_seas/syncFiles/emacs_config/ilya_el_manual")
+  (put 'dired-find-alternate-file 'disabled nil)
  #+END_SRC
 * Emacs feel                                                         :darren:
 ** menus
@@ -772,7 +773,8 @@ beautiful file browsing
   (require 'dired+)
   (global-set-key (kbd "C-x C-d") (function dired))
   (define-key dired-mode-map (kbd "C-c C-q") (function toggle-read-only))
-
+  (define-key dired-mode-map (kbd "RET") (function dired-find-alternate-file))
+  (define-key dired-mode-map (kbd "<right>") (function dired-find-file-other-window))
  #+END_SRC
 ** bindings
 | a       | go to file or directory and close dired bufffer |
@@ -1110,8 +1112,10 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
 * Magit mode                                                         :darren:
 #+BEGIN_SRC emacs-lisp 
   (use-package magit
-    :ensure t
-)  
+    :ensure t)  
+
+  (use-package git-gutter
+    :ensure t)
  #+END_SRC
 * Org mode                                                           :darren:
 ** autocomplete in org mode (when typing #+)
@@ -1417,13 +1421,14 @@ the nice bullets instead of multiplication symbols
 
   (push '(starred elfeed-search-starred-title-face) elfeed-search-face-alist)
 #+END_SRC
-** new entry
+** adding tags to new entries
+=M-x elfeed-apply-hooks-now= to apply this to all exisitng entries
 #+BEGIN_SRC emacs-lisp 
-  (add-hook 'elfeed-new-entry-hook
-           (elfeed-make-tagger :feed-url "stratechery.com/feed/"
-                               :entry-title '("Exponent Podcast:.*")
-                               :add 'podcast
-                               :remove 'unread))
+  ;; (add-hook 'elfeed-new-entry-hook
+  ;;          (elfeed-make-tagger :feed-url "stratechery.com/feed/"
+  ;;                              :entry-title '("Exponent Podcast:.*")
+  ;;                              :add 'podcast
+  ;;                              :remove 'unread))
  #+END_SRC
 ** keybinding
 b: open selected entries in your browser (browse-url)
@@ -2125,8 +2130,10 @@ hides the minor modes that are trivial
 * Post load
 ** Global Unbindings
 #+BEGIN_SRC emacs-lisp 
+  (define-key input-decode-map [?\C-m] [C-m]) ;unbinds C-m from Enter
   (global-unset-key (kbd "C-c q"))
   (global-unset-key (kbd "C-x #"))
+  (global-unset-key (kbd "C-o"))
   (global-set-key (kbd "C-x C-i") (function server-edit))
   (global-set-key (kbd "C-x C-j") (function ein:run))
  #+END_SRC
