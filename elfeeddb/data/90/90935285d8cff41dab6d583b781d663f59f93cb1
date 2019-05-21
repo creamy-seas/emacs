@@ -1,0 +1,31 @@
+<blockquote>
+  <p>I've written a fair bit over the last few months on other mediums (FB and Hackernews). I'm going to start collecting some of that content and reposting it here.</p>
+</blockquote>
+
+<p>From <a href="https://news.ycombinator.com/item?id=12941979#12942372">here</a>:</p>
+
+<p>Performance of modern web apps is simply awful compared to their native counterparts by any measure. They load slowly and consistently feel sluggish in comparison to proper native apps. Slack takes seconds to load and it'll happily sit on over a gig of ram while in use. (And remember, its a glorified IRC client.)</p>
+
+<p>Web apps only have two benefits over native apps:</p>
+
+<ol>
+<li>They're easier to build in a cross-platform way, because you just have to make the app once  </li>
+<li>Users don't need to install anything.</li>
+</ol>
+
+<p>I hope in the long run we solve both of those problems for native apps and move back to writing applications which don't depend on a DOM implementation to run. React-native is a great step toward solving (1). I hope that in time we can have modern (reactish), good looking cross-platform toolkit for native app development.</p>
+
+<p>But the biggest hurdle is (2), which very few people are attacking. App stores have helped a lot, but we need to be able to run native apps without installing anything. It should be as easy as it is on the web. Unfortunately native app authors usually assume all their assets are bundled. Nobody even thinks about how long it takes from the point when a user decides to install an app to when they see the first content. On the web we count that time in milliseconds and on native apps we count minutes. There aren't any hard technical problems there - we obviously manage it on the web, so its easily possible. We need native apps to catch up if they are ever going to be able to compete as a platform.</p>
+
+<blockquote>
+  <p>Why would you want to solve the problems of native apps rather than solve the problem (there is only one) of web apps, which is the performance issue.</p>
+  
+  <p>Customers don't install apps for the most part. Why try to solve for that?</p>
+</blockquote>
+
+<p>Why? Because building hack on top of hack is convenient, but terrible craftsmanship. The web today is a red hot mess of overlapping standards and inconsistent APIs. Google chrome is up to ~20M lines of code now, which makes it bigger than the linux kernel (with every device driver). Its basically a small virtualised operating system at this point. <br>
+How many more lines of code do you think it'll take for chrome to feel fast and light again? Is it possible to achieve that by adding code, forever? And then to work around all the cruft in browsers we have frameworks like react - conceptually beautiful but which do layout by diffing thousands of DOM elements through javascript.</p>
+
+<p>The stack is a mess, and I don't see any direction it can possibly go but fatter, bigger and uglier than ever before. Forever. Surprisingly, this is a fate native apps have avoided. And in avoiding that fate new laptops have amazing battery life and work great. Well, until you open chrome or slack that is.</p>
+
+<p>I don't write code for customers. I do it because as a kid I fell in love with the craft. I just... didn't fall in love with programming for this. Nope nope nope I want off the train before I throw up.</p>

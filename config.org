@@ -1122,8 +1122,7 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
 ** Time machine
 #+BEGIN_SRC emacs-lisp 
   (use-package git-timemachine
-    :ensure t
-    )
+    :ensure t)
 
  #+END_SRC
 ** Hydra
@@ -1203,37 +1202,47 @@ C-u C-c C-x !
 #+BEGIN_SRC emacs-lisp 
   (setq org-agenda-files (list "~/creamy_seas/antlers.org"))
   ;;                              "~/creamy_seas/1488.org"))
-  ;; ;
-                                          ;(setq org-agenda-files
-  ;;      (append
-  ;;       (file-expand-wildcards "*.org")))
  #+END_SRC
 *** agenda layout prompt
 #+BEGIN_SRC emacs-lisp 
   (setq org-agenda-custom-commands
         (quote (("c" "Simple agenda view"
            ((agenda ""))))))
-            ;; (alltodo ""))))))
  #+END_SRC
 *** org-capture-templates
 #+BEGIN_SRC emacs-lisp 
   (setq org-capture-templates
         '(
-          ("l" "Boomer Entry" item (file+headline "~/creamy_seas/1488.org" "Becoming a boomer") "%^{What did Luke say} %^G\n%?"
-           (file "~/creamy_seas/1488.org") "%?")
-          ("u" "Save URL" entry (file+headline "~/creamy_seas/1488.org" "URL too good to throw away")
-           "** %^L %? %^G"
-           :kill-buffer t)
+          ;; random tasks and reminders
+          ("b" "Bloat" entry (id "antlers-bloat")
+           "** BLOAT %^{stuff-to-be-done}\nSHEDULED: %^T")
+          ;; temporary org file on desktop
           ("d" "Draft" plain (file "~/creamy_seas/Desktop/.temp.org")
            "%?")
+          ;; tasks for neural network future
           ("e" "East-India Data Company")
           ("e2" "2am goals" entry (id "bryan-plan")
            "** BRYAN %^{project|Bot|Neural Network|Database|Bloat}: %^{stuff-to-be-done}\nDEADLINE: %^T")
-          ("b" "Bloat" entry (id "antlers-bloat")
-           "** BLOAT %^{stuff-to-be-done}\nSHEDULED: %^T")
           ("et" "Time log" table-line (id "bryan-done")
            "| %^u | %^{Project}: %^{task-summary} | %^{hours-worked} hours | |"
            :table-line-pos "@<-1")
+          ;; lukes quotes
+          ("l" "Boomer Entry" item (file+headline "~/creamy_seas/1488.org" "Becoming a boomer") "%^{What did Luke say} %^G\n%?"
+           (file "~/creamy_seas/1488.org") "%?")
+          ("p" "PhD Tasks")
+          ("pp" "Photon Counting" entry (id "phd-photon")
+           "*** PHD Photn Counting [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("pt" "Twin Qubit" entry (id "phd-twin")
+           "*** PHD Twin Qubit [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("px" "xMon" entry (id "phd-xmon")
+           "*** PHD xMon [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ;; save a really good url
+          ("u" "Save URL" entry (file+headline "~/creamy_seas/1488.org" "URL too good to throw away")
+           "** %^L %? %^G"
+           :kill-buffer t)
+          ;; random stories to save
+          ("s" "Stories" entry (id "stories") "** %^{Title} %t\n%?")
+          ;; tutoring
           ("t" "Tutoring lessons")
           ("tw" "Nikhil Lesson (Winchester)" table-line (id "tutoring-nikhil-invoice")
            "| # | %^u | %^{lesson summary} | 120%? | |"
@@ -1249,7 +1258,6 @@ C-u C-c C-x !
            "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
           ("fn" "Nathan Lesson" entry (id "tutoring-nathan-lesson")
            "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
-          ("s" "Stories" entry (id "stories") "** %^{Title} %t\n%?")
           ))
  #+END_SRC
 *** org capture frame
@@ -2144,7 +2152,7 @@ one can turn it off, or make the backups in a separate directory
             (rename-file filename new-name t)
             (set-visited-file-name new-name t t)))))))
 
-  (global-set-key (kbd "C-c m")  'rename-file-and-buffer)
+  (global-set-key (kbd "<C-m>")  'rename-file-and-buffer)
  #+END_SRC:
 * Hide minor modes                                             :must_be_last:
 hides the minor modes that are trivial
@@ -2172,6 +2180,8 @@ hides the minor modes that are trivial
 ** Global Unbindings
 #+BEGIN_SRC emacs-lisp 
   (define-key input-decode-map [?\C-m] [C-m]) ;unbinds C-m from Enter
+  (global-set-key (kbd "C-c C-;") (function comment-line))
+  (global-set-key (kbd "C-x m")  'rename-file-and-buffer)
   (global-unset-key (kbd "C-c q"))
   (global-unset-key (kbd "C-x #"))
   (global-unset-key (kbd "C-o"))
