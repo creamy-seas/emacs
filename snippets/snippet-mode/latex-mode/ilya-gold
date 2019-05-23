@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ilya-gold
+# key: gold
+# --
+\gold{${1:gold-text}}\ec$0
