@@ -14,7 +14,12 @@
 ** load path
 #+BEGIN_SRC emacs-lisp 
   (add-to-list 'load-path "~/creamy_seas/syncFiles/emacs_config/ilya_el_manual")
+ #+END_SRC
+** allowed commands
+#+BEGIN_SRC emacs-lisp 
   (put 'dired-find-alternate-file 'disabled nil)
+  (put 'upcase-region 'disabled nil)
+  (put 'downcase-region 'disabled nil)
  #+END_SRC
 * Emacs feel                                                         :darren:
 ** menus
@@ -1171,25 +1176,24 @@ to control where the plots are sent to, set the backend to =Qt5Agg=
 * Org mode                                                           :darren:
 ** autocomplete in org mode (when typing #+)
 #+BEGIN_SRC emacs-lisp  
-  (use-package org-ac
-    :ensure t
-    :init
-    (require 'org-ac)
-    (org-ac/config-default)
-    (setq org-ac/ac-trigger-command-keys (quote ("\\" ":" "[" "+"))) ;keys that trigger autocomplete
-    ;bing the usual scrolling keys
-    (define-key ac-completing-map (kbd "C-n") (function ac-next))
-    (define-key ac-completing-map (kbd "C-p") (function ac-previous))
-    (define-key ac-completing-map (kbd "C-v") (function ac-quick-help-scroll-down))
-    (define-key ac-completing-map (kbd "M-v") (function ac-quick-help-scroll-up)))
+  ;; (use-package org-ac
+  ;;   :ensure t
+  ;;   :init
+  ;;   (require 'org-ac)
+  ;;   (org-ac/config-default)
+  ;;   (setq org-ac/ac-trigger-command-keys (quote ("\\" ":" "[" "+"))) ;keys that trigger autocomplete
+  ;;   ;bing the usual scrolling keys
+  ;;   (define-key ac-completing-map (kbd "C-n") (function ac-next))
+  ;;   (define-key ac-completing-map (kbd "C-p") (function ac-previous))
+  ;;   (define-key ac-completing-map (kbd "C-v") (function ac-quick-help-scroll-down))
+  ;;   (define-key ac-completing-map (kbd "M-v") (function ac-quick-help-scroll-up)))
+
  #+END_SRC
 ** get rid of anoying 'ding in table'
 C-u C-c C-x !
 ** todo lists
 #+BEGIN_SRC emacs-lisp 
-  (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d)")
-                            (sequence "BLOAT(B)" "|" "GOOD(g)")
-                            (sequence "TUTORING(l)" "SCHOOLS(s)" "PHD(p)" "BRYAN(b)" "|" "Dominated(D)")))
+  (setq org-todo-keywords '((sequence "TODO(t)" "BLOAT(B)" "BRYAN(b)" "PHD(p)" "SCHOOLS(s)" "TUTORING(l)" "|" "DOMINATED(d)")))
 
   (setq org-todo-keyword-faces (quote (
                                        ("STARTED" . "yellow")
@@ -1360,6 +1364,7 @@ the nice bullets instead of multiplication symbols
  #+END_SRC
 ** keybindings
 #+BEGIN_SRC emacs-lisp 
+  (define-key org-mode-map (kbd "C-x RET") (function org-insert-subheading))
   (define-key org-mode-map (kbd "C-c C-;") (function comment-line))
   (define-key emacs-lisp-mode-map (kbd "C-c C-;") (function comment-line))
  #+END_SRC
@@ -1564,7 +1569,7 @@ once autocomplete is triggered, =C-d= to get documentation at point
   (use-package company
     :ensure t
     :config
-    ;; (add-hook 'org-mode-hook 'company-mode)
+    (add-hook 'org-mode-hook 'company-mode)
     (add-hook 'emacs-lisp-mode-hook 'company-mode)
     (add-hook 'text-mode-hook 'company-mode)
     (add-hook 'inferior-python-mode-hook 'company-mode)
@@ -1649,52 +1654,53 @@ once autocomplete is triggered, =C-d= to get documentation at point
 ibuffer will mean that new buffer is opened in the window that the command was called from
 *** config
 #+BEGIN_SRC emacs-lisp
-    (global-set-key (kbd "C-x b") 'ibuffer)
-    (setq ibuffer-saved-filter-groups
-          (quote (("default"
-                   ("⍫ Magit" (or
-                               (name . "^.*gitignore$")
-                               (name . "^magit.*$")))
-                   ("ᛔ Jupyter" (or
-                                 (mode . "ein:notebooklist-mode")
-                                 (name . "\\*ein:.*")
-                                 ))
-                   ("ᛥ Dired" (mode . dired-mode))
-                   ("ᚧ Python" (or
-                                (mode . python-mode)
-                                (mode . inferior-python-mode)
-                                (name . "^\\*Python Doc\\*$")
-                                (name . "^matplotlibrc$")
-                                (name . "^.*mplstyle$")
-                                (name . "^\\*Flycheck error messages\\*$")))
-                   ("ᛋᛋ Latex" (or
-                                (name . "^.*tex$")
-                                (name . "^.*bib$")
-                                (name . "^.*log$")
-                                (name . "\\*RefTeX Select\\*")
-                                (mode . comint-mode)))
-                   ("ᚸ Org" (name . "\\.org"))
-                   ("⚓ Shell" (name . "\\.sh"))
-                   ("卍 Config" (name . "^\\..*$"))
-                   ("ᛓ Elfeed" (or
-                                (name . "\\*elfeed.*\\*")
-                                (name . "^ef.*$")))
-                   ))))
-    (add-hook 'ibuffer-mode-hook
-              (lambda ()
-                (ibuffer-auto-mode 1)
-                (ibuffer-switch-to-saved-filter-groups "default")))
+  (global-set-key (kbd "C-x b") 'ibuffer)
+  (setq ibuffer-saved-filter-groups
+        (quote (("default"
+                 ("⍫ Magit" (or
+                             (name . "^.*gitignore$")
+                             (name . "^magit.*$")))
+                 ("ᛔ Jupyter" (or
+                               (mode . "ein:notebooklist-mode")
+                               (name . "\\*ein:.*")
+                               ))
+                 ("ᛥ Dired" (mode . dired-mode))
+                 ("ᚧ Python" (or
+                              (mode . python-mode)
+                              (mode . inferior-python-mode)
+                              (name . "^\\*Python Doc\\*$")
+                              (name . "^matplotlibrc$")
+                              (name . "^.*mplstyle$")
+                              (name . "^\\*Flycheck error messages\\*$")))
+                 ("ᛋᛋ Latex" (or
+                              (name . "^.*tex$")
+                              (name . "^.*bib$")
+                              (name . "^.*log$")
+                              (name . "\\*RefTeX Select\\*")
+                              (mode . comint-mode)))
+                 ("ᚸ Org" (name . "\\.org"))
+                 ("⚓ Shell" (name . "\\.sh"))
+                 ("෴ PDF" (name . "\\.pdf"))
+                 ("卍 Config" (name . "^\\..*$"))
+                 ("ᛓ Elfeed" (or
+                              (name . "\\*elfeed.*\\*")
+                              (name . "^ef.*$")))
+                 ))))
+  (add-hook 'ibuffer-mode-hook
+            (lambda ()
+              (ibuffer-auto-mode 1)
+              (ibuffer-switch-to-saved-filter-groups "default")))
 
-    ;; (" Emacs" (or
-    ;;               (name . "^\\*scratch\\*$")
-    ;;               (name . "^\\*Messages\\*$")
-    ;;               (name . "^\\*Backtrace\\*$")))
-    ;; ("卍 Horter" (or
-    ;;               (name . "^\\*dashboard\\*$")
-    ;;               (mode . emacs-lisp-mode)))
-    ;;(add-to-list `ibuffer-never-show-predicates "*Completions*")
-    ;;  (add-to-list `ibuffer-never-show-predicates "*Help*")
-    ;; (add-to-list `ibuffer-never-show-predicates "*elfeed-log*")
+  ;; (" Emacs" (or
+  ;;               (name . "^\\*scratch\\*$")
+  ;;               (name . "^\\*Messages\\*$")
+  ;;               (name . "^\\*Backtrace\\*$")))
+  ;; ("卍 Horter" (or
+  ;;               (name . "^\\*dashboard\\*$")
+  ;;               (mode . emacs-lisp-mode)))
+  ;;(add-to-list `ibuffer-never-show-predicates "*Completions*")
+  ;;  (add-to-list `ibuffer-never-show-predicates "*Help*")
+  ;; (add-to-list `ibuffer-never-show-predicates "*elfeed-log*")
 #+END_SRC
 *** column lengths
 #+BEGIN_SRC emacs-lisp
@@ -2192,7 +2198,8 @@ hides the minor modes that are trivial
 * Post load
 ** Global Unbindings
 #+BEGIN_SRC emacs-lisp 
-  ;; (define-key input-decode-map [?\C-m] [C-m]) ;unbinds C-m from Enter
+  (define-key key-translation-map (kbd "C-x 8 O") (kbd "Ω"))
+  (define-key key-translation-map (kbd "C-x 8 #") (kbd "£"))
   (global-set-key (kbd "C-c C-;") (function comment-line))
   (global-set-key (kbd "C-x m")  'rename-file-and-buffer)
   (global-unset-key (kbd "C-c q"))
