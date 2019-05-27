@@ -106,8 +106,9 @@ to access the inconsolata font you need to
 ** theme
 #+BEGIN_SRC emacs-lisp
   (if (file-exists-p "~/.macbook_localiser")
-      (load-theme 'misterioso)
-    (use-package spacemacs-theme
+      ;; (load-theme 'misterioso)
+      (load-theme 'wheatgrass)
+      (use-package spacemacs-theme
       :defer t
       :ensure t
       :config (load-theme 'spacemacs-dark)))
@@ -151,7 +152,7 @@ to access the inconsolata font you need to
    ;; rest of autocomplete
    `(popup-menu-face ((t (:inherit default :background "#41bf505b61e3"))))
    `(popup-menu-summary-face ((t (:inherit default :background "#41bf505b61e3")))))
-  (set-default 'cursor-type 'hbar)
+  (set-default 'cursor-type 'hollow)
   (set-cursor-color "#ffd700")
  #+END_SRC
 * Emacs Shortcuts                                                    :darren:
