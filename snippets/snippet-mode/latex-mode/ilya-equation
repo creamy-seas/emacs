@@ -1,10 +1,10 @@
 # -*- mode: snippet -*-
-# name: equation
+# name: ilya-equation
 # key: eq
 # --
 \begin{equation}
  \label{eq:${1:label}}
- ${2:equation-content}
+ ${2:equation-content}$0
 \end{equation}
 
-\noindent $0
+\noindent 

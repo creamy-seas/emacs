@@ -2,4 +2,4 @@
 # name: ilya-unit
 # key: iu
 # --
-\iunit{${1:number}}{${2:text-unit}}$0
+\iunit{${1:number}}{${2:text-unit}$0}

@@ -1,13 +1,15 @@
 #+STARTUP: overview
-
-* PDF Tools
+* Ox-reveal
+presentations can be hosted from github - look at video no 50
 #+BEGIN_SRC emacs-lisp 
-  ;; (use-package pdf-tools
-  ;;   :ensure t
-  ;;   :config
-  ;;   (pdf-tools-install))
-
-  (use-package org-pdfview
+  (use-package ox-reveal
+    :ensure t
+    :config
+    (require 'ox-reveal)
+    (setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
+    (setq org-reveal-mathjax t)
+    )
+  (use-package htmlize
     :ensure t)
  #+END_SRC
 * Primary load
@@ -21,7 +23,7 @@
   (put 'upcase-region 'disabled nil)
   (put 'downcase-region 'disabled nil)
  #+END_SRC
-* Emacs feel                                                         :darren:
+* Emacs feel
 ** menus
 #+BEGIN_SRC emacs-lisp
   (setq frame-title-format "nsdap")
@@ -35,73 +37,79 @@ to access the inconsolata font you need to
 **** run =M-x customize= go to =faces= then =defaults= and type =Inconsolata=
 ** bottoms bar
 #+BEGIN_SRC emacs-lisp
-  ;; (if (file-exists-p "~/.macbook_localiser")
-  ;;     (progn
-  ;;       (use-package powerline			
-  ;;         :ensure t
-  ;;         :init
-  ;;         (powerline-center-theme)
-  ;;         (setq ns-use-srgb-colorspace nil)
-  ;;         )
-  ;;       (setq powerline-default-separator 'wave)
-  ;;       )
-  ;;   (progn
-  ;;     (use-package spaceline
-  ;;       :ensure t
-  ;;       :config
-  ;;       (require 'spaceline-config)
-  ;;       (setq powerline-default-separator (quote arrow))
-  ;;       (setq ns-use-srgb-colorspace nil)
-  ;;       (spaceline-spacemacs-theme))))
+  (if (file-exists-p "~/.macbook_localiser")
+      (progn
+        (use-package powerline			
+          :ensure t
+          :init
+          (powerline-center-theme)
+          (setq ns-use-srgb-colorspace nil)
+          )
+        (setq powerline-default-separator 'box)
+        )
+    (progn
+      (use-package spaceline
+        :ensure t
+        :config
+        (require 'spaceline-config)
+        (setq powerline-default-separator (quote arrow))
+        (setq ns-use-srgb-colorspace nil)
+        (spaceline-spacemacs-theme))))
 #+END_SRC
 ** sml
+smart mode line allows infinite customization
+*** main setup
 #+BEGIN_SRC emacs-lisp 
-  (use-package smart-mode-line
-    :ensure t
-    :init
-    ;; (use-package smart-mode-line-powerline-theme
-    ;;   :ensure t)
-    (setq size-indication-mode t)
-    (setq sml/shorten-directory t)
-    (setq sml/no-confirm-load-theme t)
-    (setq sml/shorten-modes t)
-    (sml/setup))
+  ;; (use-package smart-mode-line
+  ;;   :ensure t
+  ;;   :init
+  ;;   ;; (use-package smart-mode-line-powerline-theme
+  ;;   ;;   :ensure t)
+  ;;   (setq size-indication-mode t)
+  ;;   (setq sml/shorten-directory t)
+  ;;   (setq sml/no-confirm-load-theme t)
+  ;;   (setq sml/shorten-modes t)
+  ;;   (sml/setup))
+ #+END_SRC
+*** naming
+#+BEGIN_SRC emacs-lisp
+  ;; (add-to-list 'sml/replacer-regexp-list '("^.*config.*$" ":ED:") t)
+  ;; (add-to-list 'sml/replacer-regexp-list '("^.*config\\.org$" ":ED:") t)
+  ;; (custom-set-variables
+  ;;  '(sml/col-number-format "")
+  ;;  '(sml/extra-filler -2)
+  ;;  '(sml/line-number-format "")
+  ;;  '(sml/mule-info "")
+  ;;  '(sml/modified-char "☦︎")
+  ;;  '(sml/name-width (quote (20 . 40)))
+  ;;  '(sml/read-only-char "☧")
+  ;;  '(sml/pos-minor-modes-separator " ᛋᛋ")
+  ;;  '(sml/pre-minor-modes-separator "ᛋᛋ")
+  ;;  )
+ #+END_SRC
+*** coloring
+#+BEGIN_SRC emacs-lisp 
+  ;; (custom-set-faces
+  ;;  '(sml/filename ((t (:inherit mode-line-buffer-id :foreground "#eab700" :weight bold)))) ;file name
+  ;;  '(sml/prefix ((t (:foreground "#eab700")))) ;shortennings
+  ;;  '(sml/folder ((t (:foreground "#505040" :weight normal)))) ;folder
+  ;;  '(sml/global ((t (:foreground "white")))) ;most things on line
+  ;;  '(sml/position-percentage ((t (:foreground "white")))) ;percentageof buffer
+  ;;  '(sml/remote ((t (:foreground "red")))) ;local or remote load
+  ;;  '(sml/git ((t (:foreground "white"))))	;github
+  ;;  '(sml/vc-edited ((t (:foreground "white")))) ;github
+  ;;  '(sml/modes ((t (:foreground "#1eafe1" :weight bold :box (:line-width 1 :color "#2d379a" :style pressed-button))))) ;major mode
+  ;;  '(sml/minor-modes ((t (:foreground "#1eafe1")))) ;major mode
+  ;;  '(sml/process ((t (:foreground "red")))) ;github
+  ;;  '(mode-line ((t (:background "#2d379a" :foreground "#1eafe1" :box nil))))
+  ;;  '(mode-line-inactive ((t (:foreground "#1eafe1" :background "#1d679a" :box nil))))
+  ;;  )
 
-  (add-to-list 'sml/replacer-regexp-list '("^.*config.*$" ":ED:") t)
-  (add-to-list 'sml/replacer-regexp-list '("^.*config\\.org$" ":ED:") t)
-  (custom-set-variables
-   '(sml/col-number-format "")
-   '(sml/extra-filler -2)
-   '(sml/line-number-format "")
-   '(sml/mule-info "")
-   '(sml/modified-char "☦︎")
-   '(sml/name-width (quote (20 . 40)))
-   '(sml/read-only-char "☧")
-   '(sml/pos-minor-modes-separator " ᛋᛋ")
-   '(sml/pre-minor-modes-separator "ᛋᛋ")
-   )
-
-  (custom-set-faces
-  ;;   '(sml/charging ((t (:inherit s
-  ;;                               ml/global :foreground "ForestGreen" :underline t))))
-  ;; '(sml/client ((t (:inherit sml/prefix :underline t))))
-  ;; '(sml/col-number ((t (:inherit sml/global :underline t))))
-  ;; '(sml/discharging ((t (:inherit sml/global :foreground "Red" :underline t))))
-   '(sml/filename ((t (:inherit mode-line-buffer-id :foreground "#eab700" :weight bold)))) ;file name
-   '(sml/prefix ((t (:foreground "#eab700")))) ;shortennings
-  '(sml/folder ((t (:foreground "#505040" :weight normal)))) ;folder
-  '(sml/global ((t (:foreground "white")))) ;most things on line
-  '(sml/position-percentage ((t (:foreground "white")))) ;percentageof buffer
-  '(sml/remote ((t (:foreground "red")))) ;local or remote load
-  '(sml/git ((t (:foreground "white"))))	;github
-  '(sml/vc-edited ((t (:foreground "white")))) ;github
-  '(sml/modes ((t (:foreground "#1eafe1" :weight bold :box (:line-width 1 :color "#2d379a" :style pressed-button))))) ;major mode
-  '(sml/minor-modes ((t (:foreground "#1eafe1")))) ;major mode
-  '(sml/process ((t (:foreground "red")))) ;github
-  ;; '(sml/global ((t (:inherit font-lock-preprocessor-face))))
-  '(mode-line ((t (:background "#2d379a" :foreground "#1eafe1" :box nil))))
-    '(mode-line-inactive ((t (:foreground "#1eafe1" :background "#1d679a" :box nil))))
-   )
+   ;;   '(sml/charging ((t (:inherit s
+   ;;                               ml/global :foreground "ForestGreen" :underline t))))
+   ;; '(sml/client ((t (:inherit sml/prefix :underline t))))
+   ;; '(sml/col-number ((t (:inherit sml/global :underline t))))
+   ;; '(sml/discharging ((t (:inherit sml/global :foreground "Red" :underline t))))
  #+END_SRC
 ** theme
 #+BEGIN_SRC emacs-lisp
@@ -115,16 +123,16 @@ to access the inconsolata font you need to
 #+END_SRC
 ** window splitting
 #+BEGIN_SRC emacs-lisp 
-  (setq split-height-threshold nil)
-  (setq split-width-threshold 120)
+  (setq split-height-threshold 80)
+  (setq split-width-threshold 160)
  #+END_SRC
-** line highlight                                                   :darren:
+** line highlight
 #+BEGIN_SRC emacs-lisp
   (global-hl-line-mode 1)
   (set-face-background 'hl-line "#3e4446")
   (set-cursor-color "yellow")
 #+END_SRC
-** current line fade                                                :darren:
+** current line fade
 #+BEGIN_SRC emacs-lisp
   (use-package beacon
     :ensure t
@@ -578,10 +586,10 @@ here we make it do it explictly
  #+END_SRC
 *** cdlatex (autcompletion)
 #+BEGIN_SRC emacs-lisp 
-  (use-package cdlatex
-    :ensure t
-    :config
-    (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex))
+  ;;(use-package cdlatex
+  ;;  :ensure t
+  ;;  :config
+  ;;  (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex))
  #+END_SRC
 ** latex expand text
 #+BEGIN_SRC emacs-lisp 
@@ -742,9 +750,11 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
                              (1 'ilya_face-latex-gold t)
                              (4 'ilya_face-latex-gold t))))
 
+  ;; %% Comment
   (font-lock-add-keywords 'latex-mode
-                          '(("\\(%%\s.*\\)\\($\\)"
-                             (1 'ilya_face-latex-title t))))
+                           '(("\\(%\\{2,\\}\\)\\(\s.*\\)\\($\\)"
+                              (1 'ilya_face-latex-title t)
+                              (2 'ilya_face-latex-title t))))
  #+END_SRC
 ** colouring
 #+BEGIN_SRC emacs-lisp 
@@ -755,7 +765,7 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
    '(font-latex-sedate-face ((t (:foreground "burlywood")))))
  #+END_SRC
 * C++ mode
-*** Preliminary instructions
+** Preliminary instructions
 1) you need to first check that clang is on computer =clang --version=
 2) then make sure that cmake is also installed =brew install cmake=
 3) after filling out the code below, run =M-x irony-install-server=
@@ -764,20 +774,32 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
   cmake -DCMAKE_INSTALL_PREFIX\=/Users/CCCP/.emacs.d/irony/  /Users/CCCP/.emacs.d/elpa/irony-20181218.2241/server && cmake --build . --use-stderr --config Release --target install
 #+END_SRC
 5) *copy this into terminal and evalute. Then it chould be working*
+** tags file [[https://github.com/leoliu/ggtags][read about it here]]
 #+BEGIN_SRC emacs-lisp 
-   ;;tie backend of autocompletion to company-irony
-  (use-package company-irony
+  (use-package ggtags
     :ensure t
-    :config
-    (require 'company)
-    (add-to-list 'company-backends 'company-irony))
-
+    :config 
+    (add-hook 'c-mode-common-hook
+              (lambda ()
+                (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+                  (ggtags-mode 1))))
+    )
+ #+END_SRC
+** Actual installation
+#+BEGIN_SRC emacs-lisp 
   ;;setup company-irony with c++ connection
   (use-package irony
     :ensure t
     :config
     (add-hook 'c++-mode-hook 'irony-mode)
     (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+
+  ;;tie backend of autocompletion to company-irony
+  (use-package company-irony
+    :ensure t
+    :config
+    (require 'company)
+    (add-to-list 'company-backends 'company-irony))
 
   ;;finally ensure that c++-mode-hook is activated when company mode is on
   (with-eval-after-load 'company
@@ -1233,7 +1255,7 @@ C-u C-c C-x !
           ("b" "Bloat" entry (id "antlers-bloat")
            "** BLOAT %^{stuff-to-be-done}\nSHEDULED: %^T")
           ;; temporary org file on desktop
-          ("d" "Draft" plain (file "~/creamy_seas/Desktop/.temp.org")
+          ("d" "Draft" plain (file "~/Desktop/.temp.org")
            "%?")
           ;; tasks for neural network future
           ("e" "East-India Data Company")
@@ -1551,19 +1573,17 @@ The problem is that the entry content only includes the tiny reddit-hosted thumb
     (add-hook 'LaTeX-mode-hook 'yas-minor-mode)
     (add-hook 'python-mode-hook 'yas-minor-mode)
     (add-hook 'org-mode-hook 'yas-minor-mode)
-
-    ;; (add-hook 'ein:notebook-mode-hook 'function)
-    ;; (global-set-key (kbd "C-c C-n") 'yas-new-snippet)
+    (add-hook 'c++-mode-hook 'yas-minor-mode)
 
     :config
     (add-to-list 'yas-snippet-dirs "~/creamy_seas/syncFiles/emacs_config/snippets/snippet-mode")
 
-    (use-package yasnippet-snippets
+    (use-package yasnippet-snippets	;the snippets file
       :ensure t)
 
     (yas-reload-all))
 #+END_SRC
-* Autocomplete Company                                               :darren:
+* Autocomplete Company
 Autocomplete shoudl only run in certain environments
 once autocomplete is triggered, =C-d= to get documentation at point
 #+BEGIN_SRC emacs-lisp
@@ -1575,6 +1595,8 @@ once autocomplete is triggered, =C-d= to get documentation at point
     (add-hook 'text-mode-hook 'company-mode)
     (add-hook 'inferior-python-mode-hook 'company-mode)
     (add-hook 'LaTeX-mode-hook 'company-mode)
+    (add-hook 'c++-mode-hook 'company-mode)
+
     (setq company-idle-delay 0.2)
     (setq company-minimum-prefix-length 4))
 #+END_SRC
@@ -1781,7 +1803,7 @@ buffer suggestion is given as a list in the terminal command (after C-x b)
     :ensure t
     :bind ("C-c q" . 'mark-next-line-this))
 #+END_SRC
-** copy within region                                               :darren:
+** copy within region
 this will copy within the first brackets, then second, third, etc
 #+BEGIN_SRC emacs-lisp
   (use-package expand-region
@@ -1818,7 +1840,7 @@ hungry delete deletes all white space between cursor and the next character
   (global-set-key (kbd "C-c w l") 'copy-whole-line)
 #+END_SRC
 
-** kill ring                                                        :darren:
+** kill ring
 nice popup menu when pasting of the past history
 #+BEGIN_SRC emacs-lisp
   (use-package popup-kill-ring
@@ -1833,8 +1855,8 @@ mark and edit all copies of the marked region simultaniously.
     :config
     (global-set-key (kbd "C-:") (function iedit-mode)))
  #+END_SRC
-* Default loading screens                                            :darren:
-** do not show startup screen                                       :darren:
+* Default loading screens
+** do not show startup screen
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-screen t)
 #+END_SRC
@@ -1848,7 +1870,7 @@ mark and edit all copies of the marked region simultaniously.
     :ensure t
     :config
     (dashboard-setup-startup-hook)
-    (setq dashboard-items '((recents . 20)))
+    (setq dashboard-items '((recents . 40)))
     (setq dashboard-startup-banner "~/creamy_seas/gallery_road/pepe/ree.png")
     (setq dashboard-banner-length 300)
     (setq dashboard-banner-logo-title "- Dinner is 2030. And dinner is first\n              - Respond with exact timings for commitments\n              - Understand that it is hard being pregnant"))
@@ -1895,7 +1917,7 @@ for this to work, you *must* install ispell
   (global-visual-line-mode t)
 #+END_SRC
 
-** key suggestions                                                  :darren:
+** key suggestions
 #+BEGIN_SRC emacs-lisp
   (use-package which-key
     :ensure t
@@ -2002,7 +2024,7 @@ becuase initially emacs keeps it in the original window
     (other-window 1))
   (global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
 #+END_SRC
-** jump using highlighted syntax                                    :darren:
+** jump using highlighted syntax
 the superior search method
 #+BEGIN_SRC emacs-lisp
   (use-package avy
@@ -2010,7 +2032,6 @@ the superior search method
     :init
     (global-set-key (kbd "M-s") 'avy-goto-word-or-subword-1)
     (setq avy-background t))
-  ;;(global-set-key (kbd "M-s") 'ace-jump-mode)
 #+END_SRC
 
 ** searching                                                        :darren:
@@ -2041,6 +2062,16 @@ the superior search mode to the original
     (add-hook 'python-mode-hook 'linum-relative-mode)
     (add-hook 'LaTeX-mode-hook 'linum-relative-mode))
 #+END_SRC
+* PDF Tools
+#+BEGIN_SRC emacs-lisp 
+  ;; (use-package pdf-tools
+  ;;   :ensure t
+  ;;   :config
+  ;;   (pdf-tools-install))
+
+  (use-package org-pdfview
+    :ensure t)
+ #+END_SRC
 
 * Projectile
 Navigation around a set of project files. There's tons of shortcuts to explore
@@ -2209,6 +2240,7 @@ hides the minor modes that are trivial
   (global-unset-key (kbd "ESC ESC ESC"))
   (global-set-key (kbd "C-x C-i") (function server-edit))
   (global-set-key (kbd "C-x C-j") (function ein:run))
+
  #+END_SRC
 ** Function calls
 #+BEGIN_SRC emacs-lisp 
