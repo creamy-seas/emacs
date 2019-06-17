@@ -2,4 +2,4 @@
 # name: time-stamp
 # key: ts
 # --
-${1:hour}:${2:minute}:${3:second}$0
+${1:00}:${2:00}:${3:00}$0

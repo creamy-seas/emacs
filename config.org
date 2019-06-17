@@ -17,12 +17,6 @@ presentations can be hosted from github - look at video no 50
 #+BEGIN_SRC emacs-lisp 
   (add-to-list 'load-path "~/creamy_seas/syncFiles/emacs_config/ilya_el_manual")
  #+END_SRC
-** allowed commands
-#+BEGIN_SRC emacs-lisp 
-  (put 'dired-find-alternate-file 'disabled nil)
-  (put 'upcase-region 'disabled nil)
-  (put 'downcase-region 'disabled nil)
- #+END_SRC
 * Emacs feel
 ** menus
 #+BEGIN_SRC emacs-lisp
@@ -207,12 +201,6 @@ MAP is the keybinding map for the major or minor mode e.g. LaTeX-mode-map
     (when (memq window-system '(mac ns x))
       (exec-path-from-shell-initialize))
     )
-
-  ;; (defun ilya_fire-up-from-emacs(relative-path)
-  ;;   "Create a string that appends onto the systems .emacs.d directory. EMACS_HOME must be specified in .profile"
-  ;;   (setq path (exec-path-from-shell-copy-env "EMACS_HOME"))
-  ;;   (concat path "/" relative-path)
-  ;;   )
  #+END_SRC
 ** do not ask for kill confirmation
 #+BEGIN_SRC emacs-lisp 
@@ -251,22 +239,23 @@ MAP is the keybinding map for the major or minor mode e.g. LaTeX-mode-map
 #+END_SRC
 ** execution path
 #+BEGIN_SRC emacs-lisp 
-   (defun set-exec-path-from-shell-PATH ()
-    "Sets the exec-path to the same value used by the user shell"
-    (let ((path-from-shell
-           (replace-regexp-in-string
-            "[[:space:]\n]*$" ""
-            (shell-command-to-string "$SHELL -l -c 'echo $PATH'"))))
-      (setenv "PATH" path-from-shell)
-      (setq exec-path (split-string path-from-shell path-separator))))
+  ;;  (defun set-exec-path-from-shell-PATH ()
+  ;;   "Sets the exec-path to the same value used by the user shell"
+  ;;   (let ((path-from-shell
+  ;;          (replace-regexp-in-string
+  ;;           "[[:space:]\n]*$" ""
+  ;;           (shell-command-to-string "$SHELL -l -c 'echo $PATH'"))))
+  ;;     (setenv "PATH" path-from-shell)
+  ;;     (setq exec-path (split-string path-from-shell path-separator))))
 
-  ;; call function now
-  (set-exec-path-from-shell-PATH)
+  ;; ;; call function now
+  ;; (set-exec-path-from-shell-PATH)
  #+END_SRC
 ** emacs executable path
 path for emacs executables to
 #+BEGIN_SRC emacs-lisp 
   (setq exec-path (append exec-path '("/usr/local/bin")))
+  (setq exec-path (append exec-path '("/Users/CCCP/.scripts")))
  #+END_SRC
 * Very cool benis
 ** reload file on the go
@@ -574,6 +563,13 @@ here we make it do it explictly
              (switch-to-buffer ,old-buff))
            (goto-char ,old-point)))))
  #+END_SRC
+** inkscape
+#+BEGIN_SRC emacs-lisp 
+  (defun inkscape (filename)
+    "Open inkscape file and monitor it"
+    (interactive "FFile to create:")
+    (shell-command (concat "/Users/CCCP/.scripts/inkscape_load.sh " filename)))
+ #+END_SRC
 ** minor modes
 *** reftex
 #+BEGIN_SRC emacs-lisp 
@@ -586,10 +582,10 @@ here we make it do it explictly
  #+END_SRC
 *** cdlatex (autcompletion)
 #+BEGIN_SRC emacs-lisp 
-  ;;(use-package cdlatex
-  ;;  :ensure t
-  ;;  :config
-  ;;  (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex))
+  (use-package cdlatex
+   :ensure t
+   :config
+   (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex))
  #+END_SRC
 ** latex expand text
 #+BEGIN_SRC emacs-lisp 
@@ -771,7 +767,7 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
 3) after filling out the code below, run =M-x irony-install-server=
 4) this should prepare to run some long command like:
 #+BEGIN_SRC sh
-  cmake -DCMAKE_INSTALL_PREFIX\=/Users/CCCP/.emacs.d/irony/  /Users/CCCP/.emacs.d/elpa/irony-20181218.2241/server && cmake --build . --use-stderr --config Release --target install
+  /usr/local/bin/cmake -DCMAKE_INSTALL_PREFIX\=/Users/CCCP/.emacs.d/irony/  /Users/CCCP/.emacs.d/elpa/irony-20190516.2348/server && /usr/local/bin/cmake --build . --use-stderr --config Release --target install
 #+END_SRC
 5) *copy this into terminal and evalute. Then it chould be working*
 ** tags file [[https://github.com/leoliu/ggtags][read about it here]]
@@ -787,19 +783,19 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
  #+END_SRC
 ** Actual installation
 #+BEGIN_SRC emacs-lisp 
+  ;;tie backend of company to company-irony
+  (use-package company-irony
+    :ensure t
+    :config
+    (require 'company)
+    (add-to-list 'company-backends 'company-irony))
+
   ;;setup company-irony with c++ connection
   (use-package irony
     :ensure t
     :config
     (add-hook 'c++-mode-hook 'irony-mode)
     (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
-
-  ;;tie backend of autocompletion to company-irony
-  (use-package company-irony
-    :ensure t
-    :config
-    (require 'company)
-    (add-to-list 'company-backends 'company-irony))
 
   ;;finally ensure that c++-mode-hook is activated when company mode is on
   (with-eval-after-load 'company
@@ -812,7 +808,7 @@ beautiful file browsing
   (require 'dired+)
   (global-set-key (kbd "C-x C-d") (function dired))
   (define-key dired-mode-map (kbd "C-c C-q") (function toggle-read-only))
-  (define-key dired-mode-map (kbd "RET") (function dired-find-alternate-file))
+  ;; (define-key dired-mode-map (kbd "RET") (function dired-find-alternate-file)) ;close the current dired file and open new one with target
   (define-key dired-mode-map (kbd "<right>") (function dired-find-file-other-window))
  #+END_SRC
 ** bindings
@@ -829,7 +825,7 @@ beautiful file browsing
 * EIN mode
 - jupyter notebook server in emacs
 - *do not set* =(setq ein:use-smartrep t)= or it doesn't work
-- =C-c C-f= for tooltip help
+- =C-c C-h= for tooltip help
 ** setup
 #+BEGIN_SRC emacs-lisp 
   (use-package ein
@@ -1390,6 +1386,7 @@ the nice bullets instead of multiplication symbols
   (define-key org-mode-map (kbd "C-x RET") (function org-insert-subheading))
   (define-key org-mode-map (kbd "C-c C-;") (function comment-line))
   (define-key emacs-lisp-mode-map (kbd "C-c C-;") (function comment-line))
+  (define-key org-mode-map (kbd "C-c C-r") (function org-toggle-inline-images))
  #+END_SRC
 * RSS mode
 - =elfeed-new-entry-hook= is called each time a new entry is added
@@ -1563,7 +1560,7 @@ The problem is that the entry content only includes the tiny reddit-hosted thumb
 - Autocompletion by typing in first part of word and tabbing to insert a template
 - yasnippet is the framework
 - yasnippet-snippets is the official collection of snippets
-
+** setup
 *create a hard link between the =.emacs.d/snippets= files and the =.emacs/elpa/yasnippets-snippets/snippets/REQUIRED_MODE/= files*
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
@@ -1998,11 +1995,11 @@ when the there are more than two windows =C-x o= will give each window a letter 
     :ensure t
     :config
     (setq switch-window-input-style 'minibuffer)
-    (setq switch-window-increase 7)
+    (setq switch-window-increase 8)
     (setq switch-window-threshold 2)
     (setq switch-window-shortcut-style 'qwerty) 
     (setq switch-window-qwerty-shortcuts
-          '("a" "s" "d" "f" "g" "h" "i"))
+          '("a" "s" "d" "f" "g" "h" "j"))
     :bind
     ([remap other-window] . switch-window))
   ;;(global-set-key (kbd "C-M-z") 'switch-window)
@@ -2228,10 +2225,15 @@ hides the minor modes that are trivial
     )
 #+END_SRC
 * Post load
-** Global Unbindings
+** global unbindings
 #+BEGIN_SRC emacs-lisp 
   (define-key key-translation-map (kbd "C-x 8 O") (kbd "Ω"))
   (define-key key-translation-map (kbd "C-x 8 #") (kbd "£"))
+  (define-key key-translation-map (kbd "C-x 8 -") (kbd "→"))
+  (define-key key-translation-map (kbd "C-x 8 t") (kbd "✔"))
+  (define-key key-translation-map (kbd "C-x 8 c") (kbd "✘"))
+  (define-key key-translation-map (kbd "C-x 8 b") (kbd "⦿"))
+  (define-key key-translation-map (kbd "C-x 8 _") (kbd "̲"))
   (global-set-key (kbd "C-c C-;") (function comment-line))
   (global-set-key (kbd "C-x m")  'rename-file-and-buffer)
   (global-unset-key (kbd "C-c q"))
@@ -2242,7 +2244,14 @@ hides the minor modes that are trivial
   (global-set-key (kbd "C-x C-j") (function ein:run))
 
  #+END_SRC
-** Function calls
+** function calls
 #+BEGIN_SRC emacs-lisp 
   (hydra-python-vi/body)
+ #+END_SRC
+** allowed commands
+#+BEGIN_SRC emacs-lisp 
+  (put 'dired-find-alternate-file 'disabled nil)
+  (put 'upcase-region 'disabled nil)
+  (put 'downcase-region 'disabled nil)
+  (put 'set-goal-column 'disabled nil)	;set goal column, so that with next line you stay in same column
  #+END_SRC
