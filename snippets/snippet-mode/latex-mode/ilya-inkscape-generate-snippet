@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: ilya-inkscape-generate-snippet
+# --
+\begin{figure}[h]
+  \centering
+  \def\svgwidth{${1:width}cm}\input{`temp-file-name-for-snippet`.pdf_tex}
+  \caption{\small ${3:caption-text}\label{fig:`temp-file-name-for-snippet`}}
+\end{figure}
