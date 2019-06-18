@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: ilya-inkscape-latex
+# binding: C-c i
+# type: command
+# --
+(inkscape-generate (concat (expand-file-name (TeX-master-directory)) "/"))
+(yas/insert-by-name "ilya-inkscape-latex-snippet")

@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: ilya-inkscape-generate-snippet
+# name: ilya-inkscape-latex-snippet
 # --
 \begin{figure}[h]
   \centering

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: ilya-inkscape-latex-load
+# binding: C-c l
+# type: command
+# --
+(inkscape-load (concat (expand-file-name (TeX-master-directory)) "/"))

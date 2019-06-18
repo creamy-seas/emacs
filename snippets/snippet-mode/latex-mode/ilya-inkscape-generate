@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: ilya-inkscape-generate
-# key: ink
-# binding: C-c i
-# type: command
-# --
-(inkscape-generate)
