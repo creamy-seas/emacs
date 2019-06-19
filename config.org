@@ -1401,7 +1401,8 @@ the nice bullets instead of multiplication symbols
     "Reads the current line and launches an inkscape document under this name. Base directory must end in /"
     (interactive)
     (let* (;; a - generate filename
-          (file-name (ilya-copy-line))	;reads in current line, downcase and remove spaces
+           (file-name (ilya-copy-line))	;reads in current line
+           (file-name (replace-regexp-in-string "^\s*" "" file-name))
           (file-name (downcase file-name)) ;downcase
           (file-name (replace-regexp-in-string " " "_" file-name)) ;replace spaces
           ;; b - find root folder and create a directory path
