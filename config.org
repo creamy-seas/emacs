@@ -36,7 +36,7 @@ presentations can be hosted from github - look at video no 50
  #+END_SRC
 ** load path
 #+BEGIN_SRC emacs-lisp 
-  (add-to-list 'load-path "~/creamy_seas/syncFiles/emacs_config/ilya_el_manual")
+  (add-to-list 'load-path "~/creamy_seas/sync_files/emacs_config/ilya_el_manual")
  #+END_SRC
 * Emacs feel
 ** menus
@@ -183,14 +183,14 @@ smart mode line allows infinite customization
 #+BEGIN_SRC emacs-lisp
   (defun config-visit()                       ;;no arguments
     (interactive)                                 ;;function type
-    (find-file "~/creamy_seas/syncFiles/emacs_config/config.org"))
+    (find-file "~/creamy_seas/sync_files/emacs_config/config.org"))
   (global-set-key (kbd "C-c e") 'config-visit) ;;call the function defined above
 #+END_SRC
 ** function to load the configuration into emacs
 #+BEGIN_SRC emacs-lisp
   (defun reload-config()
     (interactive)
-    (org-babel-load-file (expand-file-name "~/creamy_seas/syncFiles/emacs_config/config.org")))
+    (org-babel-load-file (expand-file-name "~/creamy_seas/sync_files/emacs_config/config.org")))
   (global-set-key (kbd "C-c r") 'reload-config)
 #+END_SRC
 * Do not forget
@@ -405,7 +405,7 @@ Indenting environment
     (minibuffer-message (concat "ᛋᛋ Generating \"" (TeX-master-file) "\" ᛋᛋ"))
     (let (
           ;; 1 - variable definition
-          (command-script (ilya_expand-latex-command "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/pdf_engine.sh %s")))
+          (command-script (ilya_expand-latex-command "~/creamy_seas/sync_files/emacs_config/ilya_scripts/pdf_engine.sh %s")))
 
       ;; 2 - prepare for compilation buffer
       (ilya_latex-compilation-prepare "BuildPDF")
@@ -436,7 +436,7 @@ Indenting environment
 
     (minibuffer-message (concat "===> 卍 Exterminating \"" (ilya_get-master-file-name) "\" 卍"))
 
-    (let ((command-script (ilya_expand-latex-command "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/jew_engine.sh %s")))
+    (let ((command-script (ilya_expand-latex-command "~/creamy_seas/sync_files/emacs_config/ilya_scripts/jew_engine.sh %s")))
 
       ;; 1 - get the buffer names and variables of running process
       (ilya_latex-compilation-prepare "BuildPDF")
@@ -487,7 +487,7 @@ Indenting environment
 
 #+BEGIN_SRC emacs-lisp
   (setq TeX-view-program-list
-        '(("SkimViewer" "~/creamy_seas/syncFiles/emacs_config/ilya_scripts/search_engine.sh %s %n %o %b")))
+        '(("SkimViewer" "~/creamy_seas/sync_files/emacs_config/ilya_scripts/search_engine.sh %s %n %o %b")))
 
   (setq TeX-view-program-selection '((output-pdf "SkimViewer")))
  #+END_SRC
@@ -1085,7 +1085,7 @@ beautiful file browsing
 
 add the following to =bashrc=
 #+BEGIN_SRC sh
-  export WORKON_HOME=~/creamy_seas/syncFiles/python_vi
+  export WORKON_HOME=~/creamy_seas/sync_files/python_vi
   source /usr/bin/virtualenvwrapper.sh
 #+END_SRC
 (** setup python virtual environment
@@ -1155,7 +1155,7 @@ is activated
     "Activate the neural network environment"
     (interactive)
     (progn
-      (pyvenv-activate "~/creamy_seas/syncFiles/python_vi/nn_vi")
+      (pyvenv-activate "~/creamy_seas/sync_files/python_vi/nn_vi")
       (setq elpy-rpc-python-command "python3.7")
       (setq python-shell-interpreter "python3.7"
             python-shell-interpreter-args "-i")
@@ -1166,7 +1166,7 @@ is activated
     "Activate the phd environment"
     (interactive)
     (progn
-      (pyvenv-activate "~/creamy_seas/syncFiles/python_vi/mac_vi")
+      (pyvenv-activate "~/creamy_seas/sync_files/python_vi/mac_vi")
       (setq elpy-rpc-python-command "python3.7")
       (setq python-shell-interpreter "python3.7"
             python-shell-interpreter-args "-i")
@@ -1180,7 +1180,7 @@ is activated
     :config
     (if (file-exists-p "~/.macbook_localiser")
         (ilya-pyenv-mac)
-      (pyvenv-activate "~/creamy_seas/syncFiles/python_vi/arch_vi")))
+      (pyvenv-activate "~/creamy_seas/sync_files/python_vi/arch_vi")))
 #+END_SRC
 
 *** DONE python3 (the way to handle long scripts)
@@ -1688,6 +1688,7 @@ the nice bullets instead of multiplication symbols
  #+END_SRC
 ** keybindings
 #+BEGIN_SRC emacs-lisp
+  (define-key cdlatex-mode-map (kbd "<C-return>") nil)
   (define-key org-mode-map (kbd "<C-return>") (function org-insert-heading))
   (define-key org-mode-map (kbd "C-x RET") (function org-insert-subheading))
   (define-key org-mode-map (kbd "C-c C-;") (function comment-line))
@@ -1763,7 +1764,7 @@ the nice bullets instead of multiplication symbols
     :ensure t
     :config
     (elfeed-org)
-    (setq rmh-elfeed-org-files (list "~/creamy_seas/syncFiles/emacs_config/elfeed.org")))
+    (setq rmh-elfeed-org-files (list "~/creamy_seas/sync_files/emacs_config/elfeed.org")))
 #+END_SRC
 ** elfeed setip
 #+BEGIN_SRC emacs-lisp
@@ -1771,7 +1772,7 @@ the nice bullets instead of multiplication symbols
     :ensure t
     :init
     (global-set-key (kbd "C-c f") 'elfeed)
-    (setq elfeed-db-directory "~/creamy_seas/syncFiles/emacs_config/elfeeddb")
+    (setq elfeed-db-directory "~/creamy_seas/sync_files/emacs_config/elfeeddb")
     (setq-default elfeed-search-filter "+unread")
     :bind
     (:map elfeed-search-mode-map
@@ -1942,7 +1943,7 @@ The problem is that the entry content only includes the tiny reddit-hosted thumb
     (add-hook 'c++-mode-hook 'yas-minor-mode)
 
     :config
-    (add-to-list 'yas-snippet-dirs "~/creamy_seas/syncFiles/emacs_config/snippets/snippet-mode")
+    (add-to-list 'yas-snippet-dirs "~/creamy_seas/sync_files/emacs_config/snippets/snippet-mode")
 
     (use-package yasnippet-snippets	;the snippets file
       :ensure t)
