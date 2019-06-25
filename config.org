@@ -1016,8 +1016,10 @@ beautiful file browsing
   ;; (with-eval-after-load "ein-notebook"
   ;;  (define-key ein:notebook-mode-map (kbd "C-c C-u") (function ilya_ein-header)))
  #+END_SRC
-** starting server
+** =ilya-start-jupyter-notebook=
 #+BEGIN_SRC emacs-lisp 
+  (setq ein:notebooklist-login-timeout 10000)
+
   (defun ilya-start-jupyter-notebook ()
     "Opens up either a local jupyter server or connects to east-india's one"
     (interactive)
@@ -1043,17 +1045,61 @@ beautiful file browsing
               for line = (mapconcat #'identity (list domain "FALSE" (car (url-path-and-query parsed-url)) (if securep "TRUE" "FALSE") "0" (symbol-name name) (concat content "\n")) "\t")
               do (write-region line nil (request--curl-cookie-jar) 'append))))
 
+
     (let ((token (ein:notebooklist-token-or-password url-or-port)))
       (cond ((null token) ;; don't know
              (ein:notebooklist-login--iteration url-or-port callback nil nil -1 nil))
-            ((string= token "") ;; all authentication disabled
-             (ein:log 'verbose "Skipping login %s" url-or-port)
-             (ein:notebooklist-open* url-or-port nil nil nil callback nil))
-            (t (ein:notebooklist-login--iteration url-or-port callback nil token 0 nil))))
+            ;; ((string= token "") ;; all authentication disabled
+            ;;  (ein:log 'verbose "Skipping login %s" url-or-port)
+            ;;  (ein:notebooklist-open* url-or-port nil nil nil callback nil))
+             ;; (t (ein:notebooklist-login--iteration url-or-port callback nil token 0 nil))
+             ;; (message "null")
+            )
+      )
 
     (switch-to-buffer-other-window "*ein:notebooklist http://project02.sinobestech.com.hk/user/ilya*"))
 
   (global-set-key (kbd "C-x C-j") (function ilya-start-jupyter-notebook))
+ #+END_SRC
+** =ilya-save-execute-and-go-to-next=
+#+BEGIN_SRC emacs-lisp 
+  (defun ilya-save-exectute-and-goto-next ()
+    "Saves the notebook → execute cell → go to next cell"
+    (interactive)
+    (call-interactively (function ein:notebook-save-notebook-command))
+    (call-interactively (function ein:worksheet-execute-cell-and-goto-next)))
+
+  (defun ilya-save-exectute ()
+    "Saves the notebook → execute cell → go to next cell"
+    (interactive)
+    (call-interactively (function ein:notebook-save-notebook-command))
+    (call-interactively (function ein:worksheet-execute-cell)))
+
+  (define-key ein:notebook-mode-map (kbd "<M-return>") (function ilya-save-exectute-and-goto-next))
+  (define-key ein:notebook-mode-map (kbd "C-c C-c") (function ilya-save-exectute))
+
+ #+END_SRC
+** debug
+#+BEGIN_SRC emacs-lisp 
+  (defun temp (url-or-port callback errback token iteration response-status)
+    ;; (ein:log 'debug "Login attempt #%d in response to %s from %s."
+    ;;          iteration response-status url-or-port)
+    ;; (unless callback
+    ;;   (setq callback #'ignore))
+    ;; (unless errback
+    ;;   (setq errback #'ignore))
+    (ein:query-singleton-ajax
+     (list 'notebooklist-login--iteration url-or-port)
+     (ein:url url-or-port "login")
+     :timeout 10000
+     ;; :data (if token (concat "password=" (url-hexify-string token)))
+     ;; :parser #'ein:notebooklist-login--parser
+     ;; :complete (apply-partially #'ein:notebooklist-login--complete url-or-port)
+     ;; :error (apply-partially #'ein:notebooklist-login--error url-or-port token
+     ;;                         callback errback iteration)
+     :success (apply-partially #'ein:notebooklist-login--success url-or-port callback
+                               errback token iteration)
+    ))
  #+END_SRC
 ** key bindings
 #+BEGIN_SRC emacs-lisp 
