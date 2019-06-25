@@ -1,7 +1,21 @@
 #+STARTUP: overview
 
-* Important emacs notes
+* Things not to forget
 - to run an interactive command =(call-interactively (function functionName))=
+- install
+| ispell       |
+| inkscape     |
+| latex-no-gui |
+| vlc          |
+** matplotlib setup
+- put the =matplotlibrc= files into either =.config/matplotlib= or =.matplotlib=
+- check location with =matplotlib.matplotlib_fname()= or =matplotlib.get_configdir()=
+*** setting the backend
+to control where the plots are sent to, set the backend to =Qt5Agg=
+*** creating styles
+- to print the available styles =plt.style.available=
+- to use styles =plt.style.use('ggplot')=
+- create a style document =example.mplstyle= in the =matplolib/stylelib= folder
 * Ox-reveal
 presentations can be hosted from github - look at video no 50
 #+BEGIN_SRC emacs-lisp 
@@ -15,7 +29,22 @@ presentations can be hosted from github - look at video no 50
   (use-package htmlize
     :ensure t)
  #+END_SRC
-* Primary load
+* Passwords                                                             :gpg:
+** enable the encrypting password package
+#+BEGIN_SRC emacs-lisp
+  ;;(use-package epa
+  ;;     :ensure t
+  ;;     :init
+  ;;     (custom-set-variables '(epg-gpg-program "/usr/local/bin/gpg"))
+  ;;     (epa-file-enable))
+#+END_SRC
+* Preload
+** executable path
+path for emacs executables to
+#+BEGIN_SRC emacs-lisp 
+  (setq exec-path (append exec-path '("/usr/local/bin")))
+  (setq exec-path (append exec-path '("/Users/CCCP/.scripts")))
+ #+END_SRC
 ** functions
 #+BEGIN_SRC emacs-lisp 
   (defun ilya-copy-line ()
@@ -35,6 +64,7 @@ presentations can be hosted from github - look at video no 50
     (match-string index string))
  #+END_SRC
 ** load path
+add folder with some =.el= files that could not be resolved by emacs
 #+BEGIN_SRC emacs-lisp 
   (add-to-list 'load-path "~/creamy_seas/sync_files/emacs_config/ilya_el_manual")
  #+END_SRC
@@ -52,16 +82,14 @@ to access the inconsolata font you need to
 **** run =M-x customize= go to =faces= then =defaults= and type =Inconsolata=
 ** bottoms bar
 #+BEGIN_SRC emacs-lisp
-  (if (file-exists-p "~/.macbook_localiser")
+  (if t
       (progn
         (use-package powerline			
           :ensure t
           :init
           (powerline-center-theme)
-          (setq ns-use-srgb-colorspace nil)
-          )
-        (setq powerline-default-separator 'box)
-        )
+          (setq ns-use-srgb-colorspace nil))
+        (setq powerline-default-separator 'box))
     (progn
       (use-package spaceline
         :ensure t
@@ -181,37 +209,21 @@ smart mode line allows infinite customization
 * Emacs Shortcuts                                                    :darren:
 ** function to open up the config file for editing
 #+BEGIN_SRC emacs-lisp
-  (defun config-visit()                       ;;no arguments
-    (interactive)                                 ;;function type
+  (defun config-visit()
+      "Opens up the configuration file on the stroke of =C-c e=
+  "
+    (interactive)
     (find-file "~/creamy_seas/sync_files/emacs_config/config.org"))
-  (global-set-key (kbd "C-c e") 'config-visit) ;;call the function defined above
+
+  (global-set-key (kbd "C-c e") (function config-visit))
 #+END_SRC
 ** function to load the configuration into emacs
 #+BEGIN_SRC emacs-lisp
   (defun reload-config()
+    "Reruns the config file
+  "
     (interactive)
     (org-babel-load-file (expand-file-name "~/creamy_seas/sync_files/emacs_config/config.org")))
-  (global-set-key (kbd "C-c r") 'reload-config)
-#+END_SRC
-* Do not forget
-- =export EMACS_HOME="pathToemacs.dDirectory" in =.profile= of the system
-- =make sure ispell is installed=
-
-- =rx= to build regular expressions
-- global mode -> major mode -> minor mode in terms of key bindings
-- modes have hooks associeted with them
-- when rebinding keys, call  =define-key MAP (kbd "combo") (function NAME)=
-MAP is the keybinding map for the major or minor mode e.g. LaTeX-mode-map
-- to set major mode key =(local-set key (kbd "combo") (function NAME)=
-- to set global key =(global-set-key (kbd "combo") (function NAME)=
-* Passwords                                                             :gpg:
-** enable the encrypting password package
-#+BEGIN_SRC emacs-lisp
-  ;;(use-package epa
-  ;;     :ensure t
-  ;;     :init
-  ;;     (custom-set-variables '(epg-gpg-program "/usr/local/bin/gpg"))
-  ;;     (epa-file-enable))
 #+END_SRC
 * Terminal and Bash
 ** import bash variables
@@ -258,38 +270,12 @@ MAP is the keybinding map for the major or minor mode e.g. LaTeX-mode-map
     :bind
     ("s-SPC" . 'dmenu))
 #+END_SRC
-** execution path
-#+BEGIN_SRC emacs-lisp 
-  ;;  (defun set-exec-path-from-shell-PATH ()
-  ;;   "Sets the exec-path to the same value used by the user shell"
-  ;;   (let ((path-from-shell
-  ;;          (replace-regexp-in-string
-  ;;           "[[:space:]\n]*$" ""
-  ;;           (shell-command-to-string "$SHELL -l -c 'echo $PATH'"))))
-  ;;     (setenv "PATH" path-from-shell)
-  ;;     (setq exec-path (split-string path-from-shell path-separator))))
-
-  ;; ;; call function now
-  ;; (set-exec-path-from-shell-PATH)
- #+END_SRC
-** emacs executable path
-path for emacs executables to
-#+BEGIN_SRC emacs-lisp 
-  (setq exec-path (append exec-path '("/usr/local/bin")))
-  (setq exec-path (append exec-path '("/Users/CCCP/.scripts")))
- #+END_SRC
 * Very cool benis
 ** reload file on the go
 any changes of a file, will be automatically reloaded
 #+BEGIN_SRC emacs-lisp 
   (global-auto-revert-mode 1)
-  ;; (setq auto-revert-mode nil)
  #+END_SRC
-** multiple cursors
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-(") 'mc/mark-next-lines)
-  (global-set-key (kbd "C-)") 'mc/mark-previous-lines)
-#+END_SRC
 ** symon mode
 (system memory etc showing at the bottom of the screen)
 #+BEGIN_SRC emacs-lisp
@@ -952,8 +938,9 @@ beautiful file browsing
 | C-c C-q | rename then =C-c C-c=                           |
 |         |                                                 |
 * EIN mode
-- jupyter notebook server in emacs
 - *do not set* =(setq ein:use-smartrep t)= or it doesn't work
+- run command =jt= to set html variables*
+- run =jt notebook password= to set a password
 - =C-c C-h= for tooltip help
 ** setup
 #+BEGIN_SRC emacs-lisp 
@@ -963,9 +950,7 @@ beautiful file browsing
     (setq ein:completion-backend 'ein:use-company-backend)
     (custom-set-variables
      '(ein:jupyter-default-notebook-directory
-       "/Users/CCCP/creamy_seas/2am/python")))
-
-  ;; 
+       "~/creamy_seas/2am/python")))
 
   (defun ilya-no-relative-numbering ()
     "turn off relative numbering"
@@ -986,24 +971,7 @@ beautiful file browsing
    '(ein:cell-heading-6 ((t (:inherit variable-pitch :foreground "MediumPurple3" :weight bold)))))
 
  #+END_SRC
-** common commands
-| =C-c C-a/b= | create cell above/below           |
-| =C-c C-c=   | evalute cell                      |
-| =C-c C-e=   | hide evaluation                   |
-| =C-c C-h=   | get python documentation at point |
-| =C-c C-TAB= | autocmplete                       |
-| =C-c C-k=   | kill cell                         |
-| =C-c C-m/s= | merge or split cell               |
-| =C-c C-n/p= | next/previous cell                |
-| =C-c C-o=   | open notebook                     |
-| =C-c C-q=   | close ntebook                     |
-| =C-c C-t=   | change cell format                |
-| =C-c C-w/y= | copy/yank cell                    |
-| =C-c C-z=   | interrupt kernel                  |
-** html setup
-- run command =jt= to set html variables*
-- run =jt notebook password= to set a password
-** custom
+** =ilya-ein-header=
 #+BEGIN_SRC emacs-lisp 
   ;; (defun ilya_ein-header (ws cell type &optional level focus)
   ;;   "Change the cell type of the current cell.
@@ -1059,12 +1027,6 @@ beautiful file browsing
     (define-key ein:notebook-mode-map (kbd "C-:") (function iedit-mode))
     (define-key ein:notebook-mode-map (kbd "C-c C-;") (function comment-line))
     (define-key ein:notebook-mode-map (kbd "C-c TAB") (function ein:completer-complete)))
-
- #+END_SRC
-#+BEGIN_SRC emacs-lisp 
-  ;; (add-hook 'ein-notebook-mode-hook (lambda()
-                                      ;; (define-key ein:notebook-mode-map (kbd "C-c") )))
-
  #+END_SRC
 * Elpy mode
 ** external setup of python
@@ -1151,63 +1113,37 @@ is activated
  #+END_SRC
 *** different virtual environments
 #+BEGIN_SRC emacs-lisp 
-  (defun ilya-pyenv-nn ()
-    "Activate the neural network environment"
+  (defun ilya-pyenv-activate (python-environment-path)
+    "Activate a particular environment
+  -------------------------------------------------------------------
+  python-path     relative path (from home directory) to the python env
+                  folder to activate
+  "
     (interactive)
     (progn
-      (pyvenv-activate "~/creamy_seas/sync_files/python_vi/nn_vi")
+      (pyvenv-activate python-environment-path)
       (setq elpy-rpc-python-command "python3.7")
       (setq python-shell-interpreter "python3.7"
             python-shell-interpreter-args "-i")
-      (pyvenv-restart-python))
-    )
-
-  (defun ilya-pyenv-mac ()
-    "Activate the phd environment"
-    (interactive)
-    (progn
-      (pyvenv-activate "~/creamy_seas/sync_files/python_vi/mac_vi")
-      (setq elpy-rpc-python-command "python3.7")
-      (setq python-shell-interpreter "python3.7"
-            python-shell-interpreter-args "-i")
-      (pyvenv-restart-python))
-    )
+      (pyvenv-restart-python)))
  #+END_SRC
-*** default startup
+*** default load
 #+BEGIN_SRC emacs-lisp
   (use-package pyenv-mode
     :ensure t
     :config
     (if (file-exists-p "~/.macbook_localiser")
-        (ilya-pyenv-mac)
-      (pyvenv-activate "~/creamy_seas/sync_files/python_vi/arch_vi")))
+        (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/nn_vi")
+      (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/arch_vi")))
 #+END_SRC
 
-*** DONE python3 (the way to handle long scripts)
-#+BEGIN_SRC emacs-lisp
-  ;; (setq python-shell-interpreter "python3.7"
-  ;;       python-shell-interpreter-args "-i")
-#+END_SRC
-*** DONE jupyter notebook
-#+BEGIN_SRC emacs-lisp 
-  ;;(setq python-shell-interpreter "jupyter"
-  ;;      python-shell-interpreter-args "console --simple-prompt"
-  ;;      python-shell-prompt-detect-failure-warning nil)
-  ;;(add-to-list 'python-shell-completion-native-disabled-interpreters
-  ;;             "jupyter")
- #+END_SRC
-*** DONE ipython (do not use - buggy)
-#+BEGIN_SRC emacs-lisp 
-  ;;(setq python-shell-interpreter "ipython"
-  ;;      python-shell-interpreter-args "-i --simple-prompt") 
- #+END_SRC
 ** hydra
 #+BEGIN_SRC emacs-lisp
   (use-package hydra
     :ensure t)
 
   (defhydra hydra-python-vi (:color teal
-                              :hint nil)
+			      :hint nil)
     "
        PYTHON ENVIRONMENT SELECTION
   ^^^^^------------------------------------------------------------------------------------------
@@ -1216,52 +1152,38 @@ is activated
   ^^
   ^^
   "
-    ("m"   ilya-pyenv-mac)
-    ("n"   ilya-pyenv-nn)
+    ("m"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/mac_vi"))
+    ("n"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/nn_vi"))
     ("r"   pyvenv-restart-python)
     ("q"   nil "cancel" :color blue))
 
   (global-set-key (kbd "<f9>") (function hydra-python-vi/body))
  #+END_SRC
-
-** matplotlib setup
-- put the =matplotlibrc= files into either =.config/matplotlib= or =.matplotlib=
-- check location with =matplotlib.matplotlib_fname()= or =matplotlib.get_configdir()=
-*** setting the backend
-to control where the plots are sent to, set the backend to =Qt5Agg=
-*** creating styles
-- to print the available styles =plt.style.available=
-- to use styles =plt.style.use('ggplot')=
-- create a style document =example.mplstyle= in the =matplolib/stylelib= folder
-** custom commands
+** =ilya-python-interrupt=
 #+BEGIN_SRC emacs-lisp 
-  (defun ilya_python-interrupt ()
+  (defun ilya-python-interrupt ()
     "Send an interrupt signal to python process"
     (interactive)
     (let ((proc (ignore-errors
-                  (python-shell-get-process-or-error))))
+		  (python-shell-get-process-or-error))))
       (when proc
-        (interrupt-process proc))))
-
-  (defun ilya_python-kill-all (args)
-    "Kill all without warning"
-    )
+	(interrupt-process proc))))
 
  #+END_SRC
-** key rebinding
+** binding
 #+BEGIN_SRC emacs-lisp 
   (add-hook 'python-mode-hook (lambda ()
-                                (local-unset-key (kbd "C-c C-j")) ;imenu
-                                (local-unset-key (kbd "C-c C-f")) ;elpy-find-file
-                                (define-key elpy-mode-map (kbd "C-c C-b") nil) ;select current indentation
+				(local-unset-key (kbd "C-c C-j")) ;imenu
+				(local-unset-key (kbd "C-c C-f")) ;elpy-find-file
+				(define-key elpy-mode-map (kbd "C-c C-b") nil) ;select current indentation
 
-                                (define-key elpy-mode-map (kbd "C-c C-k") (function ilya_python-interrupt))
-                                (define-key elpy-mode-map (kbd "C-c C-j") (function elpy-shell-kill-all))
-                                (define-key elpy-mode-map (kbd "C-c C-n") (function flycheck-next-error))
-                                (define-key elpy-mode-map (kbd "C-c C-p") (function flycheck-previous-error))
-                                (define-key elpy-mode-map (kbd "C-c C-f") (function elpy-nav-expand-to-indentation))
-                                (define-key elpy-mode-map (kbd "C-c C-r") (function elpy-rpc-restart))
-                                (define-key elpy-mode-map (kbd "C-c C-;") (function comment-line))))
+				(define-key elpy-mode-map (kbd "C-c C-k") (function ilya-python-interrupt))
+				(define-key elpy-mode-map (kbd "C-c C-j") (function elpy-shell-kill-all))
+				(define-key elpy-mode-map (kbd "C-c C-n") (function flycheck-next-error))
+				(define-key elpy-mode-map (kbd "C-c C-p") (function flycheck-previous-error))
+				(define-key elpy-mode-map (kbd "C-c C-f") (function elpy-nav-expand-to-indentation))
+				(define-key elpy-mode-map (kbd "C-c C-r") (function elpy-rpc-restart))
+				(define-key elpy-mode-map (kbd "C-c C-;") (function comment-line))))
  #+END_SRC
 * Markdown mode
 #+BEGIN_SRC emacs-lisp 
@@ -1575,6 +1497,8 @@ C-u C-c C-x !
            "*** PHD Twin Qubit [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
           ("px" "xMon" entry (id "phd-xmon")
            "*** PHD xMon [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("pg" "General" entry (id "phd-general")
+           "*** PHD General [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
           ;; save a really good url
           ("u" "Save URL" entry (file+headline "~/creamy_seas/1488.org" "URL too good to throw away")
            "** %^L %? %^G"
@@ -1651,7 +1575,7 @@ the nice bullets instead of multiplication symbols
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'org-structure-template-alist
                '("el" "#+BEGIN_SRC emacs-lisp \n ? \n #+END_SRC")
-               '("py" "#+BEGIN_SRC python \n ? \n #+END_SRC"))
+               '("pyt" "#+BEGIN_SRC python \n ? \n #+END_SRC"))
 #+END_SRC
 ** indentation                                                      :darren:
 #+BEGIN_SRC emacs-lisp
@@ -1696,6 +1620,7 @@ the nice bullets instead of multiplication symbols
   (define-key emacs-lisp-mode-map (kbd "C-c C-;") (function comment-line))
  #+END_SRC
 * Inkscape
+- to edit interactively, open =.svg= file → save as → =.pdf= → =omit text= → use exported object size
 - call function with "base-directory argument supplied"
 #+BEGIN_SRC emacs-lisp 
   (setq inkscape-generate-location "/Users/CCCP/.scripts/inkscape_generate.sh")
@@ -2600,7 +2525,6 @@ hides the minor modes that are trivial
         (diminish 'visual-line-mode)
         (diminish 'org-indent-mode)
         (diminish 'prettify-symbols-mode)
-  ;;      (diminish 'yas-minor-mode)
         (diminish 'hl-line-mode)
         (diminish 'column-number-mode)
         (diminish 'line-number-mode)
@@ -2638,3 +2562,42 @@ hides the minor modes that are trivial
   (put 'downcase-region 'disabled nil)
   (put 'set-goal-column 'disabled nil)	;set goal column, so that with next line you stay in same column
  #+END_SRC
+* Graveyard
+** multiple cursors
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-(") 'mc/mark-next-lines)
+  (global-set-key (kbd "C-)") 'mc/mark-previous-lines)
+#+END_SRC
+** DONE python3 (the way to handle long scripts)
+#+BEGIN_SRC emacs-lisp
+  ;; (setq python-shell-interpreter "python3.7"
+  ;;       python-shell-interpreter-args "-i")
+#+END_SRC
+** DONE jupyter notebook
+#+BEGIN_SRC emacs-lisp 
+  ;;(setq python-shell-interpreter "jupyter"
+  ;;      python-shell-interpreter-args "console --simple-prompt"
+  ;;      python-shell-prompt-detect-failure-warning nil)
+  ;;(add-to-list 'python-shell-completion-native-disabled-interpreters
+  ;;             "jupyter")
+ #+END_SRC
+** DONE ipython (do not use - buggy)
+#+BEGIN_SRC emacs-lisp 
+  ;;(setq python-shell-interpreter "ipython"
+  ;;      python-shell-interpreter-args "-i --simple-prompt") 
+ #+END_SRC
+
+** common commands jupyter
+| =C-c C-a/b= | create cell above/below           |
+| =C-c C-c=   | evalute cell                      |
+| =C-c C-e=   | hide evaluation                   |
+| =C-c C-h=   | get python documentation at point |
+| =C-c C-TAB= | autocmplete                       |
+| =C-c C-k=   | kill cell                         |
+| =C-c C-m/s= | merge or split cell               |
+| =C-c C-n/p= | next/previous cell                |
+| =C-c C-o=   | open notebook                     |
+| =C-c C-q=   | close ntebook                     |
+| =C-c C-t=   | change cell format                |
+| =C-c C-w/y= | copy/yank cell                    |
+| =C-c C-z=   | interrupt kernel                  |
