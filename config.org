@@ -3,6 +3,7 @@
 * Things not to forget
 - to run an interactive command =(call-interactively (function functionName))=
 - install
+- [[https://habr.com/ru/post/248663/][Habr Emacs Config]]
 | ispell       |
 | inkscape     |
 | latex-no-gui |
@@ -206,7 +207,7 @@ smart mode line allows infinite customization
   (set-default 'cursor-type 'hollow)
   (set-cursor-color "#ffd700")
  #+END_SRC
-* Emacs Shortcuts                                                    :darren:
+* Emacs Shortcuts    1                                               :darren:
 ** function to open up the config file for editing
 #+BEGIN_SRC emacs-lisp
   (defun config-visit()
@@ -896,6 +897,21 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
                   (ggtags-mode 1))))
     )
  #+END_SRC
+** habr
+#+BEGIN_SRC emacs-lisp 
+  ;; (require 'cedet) ;; использую "вшитую" версию CEDET. Мне хватает...
+  ;; (add-to-list 'semantic-default-submodes 'global-semanticdb-minor-mode)
+  ;; (add-to-list 'semantic-default-submodes 'global-semantic-mru-bookmark-mode)
+  ;; (add-to-list 'semantic-default-submodes 'global-semantic-idle-scheduler-mode)
+  ;; (add-to-list 'semantic-default-submodes 'global-semantic-highlight-func-mode)
+  ;; (add-to-list 'semantic-default-submodes 'global-semantic-idle-completions-mode)
+  ;; (add-to-list 'semantic-default-submodes 'global-semantic-show-parser-state-mode)
+  ;; (semantic-mode   t)
+  ;; (global-ede-mode t)
+  ;; (require 'ede/generic)
+  ;; (require 'semantic/ia)
+  ;; (ede-enable-generic-projects)
+ #+END_SRC
 ** Actual installation
 #+BEGIN_SRC emacs-lisp 
   ;;tie backend of company to company-irony
@@ -1075,8 +1091,9 @@ beautiful file browsing
     (call-interactively (function ein:notebook-save-notebook-command))
     (call-interactively (function ein:worksheet-execute-cell)))
 
-  (define-key ein:notebook-mode-map (kbd "<M-return>") (function ilya-save-exectute-and-goto-next))
-  (define-key ein:notebook-mode-map (kbd "C-c C-c") (function ilya-save-exectute))
+  (with-eval-after-load "ein-notebook"
+    (define-key ein:notebook-mode-map (kbd "<M-return>") (function ilya-save-exectute-and-goto-next))
+    (define-key ein:notebook-mode-map (kbd "C-c C-c") (function ilya-save-exectute)))
 
  #+END_SRC
 ** debug
@@ -1329,6 +1346,7 @@ is activated
   (global-set-key (kbd "M-g M-g") (function hydra-git-gutter/body))
  #+END_SRC
 * Org mode                                                           :darren:
+- (turn-on-cdlatex) to enable latex completions
 ** autocomplete in org mode (when typing #+)
 #+BEGIN_SRC emacs-lisp  
   ;; (use-package org-ac
@@ -1532,11 +1550,6 @@ C-u C-c C-x !
       (insert (org-make-link-string link desc))
       ;; Redisplay so as the new link has proper invisible characters.
       (sit-for 0)))
- #+END_SRC
-** latex mode
-#+BEGIN_SRC emacs-lisp 
-  (add-hook 'org-mode-hook 'turn-on-cdlatex)
-
  #+END_SRC
 ** agenda files
 *** keybinding
@@ -2021,6 +2034,17 @@ once autocomplete is triggered, =C-d= to get documentation at point
     (define-key company-active-map (kbd "C-p") #'company-select-previous)
     )
  #+END_SRC
+* Bookmarks
+#+BEGIN_SRC emacs-lisp 
+  (setq bookmark-save-flag t) 		;save bookmars to file
+  (when (file-exists-p (concat user-emacs-directory "bookmarks"))
+    (bookmark-load bookmark-default-file t)) ;load boomarks from "~/.emacs.d/bookmarks"
+  (setq bookmark-default-file (concat user-emacs-directory "bookmarks"))
+
+  (global-set-key (kbd "<f6>") 'bookmark-set)
+  (global-set-key (kbd "<f7>") 'bookmark-jump)
+  (global-set-key (kbd "<f8>") 'bookmark-bmenu-list)
+ #+END_SRC
 * Brackets
 ** autoclosing parantheses
 #+BEGIN_SRC emacs-lisp
@@ -2237,6 +2261,10 @@ nice popup menu when pasting of the past history
     :ensure t
     :bind ("M-y" . popup-kill-ring))
 #+END_SRC
+** delete over selection
+#+BEGIN_SRC emacs-lisp 
+  (delete-selection-mode t)
+ #+END_SRC
 ** iedit (multiple replacements)
 mark and edit all copies of the marked region simultaniously. 
 #+BEGIN_SRC emacs-lisp 
@@ -2285,6 +2313,11 @@ mark and edit all copies of the marked region simultaniously.
  #+END_SRC
 * Essential autism                                                   :darren:
 This stuff should be there by default, but >muh autism prevents this from being so
+** adding new line to end of file when saving
+#+BEGIN_SRC emacs-lisp 
+  (setq require-final-newline    t)
+  (setq next-line-add-newlines nil)
+ #+END_SRC
 ** toggling fullscreen
 #+BEGIN_SRC emacs-lisp 
   (add-hook 'prog-mode-hook (
@@ -2638,6 +2671,11 @@ hides the minor modes that are trivial
 ** function calls
 #+BEGIN_SRC emacs-lisp 
   (hydra-python-vi/body)
+ #+END_SRC
+** start server
+#+BEGIN_SRC emacs-lisp 
+   (unless (server-running-p)
+          (server-start))
  #+END_SRC
 ** allowed commands
 #+BEGIN_SRC emacs-lisp 
