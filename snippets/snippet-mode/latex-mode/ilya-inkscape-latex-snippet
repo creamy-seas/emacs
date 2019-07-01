@@ -3,6 +3,6 @@
 # --
 \begin{figure}[h]
   \centering
-  \def\svgheight{${1:height}$0cm}\import{images_inkscape/}{`temp-file-name-for-snippet`.pdf_tex}
+  \def\svgwidth{${1:width}$0cm}\import{images_inkscape/}{`temp-file-name-for-snippet`.pdf_tex}
   \caption{\small ${3:caption-text}\label{fig:`temp-file-name-for-snippet`}}
 \end{figure}

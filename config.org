@@ -1,5 +1,22 @@
 #+STARTUP: overview
 
+* Latex Formatting Macros
+#+BEGIN_SRC emacs-lisp 
+  (fset 'ipic
+     (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([19 105 112 105 99 return 6 C-backspace 98 101 103 105 110 123 99 101 110 116 101 114 6 return 92 105 110 99 108 117 100 101 103 114 97 112 104 105 99 115 91 4 104 101 105 103 104 116 61 19 125 return backspace 93 5 return 92 101 110 100 123 99 101 110 116 101 114 125] 0 "%d")) arg)))
+
+  (fset 'iRa
+     (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([19 105 82 97 return 134217826 2 2 67108896 6 6 6 6 backspace 92 113 117 97 100 92 82 105 103 104 116 97 114 114 112 119 backspace backspace 111 119 92 113 117 97 100] 0 "%d")) arg)))
+
+  (fset 'ira
+     (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([19 105 114 97 return C-backspace backspace 92 44 92 114 105 103 104 116 97 114 114 111 119 92 44] 0 "%d")) arg)))
+
+  (fset 'ipicCaption
+     (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([19 105 112 105 99 67 return 134217830 C-backspace C-backspace 98 101 103 105 110 123 102 105 103 117 114 101 125 91 104 93 return 92 98 101 103 105 110 123 99 101 110 116 101 114 125 return 92 105 110 99 108 117 100 101 103 114 97 112 104 105 99 115 91 104 101 105 103 104 116 61 4 4 4 19 125 return backspace 93 19 125 return return 92 99 97 112 116 105 111 110 123 92 115 109 97 108 108 4 4 4 32 19 125 return 134217829 return 92 101 110 100 123 99 101 110 116 101 114 125 return 92 101 110 100 123 102 105 103 117 114 101 125] 0 "%d")) arg)))
+
+  (fset 'iframed
+     (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([19 105 102 114 97 109 101 return C-backspace 98 101 103 105 110 6 102 114 97 109 101 100 125 92 110 111 105 110 100 101 110 116 return 134217829 backspace return 92 101 110 100 123 102 114 109 backspace 97 109 101 100 125] 0 "%d")) arg)))
+ #+END_SRC
 * Things not to forget
 - to run an interactive command =(call-interactively (function functionName))=
 - install
@@ -1368,10 +1385,11 @@ is activated
 C-u C-c C-x !
 ** todo lists
 #+BEGIN_SRC emacs-lisp 
-  (setq org-todo-keywords '((sequence "TODO(t)" "BLOAT(B)" "BRYAN(b)" "PHD(p)" "SCHOOLS(s)" "TUTORING(l)" "|" "DOMINATED(d)")))
+  (setq org-todo-keywords '((sequence "TODO(t)" "BLOAT(B)" "BRYAN(b)" "PHD(p)" "SCHOOLS(s)" "TUTORING(l)" "CURRENT(c)" "|" "DOMINATED(d)")))
 
   (setq org-todo-keyword-faces (quote (
                                        ("STARTED" . "yellow")
+                                       ("CURRENT" . (:foreground "#ffff0a" :background "#754ec1" :weight bold))
                                        ("PHD" . (:foreground "yellow" :background "#FF3333"))
                                        ("SCHOOLS" . (:foreground "#090C42" :background "#9DFE9D"))
                                        ("Dominated" . (:foreground "#9DFE9D" :weight bold))
