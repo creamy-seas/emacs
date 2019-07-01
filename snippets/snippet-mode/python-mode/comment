@@ -3,12 +3,12 @@
 # key: com
 # --
 """
-__ Parameters __
-${1:parameter me up}
+${1:__ Parameters __
+${2:parameter me up}}
 
-__ Description __
-${2:description of function does}
+${3:__ Description __
+${4:description of function does}}
 
-__ Return __
-${3:any return values}$0
+${5:__ Return __
+${6:any return values}}$0
 """

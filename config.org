@@ -157,13 +157,14 @@ smart mode line allows infinite customization
  #+END_SRC
 ** theme
 #+BEGIN_SRC emacs-lisp
-  (if (file-exists-p "~/.macbook_localiser")
-      ;; (load-theme 'misterioso)
-      (load-theme 'wheatgrass)
-      (use-package spacemacs-theme
-      :defer t
-      :ensure t
-      :config (load-theme 'spacemacs-dark)))
+  (if (display-graphic-p)			;only if we are in graphics mode
+      (if (file-exists-p "~/.macbook_localiser")
+          ;; (load-theme 'misterioso)
+          (load-theme 'wheatgrass)
+        (use-package spacemacs-theme
+          :defer t
+          :ensure t
+          :config (load-theme 'spacemacs-dark))))
 #+END_SRC
 ** window splitting
 #+BEGIN_SRC emacs-lisp 
@@ -207,7 +208,7 @@ smart mode line allows infinite customization
   (set-default 'cursor-type 'hollow)
   (set-cursor-color "#ffd700")
  #+END_SRC
-* Emacs Shortcuts    1                                               :darren:
+* Emacs Shortcuts                                                    :darren:
 ** function to open up the config file for editing
 #+BEGIN_SRC emacs-lisp
   (defun config-visit()
@@ -609,8 +610,6 @@ here we make it do it explictly
         (set-fill-column temp-fill-width)
       (set-fill-column 94)))
 
-
-  (global-set-key (kbd "C-c l") (function ilya_buffer-fill-column))
  #+END_SRC
  
 ** =hyperref=
@@ -765,7 +764,7 @@ here we make it do it explictly
       (setq justify-width (ilya_buffer-fill-column))
 
       ;; 3 - perform fill
-      (ignore-errors (LaTeX-fill-buffer justify-width))
+      (ignore-errors (LaTeX-fill-environment justify-width))
 
       ;; 2 - save file
       (save-buffer))
@@ -1032,20 +1031,8 @@ beautiful file browsing
   ;; (with-eval-after-load "ein-notebook"
   ;;  (define-key ein:notebook-mode-map (kbd "C-c C-u") (function ilya_ein-header)))
  #+END_SRC
-** =ilya-start-jupyter-notebook=
+** =ilya-login-east-india=
 #+BEGIN_SRC emacs-lisp 
-  (setq ein:notebooklist-login-timeout 10000)
-
-  (defun ilya-start-jupyter-notebook ()
-    "Opens up either a local jupyter server or connects to east-india's one"
-    (interactive)
-    (let ((choices (list "✇ local" "₿ east-india-server")))
-      (setq temp-chosen-server (ido-completing-read "Portal to open:" choices))
-      (if (string-equal temp-chosen-server "₿ east-india-server")
-          (call-interactively (function ilya-login-east-india))
-        (call-interactively (function ein:run)))))
-
-
   (defun ilya-login-east-india (callback &optional cookie-plist)
     "based of ein:notebook-login, but with supplied part to connect to"
     (setq url-or-port "http://project02.sinobestech.com.hk")
@@ -1065,15 +1052,27 @@ beautiful file browsing
     (let ((token (ein:notebooklist-token-or-password url-or-port)))
       (cond ((null token) ;; don't know
              (ein:notebooklist-login--iteration url-or-port callback nil nil -1 nil))
-            ;; ((string= token "") ;; all authentication disabled
-            ;;  (ein:log 'verbose "Skipping login %s" url-or-port)
-            ;;  (ein:notebooklist-open* url-or-port nil nil nil callback nil))
-             ;; (t (ein:notebooklist-login--iteration url-or-port callback nil token 0 nil))
-             ;; (message "null")
+            ((string= token "") ;; all authentication disabled
+             (ein:log 'verbose "Skipping login %s" url-or-port)
+             (ein:notebooklist-open* url-or-port nil nil nil callback nil))
+             (t (ein:notebooklist-login--iteration url-or-port callback nil token 0 nil))
+             (message "null")
             )
       )
-
     (switch-to-buffer-other-window "*ein:notebooklist http://project02.sinobestech.com.hk/user/ilya*"))
+ #+END_SRC
+** =ilya-start-jupyter-notebook=
+#+BEGIN_SRC emacs-lisp 
+  (setq ein:notebooklist-login-timeout 10000)
+
+  (defun ilya-start-jupyter-notebook ()
+    "Opens up either a local jupyter server or connects to east-india's one"
+    (interactive)
+    (let ((choices (list "✇ local" "₿ east-india-server")))
+      (setq temp-chosen-server (ido-completing-read "Portal to open:" choices))
+      (if (string-equal temp-chosen-server "₿ east-india-server")
+          (call-interactively (function ilya-login-east-india))
+        (call-interactively (function ein:run)))))
 
   (global-set-key (kbd "C-x C-j") (function ilya-start-jupyter-notebook))
  #+END_SRC
