@@ -375,7 +375,10 @@ Indenting environment
     (LaTeX-mode-hook . font-lock-mode);; font highlighting
     )
 
-  (server-start)
+  (progn
+    (require 'server)
+    (if (not (server-running-p))
+        (server-start)))
  #+END_SRC
 ** tailored commands
 *Some important AucTex commands and variables*
