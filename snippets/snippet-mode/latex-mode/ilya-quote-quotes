@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: quote
+# key: q
+# --
+\`\`${1:quote-me-in}'' $0

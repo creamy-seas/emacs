@@ -57,6 +57,10 @@ presentations can be hosted from github - look at video no 50
   ;;     (epa-file-enable))
 #+END_SRC
 * Preload
+** ignore bell
+#+BEGIN_SRC emacs-lisp 
+  (setq ring-bell-function 'ignore)
+ #+END_SRC
 ** executable path
 path for emacs executables to
 #+BEGIN_SRC emacs-lisp 
@@ -176,12 +180,15 @@ smart mode line allows infinite customization
 #+BEGIN_SRC emacs-lisp
   (if (display-graphic-p)			;only if we are in graphics mode
       (if (file-exists-p "~/.macbook_localiser")
-          ;; (load-theme 'misterioso)
-          (load-theme 'wheatgrass)
-        (use-package spacemacs-theme
-          :defer t
-          :ensure t
-          :config (load-theme 'spacemacs-dark))))
+	  (load-theme 'deeper-blue)
+	(load-theme 'light-blue)))
+	;; (use-package spacemacs-theme
+	;;   :defer t
+	;;   :ensure t
+	;;   :config (load-theme 'spacemacs-dark))))
+
+  ;; (load-theme 'misterioso)
+  ;; (load-theme 'wheatgrass)
 #+END_SRC
 ** window splitting
 #+BEGIN_SRC emacs-lisp 
@@ -213,15 +220,17 @@ smart mode line allows infinite customization
 ** colouring
 #+BEGIN_SRC emacs-lisp 
   (custom-set-faces
-   '(default ((t (:family "Inconsolata" :height 170 :background "#2d3743"))))
-   `(popup-scroll-bar-background-face ((t (:background "#189a1e1224a2"))))
-   `(popup-scroll-bar-foreground-face ((t (:background "#41bf505b61e3"))))
-   `(popup-face ((t (:background "#41bf505b61e3" :foreground "white"))))
+   '(default ((t (:family "Inconsolata" :height 170))))
+   ;; '(default ((t (:family "Inconsolata" :height 170 :background "#2d3743"))))
+   ;; `(popup-scroll-bar-background-face ((t (:background "#189a1e1224a2"))))
+   ;; `(popup-scroll-bar-foreground-face ((t (:background "#41bf505b61e3"))))
+   ;; `(popup-face ((t (:background "#41bf505b61e3" :foreground "white"))))
    ;; selection on autocomplete
-   `(popup-menu-selection-face ((t (:background "orange2" :foreground "#3a3a6e" :weight semibold))))
+   ;; `(popup-menu-selection-face ((t (:background "orange2" :foreground "#3a3a6e" :weight semibold))))
    ;; rest of autocomplete
-   `(popup-menu-face ((t (:inherit default :background "#41bf505b61e3"))))
-   `(popup-menu-summary-face ((t (:inherit default :background "#41bf505b61e3")))))
+   ;; `(popup-menu-face ((t (:inherit default :background "#41bf505b61e3"))))
+   ;; `(popup-menu-summary-face ((t (:inherit default :background "#41bf505b61e3"))))
+   )
   (set-default 'cursor-type 'hollow)
   (set-cursor-color "#ffd700")
  #+END_SRC
@@ -951,6 +960,11 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
   (with-eval-after-load 'company
     (add-hook 'c++-mode-hook 'company-mode))
  #+END_SRC
+* csv mode
+#+BEGIN_SRC emacs-lisp 
+  (use-package csv-mode
+    :ensure t)
+ #+END_SRC
 * Dired
 beautiful file browsing
 
@@ -1140,6 +1154,7 @@ beautiful file browsing
 ** key bindings
 #+BEGIN_SRC emacs-lisp 
   (with-eval-after-load "ein-notebook"
+    (define-key ein:notebook-mode-map (kbd "C-c C-d") (function ein:pytools-request-tooltip-or-help))
     (define-key ein:notebook-mode-map (kbd "C-c C-j") (function ein:notebook-kernel-interrupt-command))
     ;; (define-key ein:notebook-mode-map (kbd "C-c C-j") (function
     ;;                                                    (prog
@@ -1962,10 +1977,26 @@ The problem is that the entry content only includes the tiny reddit-hosted thumb
    ;;  :ensure t
    ;;  :config
    ;;  (customize-set-variable 'auth-sources "~/.authinfo"))
-* Shell mode
+* Shell and commands
+** open up interactive shell
 #+BEGIN_SRC emacs-lisp
   (add-hook 'sh-mode-hook (lambda ()
                                 (define-key sh-mode-map (kbd "C-c C-;") (function comment-line))))
+ #+END_SRC
+** run figlet
+#+BEGIN_SRC emacs-lisp 
+  (defun ilya-figlet (string-to-convert)
+    "Converts 'string-to-convert' to ascii art and inserts it into buffer
+
+    string-to-convert:	string to turn to art
+    "
+    (interactive "sString to make into art: ")
+    (setq ascii-art (shell-command-to-string (concat "figlet -k" " " string-to-convert)))
+    (setq ascii-art (replace-regexp-in-string "^"
+                                              comment-start
+                                              ascii-art))
+    (insert ascii-art)
+    )
  #+END_SRC
 * Autocomplete Yasnippet
 - Autocompletion by typing in first part of word and tabbing to insert a template
@@ -1984,6 +2015,7 @@ The problem is that the entry content only includes the tiny reddit-hosted thumb
     (add-hook 'python-mode-hook 'yas-minor-mode)
     (add-hook 'org-mode-hook 'yas-minor-mode)
     (add-hook 'c++-mode-hook 'yas-minor-mode)
+    (add-hook 'shell-mode-hook 'yas-minor-mode)
 
     :config
     (add-to-list 'yas-snippet-dirs "~/creamy_seas/sync_files/emacs_config/snippets/snippet-mode")
@@ -2230,6 +2262,84 @@ buffer suggestion is given as a list in the terminal command (after C-x b)
     (kill-buffer (current-buffer)))
   (global-set-key (kbd "C-x k") 'kill-curr-buffer)
 #+END_SRC
+* Calendar
+#+BEGIN_SRC emacs-lisp 
+  (eval-after-load "calendar" '(progn
+    (define-key calendar-mode-map "<" 'lawlist-scroll-year-calendar-backward)
+    (define-key calendar-mode-map ">" 'lawlist-scroll-year-calendar-forward) ))
+
+  (defun year-calendar (&optional month year)
+    "Generate a one (1) year calendar that can be scrolled by month in each direction.
+  This is a modification of:  http://homepage3.nifty.com/oatu/emacs/calendar.html
+  See also:  http://ivan.kanis.fr/caly.el"
+  (interactive)
+    (require 'calendar)
+    (let* (
+        (current-year (number-to-string (nth 5 (decode-time (current-time)))))
+        (month (if month month
+          (string-to-number
+            (read-string "Please enter a month number (e.g., 1):  " nil nil "1"))))
+        (year (if year year
+          (string-to-number
+            (read-string "Please enter a year (e.g., 2014):  "
+              nil nil current-year)))))
+      (switch-to-buffer (get-buffer-create calendar-buffer))
+      (when (not (eq major-mode 'calendar-mode))
+        (calendar-mode))
+      (setq displayed-month month)
+      (setq displayed-year year)
+      (setq buffer-read-only nil)
+      (erase-buffer)
+      ;; horizontal rows
+      (calendar-for-loop j from 0 to 3 do
+        ;; vertical columns
+        (calendar-for-loop i from 0 to 2 do
+          (calendar-generate-month
+            ;; month
+            (cond
+              ((> (+ (* j 3) i month) 12)
+                (- (+ (* j 3) i month) 12))
+              (t
+                (+ (* j 3) i month)))
+            ;; year
+            (cond
+              ((> (+ (* j 3) i month) 12)
+               (+ year 1))
+              (t
+                year))
+            ;; indentation / spacing between months
+            (+ 5 (* 25 i))))
+        (goto-char (point-max))
+        (insert (make-string (- 10 (count-lines (point-min) (point-max))) ?\n))
+        (widen)
+        (goto-char (point-max))
+        (narrow-to-region (point-max) (point-max)))
+      (widen)
+      (goto-char (point-min))
+      (setq buffer-read-only t)))
+
+  (defun lawlist-scroll-year-calendar-forward (&optional arg event)
+    "Scroll the yearly calendar by month in a forward direction."
+    (interactive (list (prefix-numeric-value current-prefix-arg)
+                       last-nonmenu-event))
+    (unless arg (setq arg 1))
+    (save-selected-window
+      (if (setq event (event-start event)) (select-window (posn-window event)))
+      (unless (zerop arg)
+        (let* (
+              (month displayed-month)
+              (year displayed-year))
+          (calendar-increment-month month year arg)
+          (year-calendar month year)))
+      (goto-char (point-min))
+      (run-hooks 'calendar-move-hook)))
+
+  (defun lawlist-scroll-year-calendar-backward (&optional arg event)
+    "Scroll the yearly calendar by month in a backward direction."
+    (interactive (list (prefix-numeric-value current-prefix-arg)
+                       last-nonmenu-event))
+    (lawlist-scroll-year-calendar-forward (- (or arg 1)) event))
+ #+END_SRC
 * Copying and killing                                                :darren:
 ** select same element
 #+BEGIN_SRC emacs-lisp
@@ -2672,6 +2782,7 @@ hides the minor modes that are trivial
 * Post load
 ** global unbindings
 #+BEGIN_SRC emacs-lisp 
+  (define-key key-translation-map (kbd "C-x 8 h") (kbd "卍"))
   (define-key key-translation-map (kbd "C-x 8 O") (kbd "Ω"))
   (define-key key-translation-map (kbd "C-x 8 #") (kbd "£"))
   (define-key key-translation-map (kbd "C-x 8 -") (kbd "→"))
@@ -2690,7 +2801,7 @@ hides the minor modes that are trivial
  #+END_SRC
 ** function calls
 #+BEGIN_SRC emacs-lisp 
-  (hydra-python-vi/body)
+  ;; (hydra-python-vi/body)
  #+END_SRC
 ** start server
 #+BEGIN_SRC emacs-lisp 
@@ -2703,6 +2814,10 @@ hides the minor modes that are trivial
   (put 'upcase-region 'disabled nil)
   (put 'downcase-region 'disabled nil)
   (put 'set-goal-column 'disabled nil)	;set goal column, so that with next line you stay in same column
+ #+END_SRC
+** full screen
+#+BEGIN_SRC emacs-lisp 
+  (toggle-frame-fullscreen)
  #+END_SRC
 * Graveyard
 ** multiple cursors
