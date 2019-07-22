@@ -761,6 +761,19 @@ here we make it do it explictly
   (setq cdlatex-math-symbol-alist
         `(
           (?F ("\\Phi"))))
+
+  (setq cdlatex-env-alist
+        '(("cases" "\\begin{cases}\nAUTOLABEL\n?\n\\end{cases}\n" nil)
+          ("big-left-right" "\\big(?\\big)" nil)
+          ("bigg-left-right" "\\bigg(?\\bigg)" nil)
+         ("theorem" "\\begin{theorem}\nAUTOLABEL\n?\n\\end{theorem}\n" nil)))
+
+  ;; last 2 t/nil is whether to activate in text and math modes
+  (setq cdlatex-command-alist
+        '(("cas" "Insert cases env"   "" cdlatex-environment ("cases") t nil)
+          ("glr(" "Insert big left-right brackets"   "" cdlatex-environment ("big-left-right") t t)
+          ("gglr(" "Insert bigg-left-right brackets"   "" cdlatex-environment ("bigg-left-right") t t)
+     ("thr" "Insert theorem env" "" cdlatex-environment ("theorem") t nil)))
  #+END_SRC
 ** key bindings
 #+BEGIN_SRC emacs-lisp 
@@ -1069,7 +1082,7 @@ beautiful file browsing
 #+BEGIN_SRC emacs-lisp 
   (defun ilya-login-east-india (callback &optional cookie-plist)
     "based of ein:notebook-login, but with supplied part to connect to"
-    (setq url-or-port "http://project02.sinobestech.com.hk")
+    (setq url-or-port "https://project02.sinobestech.com.hk")
     (interactive `(,(lambda (buffer url-or-port) (pop-to-buffer buffer))
                    ,(if current-prefix-arg (ein:notebooklist-ask-user-pw-pair "Cookie name" "Cookie content"))))
     (unless callback (setq callback (lambda (buffer url-or-port))))
@@ -1093,7 +1106,7 @@ beautiful file browsing
              (message "null")
             )
       )
-    (switch-to-buffer-other-window "*ein:notebooklist http://project02.sinobestech.com.hk/user/ilya*"))
+    (switch-to-buffer-other-window "*ein:notebooklist https://project02.sinobestech.com.hk/user/ilya*"))
  #+END_SRC
 ** =ilya-start-jupyter-notebook=
 #+BEGIN_SRC emacs-lisp 
@@ -1263,38 +1276,6 @@ is activated
             python-shell-interpreter-args "-i")
       (pyvenv-restart-python)))
  #+END_SRC
-*** default load
-#+BEGIN_SRC emacs-lisp
-  (use-package pyenv-mode
-    :ensure t
-    :config
-    (if (file-exists-p "~/.macbook_localiser")
-        (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/nn_vi")
-      (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/arch_vi")))
-#+END_SRC
-
-** hydra
-#+BEGIN_SRC emacs-lisp
-  (use-package hydra
-    :ensure t)
-
-  (defhydra hydra-python-vi (:color teal
-			      :hint nil)
-    "
-       PYTHON ENVIRONMENT SELECTION
-  ^^^^^------------------------------------------------------------------------------------------
-  _m_: mac-vi                _r_: restart
-  _n_: neural-network-vi
-  ^^
-  ^^
-  "
-    ("m"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/mac_vi"))
-    ("n"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/nn_vi"))
-    ("r"   pyvenv-restart-python)
-    ("q"   nil "cancel" :color blue))
-
-  (global-set-key (kbd "<f9>") (function hydra-python-vi/body))
- #+END_SRC
 ** =ilya-python-interrupt=
 #+BEGIN_SRC emacs-lisp 
   (defun ilya-python-interrupt ()
@@ -1305,6 +1286,29 @@ is activated
       (when proc
 	(interrupt-process proc))))
 
+ #+END_SRC
+
+** hydra to load python virtual environment
+#+BEGIN_SRC emacs-lisp
+  (use-package hydra
+    :ensure t)
+
+  (defhydra hydra-python-vi (:color teal
+			      :hint nil)
+    "
+       PYTHON ENVIRONMENT SELECTION
+  ^^^^^------------------------------------------------------------------------------------------
+  _m_: phd-vi                _r_: restart
+  _n_: neural-network-vi
+  ^^
+  ^^
+  "
+    ("m"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/phd_vi"))
+    ("n"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/nn_vi"))
+    ("r"   pyvenv-restart-python)
+    ("q"   nil "cancel" :color blue))
+
+  (global-set-key (kbd "<f9>") (function hydra-python-vi/body))
  #+END_SRC
 ** binding
 #+BEGIN_SRC emacs-lisp 
@@ -1321,6 +1325,15 @@ is activated
 				(define-key elpy-mode-map (kbd "C-c C-r") (function elpy-rpc-restart))
 				(define-key elpy-mode-map (kbd "C-c C-;") (function comment-line))))
  #+END_SRC
+** default load
+#+BEGIN_SRC emacs-lisp
+  (use-package pyenv-mode
+    :ensure t
+    :config
+    (if (file-exists-p "~/.macbook_localiser")
+        (hydra-python-vi/body)
+      (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/arch_vi")))
+#+END_SRC
 * Markdown mode
 #+BEGIN_SRC emacs-lisp 
   (use-package markdown-mode
@@ -1610,6 +1623,8 @@ C-u C-c C-x !
           ;; random tasks and reminders
           ("b" "Bloat" entry (id "antlers-bloat")
            "** BLOAT %^{stuff-to-be-done}\nSHEDULED: %^T")
+          ;; copy pasta
+          ("c" "Copy Pasta" entry (id "copy-pasta") "** %^{Pasta Title} %t\n%?")
           ;; temporary org file on desktop
           ("d" "Draft" plain (file "~/Desktop/.temp.org")
            "%?")
@@ -1755,6 +1770,7 @@ the nice bullets instead of multiplication symbols
 * Inkscape
 - to edit interactively, open =.svg= file → save as → =.pdf= → =omit text= → use exported object size
 - call function with "base-directory argument supplied"
+
 #+BEGIN_SRC emacs-lisp 
   (setq inkscape-generate-location "/Users/CCCP/.scripts/inkscape_generate.sh")
 
@@ -2421,8 +2437,8 @@ mark and edit all copies of the marked region simultaniously.
     (setq dashboard-items '((recents . 40)))
     (setq dashboard-startup-banner "~/creamy_seas/gallery_road/pepe/ree.png")
     (setq dashboard-banner-length 300)
-    (setq dashboard-banner-logo-title "- Dinner is 2030. And dinner is first\n              - Respond with exact timings for commitments\n              - Understand that it is hard being pregnant"))
-  ;; (setq dashboard-banner-logo-title "Привет от Леонта!"))
+    ;;   (setq dashboard-banner-logo-title "- Dinner is 2030. And dinner is first\n              - Respond with exact timings for commitments\n              - Understand that it is hard being pregnant"))
+    (setq dashboard-banner-logo-title "Привет от Леонта!"))
 
 
 

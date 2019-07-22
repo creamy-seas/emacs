@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: quote-fatmanual
+# key: q
+# --
+
+\mi{$1$0}
