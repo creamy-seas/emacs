@@ -2,9 +2,8 @@
 # name: ilya-equation
 # key: eq
 # --
-\begin{equation}
- \label{eq:${1:label}}
- ${2:equation-content}$0
+\begin{equation}${1:\label{eq:${2:label}}}
+ ${3:equation-content}$0
 \end{equation}
 
 \noindent 

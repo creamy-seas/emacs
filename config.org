@@ -1,5 +1,210 @@
 #+STARTUP: overview
 
+* mu4e
+- bound with [[global_bindings]]
+** supporting macro
+#+BEGIN_SRC emacs-lisp 
+  (defmacro csetq (variable value)
+    `(funcall (or (get ',variable 'custom-set)
+                  'set-default)
+              ',variable ,value))
+ #+END_SRC
+** external setup
+- =offlineimap=
+- =w3m=
+*** location of binariesa
+#+BEGIN_SRC emacs-lisp
+  ;; add location of lisp files for me4e
+  (add-to-list 'load-path
+               (expand-file-name "/usr/local/share/emacs/site-lisp/mu/mu4e"))
+
+  ;; location of the mu binary
+  (setq mu4e-mu-binary "/usr/local/bin/mu")
+ #+END_SRC
+** mu4e configuration
+#+BEGIN_SRC emacs-lisp
+  (use-package mu4e
+    :config
+
+    ;; 1 - method to pull in the mial
+    (setq mu4e-get-mail-command "offlineimap")
+    (setq mu4e-maildir "~/mail")
+    (setq mu4e-view-show-addresses t)
+    (setq mu4e-update-interval 600)
+
+    ;; 2 - directory for saving attachments
+    (setq mu4e-attachment-dir (expand-file-name "~/mail/attachments/"))
+
+    ;; 3 - method to generate html messages and preview images
+    ;;   - html2text -utf8 -width 72
+    ;;   - textutil -stdin -format html -convert txt -stdout
+    ;;   - html2markdown | grep -v '&nbsp_place_holder;' (Requires html2text pypi)
+    ;;   - w3m -dump -cols 80 -T text/html
+    ;; (setq mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout")
+    (setq mu4e-html2text-command "w3m -T text/html")
+    (setq mu4e-show-images t)
+    (add-to-list 'mu4e-view-actions '("web-view" . mu4e-action-view-in-browser) t)
+    (when (fboundp 'imagemagick-register-types)
+      (imagemagick-register-types))
+
+    ;; 4 - main accounts and sending mail
+    (setq mu4e-user-mail-address-list '("ilya.antonov24@ntlworld.com"
+                                         "antonov.ilya225@gmail.com"
+                                         "ilya.antonov24@ntlworld.com"))
+    (setq mu4e-context-policy 'pick-first)
+    (setq mu4e-compose-context-policy 'always-ask)
+
+    ;; 5 - replies and citations
+    (setq mu4e-compose-signature (concat "Wishing all the very best,\n"
+                                         "Ilya\n"))
+    (setq message-citation-line-format "%N @ %Y-%m-%d %H:%M %Z:\n")
+    (setq message-citation-line-function 'message-insert-formatted-citation-line)
+
+    ;; 6 - spell check
+    (add-hook 'mu4e-compose-mode-hook
+          (defun my-do-compose-stuff ()
+             "⦿⦿ Those sweet custom settings"
+             (set-fill-column 72)
+             (flyspell-mode)))
+
+    ;; 7 - fine tuning of accounts
+    (setq mu4e-contexts
+          (list
+           (make-mu4e-context
+            :name "ntlworld"
+            :enter-func (lambda () (mu4e-message "Entering NTLWORLD"))
+            :leave-func (lambda () (mu4e-message "Leaving NTLWORLD"))
+            :match-func (lambda (msg)
+                          (when msg
+                            (mu4e-message-contact-field-matches
+                             msg '(:from :to :cc :bcc) "ilya.antonov24@ntlworld.com")))
+            :vars '((user-mail-address . "ilya.antonov24@ntlworld.com")
+                    (user-full-name . "Ilya Antonov (NTLWORLD)")
+                    ;; (mu4e-sent-messages-behavior 'delete)
+                    (mu4e-sent-folder . "/ilya_NTLWORLD/Sent")
+                    (mu4e-drafts-folder . "/ilya_NTLWORLD/Drafts")
+                    (mu4e-trash-folder . "/ilya_NTLWORLD/Trash")
+                    (mu4e-refile-folder . "/ilya_NTLWORLD/Archive")
+                    (mu4e-compose-signature . (concat
+                                               "Ilya Antonov,\n"
+                                               "⦿ NTLWORLD\n"))
+                    (mu4e-compose-format-flowed . nil)))
+           (make-mu4e-context
+            :name "gmail"
+            :enter-func (lambda () (mu4e-message "Entering GMAIL"))
+            :leave-func (lambda () (mu4e-message "Leaving GMAIL"))
+            :match-func (lambda (msg)
+                          (when msg
+                            (mu4e-message-contact-field-matches
+                             msg '(:from :to :cc :bcc) "antonov.ilya225@gmail.com")))
+            :vars '((user-mail-address . "antonov.ilya225@gmail.com")
+                    (user-full-name . "Ilya Antonov (GMAIL)")
+                    ;; (mu4e-sent-messages-behavior 'delete)
+                    (mu4e-sent-folder . "/ilya_GMAIL/[Gmail].Sent Mail")
+                    (mu4e-drafts-folder . "/ilya_GMAIL/[Gmail].Drafts")
+                    (mu4e-trash-folder . "/ilya_GMAIL/[Gmail].Bin")
+                    (mu4e-refile-folder . "/ilya_GMAIL/[Gmail].Starred")
+                    (mu4e-compose-signature . (concat
+                                               "Ilya Antonov,\n"
+                                               "⦿ GMAIL\n"))
+                    (mu4e-compose-format-flowed . nil)))
+           (make-mu4e-context
+            :name "outlook"
+            :enter-func (lambda () (mu4e-message "Entering OUTLOOK"))
+            :leave-func (lambda () (mu4e-message "Leaving OUTLOOK"))
+            :match-func (lambda (msg)
+                          (when msg
+                            (mu4e-message-contact-field-matches
+                             msg '(:from :to :cc :bcc) "ilya.antonov.2013@live.rhul.ac.uk")))
+            :vars '((user-mail-address . "ilya.antonov.2013@live.rhul.ac.uk")
+                    (user-full-name . "Ilya Antonov (OUTLOOK)")
+                    (mu4e-sent-folder . "/ilya_OUTLOOK/Sent Items")
+                    (mu4e-drafts-folder . "/ilya_OUTLOOK/Drafts")
+                    (mu4e-trash-folder . "/ilya_OUTLOOK/Deleted Items")
+                    (mu4e-refile-folder . "/ilya_OUTLOOK/Archive")
+                    (mu4e-compose-signature . (concat
+                                               "Ilya Antonov,\n"
+                                               "⦿ From OUTLOOK\n"))
+                    (mu4e-compose-format-flowed . nil)))))
+
+    ;; 7 - shortcuts
+    (setq mu4e-bookmarks '(("flag:unread" "Unread messages" ?u)
+                           ("date:today..now" "Today's messages" ?t)
+                           ("date:7d..now" "Last 7 days" ?w)
+                           ("mime:image/*" "Messages with images" ?p)))
+    (add-to-list 'mu4e-bookmarks
+                 (make-mu4e-bookmark
+                  :name "All Inboxes"
+                  :query "maildir:/ilya_GMAIL/INBOX OR maildir:/ilya_NTLWORLD/INBOX OR maildir:/ilya_OUTLOOK/INBOX"
+                  :key ?i))
+    (add-to-list 'mu4e-bookmarks
+                 (make-mu4e-bookmark
+                  :name "All Archives"
+                  :query "maildir:/ilya_GMAIL/[Gmail].Starred OR maildir:/ilya_NTLWORLD/Archive OR maildir:/ilya_OUTLOOK/Archive"
+                  :key ?a))
+
+
+    (setq   mu4e-maildir-shortcuts
+            '(("/ilya_GMAIL/INBOX"     . ?g)
+              ("/ilya_NTLWORLD/INBOX"     . ?n)
+              ("/ilya_OUTLOOK/INBOX"     . ?l))))
+
+ #+END_SRC
+** mu4e view
+*** column view
+#+BEGIN_SRC emacs-lisp 
+  (setq mu4e-headers-fields
+      '( (:date          .  10)
+         (:flags         .   6)
+         (:from          .  30)
+         (:subject       .  nil)))
+ #+END_SRC
+*** start in new frame
+#+BEGIN_SRC emacs-lisp 
+  (defun mu4e-in-new-frame ()
+    "Start mu4e in new frame."
+    (interactive)
+    (select-frame (make-frame))
+    (mu4e))
+ #+END_SRC
+*** fancy characters
+#+BEGIN_SRC emacs-lisp
+  (setq mu4e-split-view 'horizontal)
+ #+END_SRC
+** smtp
+- how to send the mail
+#+BEGIN_SRC emacs-lisp 
+  (setq message-send-mail-function (function message-send-mail-with-sendmail))
+  (setq sendmail-program "/usr/local/bin/msmtp")
+
+    ;; Use the correct account context when sending mail based on the from header.
+  (setq message-sendmail-envelope-from 'header)
+  (add-hook 'message-send-mail-hook 'choose-msmtp-account)
+ #+END_SRC
+** mu alert
+#+BEGIN_SRC emacs-lisp 
+  (use-package mu4e-alert
+    :ensure t
+    :after mu4e
+    :init
+    (setq mu4e-alert-interesting-mail-query
+      (concat
+       "flag:unread maildir:/ilya_NTLWORLD/INBOX "
+       "OR "
+       "flag:unread maildir:/ilya_GMAIL/INBOX"
+       "OR "
+       "flag:unread maildir:/ilya_OUTLOOK/INBOX"
+       ))
+    (mu4e-alert-enable-mode-line-display)
+
+    (defun ilya-mu4e-alert-mode-line ()
+      (interactive)
+      (mu4e~proc-kill)
+      (mu4e-alert-enable-mode-line-display)
+      )
+    (run-with-timer 0 60 'ilya-mu4e-alert-mode-line))
+ #+END_SRC
+
 * Latex Formatting Macros
 #+BEGIN_SRC emacs-lisp 
   (fset 'ipic
@@ -343,6 +548,17 @@ any changes of a file, will be automatically reloaded
           (t (narrow-to-defun))))
 
   (global-set-key (kbd "C-x n") (function narrow-or-widen-dwim))
+ #+END_SRC
+* Arsist mode
+#+BEGIN_SRC emacs-lisp 
+  (add-hook 'artist-mode-hook
+            (lambda ()
+              (local-set-key (kbd "<f1>") 'org-mode)
+              (local-set-key (kbd "<f2>") 'artist-select-op-pen-line) ; f2 = pen mode
+              (local-set-key (kbd "<f3>") 'artist-select-op-line)     ; f3 = line
+              (local-set-key (kbd "<f4>") 'artist-select-op-square)   ; f4 = rectangle
+              (local-set-key (kbd "<f5>") 'artist-select-op-ellipse)  ; f5 = ellipse
+  ))
  #+END_SRC
 * AUCTex mode                                                        :ispell:
 ** latex commands                                           :listOfCommands:
@@ -763,15 +979,13 @@ here we make it do it explictly
           (?F ("\\Phi"))))
 
   (setq cdlatex-env-alist
-        '(("cases" "\\begin{cases}\nAUTOLABEL\n?\n\\end{cases}\n" nil)
-          ("big-left-right" "\\big(?\\big)" nil)
+        '(("big-left-right" "\\big(?\\big)" nil)
           ("bigg-left-right" "\\bigg(?\\bigg)" nil)
          ("theorem" "\\begin{theorem}\nAUTOLABEL\n?\n\\end{theorem}\n" nil)))
 
   ;; last 2 t/nil is whether to activate in text and math modes
   (setq cdlatex-command-alist
-        '(("cas" "Insert cases env"   "" cdlatex-environment ("cases") t nil)
-          ("glr(" "Insert big left-right brackets"   "" cdlatex-environment ("big-left-right") t t)
+        '(("glr(" "Insert big left-right brackets"   "" cdlatex-environment ("big-left-right") t t)
           ("gglr(" "Insert bigg-left-right brackets"   "" cdlatex-environment ("bigg-left-right") t t)
      ("thr" "Insert theorem env" "" cdlatex-environment ("theorem") t nil)))
  #+END_SRC
@@ -1772,7 +1986,7 @@ the nice bullets instead of multiplication symbols
 - call function with "base-directory argument supplied"
 
 #+BEGIN_SRC emacs-lisp 
-  (setq inkscape-generate-location "/Users/CCCP/.scripts/inkscape_generate.sh")
+  (setq inkscape-generate-location "/Users/CCCP/.local/bin/inkscape/inkscape_generate.sh")
 
   (defun inkscape-generate (base-directory)
     "Reads the current line and launches an inkscape document under this name. Base directory must end in /"
@@ -2052,6 +2266,12 @@ The problem is that the entry content only includes the tiny reddit-hosted thumb
       (let ((yas/prompt-functions '(dummy-prompt)))
         (catch 'notfound
           (yas/insert-snippet t)))))
+ #+END_SRC
+** auto yasnippets
+- bound in [[global_bindings]]
+#+BEGIN_SRC emacs-lisp 
+  (use-package auto-yasnippet
+    :ensure t)
  #+END_SRC
 * Autocomplete Company
 Autocomplete shoudl only run in certain environments
@@ -2796,6 +3016,14 @@ hides the minor modes that are trivial
     )
 #+END_SRC
 * Post load
+** global bindings <<global_bindings>>
+#+BEGIN_SRC emacs-lisp 
+  (define-prefix-command 'ilya-map)
+  (global-set-key (kbd "C-z") 'ilya-map)
+  (define-key ilya-map (kbd "m") (function mu4e))
+  (define-key ilya-map (kbd "s") (function aya-create))
+  (define-key ilya-map (kbd "y") (function aya-expand))
+ #+END_SRC
 ** global unbindings
 #+BEGIN_SRC emacs-lisp 
   (define-key key-translation-map (kbd "C-x 8 h") (kbd "卍"))
