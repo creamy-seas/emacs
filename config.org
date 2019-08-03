@@ -1,5 +1,10 @@
 #+STARTUP: overview
 
+* gpg encryption via emacs
+- make emacs prompt for password in the minibuffer
+#+BEGIN_SRC emacs-lisp 
+  (setq epa-pinentry-mode 'loopback)
+ #+END_SRC
 * mu4e
 - bound with [[global_bindings]]
 ** supporting macro
@@ -31,6 +36,7 @@
     (setq mu4e-maildir "~/mail")
     (setq mu4e-view-show-addresses t)
     (setq mu4e-update-interval 600)
+    ;; (setq mu4e~get-mail-password-regexp "^Enter password for user 'Remote': $")
 
     ;; 2 - directory for saving attachments
     (setq mu4e-attachment-dir (expand-file-name "~/mail/attachments/"))
@@ -204,7 +210,38 @@
       )
     (run-with-timer 0 60 'ilya-mu4e-alert-mode-line))
  #+END_SRC
+** gpg access
+- because we need a gpg already in the cache to access the imap servers, run a dummy command on a dummy file to store the password
+#+BEGIN_SRC emacs-lisp 
+  ;; funciton is based off epa-decrypt file
+  (defun ilya-epa-decrypt-file (decrypt-file &optional plain-file)
+    "Decrypt DECRYPT-FILE into PLAIN-FILE.
+    If you do not specify PLAIN-FILE, this functions prompts for the value to use."
+    (interactive
+     (let* ((file (read-file-name "File to decrypt: "))
+            (plain (epa-read-file-name file)))
+       (list file plain)))
+    (or plain-file (setq plain-file (epa-read-file-name decrypt-file)))
+    (setq decrypt-file (expand-file-name decrypt-file))
+    (let ((context (epg-make-context epa-protocol)))
+      (epg-context-set-passphrase-callback context
+                                           #'epa-passphrase-callback-function)
+      (epg-context-set-progress-callback context
+                                         (cons
+                                          #'epa-progress-callback-function
+                                          (format "Decrypting %s..."
+                                                  (file-name-nondirectory decrypt-file))))
+      (setf (epg-context-pinentry-mode context) epa-pinentry-mode)
+      (message "Decrypting %s..." (file-name-nondirectory decrypt-file))
+      (condition-case error
+          (epg-decrypt-file context decrypt-file plain-file)
+        (error
+         (epa-display-error context)
+         (signal (car error) (cdr error))))))
 
+  (add-hook 'mu4e-update-pre-hook (lambda ()
+                                    (ilya-epa-decrypt-file "~/creamy_seas/sync_files/emacs_config/support_files/load_password_dummy_file.gpg" "/dev/null")))
+ #+END_SRC
 * Latex Formatting Macros
 #+BEGIN_SRC emacs-lisp 
   (fset 'ipic
@@ -3015,7 +3052,7 @@ hides the minor modes that are trivial
         (diminish 'linum-relative-mode)
     )
 #+END_SRC
-* Post load
+* Post loada
 ** global bindings <<global_bindings>>
 #+BEGIN_SRC emacs-lisp 
   (define-prefix-command 'ilya-map)

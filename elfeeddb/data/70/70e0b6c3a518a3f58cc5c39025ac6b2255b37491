@@ -1,0 +1,127 @@
+<p>Why don't we compose databases the same way we compose our functions?</p>
+
+<p>We use mathematical operators to compose functions all the time. Most of the time we do it without even really thinking about it:</p>
+
+<pre><code>y = op2(op1(x))  
+</code></pre>
+
+<p>Or with chaining and more functions and stuff:</p>
+
+<pre><code>complexOp = x =&gt; x.op1().op2()  
+y = complexOp(x)  
+</code></pre>
+
+<p>(This is 'obvious' so far, but bear with me). So why is function composition so useful? Well because:</p>
+
+<ul>
+<li>You can make simple primitives, then build complex functions out of those primitives.</li>
+<li>We might have the wrong function for a particular use case, and we need to transform it for a different use case.</li>
+<li>You can break up balls of mud into small reusable pieces, then make the computer recombine them.</li>
+</ul>
+
+<hr>
+
+<p>So, couldn't we do the same thing with data stores?</p>
+
+<p>Lets imagine a simple idealised key-value store. I'm stealing datomic's view of what a database is - which is simply a set of keys which hold values over time.</p>
+
+<p>So my database will store the number of coconuts each of Sally, George and Sam have. Sally was the first entry in the database (with 6 coconuts). Then we found out George has 10. Then george gave 2 to Sally, who ate one. And so on. Right now Sally has 7, George has 8 and Sam has 5.</p>
+
+<p><img src="https://josephg.com/blog/content/images/2016/08/1.png" alt="timeline of a database"></p>
+
+<p>So there's a few concepts, a databases's <em>keys</em> ('Sally', 'George', 'Sam'), the values at any point in time (now, etc). We can also see that some operations have happened. I'll add them to the diagram:</p>
+
+<p><img src="https://josephg.com/blog/content/images/2016/08/2.png" alt="diagram with events"></p>
+
+<p>These are called <em>transactions</em>, <em>operations</em> or <em>events</em>. They atomically make some set of changes to the values stored in a key.</p>
+
+<p>The transactions will (explicitly or implicitly) happen at some <em>time</em>. This might be a real clock, a logical clock (v1, v2, v3, etc), a vector clock or something fancier like an <a href="http://gsd.di.uminho.pt/members/cbm/ps/itc2008.pdf">interval tree clock</a>).</p>
+
+<p>I'm going to imagine an oversimplified API made up of functions like these, but any real implementation will have a lot more detail:</p>
+
+<pre><code>get(key) =&gt; value  
+set((key1, value1), (key2, value2), ...)  
+watch() =&gt; stream of (key, value) pairs  
+</code></pre>
+
+<p>(The watch function will tell us when any operations are applied to the database).</p>
+
+<h3 id="composition">Composition</h3>
+
+<p>So what equivalents do we have to function composition? Well, we want to make functional middleware of sorts that consume and exposes the same database interface. Lets talk through a few obvious examples.</p>
+
+<h4 id="union">Union</h4>
+
+<p>Given two databases, <code>db1 ∪ db2</code> exposes a new database interface which has the union of all keys. For <code>get()</code> if a key exists in both databases, behaviour is undefined. Writes could always sent to <code>db1</code>, or sent based on some user-specified rules.</p>
+
+<p>Maybe my password database and my coconut databases are separate. I will create a database view <code>view = users ∪ coconuts</code> against which to run queries. From the point of view of the query runner, there is only one database. Infrastructure changes (merging, resplitting, sharding, etc) can all be managed behind that database view.</p>
+
+<p>You could also use the union operator to manage indexes. Imagine implementing Wikipedia. You have a primary store of data, but also a search database. You could design a database view based on <code>view = pages ∪ SearchIndex(pages)</code>.</p>
+
+<h4 id="mount">Mount</h4>
+
+<p>Unfortunately if you're using union alone you might run into namespace collisions. (Does the <code>Steph</code> key mean the user data object or the coconut count?). We can define <code>Mount(db, path)</code> to be a database interface through which all objects in <code>db</code> are accessible with <code>path</code> prepended to the key. <code>set(key, value)</code> would only allow writes where the expected prefix matches. If it matches, the prefix is stripped and the write is sent to the underlying store.</p>
+
+<p>With this and our union function, we can define <code>view = Mount(users, 'users/') ∪ Mount(coconuts, 'coconuts/')</code>. Then <code>view.get('users/Steph')</code> and <code>view.get('coconuts/Steph')</code> are clear and unambiguous.</p>
+
+<p>It complects the abstractions a little but if the union function understood mounts it could allow writes to different paths unambiguously.</p>
+
+<h4 id="filter">Filter</h4>
+
+<p>Given a database and a predicate, the function <code>Filter(db, pred)</code> exposes a new database interface through which only keys which match the predicate are visible.</p>
+
+<p>This would be useful for user access control. So, all of Sam's database accesses hit the <code>samdb = Filter(db, key =&gt; userCanAccess(sam, key))</code> data store. If Sam tries to access the <code>users.seph</code> object, well, in Sam's database view that object simply doesn't exist. (And cannot be created).</p>
+
+<p>You could create variants of this for access control and doing access control based on deep inspection.</p>
+
+<h4 id="view">View</h4>
+
+<p>Now we get into the beautiful stealing from CouchDB land. Lets say you're implementing a blog. To be displayed to the user, each article needs to be rendered to HTML. <code>View(db, fn)</code> will present a database interface through which each value is visible transformed by the function. Writes are not allowed.</p>
+
+<p>This allows us to pre-render (or lazy render + cache) the HTML content of our blog. You could combine this: <code>dbview = Mount(posts, '/post') ∪ Mount(View(posts, renderPost), '/postHTML')</code>. Now the raw post content can be read and modified via <code>'/post/slug'</code> and the rendered content itself is immediately available in the rendered paths.</p>
+
+<hr>
+
+<p>I could happily keep describing useful functions, but we'd be here all day. Lets just name a few more useful things then move on:</p>
+
+<ul>
+<li>Schema validation middleware, which passes reads but does checked writes before saving</li>
+<li>Expose a local DB view over a network connection</li>
+<li>Ingest a remote DB over a network connection</li>
+<li>Tools to expose &amp; consume a database from the browser, like firebase.</li>
+<li>A caching DB proxy (active via watch, or passive)</li>
+</ul>
+
+<h2 id="versioningandconsistency">Versioning and consistency</h2>
+
+<p>I don't want to go to <a href="https://aphyr.com/tags/jepsen">jepsen hell</a>. Is it possible to build this while maintaining some useful consistency guarantees? In short, I believe so. It'll take another blog post this long to talk about how though. I've been thinking about this for a long time and I have a bunch of ideas depending on how general purpose you want to make it. We might also need to restrict what data we're allowed to make transactions across (no transactions spanning multiple primary stores, that sort of thing).</p>
+
+<p>Sharding and replica sets are also interesting - but how they're set up is orthogonal to the logical database network. There's no reason you couldn't have both. The only thing in the way is a lot of code.</p>
+
+<h3 id="isthisevenuseful">Is this even useful?</h3>
+
+<p>Good question. I was recently asked about this while doing some consulting work. "Sure, but what would we use it for?". I wanted a database like this in every single one of our half dozen or so projects. In a sense, MVC is really model-view-everything else. The utility of this sort of thinking is allowing us to move more and more of the 'everything else' into the model.</p>
+
+<p>I'm going to point to projects and say how I'd use a cool pluggable data store.</p>
+
+<h4 id="blogproject">Blog project</h4>
+
+<p>You're making a wordpress-like website with search, powered by server and client rendered react.</p>
+
+<ul>
+<li>The server rendering code is slow (200ms). I'd move that into a view on the database, eagerly re-rendering whenever anything is saved in the editor.</li>
+<li>The full-text-search would move to an elasticsearch wrapper / interface.</li>
+<li>The project uses client-side renders once the page has loaded, for inter-route navigation. I'd expose the database itself to the client through a firebasey API.</li>
+</ul>
+
+<h4 id="carparkproject">Carpark project</h4>
+
+<p>The project has people register their car online, then they can drive into carparks. Their license plates are read via a camera and OCR by on-premises computers. The computers have whitelists of cars they allow in automatically. The whitelist needs to be constantly kept up to date. We track how long you stay and charge the customer's credit card directly. Oh yeah, and the internet randomly goes down sometimes.</p>
+
+<p>So the active sync is begging to be implemented via a filter + simple caching middleware. The root server has a view through which only the whitelisted license plates are exposed. That view is actively synced + cached to the carpark's computer. Going the other way we cache entry &amp; exit events on the carpark computer and actively flush those back to the root servers.</p>
+
+<hr>
+
+<p>I'm going to stop there not because I don't have more ideas, but because I could be at this for days. Anyway, because nobody else has done it yet, I really want to build this thing. I think its an obvious and important piece of internet infrastructure that would make it much easier to build cool stuff simply.</p>
+
+<p>If your company is interested in funding me to build this &amp; opensource it all, get in touch - I'm <a href="https://josephg.com/blog/composing-databases/&#109;&#x61;&#x69;&#108;&#x74;&#111;:m&#x65;&#x40;&#106;&#x6f;&#115;&#x65;&#112;h&#x67;&#x2e;&#x63;&#111;&#x6d;">m&#x65;&#x40;&#106;&#x6f;&#115;&#x65;&#112;h&#x67;&#x2e;&#x63;&#111;&#x6d;</a>.</p>
