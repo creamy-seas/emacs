@@ -1,5 +1,7 @@
 #+STARTUP: overview
-
+#+BEGIN_SRC python 
+  
+ #+END_SRC
 * gpg encryption via emacs
 - make emacs prompt for password in the minibuffer
 #+BEGIN_SRC emacs-lisp 
@@ -35,7 +37,7 @@
     (setq mu4e-get-mail-command "offlineimap")
     (setq mu4e-maildir "~/mail")
     (setq mu4e-view-show-addresses t)
-    (setq mu4e-update-interval 600)
+    (setq mu4e-update-interval 86000)
     ;; (setq mu4e~get-mail-password-regexp "^Enter password for user 'Remote': $")
 
     ;; 2 - directory for saving attachments
@@ -185,7 +187,7 @@
 
     ;; Use the correct account context when sending mail based on the from header.
   (setq message-sendmail-envelope-from 'header)
-  (add-hook 'message-send-mail-hook 'choose-msmtp-account)
+  ;; (add-hook 'message-send-mail-hook 'choose-msmtp-account)
  #+END_SRC
 ** mu alert
 #+BEGIN_SRC emacs-lisp 
@@ -197,7 +199,7 @@
       (concat
        "flag:unread maildir:/ilya_NTLWORLD/INBOX "
        "OR "
-       "flag:unread maildir:/ilya_GMAIL/INBOX"
+       "flag:unread maildir:/ilya_GMAIL/INBOX "
        "OR "
        "flag:unread maildir:/ilya_OUTLOOK/INBOX"
        ))
@@ -289,15 +291,6 @@ presentations can be hosted from github - look at video no 50
   (use-package htmlize
     :ensure t)
  #+END_SRC
-* Passwords                                                             :gpg:
-** enable the encrypting password package
-#+BEGIN_SRC emacs-lisp
-  ;;(use-package epa
-  ;;     :ensure t
-  ;;     :init
-  ;;     (custom-set-variables '(epg-gpg-program "/usr/local/bin/gpg"))
-  ;;     (epa-file-enable))
-#+END_SRC
 * Preload
 ** ignore bell
 #+BEGIN_SRC emacs-lisp 
@@ -1016,15 +1009,17 @@ here we make it do it explictly
           (?F ("\\Phi"))))
 
   (setq cdlatex-env-alist
-        '(("big-left-right" "\\big(?\\big)" nil)
+        '(("cases" "\\begin{cases}\nAUTOLABEL\n?\n\\end{cases}" nil)
+          ("big-left-right" "\\big(?\\big)" nil)
           ("bigg-left-right" "\\bigg(?\\bigg)" nil)
-         ("theorem" "\\begin{theorem}\nAUTOLABEL\n?\n\\end{theorem}\n" nil)))
+         ("theorem" "\\begin{theorem}\nLABEL\n?\n\\end{theorem}\n" nil)))
 
   ;; last 2 t/nil is whether to activate in text and math modes
   (setq cdlatex-command-alist
         '(("glr(" "Insert big left-right brackets"   "" cdlatex-environment ("big-left-right") t t)
           ("gglr(" "Insert bigg-left-right brackets"   "" cdlatex-environment ("bigg-left-right") t t)
-     ("thr" "Insert theorem env" "" cdlatex-environment ("theorem") t nil)))
+          ("cases" "Insert case environment"   "" cdlatex-environment ("cases") t t)
+          ("thr" "Insert theorem env" "" cdlatex-environment ("theorem") t nil)))
  #+END_SRC
 ** key bindings
 #+BEGIN_SRC emacs-lisp 
@@ -1580,10 +1575,10 @@ is activated
 #+BEGIN_SRC emacs-lisp
   (use-package pyenv-mode
     :ensure t
-    :config
-    (if (file-exists-p "~/.macbook_localiser")
-        (hydra-python-vi/body)
-      (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/arch_vi")))
+    :config)
+    ;; (if (file-exists-p "~/.macbook_localiser")
+    ;;     (hydra-python-vi/body)
+    ;;   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/arch_vi")))
 #+END_SRC
 * Markdown mode
 #+BEGIN_SRC emacs-lisp 
@@ -1973,8 +1968,9 @@ the nice bullets instead of multiplication symbols
 ** begin_src generation 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'org-structure-template-alist
-               '("el" "#+BEGIN_SRC emacs-lisp \n ? \n #+END_SRC")
-               '("pyt" "#+BEGIN_SRC python \n ? \n #+END_SRC"))
+               '("el" "#+BEGIN_SRC emacs-lisp \n ? \n #+END_SRC"))
+  (add-to-list 'org-structure-template-alist
+               '("py" "#+BEGIN_SRC python \n ? \n #+END_SRC"))
 #+END_SRC
 ** indentation                                                      :darren:
 #+BEGIN_SRC emacs-lisp
@@ -2008,6 +2004,13 @@ the nice bullets instead of multiplication symbols
             (if (< score 70)
                 "2:1"
               "1st"))))))
+ #+END_SRC
+** latex
+#+BEGIN_SRC emacs-lisp 
+  (setq org-format-latex-options (plist-put org-format-latex-options
+                                            :scale 1.48))
+  (setq org-format-latex-options (plist-put org-format-latex-options
+                                            :foreground "#fdab10"))
  #+END_SRC
 ** keybindings
 #+BEGIN_SRC emacs-lisp
@@ -2081,9 +2084,9 @@ the nice bullets instead of multiplication symbols
     (call-interactively 'inkscape-load-part2))
  #+END_SRC
 
-* RSS mode
+* [[https://nullprogram.com/blog/2013/11/26/][Elfeed]]
 - =elfeed-new-entry-hook= is called each time a new entry is added
-** org configuration
+** read from org file
 #+BEGIN_SRC emacs-lisp
   (use-package elfeed-org
     :ensure t
@@ -2091,12 +2094,11 @@ the nice bullets instead of multiplication symbols
     (elfeed-org)
     (setq rmh-elfeed-org-files (list "~/creamy_seas/sync_files/emacs_config/elfeed.org")))
 #+END_SRC
-** elfeed setip
+** elfeed setup
 #+BEGIN_SRC emacs-lisp
   (use-package elfeed
     :ensure t
     :init
-    (global-set-key (kbd "C-c f") 'elfeed)
     (setq elfeed-db-directory "~/creamy_seas/sync_files/emacs_config/elfeeddb")
     (setq-default elfeed-search-filter "+unread")
     :bind
@@ -3060,6 +3062,7 @@ hides the minor modes that are trivial
   (define-key ilya-map (kbd "m") (function mu4e))
   (define-key ilya-map (kbd "s") (function aya-create))
   (define-key ilya-map (kbd "y") (function aya-expand))
+  (define-key ilya-map (kbd "f") (function elfeed))
  #+END_SRC
 ** global unbindings
 #+BEGIN_SRC emacs-lisp 

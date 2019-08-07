@@ -13,7 +13,7 @@
 
 
 #1) copy previous compilation into the master folder
-mv ./_output/$1.* ./ 2> /dev/null
+mv ./auto/$1.* ./ 2> /dev/null
 sleep 1
 
 #2) run latexmk to create a pdf and run in contant update mode (pvc)
