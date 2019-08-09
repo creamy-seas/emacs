@@ -621,37 +621,56 @@ Indenting environment
 | =C-c C-v=       | Look at pdf                              |                                  |
 |-----------------+------------------------------------------+----------------------------------|
 
-** general setup
+** installing latex packages
 - install =.sty= packages in =/usr/local/texlive/2018/texmf-dist/tex/latex/base=
 - run =sudo -s texhash= to load it up
 - =flyspell= requires ispell to be installed on computer
+** general setup
 #+BEGIN_SRC emacs-lisp
   (use-package latex
     :ensure auctex
     :init
     (setq TeX-auto-save t)
-    (setq TeX-parse-self t)  ;;access imported packages
-    (setq TeX-save-query nil)  ;;don't prompt file save
-    (setq-default TeX-show-compilation t)
+    (setq TeX-parse-self t)			;;access imported packages
+    (setq TeX-save-query nil)			;;don't prompt file save
+    (setq-default TeX-show-compilation t)		;;display compulation in a parrallel window
     (setq TeX-interactive-mode t)
-    (setq Tex-master nil)  ;;specify master file for each project
+    (setq Tex-master nil)				;;specify master file for each project
     :config
+    ;; spell checking
     (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+
+    ;; display greek symbols
     (add-hook 'LaTeX-mode-hook
               (lambda () (TeX-fold-mode 1)))
+
+    ;; ensure that anything inside $ $ is treated as math mode
     (add-hook 'LaTeX-mode-hook
               (lambda () (set (make-variable-buffer-local 'TeX-electric-math)
                          (cons "$" "$"))))
     :hook
-    (LaTeX-mode-hook . LaTeX-math-mode);; type ` to get suggestions
-    (LaTeX-mode-hook . font-lock-mode);; font highlighting
-    )
+    ;; type ` to get suggestions
+    (LaTeX-mode-hook . LaTeX-math-mode)
 
-  (progn
-    (require 'server)
-    (if (not (server-running-p))
-        (server-start)))
+    ;; font highlighting
+    (LaTeX-mode-hook . font-lock-mode))
  #+END_SRC
+** reftex
+#+BEGIN_SRC emacs-lisp 
+  (use-package reftex
+    :ensure t
+    :init
+    (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+    (setq reftex-plug-into-AUCTeX t))
+ #+END_SRC
+** cdlatex (autcompletion)
+#+BEGIN_SRC emacs-lisp 
+  (use-package cdlatex
+   :ensure t
+   :config
+   (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex))
+ #+END_SRC
+
 ** tailored commands
 *Some important AucTex commands and variables*
 | =TeX-expand-list-builtin= | pair list tying command with a % expression e.g. =%s= -> master latex file |
@@ -663,7 +682,7 @@ Indenting environment
 3 - expansion if performed to change =%s= to the master file name
 #+BEGIN_SRC emacs-lisp 
   (defun ilya_gen-key ()
-    "Command binded to C-c C-m will make the pdf with latexmk"
+    "Command binded to C-c C-C will make the pdf with latexmk"
     (interactive)
     (minibuffer-message (concat "ᛋᛋ Generating \"" (TeX-master-file) "\" ᛋᛋ"))
     (let (
@@ -801,11 +820,9 @@ Indenting environment
     "Expands the latex command by evaluating the % variables in accordance with the system's master file"
     (TeX-command-expand command-script 'TeX-master-file TeX-expand-list))
  #+END_SRC
-
 *** error checking =C-c C-w=
 natively, auctex creates a list of errors once the compiling finishes.
-here we make it do it explictly 
-1 - get the current active compilation buffer.
+here we make it do it explictly
 
 #+BEGIN_SRC emacs-lisp 
   (defun ilya_latex-next-error (args)
@@ -848,22 +865,6 @@ here we make it do it explictly
            (goto-char ,old-point)))))
  #+END_SRC
 ** minor modes
-*** reftex
-#+BEGIN_SRC emacs-lisp 
-  (use-package reftex
-    :ensure t
-    :init
-    (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-    (setq reftex-plug-into-AUCTeX t)
-    )
- #+END_SRC
-*** cdlatex (autcompletion)
-#+BEGIN_SRC emacs-lisp 
-  (use-package cdlatex
-   :ensure t
-   :config
-   (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex))
- #+END_SRC
 ** latex expand text
 #+BEGIN_SRC emacs-lisp 
   (use-package fill-column-indicator
@@ -1219,6 +1220,28 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
   (with-eval-after-load 'company
     (add-hook 'c++-mode-hook 'company-mode))
  #+END_SRC
+* flycheck
+- deactivate flymake and use flycheck - syntax is checked ont the fly
+- uses jedi for python
+#+BEGIN_SRC emacs-lisp 
+  (use-package flycheck
+    :ensure t
+    :init
+    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+    (add-hook 'elpy-mode-hook 'flycheck-mode)
+    (add-hook 'c++-mode-hook 'flycheck-mode))
+ #+END_SRC
+** colouring
+#+BEGIN_SRC emacs-lisp 
+  (set-face-attribute 'flycheck-error nil
+                      :family "Font Fira"
+                      ;; :background "#bf0004"
+                      ;; :foreground "gold2"
+                      ;; :underline nil
+                      :box '(:color "gold2" :line-width 1))
+  (set-face-attribute 'flycheck-warning nil
+                      :underline "DarkOrange")
+ #+END_SRC
 * csv mode
 #+BEGIN_SRC emacs-lisp 
   (use-package csv-mode
@@ -1488,16 +1511,6 @@ is activated
       (setq python-shell-completion-native-enable nil) ;remove a warming about native completion
   )
  #+END_SRC
-*** syntax checking =jedi, flycheck=
-- deactivate flymake and use flycheck - syntax is checked ont the fly
-- uses jedi
-#+BEGIN_SRC emacs-lisp 
-  (use-package flycheck
-    :ensure t
-    :init
-    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-    (add-hook 'elpy-mode-hook 'flycheck-mode))  
- #+END_SRC
 *** code formatting =autopep8=
 - automatically fix syntax errors upon saving
 #+BEGIN_SRC emacs-lisp 
@@ -1540,17 +1553,19 @@ is activated
     :ensure t)
 
   (defhydra hydra-python-vi (:color teal
-			      :hint nil)
+                              :hint nil)
     "
        PYTHON ENVIRONMENT SELECTION
   ^^^^^------------------------------------------------------------------------------------------
-  _m_: phd-vi                _r_: restart
+  _p_: phd-vi                _r_: restart
   _n_: neural-network-vi
+  _l_: linux_vi
   ^^
   ^^
   "
-    ("m"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/phd_vi"))
+    ("p"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/phd_vi"))
     ("n"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/nn_vi"))
+    ("l"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/linux"))
     ("r"   pyvenv-restart-python)
     ("q"   nil "cancel" :color blue))
 
@@ -2961,45 +2976,19 @@ Navigation around a set of project files. There's tons of shortcuts to explore
 
   (global-set-key (kbd "C-x p") (function hydra-projectile/body))
  #+END_SRC
-* Treemacs                                                      :not_working:
+* Smartparens
 #+BEGIN_SRC emacs-lisp 
-  ;; (use-package treemacs
-  ;;   :ensure t
-  ;;   :defer t
-  ;;   :config
-  ;;   (progn
-  ;;     (setq treemacs-follow-after-init          t
-  ;;           treemacs-width                      35
-  ;;           treemacs-indentation                2
-  ;;           treemacs-git-integration            t
-  ;;           treemacs-collapse-dirs              3
-  ;;           treemacs-silent-refresh             nil
-  ;;           treemacs-change-root-without-asking nil
-  ;;           treemacs-sorting                    'alphabetic-desc
-  ;;           treemacs-show-hidden-files          t
-  ;;           treemacs-never-persist              nil
-  ;;           treemacs-is-never-other-window      nil
-  ;;           treemacs-goto-tag-strategy          'refetch-index)
-
-  ;;     (treemacs-follow-mode t)
-  ;;     (treemacs-filewatch-mode t))
-  ;;   :bind
-  ;;   (:map global-map
-  ;;         ([f8]        . treemacs-toggle)
-  ;;         ([f9]        . treemacs-projectile-toggle)
-  ;;         ("<C-M-tab>" . treemacs-toggle)
-  ;;         ("M-0"       . treemacs-select-window)
-  ;;         ("C-c 1"     . treemacs-delete-other-windows)
-  ;;   )
-  ;; )
-
-  ;; (use-package treemacs-projectile
-  ;; ;
-                                          ;   :defer t
-  ;;   :ensure t
-  ;;   :config
-  ;;   (setq treemacs-header-function #'treemacs-projectile-create-header)
-  ;;   )
+  (use-package smartparens
+    :ensure t
+    :hook (prog-mode . smartparens-mode)
+    :config
+    (require 'smartparens-config)
+    :bind
+    (("C-<down>" . sp-down-sexp)
+     ("C-<up>" . sp-up-sexp)
+     ("M-<down>" . sp-backward-down-sexp)
+     ("M-<up>" . sp-backward-up-sexp)))
+  (show-paren-mode)
  #+END_SRC
 * Reverting                                                          :darren:
 ** undo tree                                                        :darren:

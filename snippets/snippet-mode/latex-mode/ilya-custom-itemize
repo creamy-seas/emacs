@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ilya-custom-itemize
+# key: ic
+# --
+\\item[\faBullseye]

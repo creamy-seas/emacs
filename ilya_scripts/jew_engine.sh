@@ -18,5 +18,5 @@ rm prv* 2> /dev/null
 rm -r _region* 2> /dev/null
 
 #2) copy all the files into there. 3 times, because the script quits prematurely for some reason, so need to be repeated
-echo "Removing files: " $1.{aux,bbl,blg,fdb_latexmk,fls,log,out,toc,bcf,run.xml}
-mv -f $1.{aux,bbl,blg,fdb_latexmk,fls,log,out,toc,bcf,run.xml,nav,snm} ./auto 2> /dev/null
+echo "Removing files: " $1.{aux,bbl,blg,fdb_latexmk,fls,log,out,toc,bcf,run.xml,el}
+mv -f $1.{aux,bbl,blg,fdb_latexmk,fls,log,out,toc,bcf,run.xml,nav,snm,el} ./auto 2> /dev/null
