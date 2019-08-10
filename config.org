@@ -179,6 +179,21 @@
 #+BEGIN_SRC emacs-lisp
   (setq mu4e-split-view 'horizontal)
  #+END_SRC
+** custom markers
+- read and delete
+#+BEGIN_SRC emacs-lisp 
+  (add-to-list 'mu4e-marks
+               '(read-and-trash
+                 :char       "✘"
+                 :prompt     "w⦿Read and Trash⦿"
+                 :show-target (lambda (target) "→Read and Trash")
+                 :action      (lambda (docid msg target)
+                              ;remove Unread and New → Mark as [S]een and [T]rash
+                                (mu4e~proc-move docid nil "+S+T-u-N"))))
+
+  (mu4e~headers-defun-mark-for read-and-trash)
+  (define-key mu4e-headers-mode-map (kbd "d") 'mu4e-headers-mark-for-read-and-trash)
+ #+END_SRC
 ** smtp
 - how to send the mail
 #+BEGIN_SRC emacs-lisp 
@@ -1164,6 +1179,11 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
    '(font-latex-math-face ((t (:foreground "#99c616"))))
    '(font-latex-sedate-face ((t (:foreground "burlywood")))))
  #+END_SRC
+** allow narrowing and widening
+#+BEGIN_SRC emacs-lisp
+(put 'TeX-narrow-to-group 'disabled nil)
+(put 'LaTeX-narrow-to-environment 'disabled nil) 
+ #+END_SRC
 * C++ mode
 ** Preliminary instructions
 1) you need to first check that clang is on computer =clang --version=
@@ -1219,28 +1239,6 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
   ;;finally ensure that c++-mode-hook is activated when company mode is on
   (with-eval-after-load 'company
     (add-hook 'c++-mode-hook 'company-mode))
- #+END_SRC
-* flycheck
-- deactivate flymake and use flycheck - syntax is checked ont the fly
-- uses jedi for python
-#+BEGIN_SRC emacs-lisp 
-  (use-package flycheck
-    :ensure t
-    :init
-    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-    (add-hook 'elpy-mode-hook 'flycheck-mode)
-    (add-hook 'c++-mode-hook 'flycheck-mode))
- #+END_SRC
-** colouring
-#+BEGIN_SRC emacs-lisp 
-  (set-face-attribute 'flycheck-error nil
-                      :family "Font Fira"
-                      ;; :background "#bf0004"
-                      ;; :foreground "gold2"
-                      ;; :underline nil
-                      :box '(:color "gold2" :line-width 1))
-  (set-face-attribute 'flycheck-warning nil
-                      :underline "DarkOrange")
  #+END_SRC
 * csv mode
 #+BEGIN_SRC emacs-lisp 
@@ -1446,7 +1444,7 @@ beautiful file browsing
     (define-key ein:notebook-mode-map (kbd "C-c C-;") (function comment-line))
     (define-key ein:notebook-mode-map (kbd "C-c TAB") (function ein:completer-complete)))
  #+END_SRC
-* Elpy mode
+* <<Elpy>> mode
 ** external setup of python
 *** install =virtualenvwrapper=
 **** mac
@@ -1595,6 +1593,28 @@ is activated
     ;;     (hydra-python-vi/body)
     ;;   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/arch_vi")))
 #+END_SRC
+* Flycheck (must be after [[Elpy]])
+- deactivate flymake and use flycheck - syntax is checked ont the fly
+- uses jedi for python
+#+BEGIN_SRC emacs-lisp 
+  (use-package flycheck
+    :ensure t
+    :init
+    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+    (add-hook 'elpy-mode-hook 'flycheck-mode)
+    (add-hook 'c++-mode-hook 'flycheck-mode))
+ #+END_SRC
+** colouring
+#+BEGIN_SRC emacs-lisp 
+  (set-face-attribute 'flycheck-error nil
+                      ;; :family "Font Fira"
+                      :background "#bf0004"
+                      :foreground "gold2"
+                      :underline nil
+                      :box '(:color "gold2" :line-width 1))
+  (set-face-attribute 'flycheck-warning nil
+                      :underline "DarkOrange")
+ #+END_SRC
 * Markdown mode
 #+BEGIN_SRC emacs-lisp 
   (use-package markdown-mode
@@ -2919,10 +2939,10 @@ the superior search mode to the original
 * Projectile
 Navigation around a set of project files. There's tons of shortcuts to explore
 #+BEGIN_SRC emacs-lisp 
-  (use-package projectile
-    :ensure t
-    :init
-    (projectile-mode +1))
+;;  (use-package projectile
+;;    :ensure t
+;;    :init
+;;    (projectile-mode +1))
     ;; (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
     ;; (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
  #+END_SRC
@@ -2988,7 +3008,12 @@ Navigation around a set of project files. There's tons of shortcuts to explore
      ("C-<up>" . sp-up-sexp)
      ("M-<down>" . sp-backward-down-sexp)
      ("M-<up>" . sp-backward-up-sexp)))
+
+  ;; highlight brackets
   (show-paren-mode)
+
+  ;; remap delete-char → sp-delete-char to always preserve brackets
+  (smartparens-global-strict-mode)
  #+END_SRC
 * Reverting                                                          :darren:
 ** undo tree                                                        :darren:
