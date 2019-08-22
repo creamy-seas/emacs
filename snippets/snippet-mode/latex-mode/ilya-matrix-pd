@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: ilya-matrix-p
+# key: imatp
+# --
+\\begin{pmatrix}
+ $1 & $2 \\\\
+ $3 & $4
+\\end{pmatrix}$0
