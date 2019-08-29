@@ -1453,6 +1453,11 @@ beautiful file browsing
 ** key bindings
 #+BEGIN_SRC emacs-lisp 
   (with-eval-after-load "ein-notebook"
+    (hungry-delete-mode)			;turns off hungry delete
+    ;; (define-key ein:notebook-mode-map (kbd "DEL") (function backward-delete-char))
+    ;; (define-key ein:notebook-mode-map (kbd "DEL") (function python-indent-dedent-line-backspace))
+    ;; (define-key ein:notebook-mode-map (kbd "DEL") (function sp-backward-delete-char))
+    (define-key ein:notebook-mode-map (kbd "'") (function self-insert-command))
     (define-key ein:notebook-mode-map (kbd "C-c C-d") (function ein:pytools-request-tooltip-or-help))
     (define-key ein:notebook-mode-map (kbd "C-c C-j") (function ein:notebook-kernel-interrupt-command))
     ;; (define-key ein:notebook-mode-map (kbd "C-c C-j") (function
@@ -2063,7 +2068,7 @@ the nice bullets instead of multiplication symbols
 ** latex
 #+BEGIN_SRC emacs-lisp 
   (setq org-format-latex-options (plist-put org-format-latex-options
-                                            :scale 1.48))
+                                            :scale 1.7))
   (setq org-format-latex-options (plist-put org-format-latex-options
                                             :foreground "#fdab10"))
  #+END_SRC

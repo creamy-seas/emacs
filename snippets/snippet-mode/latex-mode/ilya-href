@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ilya-href
+# key: hr
+# --
+\href{${1:website}}{${2:description}}

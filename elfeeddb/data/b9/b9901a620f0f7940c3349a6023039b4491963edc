@@ -1,0 +1,189 @@
+<p>What do all these things have in common?</p>
+
+<ul>
+<li>RSS feeds</li>
+<li>Gamepads and MIDI devices</li>
+<li>An email client</li>
+<li>Filesystem watching (FSWatch, kqueue, ionotify, etc)</li>
+<li>Web based monitoring dashboards</li>
+<li>CPU usage on your local machine</li>
+<li>Kafka</li>
+<li><a href="https://rethinkdb.com/docs/changefeeds/ruby/">RethinkDB Changefeeds</a></li>
+<li>A Google Docs document</li>
+<li>Contentful's <a href="https://www.contentful.com/developers/docs/concepts/sync/">sync protocol</a></li>
+<li>Syntax highlighting as I type in my editor, with red squiggly error underlines for errors</li>
+</ul>
+
+<p>All of these systems have data that changes over time. In each case, one system (the kernel, a network server, a database) authoritatively knows about some information (the filesystem, your email inbox). It needs to tell other systems about changes to that data.</p>
+
+<p>But look at this list - all of these systems have <em>completely</em> different APIs. Filesystem watching works <a href="https://github.com/emcrisostomo/fswatch#limitations">differently on every OS</a>. RSS feeds poll. Email clients ... well, email is its own mess (<a href="https://jmap.io/">JMAP</a> looks promising though). Google's APIs use a <a href="https://developers.google.com/calendar/v3/push">registered URL callback for change notifications</a>. Kafka's API queries from a specified numbered offset, with Events returned as they're available. Getting information about a running linux system usually requires parsing pseudo-files in <code>/proc</code>. Can you fs watch these files? Who knows. Even inside the linux kernel there's a handful of different APIs for observing changes depending on the system you're interacting with (<code>epoll</code> / <code>inotify</code> / <code>aio</code> / <code>procfs</code> / <code>sysfs</code> / etc). Its the same situation inside web browsers - we have DOM events (<code>onfocus</code> / <code>onblur</code>, etc). But the DOM also has <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Mutation_events"><code>MutationEvents</code></a> and <a href="https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver"><code>MutationObserver</code></a>. <a href="https://www.html5rocks.com/en/tutorials/getusermedia/intro/"><code>getUserMedia</code></a> and <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API"><code>fetch</code></a> use promises instead. MIDI gives you a stream of 3 byte messages to parse. And the Gamepad API is polled.</p>
+
+<p>The fact that these systems all work differently is really silly. It reminds me of the time before we standardized on JSON over REST. Every application had their own protocol for fetching data. <a href="https://en.wikipedia.org/wiki/File_Transfer_Protocol">FTP</a> and <a href="https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol#SMTP_transport_example">SMTP</a> use a stateful text protocol. At the time Google's systems all used RPC over protobuf. And then, REST was born and now you can access everything from <a href="https://darksky.net/dev/docs">weather forecasts</a> to <a href="https://developers.google.com/calendar/v3/reference/">a user's calendar</a> to lists of <a href="https://api.nasa.gov/api.html#exoPlanetIntro">exoplanets from NASA</a> via REST.</p>
+
+<p>I think we'll look back on today in the same way, reflecting on how silly and inconvenient it is (was) for every API to use a different method of observing data changing over time.</p>
+
+<p>I think we need 2 things:</p>
+
+<ul>
+<li>A programmatic API in each language for accessing data that changes over time</li>
+<li>A REST-equivalent network protocol for streaming data changes (or a REST extension)</li>
+</ul>
+
+<p>You might be thinking, isn't this problem solved with streams? Or observables? Or Kafka? No. Usually what I want my program to do is this:</p>
+
+<ol>
+<li>Get some initial data  </li>
+<li>Get a stream of changes <em>from that snapshot</em>. These changes should be live (not polled), <em>incremental</em> and <em>semantic</em>. (Eg Google Docs should say <code>'a' was inserted at document position 200</code>, not send a new copy of the document with every keystroke).  </li>
+<li>Reconnect to that stream without missing any changes.</li>
+</ol>
+
+<p>Stream APIs usually make it hard to do 1 and 3. Pub-sub usually makes it impossible to do 3 (if you miss a message, what do you do?). Observables aren't minimal - usually they send you the whole object with each update. As far as I can tell, GraphQL subscriptions are just typed streams - which is a pity, because they had a great opportunity to get this right.</p>
+
+<p>One mental model for this is that I want a program to watch a state machine owned by a different program. The state machine could be owned by the kernel or a database, or a goroutine or something. It could live on another computer - or even on the blockchain or <a href="https://www.scuttlebutt.nz">scuttlebutt</a>. When I connect, the state machine is in some <em>initial state</em>. It then processes <em>actions</em> which move it from state to state. (Actions is a weird term - in other areas we call them <em>operations</em>, <em>updates</em>, <em>transactions</em> or <em>diffs / patches</em>).</p>
+
+<p>If my application is interested in following along, I want that state machine to tell me:</p>
+
+<ul>
+<li>A recent snapshot of the state</li>
+<li>Each action performed by the state machine from that state, with enough detail that I can follow along locally.</li>
+</ul>
+
+<p>When I reconnect, the state machine could either tell me all the actions I missed and I can replay them locally, or it could send me a new snapshot and we can go from there. (That said, sometimes its important that we get the operations and not just a new snapshot.)</p>
+
+<p>With this, I can:</p>
+
+<ul>
+<li>Re-render my app's frontend when the data changes, without needing to poll or re-send everything over the network, or do diffing or anything like that.</li>
+<li>Maintain a computed view that is only recalculated when the data itself changes. (Like compilation artefacts, or a blog post's HTML - HTML should only be rerendered when the post's content changes!)</li>
+<li>Do local speculative writes. That allows realtime collaborative editing (like Google Docs).</li>
+<li>Do monitoring and analytics off the <em>changes</em>.</li>
+<li>Invalidate (&amp; optionally repopulate) a cache</li>
+<li>Build a secondary index that always stays up to date</li>
+</ul>
+
+<p>One of the big advantages of having REST become a standard is that we've been able to build common libraries and infrastructure that works with any kind of data. We have caching, load balancing and CDN tools like nginx / cloudflare. We have debugging tools like cURL and <a href="https://paw.cloud">Paw</a>. HTTP libraries exist in every language, and they interoperate beautifully. We should be able to do the same sort of thing with changing data - if there was a standard protocol for updates, we could have standard tools for all of the stuff in that list above! Streaming APIs like ZMQ / RabbitMQ / Redis Streams are too low level to write generic tools like that.</p>
+
+<h2 id="timeversionsshouldbeexplicit">Time (versions) should be explicit</h2>
+
+<p>We need to talk about versions. To me, one of the big problems with lots of APIs for stuff like this today is that they're missing an explicit notion of <em>time</em>. This conceptual bug shows up all over the place, and once you see it its impossible to unsee. Props to <a href="https://www.youtube.com/watch?v=RKcqYZZ9RDY">Rich Hickey</a> and <a href="https://www.youtube.com/watch?v=5ZjhNTM8XU8">Martin Kleppmann</a> for informing my thinking on this.</p>
+
+<p>The problem is that for data that changes over time, a fetched value is correct only at that precise time that it was fetched. Without re-fetching, or some other mechanism, its impossible to tell when that value is no longer valid. It might have already changed by the time you receive the value - but you have no way to know without re-fetching and comparing. And even if you do re-fetch and compare, it might have changed in the intervening time then changed back.</p>
+
+<p>If we add in the notion of explicit versions, this becomes much easier to think about. Imagine I make two queries (or SYSCALLs or whatever). I learn first that <code>x = 5</code> then <code>y = 6</code>. But from that alone I don't know anything about how those values relate across time! There might never have been a time where <code>(x,y) = (5,6)</code>. If instead I learn that <code>x = 5 at time 100</code>, then <code>y = 6 at time 100</code>, I have two <em>immutable facts</em>. I know that at time 100, <code>(x,y) = (5,6)</code>. I can ask follow up questions like <code>what is z at time 100?</code>. Or importantly, <code>notify me when x changes after version 100</code>.</p>
+
+<p>These versions could be a single incrementing number (like SVN or Kafka), a version vector or an opaque string or a hash like git.</p>
+
+<p>This might seem like an academic problem, but having time (/ version information) be implicit instead of explicit hurts us in lots of ways.</p>
+
+<p>For example, if I make two SQL queries, I have no way of knowing if the two query results are temporally coherent. The data I got back might have changed between queries. The SQL answer is to use transactions. Transactions force both queries to be answered from the same point in time. The problem with transactions is that they don't compose:</p>
+
+<ul>
+<li>I can't use the results from two sequentially made transactions together, even if the data changes rarely.</li>
+<li>I can't make a SQL transaction across multiple databases.</li>
+<li>If I have my data in PostgresQL and an index to my data in ElasticSearch, I can't make a query that fetches an ID from the index, then fetches / modifies the corresponding value in postgres. The data might have changed in between the two queries. Or my ElasticSearch index might be behind the point in time of postgres. I have no way to tell.</li>
+<li>You can't make a generic cache of query results using versionless transactions. Isn't it weird that we have generic caches for HTTP (like varnish or nginx) but nothing like that for most databases? The reason is that if you query keys <em>A</em> and <em>B</em> from a database, and the cache has <em>A</em> stored locally, it can't return the cached value for <em>A</em> and just fetch <em>B</em>. The cache also can't store <em>B</em> alongside the older result for <em>A</em>. Without versions, this problem is basically impossible to solve correctly in a general way. But we can solve it for HTTP because we have <code>ETag</code>s.</li>
+</ul>
+
+<p>The caching problem is sort of solved by read only replicas - but I find it telling that read only replicas often need private APIs to work. The main API of most databases aren't powerful enough to support a feature that the database itself needs to scale and function. (This is getting better though - <a href="https://www.mongodb.com/blog/post/an-introduction-to-change-streams">Mongo</a> / <a href="https://wiki.postgresql.org/wiki/Logical_Decoding_Plugins">Postgres</a>.)</p>
+
+<p>Personally I think this problem alone is one of the core reasons behind the <em>nosql</em> movement. Our database APIs make it impossible to correctly implement caching, secondary indexing and computed views in separate processes. So SQL databases have to do everything in-process, and this in turn kills write performance - they have ever more work to do on each write. Developers have solved these performance problems by looking elsewhere.</p>
+
+<p>It doesn't have to be like this - I think we can have our cake and eat it too; we just need better APIs.</p>
+
+<p>(Credit where credit is due - <a href="https://riak.com">Riak</a>, <a href="https://apple.github.io/foundationdb/api-c.html#c_fdb_transaction_get_versionstamp">FoundationDB</a> and <a href="http://docs.couchdb.org/en/stable/intro/api.html#documents">CouchDB</a> all provide version information in their fetch APIs. I still want better change feeds APIs though.)</p>
+
+<h2 id="minimalviablespec">Minimal Viable Spec</h2>
+
+<p>What would a baseline API for data that changes over time look like?</p>
+
+<p>The way I see it, we need 2 basic APIs:</p>
+
+<ul>
+<li><strong>fetch(query)</strong> -> data, version</li>
+<li><strong>subscribe(query, version)</strong> -> stream of (update, version) pairs. (Or maybe an error if the version is too old)</li>
+</ul>
+
+<p>There's a lot of forms the version information could take - it could be a timestamp, a number, an opaque hash, or something else. It doesn't really matter so long as it can be passed into <code>subscribe</code> calls.</p>
+
+<p>Interestingly, HTTP we already has a fetch function with this API in the <code>GET</code> method. The server returns data and usually either a <code>Last-Modified</code> header or an <code>ETag</code>. But HTTP is missing a standard way to subscribe.</p>
+
+<p>The update objects themselves should to be <em>small</em> and <em>semantic</em>. The gold standard for operations is usually that they should express <em>user intent</em>. And I also believe we should have a MIME-type equivalent set of standard update functions (like JSON-patch).</p>
+
+<p>Lets look at some examples:</p>
+
+<p>For <em>Google Docs</em>, we can't re-send the whole document with every key stroke. Not only would that be slow and wasteful, but it would make concurrent editing almost impossible. Instead Docs wants to send a semantic edit, like <code>insert 'x' at position 4</code>. With that we can update cursor positions correctly and handle concurrent edits from multiple users. Diffing isn't good enough here - if a document is <code>aaaa</code> and I have a cursor in the middle (<code>aa|aa</code>), inserting another <code>a</code> at the start or the end of the document has the same effect on the document. But those changes have different effects on my cursor position and speculative edits.</p>
+
+<p>The indie game <a href="https://www.factorio.com/"><em>Factorio</em></a> uses a deterministic game update function. Both save games and the network protocol are streams of actions which modify the game state's in a well defined way (<em>mine coal</em>, <em>place building</em>, <em>tick</em>, etc). Each player applies the stream of actions to a local snapshot of the world. Note in this case the semantic content of the updates is totally application specific - I doubt any generic JSON-patch like type would be good enough for a game like this.</p>
+
+<p>For something like a gamepad API, its probably fine to just send the entire new state every time it changes. The gamepad state data is so small and diffing is so cheap and easy to implement that it doesn't make much difference. Even versions feel like overkill here.</p>
+
+<p><em>GraphQL subscriptions</em> should work this way. GraphQL already allows me to define a schema and send a query with a shape that mirrors the schema. I want to know when the query result set changes. To do so I should be able to use the same query - but subscribe to the results instead of just fetch them. Under the hood GraphQL could send updates using JSON-patch or something like it. Then the client can locally update its view of the query. With this model we could also write tight integrations between that update format and frontend frameworks like <a href="https://svelte.dev">Svelte</a>. That would allow us to update only and exactly the DOM nodes that need to be changed as a result of the new data. This is not how <a href="https://www.apollographql.com/docs/react/advanced/subscriptions">GraphQL subscriptions work today</a>. But in my opinion it should be!</p>
+
+<p>To make GraphQL and Svelte (and anything else) interoperate, we should define some standard update formats for structured data. Games like Factorio will always need to do their own thing, but the rest of us can and should use standard stuff. I'd love to see a <code>Content-Type:</code> for update formats. I can imagine one type for plain text updates, another for JSON (probably a few for JSON). Another type for rich text, that applications like Google Docs could use. I have nearly a decade of experience goofing around with realtime collaborative editing, and this API model would work perfectly with collaborative editors built on top of OT or CRDTs.</p>
+
+<p>Coincidentally, <a href="https://github.com/ottypes/json1">I wrote this JSON operation type</a> that also supports alternate embedded types and operational transform. And Jason Chen <a href="https://github.com/ottypes/rich-text">wrote this rich text type</a>. There's also plenty of CRDT-compatible types floating around too.</p>
+
+<hr>
+
+<p>The API I described above is just one way to cut this cake. There's plenty of alternate ways to write a good API for this sort of thing. <a href="https://braid.news/protocol">Braid</a> is another approach. There's also a bunch of ancillary APIs which could be useful:</p>
+
+<ul>
+<li><strong>fetchAndSubscribe(query)</strong> -> data, version, stream of updates. This saves a round-trip in the common case, and saves re-sending the query.</li>
+<li><strong>getOps(query, fromVersion, toVersion / limit)</strong> -> list of updates. Useful for some applications</li>
+<li><strong>mutate(update, ifNotChangedSinceVersion)</strong> -> new version or conflict error</li>
+</ul>
+
+<p>Mutate is interesting. By adding a version argument, we can reimplement atomic transactions on top of this API. It can support all the same semantics as SQL, but it could also work with caches and secondary indexes.</p>
+
+<p>Having a way to generate version conflicts lets you build realtime collaborative editors with OT on top of this, using the same approach as <a href="https://firepad.io/">Firepad</a>. The algorithm is simple - put a retry loop with some OT magic in the middle, between the frontend application and database. <a href="https://github.com/josephg/statecraft/blob/master/core/lib/stores/ot.ts#L38-L47">Like this</a>. It composes really well - with this model you can do realtime editing without support from your database.</p>
+
+<p>Obviously not all data is mutable, and for data that is, it won't necessarily make sense to funnel all mutations through a single function. But its a neat property! Its also interesting to note that HTTP POST already supports doing this sort of thing with the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Match"><code>If-Match</code></a> / <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Unmodified-Since"><code>If-Unmodified-Since</code></a> headers.</p>
+
+<h2 id="standards">Standards</h2>
+
+<p>So to sum up, we need a standard for how we observe data that changes over time. We need:</p>
+
+<ul>
+<li>A local programatic APIs for kernels (and stuff like that)</li>
+<li>A standard API we can use over the network. A REST equivalent, or a protocol that extends REST directly.</li>
+</ul>
+
+<p>Both of these APIs should support:</p>
+
+<ul>
+<li>Versions (or timestamps, ETags, or some equivalent)</li>
+<li>A standard set of update operations, like <code>Content-Type</code> in http but for modifications. Sending a fresh copy of all the data with each update is bad.</li>
+<li>The ability to reconnect from some point in time</li>
+</ul>
+
+<p>And we should use these APIs basically everywhere, from databases, to applications, and down into our kernels. Personally I've wasted too much of my professional life implementing and reimplementing code to do this. And because our industry builds this stuff from scratch each time, the implementations we have aren't as good as they could be. Some have bugs (fs watching on MacOS), some are hard to use (parsing sysfs files), some require polling (Contentful), some don't allow you to reconnect to feeds (GraphQL, RethinkDB, most pubsub systems). Some don't let you send small incremental updates (observables). The high quality tools we do have for building this sort of thing are too low level (streams, websockets, MQs, Kafka). The result is a total lack of interoperability and common tools for debugging, monitoring and scaling.</p>
+
+<p>I don't want to rubbish the systems that exist today - we've needed them to explore the space and figure out what good looks like. But having done that, I think we're ready for a standard, simple, forward looking protocol for data that changes over time.</p>
+
+<p><em>Whew.</em></p>
+
+<p>By the way, I'm working to solve some problems in this space with <a href="https://github.com/josephg/statecraft">Statecraft</a>. But thats another blog post. ;)</p>
+
+<h3 id="inspirations">Inspirations</h3>
+
+<p><a href="https://www.datomic.com/">Datomic</a> and everything Rich Hickey - <a href="https://www.youtube.com/watch?v=-6BsiVyC1kM">The Value of Values talk</a> is great.</p>
+
+<p><a href="https://kafka.apache.org/">Kafka</a> and the event sourcing / DDD communities.</p>
+
+<p><a href="https://www.apollographql.com/docs/react/advanced/subscriptions">GraphQL subscriptions</a></p>
+
+<p><a href="https://rethinkdb.com/docs/changefeeds/ruby/">RethinkDB change feeds</a></p>
+
+<p><a href="https://www.learnrxjs.io/">RxJS</a> / <a href="https://developer.apple.com/documentation/objectivec/nsobject/1412787-addobserver?language=objc">Obj-C observables</a> and everything in between</p>
+
+<p><a href="https://svelte.dev/blog/svelte-3-rethinking-reactivity">Svelte</a></p>
+
+<p><a href="https://firebase.google.com/">Firebase</a></p>
+
+<p><a href="https://developers.google.com/realtime/overview">Google Realtime API</a> (Discontinued)</p>
+
+<p><a href="https://martin.kleppmann.com/">Everything Martin Kleppmann does</a>. <a href="https://www.youtube.com/watch?v=5ZjhNTM8XU8">Fav talk 1</a> <a href="https://www.youtube.com/watch?v=v2RJQELoM6Y">Talk 2</a></p>
+
+<p><a href="https://stateb.us">Statebus</a> / <a href="https://braid.news/protocol">Braid</a></p>
+
+<p><a href="https://facebook.github.io/flux/docs/in-depth-overview.html#content">React Flux</a></p>
