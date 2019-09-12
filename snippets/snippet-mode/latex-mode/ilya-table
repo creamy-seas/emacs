@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: ilya-table
+# key: t
+# --
+\begin{table}[h]
+  \centering
+  \begin{tabular}{${1:|c|c|}}
+    \hline
+     $2 & $3 \\\\\hline$0
+\end{tabular}
+\end{table}

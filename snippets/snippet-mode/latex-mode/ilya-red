@@ -2,4 +2,4 @@
 # name: red
 # key: red
 # --
-\red{${1:red-like-the-reich-flag}}\ec$0
+\red{${1:red-like-the-reich-flag}}$0

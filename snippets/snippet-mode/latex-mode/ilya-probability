@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ilya-probability
+# key: iprob
+# --
+\iprob{${1:text-here}$0}

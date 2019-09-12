@@ -1,4 +1,11 @@
 #+STARTUP: overview
+C-c \ in latex
+* emojis
+#+BEGIN_SRC emacs-lisp 
+  (use-package emojify
+    :ensure t)
+  (global-emojify-mode)
+ #+END_SRC
 
 * ggtags
 #+BEGIN_SRC emacs-lisp 
@@ -63,6 +70,7 @@ required to edit searches made by counsel
   (setq epa-pinentry-mode 'loopback)
  #+END_SRC
 * mu4e
+- for google, you need to allow
 - bound with [[global_bindings]]
 - =C-c C-a= for attachments
 ** external setup
@@ -106,7 +114,8 @@ required to edit searches made by counsel
       (imagemagick-register-types))
 
     ;; 4 - main accounts and sending mail
-    (setq mu4e-user-mail-address-list '("ilya.antonov24@ntlworld.com"
+    (setq mu4e-user-mail-address-list '("ilya.antonov@dreams-ai.com"
+                                        "ilya.antonov24@ntlworld.com"
                                          "antonov.ilya225@gmail.com"
                                          "ilya.antonov24@ntlworld.com"))
     (setq mu4e-context-policy 'pick-first)
@@ -146,6 +155,25 @@ required to edit searches made by counsel
                     (mu4e-compose-signature . (concat
                                                "Ilya Antonov,\n"
                                                "⦿ NTLWORLD\n"))
+                    (mu4e-compose-format-flowed . nil)))
+           (make-mu4e-context
+            :name "dreams-ai"
+            :enter-func (lambda () (mu4e-message "Entering Dreams ☁"))
+            :leave-func (lambda () (mu4e-message "Entering Dreams ☁"))
+            :match-func (lambda (msg)
+                          (when msg
+                            (mu4e-message-contact-field-matches
+                             msg '(:from :to :cc :bcc) "ilya.antonov@dreams-ai.com")))
+            :vars '((user-mail-address . "ilya.antonov@dreams-ai.com")
+                    (user-full-name . "Ilya Antonov (Dreams-AI)")
+                    ;; (mu4e-sent-messages-behavior 'delete)
+                    (mu4e-sent-folder . "/ilya_DREAMSAI/[Gmail].Sent Mail")
+                    (mu4e-drafts-folder . "/ilya_DREAMSAI/[Gmail].Drafts")
+                    (mu4e-trash-folder . "/ilya_DREAMSAI/[Gmail].Bin")
+                    (mu4e-refile-folder . "/ilya_DREAMSAI/[Gmail].Starred")
+                    (mu4e-compose-signature . (concat
+                                               "Ilya Antonov,\n"
+                                               "☁ DREAMSAI\n"))
                     (mu4e-compose-format-flowed . nil)))
            (make-mu4e-context
             :name "gmail"
@@ -193,17 +221,18 @@ required to edit searches made by counsel
     (add-to-list 'mu4e-bookmarks
                  (make-mu4e-bookmark
                   :name "All Inboxes"
-                  :query "maildir:/ilya_GMAIL/INBOX OR maildir:/ilya_NTLWORLD/INBOX OR maildir:/ilya_OUTLOOK/INBOX"
+                  :query "maildir:/ilya_GMAIL/INBOX OR maildir:/ilya_NTLWORLD/INBOX OR maildir:/ilya_OUTLOOK/INBOX OR maildir:/ilya_DREAMSAI/INBOX"
                   :key ?i))
     (add-to-list 'mu4e-bookmarks
                  (make-mu4e-bookmark
                   :name "All Archives"
-                  :query "maildir:/ilya_GMAIL/[Gmail].Starred OR maildir:/ilya_NTLWORLD/Archive OR maildir:/ilya_OUTLOOK/Archive"
+                  :query "maildir:/ilya_GMAIL/[Gmail].Starred OR maildir:/ilya_NTLWORLD/Archive OR maildir:/ilya_OUTLOOK/Archive OR maildir:/ilya_DREAMSAI/[Gmail].Starred"
                   :key ?a))
 
 
     (setq   mu4e-maildir-shortcuts
-            '(("/ilya_GMAIL/INBOX"     . ?g)
+            '(("/ilya_DREAMSAI/INBOX"     . ?d)
+              ("/ilya_GMAIL/INBOX"     . ?g)
               ("/ilya_NTLWORLD/INBOX"     . ?n)
               ("/ilya_OUTLOOK/INBOX"     . ?l))))
 
@@ -245,6 +274,7 @@ required to edit searches made by counsel
   (define-key mu4e-headers-mode-map (kbd "d") 'mu4e-headers-mark-for-read-and-trash)
  #+END_SRC
 ** smtp
+- =msmtp --host=smtp.office365.com --port=587 --serverinfo --tls --tls-certcheck=off=
 - how to send the mail
 #+BEGIN_SRC emacs-lisp 
   (setq message-send-mail-function (function message-send-mail-with-sendmail))
@@ -266,6 +296,8 @@ required to edit searches made by counsel
        "OR "
        "flag:unread maildir:/ilya_GMAIL/INBOX "
        "OR "
+       "flag:unread maildir:/ilya_DREAMSAI/INBOX "
+       " OR "
        "flag:unread maildir:/ilya_OUTLOOK/INBOX"
        ))
     (mu4e-alert-enable-mode-line-display)
@@ -944,7 +976,7 @@ here we make it do it explictly
         (set-fill-column temp-fill-width)
       (set-fill-column 94)))
  #+END_SRC
-** =hyperref=
+** =hyperref=                                                          :hyp:
 #+BEGIN_SRC emacs-lisp 
   (defun ilya-reftex-reference (&optional type no-insert cut)
     "Make a LaTeX reference.  Look only for labels of a certain TYPE.
@@ -1719,11 +1751,12 @@ is activated
 C-u C-c C-x !
 ** todo lists
 #+BEGIN_SRC emacs-lisp 
-  (setq org-todo-keywords '((sequence "TODO(t)" "BLOAT(B)" "BRYAN(b)" "PHD(p)" "SCHOOLS(s)" "TUTORING(l)" "CURRENT(c)" "|" "DOMINATED(d)")))
+  (setq org-todo-keywords '((sequence "TODO(t)" "BLOAT(B)" "BRYAN(b)" "PHD(p)" "DREAMS-AI(a)" "SCHOOLS(s)" "TUTORING(l)" "CURRENT(c)" "|" "DOMINATED(d)")))
 
   (setq org-todo-keyword-faces (quote (
                                        ("STARTED" . "yellow")
                                        ("CURRENT" . (:foreground "#ffff0a" :background "#754ec1" :weight bold))
+                                       ("DREAMS-AI" . (:foreground "#68c3c1" :background "#fdc989" :weight bold))
                                        ("PHD" . (:foreground "yellow" :background "#FF3333"))
                                        ("SCHOOLS" . (:foreground "#090C42" :background "#9DFE9D"))
                                        ("Dominated" . (:foreground "#9DFE9D" :weight bold))
@@ -1913,7 +1946,8 @@ C-u C-c C-x !
  #+END_SRC
 *** agenda file location
 #+BEGIN_SRC emacs-lisp 
-  (setq org-agenda-files (list "~/creamy_seas/antlers.org"))
+  (setq org-agenda-files (list "~/creamy_seas/antlers.org"
+                               "~/creamy_seas/2am/east-data-company.org"))
   ;;                              "~/creamy_seas/1488.org"))
  #+END_SRC
 *** agenda layout prompt
@@ -2099,13 +2133,14 @@ the nice bullets instead of multiplication symbols
           (inkscape-dir (concat base-directory "images_inkscape"))
           ;; c - generate full path name
           (file-name-full (concat inkscape-dir "/" file-name)))
-
+    
       ;; 1 - create directory in root folder
       (ignore-errors (make-directory inkscape-dir))
-
+    
       ;; 2 - open inkscape with the file-name
-      (shell-command (concat inkscape-generate-location " " file-name-full))
-
+      (minibuffer-message (concat inkscape-generate-location " " file-name-full))
+      (shell-command (concat inkscape-generate-location " \"" file-name-full "\""))
+    
       ;; 3 - prepare for snippet
       (setq temp-file-name-for-snippet file-name)
       (delete-region (line-beginning-position) (line-end-position))
@@ -2344,6 +2379,7 @@ The problem is that the entry content only includes the tiny reddit-hosted thumb
     (add-hook 'org-mode-hook 'yas-minor-mode)
     (add-hook 'c++-mode-hook 'yas-minor-mode)
     (add-hook 'shell-mode-hook 'yas-minor-mode)
+    (add-hook 'markdown-mode-hook 'yas-minor-mode)
 
     :config
     (add-to-list 'yas-snippet-dirs "~/creamy_seas/sync_files/emacs_config/snippets/snippet-mode")
@@ -3038,18 +3074,18 @@ Navigation around a set of project files. There's tons of shortcuts to explore
 
   ;; ;; remap delete-char → sp-delete-char to always preserve brackets
   ;; (smartparens-global-strict-mode)
-  (use-package smartparens
-    :ensure t
-    :config
-    (require 'smartparens-config)
-    :bind
-    (("C-<down>" . sp-down-sexp)
-     ("C-<up>" . sp-up-sexp)
-     ("M-<down>" . sp-backward-down-sexp)
-     ("M-<up>" . sp-backward-up-sexp)))
+  ;; (use-package smartparens
+  ;;   :ensure t
+  ;;   :config
+  ;;   (require 'smartparens-config)
+  ;;   :bind
+  ;;   (("C-<down>" . sp-down-sexp)
+  ;;    ("C-<up>" . sp-up-sexp)
+  ;;    ("M-<down>" . sp-backward-down-sexp)
+  ;;    ("M-<up>" . sp-backward-up-sexp)))
 
-  (add-hook 'LaTeX-mode-hook 'smartparens-strict-mode)
-  (add-hook 'prog-mode-hook 'smartparens-strict-mode)
+  ;; (add-hook 'LaTeX-mode-hook 'smartparens-strict-mode)
+  ;; (add-hook 'prog-mode-hook 'smartparens-strict-mode)
  #+END_SRC
 * Reverting                                                          :darren:
 ** undo tree                                                        :darren:
@@ -3086,25 +3122,28 @@ one can turn it off, or make the backups in a separate directory
 * Hide minor modes                                             :must_be_last:
 hides the minor modes that are trivial
 #+BEGIN_SRC emacs-lisp
-      (use-package diminish
-        :ensure t
-        :init
-        (diminish 'hungry-delete-mode)
-        (diminish 'beacon-mode)		
-        (diminish 'which-key-mode)
-        (diminish 'undo-tree-mode)
-        (diminish 'rainbow-mode)
-        (diminish 'subword-mode)
-        (diminish 'visual-line-mode)
-        (diminish 'org-indent-mode)
-        (diminish 'prettify-symbols-mode)
-        (diminish 'hl-line-mode)
-        (diminish 'column-number-mode)
-        (diminish 'line-number-mode)
-        (diminish 'linum-relative-mode)
-    )
+    (use-package diminish
+      :ensure t
+      :init
+      (diminish 'hungry-delete-mode)
+      (diminish 'beacon-mode)		
+      (diminish 'which-key-mode)
+      (diminish 'undo-tree-mode)
+      (diminish 'rainbow-mode)
+      (diminish 'subword-mode)
+      (diminish 'visual-line-mode)
+      (diminish 'org-indent-mode)
+      (diminish 'prettify-symbols-mode)
+      (diminish 'hl-line-mode)
+      (diminish 'column-number-mode)
+      (diminish 'line-number-mode)
+      (diminish 'linum-relative-mode)
+      (diminish 'flyspell-mode)
+      (diminish 'cdlatex-mode)
+      (diminish 'tex-scale-mode)		;changing the scale
+  )
 #+END_SRC
-* Post loada
+* Post load
 ** global bindings <<global_bindings>>
 #+BEGIN_SRC emacs-lisp 
   (define-prefix-command 'ilya-map)
@@ -3124,6 +3163,7 @@ hides the minor modes that are trivial
   (define-key key-translation-map (kbd "C-x 8 c") (kbd "✘"))
   (define-key key-translation-map (kbd "C-x 8 b") (kbd "⦿"))
   (define-key key-translation-map (kbd "C-x 8 _") (kbd "̲"))
+  (define-key key-translation-map (kbd "C-x 8 q") (kbd "\""))
   (global-set-key (kbd "C-c C-;") (function comment-line))
   (global-set-key (kbd "C-x m")  'rename-file-and-buffer)
   (global-unset-key (kbd "C-c q"))
@@ -3135,7 +3175,7 @@ hides the minor modes that are trivial
  #+END_SRC
 ** function calls
 #+BEGIN_SRC emacs-lisp 
-  ;; (hydra-python-vi/body)
+  (hydra-python-vi/body)
  #+END_SRC
 ** start server
 #+BEGIN_SRC emacs-lisp 
