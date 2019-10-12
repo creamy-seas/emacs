@@ -1,5 +1,26 @@
 #+STARTUP: overview
 C-c \ in latex
+
+* Docker
+#+BEGIN_SRC emacs-lisp 
+  
+ #+END_SRC
+* ag silversearcher
+#+BEGIN_SRC emacs-lisp 
+  (use-package ag
+    :ensure t)
+ #+END_SRC
+* conda
+** single time setuop
+=conda init fish=
+* org-babel
+#+BEGIN_SRC emacs-lisp 
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((python . t)
+     (shell . t)
+     (emacs-lisp . t)))
+ #+END_SRC
 * emojis
 #+BEGIN_SRC emacs-lisp 
   (use-package emojify
@@ -16,7 +37,10 @@ C-c \ in latex
             (lambda ()
               (ggtags-mode 1))))
  #+END_SRC
-* ivy and counsel
+* ivy and counsel and refactoring with wgrep
+1) ag-regexp to find required lines
+2) =wgrep-change-to-wgrep-mode= to edit lines
+3) =C-x C-s= to save
 ** counsel
 imports ivy (autocompletion) and swiper
 *** external setup
@@ -1317,7 +1341,7 @@ beautiful file browsing
 | *       | regexp                                          |
 | C-c C-q | rename then =C-c C-c=                           |
 |         |                                                 |
-* EIN mode
+* TODO EIN mode
 - *do not set* =(setq ein:use-smartrep t)= or it doesn't work
 - run command =jt= to set html variables*
 - run =jt notebook password= to set a password
@@ -1395,6 +1419,93 @@ beautiful file browsing
 
   ;; (with-eval-after-load "ein-notebook"
   ;;  (define-key ein:notebook-mode-map (kbd "C-c C-u") (function ilya_ein-header)))
+ #+END_SRC
+** TODO =ilya-login-devel= 
+#+BEGIN_SRC emacs-lisp 
+  ;; (defun ilya-login-east-india (callback &optional cookie-plist)
+  ;;   "based of ein:notebook-login, but with supplied part to connect to"
+  ;;   (setq url-or-port "https://project02.sinobestech.com.hk")
+  ;;   (interactive `(,(lambda (buffer url-or-port) (pop-to-buffer buffer))
+  ;;                  ,(if current-prefix-arg (ein:notebooklist-ask-user-pw-pair "Cookie name" "Cookie content"))))
+  ;;   (unless callback (setq callback (lambda (buffer url-or-port))))
+
+  ;;   (when cookie-plist
+  ;;     (let* ((parsed-url (url-generic-parse-url (file-name-as-directory url-or-port)))
+  ;;            (domain (url-host parsed-url))
+  ;;            (securep (string-match "^wss://" url-or-port)))
+  ;;       (loop for (name content) on cookie-plist by (function cddr)
+  ;;             for line = (mapconcat #'identity (list domain "FALSE" (car (url-path-and-query parsed-url)) (if securep "TRUE" "FALSE") "0" (symbol-name name) (concat content "\n")) "\t")
+  ;;             do (write-region line nil (request--curl-cookie-jar) 'append))))
+
+
+  ;;   (let ((token (ein:notebooklist-token-or-password url-or-port)))
+  ;;     (cond ((null token) ;; don't know
+  ;;            (ein:notebooklist-login--iteration url-or-port callback nil nil -1 nil))
+  ;;           ((string= token "") ;; all authentication disabled
+  ;;            (ein:log 'verbose "Skipping login %s" url-or-port)
+  ;;            (ein:notebooklist-open* url-or-port nil nil nil callback nil))
+  ;;            (t (ein:notebooklist-login--iteration url-or-port callback nil token 0 nil))
+  ;;            (message "null")
+  ;;           )
+  ;;     )
+  ;;   (switch-to-buffer-other-window "*ein:notebooklist https://project02.sinobestech.com.hk/user/ilya*"))
+
+  ;; (defun ilya-login-jupyter (callback &optional cookie-plist)
+  ;;   "based of ein:notebook-login, but with supplied part to connect to
+  ;; must set the variables
+  ;; ilj-url-or-port:		the url of the notebook server
+  ;; ilj-buffer-name:		of the buffer that will be created
+  ;; "
+  ;;   (setq url-or-port ilj-url-or-port)
+  ;;   (interactive `(,(lambda (buffer ilj-url-or-port) (pop-to-buffer buffer))
+  ;;                  ,(if current-prefix-arg (ein:notebooklist-ask-user-pw-pair "Cookie name" "Cookie content"))))
+  ;;   (unless callback (setq callback (lambda (buffer url-or-port))))
+
+  ;;   (when cookie-plist
+  ;;     (let* ((parsed-url (url-generic-parse-url (file-name-as-directory url-or-port)))
+  ;;            (domain (url-host parsed-url))
+  ;;            (securep (string-match "^wss://" url-or-port)))
+  ;;       (loop for (name content) on cookie-plist by (function cddr)
+  ;;             for line = (mapconcat #'identity (list domain "FALSE" (car (url-path-and-query parsed-url)) (if securep "TRUE" "FALSE") "0" (symbol-name name) (concat content "\n")) "\t")
+  ;;             do (write-region line nil (request--curl-cookie-jar) 'append))))
+
+
+  ;;   (let ((token (ein:notebooklist-token-or-password url-or-port)))
+  ;;     (cond ((null token) ;; don't know
+  ;;            (ein:notebooklist-login--iteration url-or-port callback nil nil -1 nil))
+  ;;           ((string= token "") ;; all authentication disabled
+  ;;            (ein:log 'verbose "Skipping login %s" url-or-port)
+  ;;            (ein:notebooklist-open* url-or-port nil nil nil callback nil))
+  ;;            (t (ein:notebooklist-login--iteration url-or-port callback nil token 0 nil))
+  ;;            (message "null")
+  ;;           )
+  ;;     )
+  ;;   (switch-to-buffer-other-window ilj-buffer-name))
+
+
+  ;; (setq ein:notebooklist-login-timeout 10000)
+
+  ;; (defun ilya-start-jupyter-notebook ()
+  ;;   "Opens up either a local jupyter server or connects to east-india's one"
+  ;;   (interactive)
+  ;;   (let ((choices (list "✇ local" "☉ Jupyter-DreamsAI" "₿ Mayfair")))
+  ;;     (setq temp-chosen-server (ido-completing-read "Portal to open:" choices))
+  ;;     (if (string-equal temp-chosen-server "☉ Jupyter-DreamsAI")
+  ;;         (progn
+  ;;           (setq ilj-url-or-port "jupyter.dreams-ai.com/user/ilya.antonov/lab/workspaces")
+  ;;           (setq ilj-buffer-name "*ein:notebooklist http://jupyter.dreams-ai.com/user/ilya.antonov*")
+  ;;           (call-interactively (function ilya-login-jupyter))
+  ;;           ))
+  ;;     (if (string-equal temp-chosen-server "₿ Mayfair")
+  ;;         (progn
+  ;;           (setq ilj-url-or-port "http://61.92.238.30:8888")
+  ;;           (setq ilj-buffer-name "*ein:notebooklist http://61.92.238:8888*")
+  ;;           (call-interactively (function ilya-login-jupyter))
+  ;;           ))
+  ;;     (if (string-equal temp-chosen-server "✇ local")
+  ;;         (call-interactively (function ein:run)))))
+
+  ;; (global-set-key (kbd "C-x C-j") (function ilya-start-jupyter-notebook))
  #+END_SRC
 ** =ilya-login-east-india=
 #+BEGIN_SRC emacs-lisp 
@@ -1732,31 +1843,137 @@ is activated
  #+END_SRC
 * Org mode                                                           :darren:
 - (turn-on-cdlatex) to enable latex completions
+** agenda files
+*** keybinding
+#+BEGIN_SRC emacs-lisp 
+  (global-set-key (kbd "C-c c") (function org-capture))
+  (global-set-key (kbd "C-c a") (function org-agenda))
+ #+END_SRC
+*** agenda file location
+#+BEGIN_SRC emacs-lisp 
+  (setq org-agenda-files (list "~/creamy_seas/antlers.org"
+                               "~/gdrive/east-data-company.org"
+                               "~/gdrive/people.org"
+                               "~/gdrive/adv18_sa36_automation/adventure_brief.org"
+                               "~/gdrive/adv17_ext_horseBetting/adventure_brief.org"))
+ #+END_SRC
+*** agenda layout prompt
+#+BEGIN_SRC emacs-lisp 
+  (setq org-agenda-custom-commands
+        (quote (("c" "Simple agenda view"
+           ((agenda ""))))))
+ #+END_SRC
+*** org-capture-templates
+#+BEGIN_SRC emacs-lisp 
+  (setq org-capture-templates
+        '(
+          ;; random tasks and reminders
+          ("b" "Bloat" entry (id "antlers-bloat")
+           "** BLOAT %^{stuff-to-be-done}\nSHEDULED: %^T")
+          ;; copy pasta
+          ("c" "Copy Pasta" entry (id "copy-pasta") "** %^{Pasta Title} %t\n%?")
+          ;; temporary org file on desktop
+          ("d" "Draft" plain (file "~/Desktop/.temp.org")
+           "%?")
+          ;; tasks for neural network future
+          ("e" "East-India Data Company")
+          ("e2" "2am goals" entry (id "bryan-plan")
+           "** DREAMS-AI %^{Project}: %^{stuff-to-be-done}\nDEADLINE: %^T")
+          ("et" "Time log" table-line (id "bryan-done")
+           "| %^u | %^{Project}: %^{task-summary} | %^{hours-worked} hours | |"
+           :table-line-pos "@<-1")
+          ;; lukes quotes
+          ("l" "Boomer Entry" item (file+headline "~/creamy_seas/1488.org.gpg" "Becoming a boomer") "%^{What did Luke say} %^G\n%?"
+           (file "~/creamy_seas/1488.org.gpg") "%?")
+          ("p" "PhD Tasks")
+          ("pp" "Photon Counting" entry (id "phd-photon")
+           "*** PHD Photn Counting [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("pt" "Twin Qubit" entry (id "phd-twin")
+           "*** PHD Twin Qubit [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("px" "xMon" entry (id "phd-xmon")
+           "*** PHD xMon [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("pg" "General" entry (id "phd-general")
+           "*** PHD General [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ;; save a really good url
+          ("u" "Save URL" entry (file+headline "~/creamy_seas/1488.org.gpg" "URL too good to throw away")
+           "** %^L %? %^G"
+           :kill-buffer t)
+          ;; random stories to save
+          ("s" "Stories" entry (id "stories") "** %^{Title} %t\n%?")
+          ;; tutoring
+          ("t" "Tutoring lessons")
+          ("tw" "Nikhil Lesson (Winchester)" table-line (id "tutoring-nikhil-invoice")
+           "| # | %^u | %^{lesson summary} | 120%? | |"
+           :table-line-pos "III-1")
+          ("tn" "Nathan Lesson" table-line (id "tutoring-nathan-invoice")
+           "| # | %^u | %^{lesson summary} | 45%? | |"
+           :table-line-pos "III-1")
+          ("td" "Darrens Programming" table-line (id "tutoring-darren-invoice")
+           "| # | %^u | %^{lesson summary} | 50%? | |"
+           :table-line-pos "III-1")
+          ("f" "Future Lesson")
+          ("fw" "Nikhil Lesson (Winchester)" entry (id "tutoring-nikhil-lesson")
+           "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
+          ("fn" "Nathan Lesson" entry (id "tutoring-nathan-lesson")
+           "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
+          ))
+ #+END_SRC
+*** org capture frame
+capture frame can be called from any application - just map it
+#+BEGIN_SRC emacs-lisp 
+  (defadvice org-capture-finalize 
+      (after delete-capture-frame activate)  
+    "Advise capture-finalize to close the frame"  
+    (if (equal "capture" (frame-parameter nil 'name))  
+        (delete-frame)))
+
+  (defadvice org-capture-destroy 
+      (after delete-capture-frame activate)  
+    "Advise capture-destroy to close the frame"  
+    (if (equal "capture" (frame-parameter nil 'name))  
+        (delete-frame)))  
+
+  (use-package noflet
+    :ensure t )
+  (defun make-capture-frame ()
+    "Create a new frame and run org-capture."
+    (interactive)
+    (make-frame '((name . "capture")))
+    (select-frame-by-name "capture")
+    (delete-other-windows)
+    (noflet ((switch-to-buffer-other-window (buf) (switch-to-buffer buf)))
+      (org-capture)))
+ #+END_SRC
+*** org capture frame supplementary installed
+- =brew install coreutils=
+- Automator -> new shell script
+#+BEGIN_SRC sh
+  socketfile=$(lsof -c Emacs | grep server | tr -s " " | cut -d' ' -f 8); /usr/local/bin/emacsclient -ne "(make-capture-frame)" -s $socketfile
+#+END_SRC
 ** autocomplete in org mode (when typing #+)
 #+BEGIN_SRC emacs-lisp  
-  ;; (use-package org-ac
-  ;;   :ensure t
-  ;;   :init
-  ;;   (require 'org-ac)
-  ;;   (org-ac/config-default)
-  ;;   (setq org-ac/ac-trigger-command-keys (quote ("\\" ":" "[" "+"))) ;keys that trigger autocomplete
-  ;;   ;bing the usual scrolling keys
-  ;;   (define-key ac-completing-map (kbd "C-n") (function ac-next))
-  ;;   (define-key ac-completing-map (kbd "C-p") (function ac-previous))
-  ;;   (define-key ac-completing-map (kbd "C-v") (function ac-quick-help-scroll-down))
-  ;;   (define-key ac-completing-map (kbd "M-v") (function ac-quick-help-scroll-up)))
+  (use-package org-ac
+    :ensure t
+    :init
+    (require 'org-ac)
+    (org-ac/config-default)
+    (setq org-ac/ac-trigger-command-keys (quote ("\\" ":" "[" "+"))) ;keys that trigger autocomplete
+    ;bing the usual scrolling keys
+    (define-key ac-completing-map (kbd "C-n") (function ac-next))
+    (define-key ac-completing-map (kbd "C-p") (function ac-previous))
+    (define-key ac-completing-map (kbd "C-v") (function ac-quick-help-scroll-down))
+    (define-key ac-completing-map (kbd "M-v") (function ac-quick-help-scroll-up)))
 
  #+END_SRC
-** get rid of anoying 'ding in table'
-C-u C-c C-x !
 ** todo lists
 #+BEGIN_SRC emacs-lisp 
-  (setq org-todo-keywords '((sequence "TODO(t)" "BLOAT(B)" "BRYAN(b)" "PHD(p)" "DREAMS-AI(a)" "SCHOOLS(s)" "TUTORING(l)" "CURRENT(c)" "|" "DOMINATED(d)")))
+  (setq org-todo-keywords '((sequence "TODO(t)" "BLOAT(B)" "BRYAN(b)" "PHD(p)" "DREAMS-AI(a)" "WORKFORCE(w)" "SCHOOLS(s)" "TUTORING(l)" "CURRENT(c)" "|" "DOMINATED(d)")))
 
   (setq org-todo-keyword-faces (quote (
                                        ("STARTED" . "yellow")
                                        ("CURRENT" . (:foreground "#ffff0a" :background "#754ec1" :weight bold))
                                        ("DREAMS-AI" . (:foreground "#68c3c1" :background "#fdc989" :weight bold))
+                                       ("WORKFORCE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
                                        ("PHD" . (:foreground "yellow" :background "#FF3333"))
                                        ("SCHOOLS" . (:foreground "#090C42" :background "#9DFE9D"))
                                        ("Dominated" . (:foreground "#9DFE9D" :weight bold))
@@ -1938,111 +2155,6 @@ C-u C-c C-x !
       ;; Redisplay so as the new link has proper invisible characters.
       (sit-for 0)))
  #+END_SRC
-** agenda files
-*** keybinding
-#+BEGIN_SRC emacs-lisp 
-  (global-set-key (kbd "C-c c") (function org-capture))
-  (global-set-key (kbd "C-c a") (function org-agenda))
- #+END_SRC
-*** agenda file location
-#+BEGIN_SRC emacs-lisp 
-  (setq org-agenda-files (list "~/creamy_seas/antlers.org"
-                               "~/creamy_seas/2am/east-data-company.org"))
-  ;;                              "~/creamy_seas/1488.org"))
- #+END_SRC
-*** agenda layout prompt
-#+BEGIN_SRC emacs-lisp 
-  (setq org-agenda-custom-commands
-        (quote (("c" "Simple agenda view"
-           ((agenda ""))))))
- #+END_SRC
-*** org-capture-templates
-#+BEGIN_SRC emacs-lisp 
-  (setq org-capture-templates
-        '(
-          ;; random tasks and reminders
-          ("b" "Bloat" entry (id "antlers-bloat")
-           "** BLOAT %^{stuff-to-be-done}\nSHEDULED: %^T")
-          ;; copy pasta
-          ("c" "Copy Pasta" entry (id "copy-pasta") "** %^{Pasta Title} %t\n%?")
-          ;; temporary org file on desktop
-          ("d" "Draft" plain (file "~/Desktop/.temp.org")
-           "%?")
-          ;; tasks for neural network future
-          ("e" "East-India Data Company")
-          ("e2" "2am goals" entry (id "bryan-plan")
-           "** BRYAN %^{project|Bot|Neural Network|Database|Bloat}: %^{stuff-to-be-done}\nDEADLINE: %^T")
-          ("et" "Time log" table-line (id "bryan-done")
-           "| %^u | %^{Project}: %^{task-summary} | %^{hours-worked} hours | |"
-           :table-line-pos "@<-1")
-          ;; lukes quotes
-          ("l" "Boomer Entry" item (file+headline "~/creamy_seas/1488.org" "Becoming a boomer") "%^{What did Luke say} %^G\n%?"
-           (file "~/creamy_seas/1488.org") "%?")
-          ("p" "PhD Tasks")
-          ("pp" "Photon Counting" entry (id "phd-photon")
-           "*** PHD Photn Counting [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
-          ("pt" "Twin Qubit" entry (id "phd-twin")
-           "*** PHD Twin Qubit [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
-          ("px" "xMon" entry (id "phd-xmon")
-           "*** PHD xMon [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
-          ("pg" "General" entry (id "phd-general")
-           "*** PHD General [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
-          ;; save a really good url
-          ("u" "Save URL" entry (file+headline "~/creamy_seas/1488.org" "URL too good to throw away")
-           "** %^L %? %^G"
-           :kill-buffer t)
-          ;; random stories to save
-          ("s" "Stories" entry (id "stories") "** %^{Title} %t\n%?")
-          ;; tutoring
-          ("t" "Tutoring lessons")
-          ("tw" "Nikhil Lesson (Winchester)" table-line (id "tutoring-nikhil-invoice")
-           "| # | %^u | %^{lesson summary} | 120%? | |"
-           :table-line-pos "III-1")
-          ("tn" "Nathan Lesson" table-line (id "tutoring-nathan-invoice")
-           "| # | %^u | %^{lesson summary} | 45%? | |"
-           :table-line-pos "III-1")
-          ("td" "Darrens Programming" table-line (id "tutoring-darren-invoice")
-           "| # | %^u | %^{lesson summary} | 50%? | |"
-           :table-line-pos "III-1")
-          ("f" "Future Lesson")
-          ("fw" "Nikhil Lesson (Winchester)" entry (id "tutoring-nikhil-lesson")
-           "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
-          ("fn" "Nathan Lesson" entry (id "tutoring-nathan-lesson")
-           "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
-          ))
- #+END_SRC
-*** org capture frame
-capture frame can be called from any application - just map it
-#+BEGIN_SRC emacs-lisp 
-  (defadvice org-capture-finalize 
-      (after delete-capture-frame activate)  
-    "Advise capture-finalize to close the frame"  
-    (if (equal "capture" (frame-parameter nil 'name))  
-        (delete-frame)))
-
-  (defadvice org-capture-destroy 
-      (after delete-capture-frame activate)  
-    "Advise capture-destroy to close the frame"  
-    (if (equal "capture" (frame-parameter nil 'name))  
-        (delete-frame)))  
-
-  (use-package noflet
-    :ensure t )
-  (defun make-capture-frame ()
-    "Create a new frame and run org-capture."
-    (interactive)
-    (make-frame '((name . "capture")))
-    (select-frame-by-name "capture")
-    (delete-other-windows)
-    (noflet ((switch-to-buffer-other-window (buf) (switch-to-buffer buf)))
-      (org-capture)))
- #+END_SRC
-*** org capture frame supplementary installed
-- =brew install coreutils=
-- Automator -> new shell script
-#+BEGIN_SRC sh
-  socketfile=$(lsof -c Emacs | grep server | tr -s " " | cut -d' ' -f 8); /usr/local/bin/emacsclient -ne "(make-capture-frame)" -s $socketfile
-#+END_SRC
 
 ** bullets                                                          :darren:
 the nice bullets instead of multiplication symbols
@@ -2065,6 +2177,8 @@ the nice bullets instead of multiplication symbols
                '("el" "#+BEGIN_SRC emacs-lisp \n ? \n #+END_SRC"))
   (add-to-list 'org-structure-template-alist
                '("py" "#+BEGIN_SRC python \n ? \n #+END_SRC"))
+  (add-to-list 'org-structure-template-alist
+               '("sh" "#+BEGIN_SRC shell \n ? \n #+END_SRC"))
 #+END_SRC
 ** indentation                                                      :darren:
 #+BEGIN_SRC emacs-lisp
@@ -2076,6 +2190,32 @@ the nice bullets instead of multiplication symbols
     :ensure t
   )
 #+END_SRC
+
+
+#+BEGIN_SRC emacs-lisp 
+  (defun my-org-inline-css-hook (exporter)
+    "Insert custom inline css"
+    (when (eq exporter 'html)
+      (let* ((dir (ignore-errors (file-name-directory (buffer-file-name))))
+             (path (concat dir "style.css"))
+             (homestyle (or (null dir) (null (file-exists-p path))))
+             (final (if homestyle "~/creamy_seas/sync_files/emacs_config/support_files/org_style.css" path)))
+        (setq org-html-head-include-default-style nil)
+        (setq org-html-head (concat
+                             "<style type=\"text/css\">\n"
+                             "<!--/*--><![CDATA[/*><!--*/\n"
+                             (with-temp-buffer
+                               (insert-file-contents final)
+                               (buffer-string))
+                             "/*]]>*/-->\n"
+                             "</style>\n")))))
+
+  (eval-after-load 'ox
+    '(progn
+       (add-hook 'org-export-before-processing-hook 'my-org-inline-css-hook)))
+
+
+ #+END_SRC
 ** export to presentation
 #+BEGIN_SRC emacs-lisp
   ;;(use-package ox-reveal
@@ -2113,6 +2253,9 @@ the nice bullets instead of multiplication symbols
   (define-key org-mode-map (kbd "C-c C-;") (function comment-line))
   (define-key org-mode-map (kbd "C-c C-r") (function org-toggle-inline-images))
   (define-key emacs-lisp-mode-map (kbd "C-c C-;") (function comment-line))
+  (global-set-key "\C-cb" 'org-switchb)
+  (global-set-key (kbd "C-c l") 'org-store-link)
+  (global-set-key (kbd "C-c C-l") 'org-insert-link)
  #+END_SRC
 * Inkscape
 - to edit interactively, open =.svg= file → save as → =.pdf= → =omit text= → use exported object size
@@ -2138,7 +2281,6 @@ the nice bullets instead of multiplication symbols
       (ignore-errors (make-directory inkscape-dir))
     
       ;; 2 - open inkscape with the file-name
-      (minibuffer-message (concat inkscape-generate-location " " file-name-full))
       (shell-command (concat inkscape-generate-location " \"" file-name-full "\""))
     
       ;; 3 - prepare for snippet
@@ -3053,8 +3195,6 @@ Navigation around a set of project files. There's tons of shortcuts to explore
     ("z"   projectile-cache-current-file)
     ("`"   hydra-projectile-other-window/body "other window")
     ("q"   nil "cancel" :color blue))
-
-  (global-set-key (kbd "C-x p") (function hydra-projectile/body))
  #+END_SRC
 * Smartparens
 #+BEGIN_SRC emacs-lisp 
@@ -3152,10 +3292,13 @@ hides the minor modes that are trivial
   (define-key ilya-map (kbd "s") (function aya-create))
   (define-key ilya-map (kbd "y") (function aya-expand))
   (define-key ilya-map (kbd "f") (function elfeed))
+  (define-key ilya-map (kbd "p") (function hydra-projectile/body))
  #+END_SRC
 ** global unbindings
 #+BEGIN_SRC emacs-lisp 
   (define-key key-translation-map (kbd "C-x 8 h") (kbd "卍"))
+  (define-key key-translation-map (kbd "C-x 8 w") (kbd "🐳"))
+  (define-key key-translation-map (kbd "C-x 8 W") (kbd "🐋"))
   (define-key key-translation-map (kbd "C-x 8 O") (kbd "Ω"))
   (define-key key-translation-map (kbd "C-x 8 #") (kbd "£"))
   (define-key key-translation-map (kbd "C-x 8 -") (kbd "→"))
