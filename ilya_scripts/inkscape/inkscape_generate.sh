@@ -15,4 +15,4 @@ inkscape "$SVGFILE" &
 
 # 3 - export image to latex after inkscape is closed
 wait %1
-inkscape_export $SVGFILE
+inkscape_export.sh $SVGFILE

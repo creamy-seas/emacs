@@ -2,13 +2,10 @@
 # name: comment
 # key: com
 # --
-"""
-${1:__ Parameters __
-${2:parameter me up}}
+"""${1:description of function does}
+${2:__ Parameters __
+${3:parameter me up}}
 
-${3:__ Description __
-${4:description of function does}}
-
-${5:__ Return __
-${6:any return values}}$0
+${4:__ Return __
+${5:any return values}}$0
 """
