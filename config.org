@@ -279,7 +279,7 @@ the flake8 (used for syntax checking) has configuration file =~/.config/flake8=
  #+END_SRC
 ** lsp
 #+BEGIN_SRC emacs-lisp 
-  (add-hook 'elpy-mode-hook #'lsp)
+  ;; (add-hook 'elpy-mode-hook #'lsp)
  #+END_SRC
 
 ** different virtual environments
@@ -444,11 +444,11 @@ required to edit searches made by counsel
 - for google, you need to allow
 - bound with [[global_bindings]]
 - =C-c C-a= for attachments
-** external setup
+** External Setup
 - =offlineimap=
 - =w3m=
 - =mu=
-*** location of binariesa
+*** location of binaries
 #+BEGIN_SRC emacs-lisp
   ;; add location of lisp files for me4e
   (add-to-list 'load-path
@@ -462,7 +462,7 @@ required to edit searches made by counsel
   (use-package mu4e
     :config
 
-    ;; 1 - method to pull in the mial
+    ;; 1 - method to pull in the mail
     (setq mu4e-get-mail-command "offlineimap")
     (setq mu4e-maildir "~/mail")
     (setq mu4e-view-show-addresses t)
@@ -472,40 +472,17 @@ required to edit searches made by counsel
     ;; 2 - directory for saving attachments
     (setq mu4e-attachment-dir (expand-file-name "~/Dropbox"))
 
-    ;; 3 - method to generate html messages and preview images
-    ;;   - html2text -utf8 -width 72
-    ;;   - textutil -stdin -format html -convert txt -stdout
-    ;;   - html2markdown | grep -v '&nbsp_place_holder;' (Requires html2text pypi)
-    ;;   - w3m -dump -cols 80 -T text/html
-    ;; (setq mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout")
-    (setq mu4e-html2text-command "w3m -T text/html")
-    (setq mu4e-view-show-images t)
-    (add-to-list 'mu4e-view-actions '("web-view" . mu4e-action-view-in-browser) t)
-    (when (fboundp 'imagemagick-register-types)
-      (imagemagick-register-types))
-
     ;; 4 - main accounts and sending mail
     (setq mu4e-user-mail-address-list '("ilya.antonov@dreams-ai.com"
                                         "ilya.antonov24@ntlworld.com"
                                          "antonov.ilya225@gmail.com"
-                                         "ilya.antonov24@ntlworld.com"))
-    ;; (setq mu4e-context-policy 'pick-first)
-    ;; (setq mu4e-compose-context-policy 'always-ask)
-
-    ;; 5 - replies and citations
-    (setq message-citation-line-format "%N @ %Y-%m-%d %H:%M %Z:\n")
-    (setq message-citation-line-function 'message-insert-formatted-citation-line)
-
-    ;; 6 - spell check
-    (add-hook 'mu4e-compose-mode-hook
-          (defun my-do-compose-stuff ()
-             "⦿⦿ Those sweet custom settings"
-             (set-fill-column 72)
-             (flyspell-mode)))
+                                         "ilya.antonov2013@live.rhul.ac.uk")))
  #+END_SRC
 ** Contexts
 #+BEGIN_SRC emacs-lisp 
-  ;; 7 - fine tuning of accounts
+  (require 'mu4e-context)
+  (setq mu4e-context-policy 'pick-first)
+  (setq mu4e-compose-context-policy 'always-ask)
   (setq mu4e-contexts
         (list
          (make-mu4e-context
@@ -602,36 +579,48 @@ required to edit searches made by counsel
                 :query "maildir:/ilya_GMAIL/[Gmail].Starred OR maildir:/ilya_NTLWORLD/Archive OR maildir:/ilya_OUTLOOK/Archive OR maildir:/ilya_DREAMSAI/[Gmail].Starred"
                 :key ?a))
 
-
   (setq   mu4e-maildir-shortcuts
           '(("/ilya_DREAMSAI/INBOX"     . ?d)
             ("/ilya_GMAIL/INBOX"     . ?g)
             ("/ilya_NTLWORLD/INBOX"     . ?n)
-            ("/ilya_OUTLOOK/INBOX"     . ?l))))
-
+            ("/ilya_OUTLOOK/INBOX"     . ?l)))
  #+END_SRC
-** mu4e view
-*** column view
+** View
+*** Email list
 #+BEGIN_SRC emacs-lisp 
   (setq mu4e-headers-fields
       '( (:date          .  10)
          (:flags         .   6)
          (:from          .  30)
          (:subject       .  nil)))
- #+END_SRC
-*** start in new frame
-#+BEGIN_SRC emacs-lisp 
-  (defun mu4e-in-new-frame ()
-    "Start mu4e in new frame."
-    (interactive)
-    (select-frame (make-frame))
-    (mu4e))
- #+END_SRC
-*** fancy characters
-#+BEGIN_SRC emacs-lisp
   (setq mu4e-split-view 'horizontal)
  #+END_SRC
-** custom actions
+*** Method to generate html messages and preview images
+#+BEGIN_SRC emacs-lisp 
+  ;;   - html2text -utf8 -width 72
+  ;;   - textutil -stdin -format html -convert txt -stdout
+  ;;   - html2markdown | grep -v '&nbsp_place_holder;' (Requires html2text pypi)
+  ;;   - w3m -dump -cols 80 -T text/html
+  ;; (setq mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout")
+  (setq mu4e-html2text-command "w3m -T text/html")
+
+  (setq mu4e-view-show-images t)
+  (when (fboundp 'imagemagick-register-types)
+    (imagemagick-register-types))
+ #+END_SRC
+*** Start in new frame
+#+BEGIN_SRC emacs-lisp 
+  ;; (defun mu4e-in-new-frame ()
+  ;;   "Start mu4e in new frame."
+  ;;   (interactive)
+  ;;   (select-frame (make-frame))
+  ;;   (mu4e))
+ #+END_SRC
+*** View in browser
+#+BEGIN_SRC emacs-lisp 
+  (add-to-list 'mu4e-view-actions '("web-view" . mu4e-action-view-in-browser) t)
+ #+END_SRC
+** Customized marking actions
 - read and delete
 #+BEGIN_SRC emacs-lisp 
   (add-to-list 'mu4e-marks
@@ -658,9 +647,9 @@ required to edit searches made by counsel
   (mu4e~headers-defun-mark-for dump-order)
   (define-key mu4e-headers-mode-map (kbd "o") 'mu4e-headers-mark-for-dump-order)
  #+END_SRC
-** smtp
-- =msmtp --host=smtp.office365.com --port=587 --serverinfo --tls --tls-certcheck=off=
-- how to send the mail
+** Sending mail
+=msmtp --host=smtp.office365.com --port=587 --serverinfo --tls --tls-certcheck=off=
+
 #+BEGIN_SRC emacs-lisp 
   (setq message-send-mail-function (function message-send-mail-with-sendmail))
   (setq sendmail-program "/usr/local/bin/msmtp")
@@ -669,7 +658,18 @@ required to edit searches made by counsel
   (setq message-sendmail-envelope-from 'header)
   ;; (add-hook 'message-send-mail-hook 'choose-msmtp-account)
  #+END_SRC
-** mu alert
+*** Composing Mail
+#+BEGIN_SRC emacs-lisp 
+  (setq message-citation-line-format "%N @ %Y-%m-%d %H:%M %Z:\n")
+  (setq message-citation-line-function 'message-insert-formatted-citation-line)
+
+  (add-hook 'mu4e-compose-mode-hook
+            (defun my-do-compose-stuff ()
+              "⦿⦿ Those sweet custom settings"
+              (set-fill-column 72)
+              (flyspell-mode)))
+ #+END_SRC
+** mu4e Alert
 #+BEGIN_SRC emacs-lisp 
   (use-package mu4e-alert
     :ensure t
@@ -695,9 +695,10 @@ required to edit searches made by counsel
     (run-with-timer 0 60 'ilya-mu4e-alert-mode-line))
  #+END_SRC
 ** gpg access
-- because we need a gpg already in the cache to access the imap servers, run a dummy command on a dummy file to store the password
-#+BEGIN_SRC emacs-lisp 
-  ;; funciton is based off epa-decrypt file
+because we need a gpg already in the cache to access the imap servers, run a dummy command on a dummy file to store the password
+
+funciton is based off epa-decrypt file
+#+BEGIN_SRC emacs-lisp
   (defun ilya-epa-decrypt-file (decrypt-file &optional plain-file)
     "Decrypt DECRYPT-FILE into PLAIN-FILE.
     If you do not specify PLAIN-FILE, this functions prompts for the value to use."
@@ -726,6 +727,7 @@ required to edit searches made by counsel
   (add-hook 'mu4e-update-pre-hook (lambda ()
                                     (ilya-epa-decrypt-file "~/creamy_seas/sync_files/emacs_config/support_files/load_password_dummy_file.gpg" "/dev/null")))
  #+END_SRC
+
 * Latex Formatting Macros
 #+BEGIN_SRC emacs-lisp 
   (fset 'ipic
@@ -1303,13 +1305,15 @@ Indenting environment
       ;; 3 - launch compilation
       (ignore-errors
         (TeX-run-TeX ilya_latex-compilation-process-id command-script (TeX-master-file)))
-    
+
       ;; 4 - change number of running processes and colour in the modeline
       (setq ilya_LaTeX-running-compilations (+ ilya_LaTeX-running-compilations 1))
-    
-    (custom-set-faces
-     '(mode-line ((t (:background "#2d379a" :foreground "#1eafe1" :box (:line-width 2 :color "red")))))))
-    )
+
+      ;; (custom-set-faces
+      ;; '(mode-line ((t (:background "#2d379a" :foreground "#1eafe1" :box (:line-width 2 :color "red"))))))
+      (custom-set-faces
+       '(mode-line ((t (:box (:line-width 2 :color "red"))))))
+      ))
 
   (add-hook 'LaTeX-mode-hook (lambda ()
                                (define-key LaTeX-mode-map (kbd "C-c C-c") (function ilya_gen-key))))
@@ -2311,12 +2315,14 @@ capture frame can be called from any application - just map it
  #+END_SRC
 ** todo lists
 #+BEGIN_SRC emacs-lisp 
-  (setq org-todo-keywords '((sequence "TODO(t)" "BLOAT(B)" "BRYAN(b)" "PHD(p)" "DREAMS-AI(a)" "WORKFORCE(w)" "SCHOOLS(s)" "TUTORING(l)" "CURRENT(c)" "|" "DOMINATED(d)")))
+  (setq org-todo-keywords '((sequence "TODO(t)" "BLOAT(B)" "BRYAN(b)" "PHD(p)" "DREAMS-AI(a)" "HORSE(h)" "SA36(3)" "WORKFORCE(w)" "SCHOOLS(s)" "TUTORING(l)" "CURRENT(c)" "|" "DOMINATED(d)")))
 
   (setq org-todo-keyword-faces (quote (
                                        ("STARTED" . "yellow")
                                        ("CURRENT" . (:foreground "#ffff0a" :background "#754ec1" :weight bold))
                                        ("DREAMS-AI" . (:foreground "#68c3c1" :background "#fdc989" :weight bold))
+                                       ("SA36" . (:background "#01168a" :foreground "#fdc989" :weight bold))
+                                       ("HORSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
                                        ("WORKFORCE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
                                        ("PHD" . (:foreground "yellow" :background "#FF3333"))
                                        ("SCHOOLS" . (:foreground "#090C42" :background "#9DFE9D"))
@@ -3266,13 +3272,11 @@ mark and edit all copies of the marked region simultaniously.
     :ensure t)
  #+END_SRC
 * Eyebrowse
-change the view mode like a chad
-=C-c C-w= to move to window configurations
+change and save view modes
 #+BEGIN_SRC emacs-lisp 
   (use-package eyebrowse
     :ensure t)
-
-  (eyebrowse-mode)3
+  (eyebrowse-mode)
  #+END_SRC
 * Hydra
 #+BEGIN_SRC emacs-lisp 
