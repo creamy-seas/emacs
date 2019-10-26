@@ -1,2 +1,3 @@
 config.el
-elfeed_db/data
+config.sh
+elfeeddb/data
