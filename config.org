@@ -9,10 +9,57 @@ C-c \ in latex
 | =ispell= | for checking spelling | [[ispell]] |
 |          |                       |        |
 * Global mapping
-|---------+---------------------------------------+------------|
-| =<f12>= | =flyspell-auto-correct-previous-word= | <<ispell>> |
-| =M-x=   | =smex=                                | <<smex>>   |
-* Packages
+|---------+---------------------------------------+---------------|
+| =<f12>= | =flyspell-auto-correct-previous-word= | [[ispell]]        |
+| =M-x=   | =smex=                                | [[smex]]          |
+| =s-,=   | move forward                          | [[mark-movement]] |
+| =s-.=   | move back                             | [[mark-movement]] |
+* Preload
+** ignore bell
+#+BEGIN_SRC emacs-lisp 
+  (setq ring-bell-function 'ignore)
+ #+END_SRC
+** executable path
+path for emacs executables to
+#+BEGIN_SRC emacs-lisp 
+  (setq exec-path (append exec-path '("/usr/local/bin")))
+  (setq exec-path (append exec-path '("/Users/CCCP/.scripts")))
+ #+END_SRC
+** functions
+#+BEGIN_SRC emacs-lisp 
+  (defun ilya-copy-line ()
+    "Copies the current line of the cursor
+     Returns the current line as a string"
+    (interactive)
+    (buffer-substring (line-beginning-position) (line-end-position)))
+
+  (defun ilya-extract-string (regexp index string)
+    "Extract a particular part of a regexp from the chosen string
+  -------------------------------------------------------------------
+  regexp     regular expression with individual arguments in \\(\\)
+  index         index match to extract
+  string        string to extract from
+  "
+    (string-match regexp string)
+    (match-string index string))
+
+  (defun ilya-file-name-from-line (prefix suffix)
+    "Copies the current line and elinates all spaces"
+    (interactive)
+    (let* (
+           (file-name (ilya-copy-line))
+           (file-name (replace-regexp-in-string "^\s*" "" file-name))
+           (file-name (downcase file-name))
+           (file-name (replace-regexp-in-string " " "_" file-name))
+           (file-name (concat prefix file-name suffix)))
+      (message file-name)))
+ #+END_SRC
+** load path
+add folder with some =.el= files that could not be resolved by emacs
+#+BEGIN_SRC emacs-lisp 
+  (add-to-list 'load-path "~/creamy_seas/sync_files/emacs_config/ilya_el_manual")
+ #+END_SRC
+* Use-package
 ** Initialize package and add Melpa source
 #+BEGIN_SRC emacs-lisp 
   (require 'package)
@@ -137,55 +184,79 @@ for this to work, you *must* install ispell
     )
 #+END_SRC
 * Language Server 
+Turn on user interface (ui) and allow company autocomplete to access the ui
 #+BEGIN_SRC emacs-lisp
-    ;; language server
   (use-package lsp-mode
     :ensure t
-    :commands lsp)
+    :commands lsp
+    :config
+    (require 'lsp-clients))
+
   (use-package lsp-ui :commands lsp-ui-mode)
   (use-package company-lsp :commands company-lsp)
 #+END_SRC
 * Rust
-- [[https://github.com/racer-rust/emacs-racer][racer instructions]]
-- installing [[https://github.com/rust-lang/rls][rls]]
-| =C-x . 4= | open definition in other window |
-| =M-.=     | jump to definition              |
-| =M-,=     | jump back                       |
-| =C-c C-d= | get docs to popup               |
-| =C-c d=   | get docs in buffer              |
+- [[https://github.com/racer-rust/emacs-racer][racer]] (for tooltip and documentation)
+- [[https://github.com/rust-lang/rls][rls]] (rust language server), must be also installed with =rustup= (see [[*External setup][External setup]])
+- cargo (for compling project)
+- [[https://github.com/brotzeit/rustic][rustic]] mode does compilation, checking and documentation. Can activate later on
+|-------------+---------------------------------+-------|
+| =C-c C-c ?= | various cargo functions         | cargo |
+|-------------+---------------------------------+-------|
+| =C-x . 4=   | open definition in other window | racer |
+| =M-.=       | jump to definition              | racer |
+| =M-,=       | jump back                       | racer |
+| =C-c C-d=   | get docs to popup               | racer |
+| =C-c d=     | get docs in buffer              | racer |
+|-------------+---------------------------------+-------|
+** External setup
+Actual rust in installed with (don't forget to add =source ~/.cargo/env= to =.profile=)
+=curl https://sh.rustup.rs -sSf | sh=
+*** Package manager
+The package manager is =rustup=. For cool packages, add nightly toolkit
+=rustup toolchain add nightly=
+*** RLS server
+=rustup component add rls rust-analysis=
+*** Racer
+It will need documentation
+=rustup component add  rust-src=
 
-** basic install
-#+BEGIN_SRC emacs-lisp 
-  (add-to-list 'load-path "~/creamy_seas/sync_files/emacs_config/ilya_el_manual/rust-mode-20191011.928")
-  (autoload 'rust-mode "rust-mode" nil t)
+You will need to =export PATH=~/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src= in order for the source to be specified or =$(rustc --print sysroot)/lib/rustlib/src/rust/src=
+
+Then install racer
+=cargo +nightly install racer=
+
+** Basic install
+#+BEGIN_SRC emacs-lisp
+  (use-package rust-mode
+    :hook
+    (rust-mode . lsp)
+    (rust-mode . company-mode)
+    :config
+    (add-hook 'rust-mode-hook
+            (lambda () (setq indent-tabs-mode nil))))
+
 
   (use-package cargo
-    :ensure t)
+    :ensure t
+    :diminish cargo-minor-mode
+    :hook (rust-mode . cargo-minor-mode))
 
+  (use-package flycheck-rust
+    :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+
+  ;; (setq racer-rust-src-path "~/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src")
   (use-package racer
-    :ensure t)
+    :ensure t
+    :config
+    (add-hook 'rust-mode-hook #'racer-mode)
+    (add-hook 'racer-mode-hook #'eldoc-mode)	;show in minibuffer fuction you are currently writing
+    (add-hook 'racer-mode-hook #'company-mode))
 
-  (use-package rustic
-    :ensure t)
- #+END_SRC
-** basic rust settings
-#+BEGIN_SRC emacs-lisp 
-  (add-hook 'rust-mode-hook
-            (lambda () (setq indent-tabs-mode nil)))
+  ;; (use-package rustic
+  ;;   :ensure t)
 
-  ;; compling 
-  (add-hook 'rust-mode-hook 'cargo-minor-mode)
-
-  ;; code compltion with company
-  (add-hook 'rust-mode-hook 'racer-mode)
-  (add-hook 'racer-mode-hook 'eldoc-mode)
-  (add-hook 'racer-mode-hook #'company-mode)
-  (setq company-tooltip-align-annotations t)
-
-  ;; even more formatting
   ;; (add-hook 'racer-mode-hook 'rustic-mode)
-  (add-hook 'rust-mode-hook 'lsp-mode)
-
   ;; (setq rustic-format-trigger 'on-save)
   ;; (setq rust-format-on-save t)
  #+END_SRC
@@ -385,7 +456,7 @@ the flake8 (used for syntax checking) has configuration file =~/.config/flake8=
               (ggtags-mode 1))))
  #+END_SRC
 * ivy and counsel and refactoring with wgrep
-1) ag-regexp to find required lines
+1) rgrep to find required lines
 2) =wgrep-change-to-wgrep-mode= to edit lines
 3) =C-x C-s= to save
 ** counsel
@@ -440,294 +511,6 @@ required to edit searches made by counsel
 #+BEGIN_SRC emacs-lisp 
   (setq epa-pinentry-mode 'loopback)
  #+END_SRC
-* mu4e
-- for google, you need to allow
-- bound with [[global_bindings]]
-- =C-c C-a= for attachments
-** External Setup
-- =offlineimap=
-- =w3m=
-- =mu=
-*** location of binaries
-#+BEGIN_SRC emacs-lisp
-  ;; add location of lisp files for me4e
-  (add-to-list 'load-path
-               (expand-file-name "/usr/local/share/emacs/site-lisp/mu/mu4e"))
-
-  ;; location of the mu binary
-  (setq mu4e-mu-binary "/usr/local/bin/mu")
- #+END_SRC
-** mu4e configuration
-#+BEGIN_SRC emacs-lisp
-  (use-package mu4e
-    :config
-
-    ;; 1 - method to pull in the mail
-    (setq mu4e-get-mail-command "offlineimap")
-    (setq mu4e-maildir "~/mail")
-    (setq mu4e-view-show-addresses t)
-    (setq mu4e-update-interval 86000)
-    ;; (setq mu4e~get-mail-password-regexp "^Enter password for user 'Remote': $")
-
-    ;; 2 - directory for saving attachments
-    (setq mu4e-attachment-dir (expand-file-name "~/Dropbox"))
-
-    ;; 4 - main accounts and sending mail
-    (setq mu4e-user-mail-address-list '("ilya.antonov@dreams-ai.com"
-                                        "ilya.antonov24@ntlworld.com"
-                                         "antonov.ilya225@gmail.com"
-                                         "ilya.antonov2013@live.rhul.ac.uk")))
- #+END_SRC
-** Contexts
-#+BEGIN_SRC emacs-lisp 
-  (require 'mu4e-context)
-  (setq mu4e-context-policy 'pick-first)
-  (setq mu4e-compose-context-policy 'always-ask)
-  (setq mu4e-contexts
-        (list
-         (make-mu4e-context
-          :name "ntlworld"
-          :enter-func (lambda () (mu4e-message "Entering NTLWORLD"))
-          :leave-func (lambda () (mu4e-message "Leaving NTLWORLD"))
-          :match-func (lambda (msg)
-                        (when msg
-                          (mu4e-message-contact-field-matches
-                           msg :to "ilya.antonov24@ntlworld.com")))
-          :vars '((user-mail-address . "ilya.antonov24@ntlworld.com")
-                  (user-full-name . "Ilya Antonov (NTLWORLD)")
-                  ;; (mu4e-sent-messages-behavior 'delete)
-                  (mu4e-sent-folder . "/ilya_NTLWORLD/Sent")
-                  (mu4e-drafts-folder . "/ilya_NTLWORLD/Drafts")
-                  (mu4e-trash-folder . "/ilya_NTLWORLD/Trash")
-                  (mu4e-refile-folder . "/ilya_NTLWORLD/Archive")
-                  (mu4e-compose-signature . (concat
-                                             "Ilya Antonov,\n"
-                                             "⦿ NTLWORLD\n"))
-                  (mu4e-compose-format-flowed . nil)))
-         (make-mu4e-context
-          :name "dreams-ai"
-          :enter-func (lambda () (mu4e-message "Entering Dreams ☁"))
-          :leave-func (lambda () (mu4e-message "Entering Dreams ☁"))
-          :match-func (lambda (msg)
-                        (when msg
-                          (mu4e-message-contact-field-matches
-                           msg :to "ilya.antonov@dreams-ai.com")))
-          :vars '((user-mail-address . "ilya.antonov@dreams-ai.com")
-                  (user-full-name . "Ilya Antonov (Dreams-AI)")
-                  ;; (mu4e-sent-messages-behavior 'delete)
-                  (mu4e-sent-folder . "/ilya_DREAMSAI/[Gmail].Sent Mail")
-                  (mu4e-drafts-folder . "/ilya_DREAMSAI/[Gmail].Drafts")
-                  (mu4e-trash-folder . "/ilya_DREAMSAI/[Gmail].Bin")
-                  (mu4e-refile-folder . "/ilya_DREAMSAI/[Gmail].Starred")
-                  (mu4e-compose-signature . (concat
-                                             "Ilya Antonov,\n"
-                                             "☁ DREAMSAI\n"))
-                  (mu4e-compose-format-flowed . nil)))
-         (make-mu4e-context
-          :name "gmail"
-          :enter-func (lambda () (mu4e-message "Entering GMAIL"))
-          :leave-func (lambda () (mu4e-message "Leaving GMAIL"))
-          :match-func (lambda (msg)
-                        (when msg
-                          (mu4e-message-contact-field-matches
-                           msg :to ".*ilya.*")))
-          :vars '((user-mail-address . "antonov.ilya225@gmail.com")
-                  (user-full-name . "Ilya Antonov (GMAIL)")
-                  ;; (mu4e-sent-messages-behavior 'delete)
-                  (mu4e-sent-folder . "/ilya_GMAIL/[Gmail].Sent Mail")
-                  (mu4e-drafts-folder . "/ilya_GMAIL/[Gmail].Drafts")
-                  (mu4e-trash-folder . "/ilya_GMAIL/[Gmail].Bin")
-                  (mu4e-refile-folder . "/ilya_GMAIL/[Gmail].Starred")
-                  (mu4e-compose-signature . (concat
-                                             "Ilya Antonov,\n"
-                                             "⦿ GMAIL\n"))
-                  (mu4e-compose-format-flowed . nil)))
-         (make-mu4e-context
-          :name "outlook"
-          :enter-func (lambda () (mu4e-message "Entering OUTLOOK"))
-          :leave-func (lambda () (mu4e-message "Leaving OUTLOOK"))
-          :match-func (lambda (msg)
-                        (when msg
-                          (mu4e-message-contact-field-matches
-                           msg '(:from :to :cc :bcc) "ilya.antonov.2013@live.rhul.ac.uk")))
-          :vars '((user-mail-address . "ilya.antonov.2013@live.rhul.ac.uk")
-                  (user-full-name . "Ilya Antonov (OUTLOOK)")
-                  (mu4e-sent-folder . "/ilya_OUTLOOK/Sent Items")
-                  (mu4e-drafts-folder . "/ilya_OUTLOOK/Drafts")
-                  (mu4e-trash-folder . "/ilya_OUTLOOK/Deleted Items")
-                  (mu4e-refile-folder . "/ilya_OUTLOOK/Archive")
-                  (mu4e-compose-signature . (concat
-                                             "Ilya Antonov,\n"
-                                             "⦿ From OUTLOOK\n"))
-                  (mu4e-compose-format-flowed . nil)))))
- #+END_SRC
-** Navigation
-#+BEGIN_SRC emacs-lisp 
-  ;; 7 - shortcuts
-  (setq mu4e-bookmarks '(("flag:unread" "Unread messages" ?u)
-                         ("date:today..now" "Today's messages" ?t)
-                         ("date:7d..now" "Last 7 days" ?w)
-                         ("mime:image/*" "Messages with images" ?p)))
-  (add-to-list 'mu4e-bookmarks
-               (make-mu4e-bookmark
-                :name "All Inboxes"
-                :query "maildir:/ilya_GMAIL/INBOX OR maildir:/ilya_NTLWORLD/INBOX OR maildir:/ilya_OUTLOOK/INBOX OR maildir:/ilya_DREAMSAI/INBOX"
-                :key ?i))
-  (add-to-list 'mu4e-bookmarks
-               (make-mu4e-bookmark
-                :name "All Archives"
-                :query "maildir:/ilya_GMAIL/[Gmail].Starred OR maildir:/ilya_NTLWORLD/Archive OR maildir:/ilya_OUTLOOK/Archive OR maildir:/ilya_DREAMSAI/[Gmail].Starred"
-                :key ?a))
-
-  (setq   mu4e-maildir-shortcuts
-          '(("/ilya_DREAMSAI/INBOX"     . ?d)
-            ("/ilya_GMAIL/INBOX"     . ?g)
-            ("/ilya_NTLWORLD/INBOX"     . ?n)
-            ("/ilya_OUTLOOK/INBOX"     . ?l)))
- #+END_SRC
-** View
-*** Email list
-#+BEGIN_SRC emacs-lisp 
-  (setq mu4e-headers-fields
-      '( (:date          .  10)
-         (:flags         .   6)
-         (:from          .  30)
-         (:subject       .  nil)))
-  (setq mu4e-split-view 'horizontal)
- #+END_SRC
-*** Method to generate html messages and preview images
-#+BEGIN_SRC emacs-lisp 
-  ;;   - html2text -utf8 -width 72
-  ;;   - textutil -stdin -format html -convert txt -stdout
-  ;;   - html2markdown | grep -v '&nbsp_place_holder;' (Requires html2text pypi)
-  ;;   - w3m -dump -cols 80 -T text/html
-  ;; (setq mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout")
-  (setq mu4e-html2text-command "w3m -T text/html")
-
-  (setq mu4e-view-show-images t)
-  (when (fboundp 'imagemagick-register-types)
-    (imagemagick-register-types))
- #+END_SRC
-*** Start in new frame
-#+BEGIN_SRC emacs-lisp 
-  ;; (defun mu4e-in-new-frame ()
-  ;;   "Start mu4e in new frame."
-  ;;   (interactive)
-  ;;   (select-frame (make-frame))
-  ;;   (mu4e))
- #+END_SRC
-*** View in browser
-#+BEGIN_SRC emacs-lisp 
-  (add-to-list 'mu4e-view-actions '("web-view" . mu4e-action-view-in-browser) t)
- #+END_SRC
-** Customized marking actions
-- read and delete
-#+BEGIN_SRC emacs-lisp 
-  (add-to-list 'mu4e-marks
-               '(read-and-trash
-                 :char       "✘"
-                 :prompt     "w⦿Read and Trash⦿"
-                 :show-target (lambda (target) "→Read and Trash")
-                 :action      (lambda (docid msg target)
-                              ;remove Unread and New → Mark as [S]een and [T]rash
-                                (mu4e~proc-move docid nil "+S+T-u-N"))))
-
-  (add-to-list 'mu4e-marks
-               '(dump-order
-                 :char       "📨"
-                 :prompt     "w⦿Place into order⦿"
-                 :show-target (lambda (target) "→Order")
-                 :action      (lambda (docid msg target)
-                              ;remove Unread and New → Mark as [S]een and [T]rash
-                                (mu4e~proc-move docid nil "+S"))))
-
-  (mu4e~headers-defun-mark-for read-and-trash)
-  (define-key mu4e-headers-mode-map (kbd "d") 'mu4e-headers-mark-for-read-and-trash)
-
-  (mu4e~headers-defun-mark-for dump-order)
-  (define-key mu4e-headers-mode-map (kbd "o") 'mu4e-headers-mark-for-dump-order)
- #+END_SRC
-** Sending mail
-=msmtp --host=smtp.office365.com --port=587 --serverinfo --tls --tls-certcheck=off=
-
-#+BEGIN_SRC emacs-lisp 
-  (setq message-send-mail-function (function message-send-mail-with-sendmail))
-  (setq sendmail-program "/usr/local/bin/msmtp")
-
-    ;; Use the correct account context when sending mail based on the from header.
-  (setq message-sendmail-envelope-from 'header)
-  ;; (add-hook 'message-send-mail-hook 'choose-msmtp-account)
- #+END_SRC
-*** Composing Mail
-#+BEGIN_SRC emacs-lisp 
-  (setq message-citation-line-format "%N @ %Y-%m-%d %H:%M %Z:\n")
-  (setq message-citation-line-function 'message-insert-formatted-citation-line)
-
-  (add-hook 'mu4e-compose-mode-hook
-            (defun my-do-compose-stuff ()
-              "⦿⦿ Those sweet custom settings"
-              (set-fill-column 72)
-              (flyspell-mode)))
- #+END_SRC
-** mu4e Alert
-#+BEGIN_SRC emacs-lisp 
-  (use-package mu4e-alert
-    :ensure t
-    :after mu4e
-    :init
-    (setq mu4e-alert-interesting-mail-query
-      (concat
-       "flag:unread maildir:/ilya_NTLWORLD/INBOX "
-       "OR "
-       "flag:unread maildir:/ilya_GMAIL/INBOX "
-       "OR "
-       "flag:unread maildir:/ilya_DREAMSAI/INBOX "
-       " OR "
-       "flag:unread maildir:/ilya_OUTLOOK/INBOX"
-       ))
-    (mu4e-alert-enable-mode-line-display)
-
-    (defun ilya-mu4e-alert-mode-line ()
-      (interactive)
-      (mu4e~proc-kill)
-      (mu4e-alert-enable-mode-line-display)
-      )
-    (run-with-timer 0 60 'ilya-mu4e-alert-mode-line))
- #+END_SRC
-** gpg access
-because we need a gpg already in the cache to access the imap servers, run a dummy command on a dummy file to store the password
-
-funciton is based off epa-decrypt file
-#+BEGIN_SRC emacs-lisp
-  (defun ilya-epa-decrypt-file (decrypt-file &optional plain-file)
-    "Decrypt DECRYPT-FILE into PLAIN-FILE.
-    If you do not specify PLAIN-FILE, this functions prompts for the value to use."
-    (interactive
-     (let* ((file (read-file-name "File to decrypt: "))
-            (plain (epa-read-file-name file)))
-       (list file plain)))
-    (or plain-file (setq plain-file (epa-read-file-name decrypt-file)))
-    (setq decrypt-file (expand-file-name decrypt-file))
-    (let ((context (epg-make-context epa-protocol)))
-      (epg-context-set-passphrase-callback context
-                                           #'epa-passphrase-callback-function)
-      (epg-context-set-progress-callback context
-                                         (cons
-                                          #'epa-progress-callback-function
-                                          (format "Decrypting %s..."
-                                                  (file-name-nondirectory decrypt-file))))
-      (setf (epg-context-pinentry-mode context) epa-pinentry-mode)
-      (message "Decrypting %s..." (file-name-nondirectory decrypt-file))
-      (condition-case error
-          (epg-decrypt-file context decrypt-file plain-file)
-        (error
-         (epa-display-error context)
-         (signal (car error) (cdr error))))))
-
-  (add-hook 'mu4e-update-pre-hook (lambda ()
-                                    (ilya-epa-decrypt-file "~/creamy_seas/sync_files/emacs_config/support_files/load_password_dummy_file.gpg" "/dev/null")))
- #+END_SRC
-
 * Latex Formatting Macros
 #+BEGIN_SRC emacs-lisp 
   (fset 'ipic
@@ -774,51 +557,6 @@ presentations can be hosted from github - look at video no 50
     )
   (use-package htmlize
     :ensure t)
- #+END_SRC
-* Preload
-** ignore bell
-#+BEGIN_SRC emacs-lisp 
-  (setq ring-bell-function 'ignore)
- #+END_SRC
-** executable path
-path for emacs executables to
-#+BEGIN_SRC emacs-lisp 
-  (setq exec-path (append exec-path '("/usr/local/bin")))
-  (setq exec-path (append exec-path '("/Users/CCCP/.scripts")))
- #+END_SRC
-** functions
-#+BEGIN_SRC emacs-lisp 
-  (defun ilya-copy-line ()
-    "Copies the current line of the cursor
-     Returns the current line as a string"
-    (interactive)
-    (buffer-substring (line-beginning-position) (line-end-position)))
-
-  (defun ilya-extract-string (regexp index string)
-    "Extract a particular part of a regexp from the chosen string
-  -------------------------------------------------------------------
-  regexp     regular expression with individual arguments in \\(\\)
-  index         index match to extract
-  string        string to extract from
-  "
-    (string-match regexp string)
-    (match-string index string))
-
-  (defun ilya-file-name-from-line (prefix suffix)
-    "Copies the current line and elinates all spaces"
-    (interactive)
-    (let* (
-           (file-name (ilya-copy-line))
-           (file-name (replace-regexp-in-string "^\s*" "" file-name))
-           (file-name (downcase file-name))
-           (file-name (replace-regexp-in-string " " "_" file-name))
-           (file-name (concat prefix file-name suffix)))
-      (message file-name)))
- #+END_SRC
-** load path
-add folder with some =.el= files that could not be resolved by emacs
-#+BEGIN_SRC emacs-lisp 
-  (add-to-list 'load-path "~/creamy_seas/sync_files/emacs_config/ilya_el_manual")
  #+END_SRC
 * Emacs feel
 ** menus
@@ -2906,14 +2644,9 @@ once autocomplete is triggered, =C-d= to get documentation at point
 #+BEGIN_SRC emacs-lisp
   (use-package company
     :ensure t
+    :hook (progn-mode . company-mode)
     :config
-    (add-hook 'org-mode-hook 'company-mode)
-    (add-hook 'emacs-lisp-mode-hook 'company-mode)
-    (add-hook 'text-mode-hook 'company-mode)
-    (add-hook 'inferior-python-mode-hook 'company-mode)
-    (add-hook 'LaTeX-mode-hook 'company-mode)
-    (add-hook 'c++-mode-hook 'company-mode)
-
+    (setq company-tooltip-align-annotations t)
     (setq company-idle-delay 0.2)
     (setq company-minimum-prefix-length 4))
 #+END_SRC
@@ -2940,14 +2673,13 @@ once autocomplete is triggered, =C-d= to get documentation at point
  #+END_SRC
 
 ** keybinding
+remap navigation only if company mode is loaded cancel some keys, and activate others
 #+BEGIN_SRC emacs-lisp 
-  (with-eval-after-load 'company;;remap navigation only if company mode is loaded
-    ;;cancel some keys, and activate others
+  (with-eval-after-load 'company
     (define-key company-active-map (kbd "M-n") nil)
     (define-key company-active-map (kbd "M-p") nil)
     (define-key company-active-map (kbd "C-n") #'company-select-next)
-    (define-key company-active-map (kbd "C-p") #'company-select-previous)
-    )
+    (define-key company-active-map (kbd "C-p") #'company-select-previous))
  #+END_SRC
 * Bookmarks
 #+BEGIN_SRC emacs-lisp 
@@ -3320,10 +3052,6 @@ change and save view modes
   (define-key elpy-mode-map (kbd "C-c C-h") (function hydra-python-collapse/body))
  #+END_SRC
 * Navigation                                                         :darren:
-** transfer using shift keys
-#+BEGIN_SRC emacs-lisp
-  ;;(windmove-default-keybindings)
-#+END_SRC
 ** switch window with number tags
 when the there are more than two windows =C-x o= will give each window a letter that can be jumped to
 #+BEGIN_SRC emacs-lisp
@@ -3379,7 +3107,25 @@ the superior search mode to the original
 #+BEGIN_SRC emacs-lisp
   (global-subword-mode 1)
 #+END_SRC
+** Moving around marks <<mark-movement>>
+#+BEGIN_SRC emacs-lisp 
+  (defun my-pop-local-mark-ring ()
+    (interactive)
+    (set-mark-command t))
 
+  (defun unpop-to-mark-command ()
+    "Unpop off mark ring. Does nothing if mark ring is empty."
+    (interactive)
+        (when mark-ring
+          (setq mark-ring (cons (copy-marker (mark-marker)) mark-ring))
+          (set-marker (mark-marker) (car (last mark-ring)) (current-buffer))
+          (when (null (mark t)) (ding))
+          (setq mark-ring (nbutlast mark-ring))
+          (goto-char (marker-position (car (last mark-ring))))))
+
+  (global-set-key (kbd "s-,") 'my-pop-local-mark-ring)
+  (global-set-key (kbd "s-.") 'unpop-to-mark-command)
+ #+END_SRC
 * Non essential
 ** clocks 
 #+BEGIN_SRC emacs-lisp
@@ -3466,32 +3212,25 @@ Navigation around a set of project files. There's tons of shortcuts to explore
  #+END_SRC
 * Smartparens
 #+BEGIN_SRC emacs-lisp 
-  ;; (use-package smartparens
-  ;;   :ensure t
-  ;;   :hook (prog-mode . smartparens-mode)
-  ;;   :config
-  ;;   (require 'smartparens-config)
-  ;;   :bind
-  ;;   (("C-<down>" . sp-down-sexp)
-  ;;    ("C-<up>" . sp-up-sexp)
-  ;;    ("M-<down>" . sp-backward-down-sexp)
-  ;;    ("M-<up>" . sp-backward-up-sexp)))
+  (use-package smartparens
+    :ensure t
+    :hook (prog-mode . smartparens-mode)
+    :config
+    (require 'smartparens-config)
+    :bind
+    (("C-<down>" . sp-down-sexp)
+     ("C-<up>" . sp-up-sexp)
+     ("M-<down>" . sp-backward-down-sexp)
+     ("M-<up>" . sp-backward-up-sexp))
+    )
+
+  (show-smartparens-global-mode t)
 
   ;; ;; highlight brackets
-  ;; (show-paren-mode)
+  (show-paren-mode)
 
   ;; ;; remap delete-char → sp-delete-char to always preserve brackets
   ;; (smartparens-global-strict-mode)
-  ;; (use-package smartparens
-  ;;   :ensure t
-  ;;   :config
-  ;;   (require 'smartparens-config)
-  ;;   :bind
-  ;;   (("C-<down>" . sp-down-sexp)
-  ;;    ("C-<up>" . sp-up-sexp)
-  ;;    ("M-<down>" . sp-backward-down-sexp)
-  ;;    ("M-<up>" . sp-backward-up-sexp)))
-
   ;; (add-hook 'LaTeX-mode-hook 'smartparens-strict-mode)
   ;; (add-hook 'prog-mode-hook 'smartparens-strict-mode)
  #+END_SRC
@@ -3522,6 +3261,293 @@ spawns a tree of all the undos that you have ever made
 
   (global-set-key (kbd "<C-m>")  'rename-file-and-buffer)
  #+END_SRC:
+* mu4e
+- for google, you need to allow
+- bound with [[global_bindings]]
+- =C-c C-a= for attachments
+** External Setup
+- =offlineimap=
+- =w3m=
+- =mu=
+*** location of binaries
+#+BEGIN_SRC emacs-lisp
+  ;; add location of lisp files for me4e
+  (add-to-list 'load-path
+               (expand-file-name "/usr/local/share/emacs/site-lisp/mu/mu4e"))
+
+  ;; location of the mu binary
+  (setq mu4e-mu-binary "/usr/local/bin/mu")
+ #+END_SRC
+** mu4e configuration
+#+BEGIN_SRC emacs-lisp
+  (use-package mu4e
+    :config
+
+    ;; 1 - method to pull in the mail
+    (setq mu4e-get-mail-command "offlineimap")
+    (setq mu4e-maildir "~/mail")
+    (setq mu4e-view-show-addresses t)
+    (setq mu4e-update-interval 86000)
+    ;; (setq mu4e~get-mail-password-regexp "^Enter password for user 'Remote': $")
+
+    ;; 2 - directory for saving attachments
+    (setq mu4e-attachment-dir (expand-file-name "~/Dropbox"))
+
+    ;; 4 - main accounts and sending mail
+    (setq mu4e-user-mail-address-list '("ilya.antonov@dreams-ai.com"
+                                        "ilya.antonov24@ntlworld.com"
+                                         "antonov.ilya225@gmail.com"
+                                         "ilya.antonov2013@live.rhul.ac.uk")))
+ #+END_SRC
+** Contexts
+#+BEGIN_SRC emacs-lisp 
+  (setq mu4e-context-policy 'pick-first)
+  (setq mu4e-compose-context-policy 'always-ask)
+  (setq mu4e-contexts
+        (list
+         (make-mu4e-context
+          :name "ntlworld"
+          :enter-func (lambda () (mu4e-message "Entering NTLWORLD"))
+          :leave-func (lambda () (mu4e-message "Leaving NTLWORLD"))
+          :match-func (lambda (msg)
+                        (when msg
+                          (mu4e-message-contact-field-matches
+                           msg :to "ilya.antonov24@ntlworld.com")))
+          :vars '((user-mail-address . "ilya.antonov24@ntlworld.com")
+                  (user-full-name . "Ilya Antonov (NTLWORLD)")
+                  ;; (mu4e-sent-messages-behavior 'delete)
+                  (mu4e-sent-folder . "/ilya_NTLWORLD/Sent")
+                  (mu4e-drafts-folder . "/ilya_NTLWORLD/Drafts")
+                  (mu4e-trash-folder . "/ilya_NTLWORLD/Trash")
+                  (mu4e-refile-folder . "/ilya_NTLWORLD/Archive")
+                  (mu4e-compose-signature . (concat
+                                             "Ilya Antonov,\n"
+                                             "⦿ NTLWORLD\n"))
+                  (mu4e-compose-format-flowed . nil)))
+         (make-mu4e-context
+          :name "dreams-ai"
+          :enter-func (lambda () (mu4e-message "Entering Dreams ☁"))
+          :leave-func (lambda () (mu4e-message "Entering Dreams ☁"))
+          :match-func (lambda (msg)
+                        (when msg
+                          (mu4e-message-contact-field-matches
+                           msg :to "ilya.antonov@dreams-ai.com")))
+          :vars '((user-mail-address . "ilya.antonov@dreams-ai.com")
+                  (user-full-name . "Ilya Antonov (Dreams-AI)")
+                  ;; (mu4e-sent-messages-behavior 'delete)
+                  (mu4e-sent-folder . "/ilya_DREAMSAI/[Gmail].Sent Mail")
+                  (mu4e-drafts-folder . "/ilya_DREAMSAI/[Gmail].Drafts")
+                  (mu4e-trash-folder . "/ilya_DREAMSAI/[Gmail].Bin")
+                  (mu4e-refile-folder . "/ilya_DREAMSAI/[Gmail].Starred")
+                  (mu4e-compose-signature . (concat
+                                             "Ilya Antonov,\n"
+                                             "☁ DREAMSAI\n"))
+                  (mu4e-compose-format-flowed . nil)))
+         (make-mu4e-context
+          :name "gmail"
+          :enter-func (lambda () (mu4e-message "Entering GMAIL"))
+          :leave-func (lambda () (mu4e-message "Leaving GMAIL"))
+          :match-func (lambda (msg)
+                        (when msg
+                          (mu4e-message-contact-field-matches
+                           msg :to ".*ilya.*")))
+          :vars '((user-mail-address . "antonov.ilya225@gmail.com")
+                  (user-full-name . "Ilya Antonov (GMAIL)")
+                  ;; (mu4e-sent-messages-behavior 'delete)
+                  (mu4e-sent-folder . "/ilya_GMAIL/[Gmail].Sent Mail")
+                  (mu4e-drafts-folder . "/ilya_GMAIL/[Gmail].Drafts")
+                  (mu4e-trash-folder . "/ilya_GMAIL/[Gmail].Bin")
+                  (mu4e-refile-folder . "/ilya_GMAIL/[Gmail].Starred")
+                  (mu4e-compose-signature . (concat
+                                             "Ilya Antonov,\n"
+                                             "⦿ GMAIL\n"))
+                  (mu4e-compose-format-flowed . nil)))
+         (make-mu4e-context
+          :name "outlook"
+          :enter-func (lambda () (mu4e-message "Entering OUTLOOK"))
+          :leave-func (lambda () (mu4e-message "Leaving OUTLOOK"))
+          :match-func (lambda (msg)
+                        (when msg
+                          (mu4e-message-contact-field-matches
+                           msg '(:from :to :cc :bcc) "ilya.antonov.2013@live.rhul.ac.uk")))
+          :vars '((user-mail-address . "ilya.antonov.2013@live.rhul.ac.uk")
+                  (user-full-name . "Ilya Antonov (OUTLOOK)")
+                  (mu4e-sent-folder . "/ilya_OUTLOOK/Sent Items")
+                  (mu4e-drafts-folder . "/ilya_OUTLOOK/Drafts")
+                  (mu4e-trash-folder . "/ilya_OUTLOOK/Deleted Items")
+                  (mu4e-refile-folder . "/ilya_OUTLOOK/Archive")
+                  (mu4e-compose-signature . (concat
+                                             "Ilya Antonov,\n"
+                                             "⦿ From OUTLOOK\n"))
+                  (mu4e-compose-format-flowed . nil)))))
+ #+END_SRC
+** Navigation
+#+BEGIN_SRC emacs-lisp 
+  ;; 7 - shortcuts
+  (setq mu4e-bookmarks '(("flag:unread" "Unread messages" ?u)
+                         ("date:today..now" "Today's messages" ?t)
+                         ("date:7d..now" "Last 7 days" ?w)
+                         ("mime:image/*" "Messages with images" ?p)))
+  (add-to-list 'mu4e-bookmarks
+               (make-mu4e-bookmark
+                :name "All Inboxes"
+                :query "maildir:/ilya_GMAIL/INBOX OR maildir:/ilya_NTLWORLD/INBOX OR maildir:/ilya_OUTLOOK/INBOX OR maildir:/ilya_DREAMSAI/INBOX"
+                :key ?i))
+  (add-to-list 'mu4e-bookmarks
+               (make-mu4e-bookmark
+                :name "All Archives"
+                :query "maildir:/ilya_GMAIL/[Gmail].Starred OR maildir:/ilya_NTLWORLD/Archive OR maildir:/ilya_OUTLOOK/Archive OR maildir:/ilya_DREAMSAI/[Gmail].Starred"
+                :key ?a))
+
+  (setq   mu4e-maildir-shortcuts
+          '(("/ilya_DREAMSAI/INBOX"     . ?d)
+            ("/ilya_GMAIL/INBOX"     . ?g)
+            ("/ilya_NTLWORLD/INBOX"     . ?n)
+            ("/ilya_OUTLOOK/INBOX"     . ?l)))
+ #+END_SRC
+** View
+*** Email list
+#+BEGIN_SRC emacs-lisp 
+  (setq mu4e-headers-fields
+      '( (:date          .  10)
+         (:flags         .   6)
+         (:from          .  30)
+         (:subject       .  nil)))
+  (setq mu4e-split-view 'horizontal)
+ #+END_SRC
+*** Method to generate html messages and preview images
+#+BEGIN_SRC emacs-lisp 
+  ;;   - html2text -utf8 -width 72
+  ;;   - textutil -stdin -format html -convert txt -stdout
+  ;;   - html2markdown | grep -v '&nbsp_place_holder;' (Requires html2text pypi)
+  ;;   - w3m -dump -cols 80 -T text/html
+  ;; (setq mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout")
+  (setq mu4e-html2text-command "w3m -T text/html")
+
+  (setq mu4e-view-show-images t)
+  (when (fboundp 'imagemagick-register-types)
+    (imagemagick-register-types))
+ #+END_SRC
+*** Start in new frame
+#+BEGIN_SRC emacs-lisp 
+  ;; (defun mu4e-in-new-frame ()
+  ;;   "Start mu4e in new frame."
+  ;;   (interactive)
+  ;;   (select-frame (make-frame))
+  ;;   (mu4e))
+ #+END_SRC
+*** View in browser
+#+BEGIN_SRC emacs-lisp 
+  (add-to-list 'mu4e-view-actions '("web-view" . mu4e-action-view-in-browser) t)
+ #+END_SRC
+** Customized marking actions
+- read and delete
+#+BEGIN_SRC emacs-lisp 
+  (add-to-list 'mu4e-marks
+               '(read-and-trash
+                 :char       "✘"
+                 :prompt     "w⦿Read and Trash⦿"
+                 :show-target (lambda (target) "→Read and Trash")
+                 :action      (lambda (docid msg target)
+                              ;remove Unread and New → Mark as [S]een and [T]rash
+                                (mu4e~proc-move docid nil "+S+T-u-N"))))
+
+  (add-to-list 'mu4e-marks
+               '(dump-order
+                 :char       "📨"
+                 :prompt     "w⦿Place into order⦿"
+                 :show-target (lambda (target) "→Order")
+                 :action      (lambda (docid msg target)
+                              ;remove Unread and New → Mark as [S]een and [T]rash
+                                (mu4e~proc-move docid nil "+S"))))
+
+  (mu4e~headers-defun-mark-for read-and-trash)
+  (define-key mu4e-headers-mode-map (kbd "d") 'mu4e-headers-mark-for-read-and-trash)
+
+  (mu4e~headers-defun-mark-for dump-order)
+  (define-key mu4e-headers-mode-map (kbd "o") 'mu4e-headers-mark-for-dump-order)
+ #+END_SRC
+** Sending mail
+=msmtp --host=smtp.office365.com --port=587 --serverinfo --tls --tls-certcheck=off=
+
+#+BEGIN_SRC emacs-lisp 
+  (setq message-send-mail-function (function message-send-mail-with-sendmail))
+  (setq sendmail-program "/usr/local/bin/msmtp")
+
+    ;; Use the correct account context when sending mail based on the from header.
+  (setq message-sendmail-envelope-from 'header)
+  ;; (add-hook 'message-send-mail-hook 'choose-msmtp-account)
+ #+END_SRC
+*** Composing Mail
+#+BEGIN_SRC emacs-lisp 
+  (setq message-citation-line-format "%N @ %Y-%m-%d %H:%M %Z:\n")
+  (setq message-citation-line-function 'message-insert-formatted-citation-line)
+
+  (add-hook 'mu4e-compose-mode-hook
+            (defun my-do-compose-stuff ()
+              "⦿⦿ Those sweet custom settings"
+              (set-fill-column 72)
+              (flyspell-mode)))
+ #+END_SRC
+** mu4e Alert
+#+BEGIN_SRC emacs-lisp 
+  (use-package mu4e-alert
+    :ensure t
+    :after mu4e
+    :init
+    (setq mu4e-alert-interesting-mail-query
+      (concat
+       "flag:unread maildir:/ilya_NTLWORLD/INBOX "
+       "OR "
+       "flag:unread maildir:/ilya_GMAIL/INBOX "
+       "OR "
+       "flag:unread maildir:/ilya_DREAMSAI/INBOX "
+       " OR "
+       "flag:unread maildir:/ilya_OUTLOOK/INBOX"
+       ))
+    (mu4e-alert-enable-mode-line-display)
+
+    (defun ilya-mu4e-alert-mode-line ()
+      (interactive)
+      (mu4e~proc-kill)
+      (mu4e-alert-enable-mode-line-display)
+      )
+    (run-with-timer 0 60 'ilya-mu4e-alert-mode-line))
+ #+END_SRC
+** gpg access
+because we need a gpg already in the cache to access the imap servers, run a dummy command on a dummy file to store the password
+
+funciton is based off epa-decrypt file
+#+BEGIN_SRC emacs-lisp
+  (defun ilya-epa-decrypt-file (decrypt-file &optional plain-file)
+    "Decrypt DECRYPT-FILE into PLAIN-FILE.
+    If you do not specify PLAIN-FILE, this functions prompts for the value to use."
+    (interactive
+     (let* ((file (read-file-name "File to decrypt: "))
+            (plain (epa-read-file-name file)))
+       (list file plain)))
+    (or plain-file (setq plain-file (epa-read-file-name decrypt-file)))
+    (setq decrypt-file (expand-file-name decrypt-file))
+    (let ((context (epg-make-context epa-protocol)))
+      (epg-context-set-passphrase-callback context
+                                           #'epa-passphrase-callback-function)
+      (epg-context-set-progress-callback context
+                                         (cons
+                                          #'epa-progress-callback-function
+                                          (format "Decrypting %s..."
+                                                  (file-name-nondirectory decrypt-file))))
+      (setf (epg-context-pinentry-mode context) epa-pinentry-mode)
+      (message "Decrypting %s..." (file-name-nondirectory decrypt-file))
+      (condition-case error
+          (epg-decrypt-file context decrypt-file plain-file)
+        (error
+         (epa-display-error context)
+         (signal (car error) (cdr error))))))
+
+  (add-hook 'mu4e-update-pre-hook (lambda ()
+                                    (ilya-epa-decrypt-file "~/creamy_seas/sync_files/emacs_config/support_files/load_password_dummy_file.gpg" "/dev/null")))
+ #+END_SRC
+
 * Hide minor modes                                             :must_be_last:
 hides the minor modes that are trivial
 #+BEGIN_SRC emacs-lisp
