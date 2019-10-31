@@ -59,6 +59,12 @@ add folder with some =.el= files that could not be resolved by emacs
 #+BEGIN_SRC emacs-lisp 
   (add-to-list 'load-path "~/creamy_seas/sync_files/emacs_config/ilya_el_manual")
  #+END_SRC
+* Global highlighting
+** Todo highlighting
+#+BEGIN_SRC emacs-lisp 
+  (require 'fic-mode)
+  (add-hook 'prog-mode-hook 'turn-on-fic-mode) 
+ #+END_SRC
 * Use-package
 ** Initialize package and add Melpa source
 #+BEGIN_SRC emacs-lisp 
@@ -218,6 +224,7 @@ The package manager is =rustup=. For cool packages, add nightly toolkit
 *** RLS server
 =rustup component add rls rust-analysis=
 *** Racer
+
 It will need documentation
 =rustup component add  rust-src=
 
@@ -236,7 +243,6 @@ Then install racer
     (add-hook 'rust-mode-hook
             (lambda () (setq indent-tabs-mode nil))))
 
-
   (use-package cargo
     :ensure t
     :diminish cargo-minor-mode
@@ -245,7 +251,7 @@ Then install racer
   (use-package flycheck-rust
     :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
-  ;; (setq racer-rust-src-path "~/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src")
+  (setq racer-rust-src-path "~/.rustup/toolchains/nightly-x86_64-apple-darwin/lib/rustlib/src/rust/src")
   (use-package racer
     :ensure t
     :config
@@ -254,7 +260,7 @@ Then install racer
     (add-hook 'racer-mode-hook #'company-mode))
 
   ;; (use-package rustic
-  ;;   :ensure t)
+    ;; :ensure t)
 
   ;; (add-hook 'racer-mode-hook 'rustic-mode)
   ;; (setq rustic-format-trigger 'on-save)
@@ -266,8 +272,8 @@ Then install racer
   (define-key rust-mode-map (kbd "C-c C-d") (function racer-describe-tooltip))
   (define-key rust-mode-map (kbd "C-c d") (function racer-describe))
  #+END_SRC
-* <<Elpy>> mode
-** external setup of python
+* Python mode
+** external setup 
 *** install =virtualenvwrapper=
 **** mac
 - install with pip3
@@ -288,7 +294,7 @@ add the following to =bashrc=
   export WORKON_HOME=~/creamy_seas/sync_files/python_vi
   source /usr/bin/virtualenvwrapper.sh
 #+END_SRC
-** setup python virtual environment
+*** setup virtual-env
 make virtual end with =mkvirtualenv NAME=
 |------------------------------------+----------------------------------------------|
 | =source NAMELOCATION/bin/activate= | activate an environment                      |
@@ -298,27 +304,20 @@ make virtual end with =mkvirtualenv NAME=
 | =pip install PACKAGENAME=          | install a package to the virtual environemnt |
 | =echo $VIRTUAL_ENV=                | the currently activate virtual environment   |
 |------------------------------------+----------------------------------------------|
-
-*** to install using pip (second part not required)
-|-------------------------------+---------------------------------------------|
-| =jedi=                        | autocompletion python (suggest names)       |
-| =autopep8=                    | format the code (indent etc). uses =flake8= |
-| =flake8=                      | linting (checks typos, syntax errors)       |
-| =importmagic=                 | automatic imports                           |
-| =matplotlib=                  |                                             |
-| =qutip=                       | needs =numpy= =Cython= =scipy=              |
-| =PyQt5=                       | gui interface                               |
-| =python-language-server[all]= |                                             |
-|-------------------------------+---------------------------------------------|
-| =ipython3=                    | kernel                                      |
-| =yapf=                        | code formatiing                             |
-| =rope=                        | 'refactoring' library                       |
-| =jupyter=                     | notebook                                    |
-|-------------------------------+---------------------------------------------|
+*** pip install (second part not required)
+|-------------------------------+---------------------------------------------+--------------------|
+| =jedi=                        | autocompletion python (suggest names)       |                    |
+| =autopep8=                    | format the code (indent etc). uses =flake8= |                    |
+| =flake8=                      | linting (checks typos, syntax errors)       | =~/.config/flake8= |
+| =importmagic=                 | automatic imports                           |                    |
+| =python-language-server[all]= |                                             |                    |
+|-------------------------------+---------------------------------------------+--------------------|
+| =ipython3=                    | kernel                                      |                    |
+| =yapf=                        | code formatiing                             |                    |
+| =rope=                        | 'refactoring' library                       |                    |
+|-------------------------------+---------------------------------------------+--------------------|
 #+TBLFM: $1=PyQt5
 
-*** configuration files
-the flake8 (used for syntax checking) has configuration file =~/.config/flake8=
 ** elpy
 #+BEGIN_SRC emacs-lisp 
   (use-package elpy
@@ -328,10 +327,9 @@ the flake8 (used for syntax checking) has configuration file =~/.config/flake8=
     (setq elpy-shell-use-project-root nil)
     (setq python-shell-completion-native-enable nil) ;remove a warming about native completion
     )
-
  #+END_SRC
-** code formatting =autopep8=
-- automatically fix syntax errors upon saving
+*** =autopep8= support
+automatically fix syntax errors upon saving
 #+BEGIN_SRC emacs-lisp 
   (use-package py-autopep8
     :ensure t
@@ -353,14 +351,10 @@ the flake8 (used for syntax checking) has configuration file =~/.config/flake8=
   ;; (add-hook 'elpy-mode-hook #'lsp)
  #+END_SRC
 
-** different virtual environments
+** virtual environments
 #+BEGIN_SRC emacs-lisp 
   (defun ilya-pyenv-activate (python-environment-path)
-    "Activate a particular environment
-  -------------------------------------------------------------------
-  python-path     relative path (from home directory) to the python env
-                  folder to activate
-  "
+    "Activate a particular environment"
     (interactive)
     (progn
       (pyvenv-activate python-environment-path)
@@ -369,7 +363,7 @@ the flake8 (used for syntax checking) has configuration file =~/.config/flake8=
             python-shell-interpreter-args "-i")
       (pyvenv-restart-python)))
  #+END_SRC
-** hydra to load python virtual environment
+*** hydra (loaded on default load)
 #+BEGIN_SRC emacs-lisp
   (use-package hydra
     :ensure t)
@@ -410,15 +404,6 @@ the flake8 (used for syntax checking) has configuration file =~/.config/flake8=
 				(define-key elpy-mode-map (kbd "C-c C-r") (function elpy-rpc-restart))
 				(define-key elpy-mode-map (kbd "C-c C-;") (function comment-line))))
  #+END_SRC
-** default load
-#+BEGIN_SRC emacs-lisp
-  (use-package pyenv-mode
-    :ensure t
-    :config)
-    ;; (if (file-exists-p "~/.macbook_localiser")
-    ;;     (hydra-python-vi/body)
-    ;;   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/arch_vi")))
-#+END_SRC
 * Docker
 #+BEGIN_SRC emacs-lisp 
   
@@ -2053,13 +2038,14 @@ capture frame can be called from any application - just map it
  #+END_SRC
 ** todo lists
 #+BEGIN_SRC emacs-lisp 
-  (setq org-todo-keywords '((sequence "TODO(t)" "BLOAT(B)" "BRYAN(b)" "PHD(p)" "DREAMS-AI(a)" "HORSE(h)" "SA36(3)" "WORKFORCE(w)" "SCHOOLS(s)" "TUTORING(l)" "CURRENT(c)" "|" "DOMINATED(d)")))
+  (setq org-todo-keywords '((sequence "TODO(t)" "BLOAT(B)" "BRYAN(z)" "PHD(p)" "DREAMS-AI(a)" "HORSE(h)" "SA36(3)" "WORKFORCE(w)" "SCHOOLS(b)" "TUTORING(l)" "CURRENT(c)" "SKYPE(s)" "|" "DOMINATED(d)")))
 
   (setq org-todo-keyword-faces (quote (
                                        ("STARTED" . "yellow")
                                        ("CURRENT" . (:foreground "#ffff0a" :background "#754ec1" :weight bold))
                                        ("DREAMS-AI" . (:foreground "#68c3c1" :background "#fdc989" :weight bold))
                                        ("SA36" . (:background "#01168a" :foreground "#fdc989" :weight bold))
+                                       ("SKYPE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
                                        ("HORSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
                                        ("WORKFORCE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
                                        ("PHD" . (:foreground "yellow" :background "#FF3333"))
@@ -2272,6 +2258,13 @@ the nice bullets instead of multiplication symbols
 #+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook 'org-indent-mode)
 #+END_SRC
+** export to html
+#+BEGIN_SRC emacs-lisp 
+(setq org-html-checkbox-type 'html)
+ #+END_SRC
+*** nice template
+#+INFOJS_OPT: view:t toc:t ltoc:t mouse:underline buttons:1 path:http://thomasf.github.io/solarized-css/org-info.min.js
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://thomasf.github.io/solarized-css/solarized-light.min.css" />
 ** export to nice html
 #+BEGIN_SRC emacs-lisp
   (use-package ox-twbs
