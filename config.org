@@ -1081,7 +1081,7 @@ Indenting environment
 
       (if (eq ilya_LaTeX-running-compilations 0)
           (custom-set-faces
-           '(mode-line ((t (:background "#2d379a" :foreground "#1eafe1"))))))
+         '(mode-line ((t (:box (:line-width 0 :color "red")))))))
       (sleep-for 2)
 
       ;; 5 - close this buffer window
@@ -2023,17 +2023,17 @@ capture frame can be called from any application - just map it
 #+END_SRC
 ** autocomplete in org mode (when typing #+)
 #+BEGIN_SRC emacs-lisp  
-  (use-package org-ac
-    :ensure t
-    :init
-    (require 'org-ac)
-    (org-ac/config-default)
-    (setq org-ac/ac-trigger-command-keys (quote ("\\" ":" "[" "+"))) ;keys that trigger autocomplete
-    ;bing the usual scrolling keys
-    (define-key ac-completing-map (kbd "C-n") (function ac-next))
-    (define-key ac-completing-map (kbd "C-p") (function ac-previous))
-    (define-key ac-completing-map (kbd "C-v") (function ac-quick-help-scroll-down))
-    (define-key ac-completing-map (kbd "M-v") (function ac-quick-help-scroll-up)))
+  ;; (use-package org-ac
+  ;;   :ensure t
+  ;;   :init
+  ;;   (require 'org-ac)
+  ;;   (org-ac/config-default)
+  ;;   (setq org-ac/ac-trigger-command-keys (quote ("\\" ":" "[" "+"))) ;keys that trigger autocomplete
+  ;;   ;bing the usual scrolling keys
+  ;;   (define-key ac-completing-map (kbd "C-n") (function ac-next))
+  ;;   (define-key ac-completing-map (kbd "C-p") (function ac-previous))
+  ;;   (define-key ac-completing-map (kbd "C-v") (function ac-quick-help-scroll-down))
+  ;;   (define-key ac-completing-map (kbd "M-v") (function ac-quick-help-scroll-up)))
 
  #+END_SRC
 ** todo lists
@@ -2339,11 +2339,12 @@ the nice bullets instead of multiplication symbols
   (global-set-key (kbd "C-c C-l") 'org-insert-link)
  #+END_SRC
 * Inkscape
+- =aspell= must be installed
 - to edit interactively, open =.svg= file → save as → =.pdf= → =omit text= → use exported object size
 - call function with "base-directory argument supplied"
 
 #+BEGIN_SRC emacs-lisp 
-  (setq inkscape-generate-location "~/creamy_seas/sync_files/emacs_config/ilya_scripts/inkscape/inkscape_generate.sh")
+  (setq inkscape-generate-location "~/creamy_seas/sync_files/emacs_config/ilya_scripts/inkscape/inkscape_emacs_generate.sh")
 
   (defun inkscape-generate (base-directory)
     "Reads the current line and launches an inkscape document under this name. Base directory must end in /"
@@ -2357,16 +2358,17 @@ the nice bullets instead of multiplication symbols
           (inkscape-dir (concat base-directory "images_inkscape"))
           ;; c - generate full path name
           (file-name-full (concat inkscape-dir "/" file-name)))
-    
+
       ;; 1 - create directory in root folder
       (ignore-errors (make-directory inkscape-dir))
-    
+
       ;; 2 - open inkscape with the file-name
       (shell-command (concat inkscape-generate-location " \"" file-name-full "\""))
-    
+
       ;; 3 - prepare for snippet
-      (setq temp-file-name-for-snippet file-name)
       (delete-region (line-beginning-position) (line-end-position))
+      (shell-command (concat "inkscape_export.sh images_inkscape/" file-name ".svg"))
+      (insert (concat "[[file:images_inkscape/" file-name ".png][" file-name "]]"))
       ))
 
   (defun inkscape-load-part1 (base-directory)
@@ -2392,7 +2394,10 @@ the nice bullets instead of multiplication symbols
     (setq default-directory old-default-directory)
 
     ;; 3 - open the file for editing
-    (shell-command (concat inkscape-generate-location " " file-name-full)))
+    (shell-command (concat inkscape-generate-location " " file-name-full))
+    (setq file-name-full (replace-regexp-in-string "^.*/" "" file-name-full))
+
+    (shell-command (concat "inkscape_export.sh images_inkscape/" file-name-full ".svg")))
 
   (defun inkscape-load (base-directory)
     "Loads up a user chosen inkscape file"
@@ -2697,54 +2702,56 @@ remap navigation only if company mode is loaded cancel some keys, and activate o
 ibuffer will mean that new buffer is opened in the window that the command was called from
 *** config
 #+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-x b") 'ibuffer)
-  (setq ibuffer-saved-filter-groups
-        (quote (("default"
-                 ("⍫ Magit" (or
-                             (name . "^.*gitignore$")
-                             (name . "^magit.*$")))
-                 ("ᛔ Jupyter" (or
-                               (mode . "ein:notebooklist-mode")
-                               (name . "\\*ein:.*")
-                               ))
-                 ("ᛥ Dired" (mode . dired-mode))
-                 ("ᚧ Python" (or
-                              (mode . python-mode)
-                              (mode . inferior-python-mode)
-                              (name . "^\\*Python Doc\\*$")
-                              (name . "^matplotlibrc$")
-                              (name . "^.*mplstyle$")
-                              (name . "^\\*Flycheck error messages\\*$")))
-                 ("ᛋᛋ Latex" (or
-                              (name . "^.*tex$")
-                              (name . "^.*bib$")
-                              (name . "^.*log$")
-                              (name . "\\*RefTeX Select\\*")
-                              (name . "^\\*toc\\*$")
-                              (mode . comint-mode)))
-                 ("ᚸ Org" (name . "\\.org"))
-                 ("⚓ Shell" (name . "\\.sh"))
-                 ("෴ PDF" (name . "\\.pdf"))
-                 ("卍 Config" (name . "^\\..*$"))
-                 ("ᛓ Elfeed" (or
-                              (name . "\\*elfeed.*\\*")
-                              (name . "^ef.*$")))
-                 ))))
-  (add-hook 'ibuffer-mode-hook
-            (lambda ()
-              (ibuffer-auto-mode 1)
-              (ibuffer-switch-to-saved-filter-groups "default")))
+    (global-set-key (kbd "C-x b") 'ibuffer)
+    (setq ibuffer-saved-filter-groups
+          (quote (("default"
+                   ("⍫ Magit" (or
+                               (name . "^.*gitignore$")
+                               (name . "^magit.*$")))
+                   ("⚙ Rust" (or
+                               (mode . rust-mode)))
+                   ("ᛔ Jupyter" (or
+                                 (mode . "ein:notebooklist-mode")
+                                 (name . "\\*ein:.*")
+                                 ))
+                   ("ᛥ Dired" (mode . dired-mode))
+                   ("ᚧ Python" (or
+                                (mode . python-mode)
+                                (mode . inferior-python-mode)
+                                (name . "^\\*Python Doc\\*$")
+                                (name . "^matplotlibrc$")
+                                (name . "^.*mplstyle$")
+                                (name . "^\\*Flycheck error messages\\*$")))
+                   ("ᛋᛋ Latex" (or
+                                (name . "^.*tex$")
+                                (name . "^.*bib$")
+                                (name . "^.*log$")
+                                (name . "\\*RefTeX Select\\*")
+                                (name . "^\\*toc\\*$")
+                                (mode . comint-mode)))
+                   ("ᚸ Org" (name . "\\.org"))
+                   ("⚓ Shell" (name . "\\.sh"))
+                   ("෴ PDF" (name . "\\.pdf"))
+                   ("卍 Config" (name . "^\\..*$"))
+                   ("ᛓ Elfeed" (or
+                                (name . "\\*elfeed.*\\*")
+                                (name . "^ef.*$")))
+                   ))))
+    (add-hook 'ibuffer-mode-hook
+              (lambda ()
+                (ibuffer-auto-mode 1)
+                (ibuffer-switch-to-saved-filter-groups "default")))
 
-  ;; (" Emacs" (or
-  ;;               (name . "^\\*scratch\\*$")
-  ;;               (name . "^\\*Messages\\*$")
-  ;;               (name . "^\\*Backtrace\\*$")))
-  ;; ("卍 Horter" (or
-  ;;               (name . "^\\*dashboard\\*$")
-  ;;               (mode . emacs-lisp-mode)))
-  ;;(add-to-list `ibuffer-never-show-predicates "*Completions*")
-  ;;  (add-to-list `ibuffer-never-show-predicates "*Help*")
-  ;; (add-to-list `ibuffer-never-show-predicates "*elfeed-log*")
+    ;; (" Emacs" (or
+    ;;               (name . "^\\*scratch\\*$")
+    ;;               (name . "^\\*Messages\\*$")
+    ;;               (name . "^\\*Backtrace\\*$")))
+    ;; ("卍 Horter" (or
+    ;;               (name . "^\\*dashboard\\*$")
+    ;;               (mode . emacs-lisp-mode)))
+    ;;(add-to-list `ibuffer-never-show-predicates "*Completions*")
+    ;;  (add-to-list `ibuffer-never-show-predicates "*Help*")
+    ;; (add-to-list `ibuffer-never-show-predicates "*elfeed-log*")
 #+END_SRC
 *** column lengths
 #+BEGIN_SRC emacs-lisp
@@ -3255,7 +3262,7 @@ spawns a tree of all the undos that you have ever made
   (global-set-key (kbd "<C-m>")  'rename-file-and-buffer)
  #+END_SRC:
 * mu4e
-- for google, you need to allow
+- for google, you need to allow less secure apps in =https://myaccount.google.com/u/4/security=
 - bound with [[global_bindings]]
 - =C-c C-a= for attachments
 ** External Setup
