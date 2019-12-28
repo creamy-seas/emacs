@@ -1,7 +1,6 @@
 #+TITLE: Emacs configuration file
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
-
 C-c \ in latex
 =M-x package-refresh-contents= if not installing
 * External installs
@@ -374,7 +373,7 @@ automatically fix syntax errors upon saving
        PYTHON ENVIRONMENT SELECTION
   ^^^^^------------------------------------------------------------------------------------------
   _p_: phd-vi                _r_: restart
-  _n_: neural-network-vi
+  _n_: neural-network-vi     _d_: devel_vi
   _o_: pro_vi
   _s_: scraping_vi
   ^^
@@ -384,6 +383,7 @@ automatically fix syntax errors upon saving
     ("o"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/pro_vi"))
     ("n"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/nn_vi"))
     ("s"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/scraping_vi"))
+    ("d"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/devel_vi"))
     ("r"   pyvenv-restart-python)
     ("q"   nil "cancel" :color blue))
 
@@ -1575,7 +1575,7 @@ beautiful file browsing
     (setq ein:completion-backend 'ein:use-company-backend)
     (custom-set-variables
      '(ein:jupyter-default-notebook-directory
-       "~/gdrive")))
+       "~/mydrive")))
 
   (defun ilya-no-relative-numbering ()
     "turn off relative numbering"
@@ -1922,11 +1922,11 @@ beautiful file browsing
 *** agenda file location
 #+BEGIN_SRC emacs-lisp 
   (setq org-agenda-files (list "~/creamy_seas/antlers.org"
-                               "~/gdrive/east-data-company.org"
-                               "~/gdrive/people.org"
-                               "~/gdrive/adv18_sa36_automation/adventure_brief.org"
-                               "~/gdrive/adv17_ext_horseBetting/adventure_brief.org"
-                               "~/gdrive/adv16_sa_onFire/adventure_brief.org"))
+                               "~/mydrive/east-data-company.org"
+                               "~/mydrive/people.org"
+                               "~/mydrive/adv18_sa36_automation/adventure_brief.org"
+                               "~/mydrive/adv17_ext_horseBetting/adventure_brief.org"
+                               "~/mydrive/adv16_sa_onFire/adventure_brief.org"))
  #+END_SRC
 *** agenda layout prompt
 #+BEGIN_SRC emacs-lisp 
@@ -1949,7 +1949,7 @@ beautiful file browsing
           ;; tasks for neural network future
           ("e" "East-India Data Company")
           ("e2" "2am goals" entry (id "bryan-plan")
-           "** DREAMS-AI %^{Project}: %^{stuff-to-be-done}\nDEADLINE: %^T")
+           "** %^{TODO-STATE} %^{stuff-to-be-done}\nDEADLINE: %^T")
           ("et" "Time log" table-line (id "bryan-done")
            "| %^u | %^{Project}: %^{task-summary} | %^{hours-worked} hours | |"
            :table-line-pos "@<-1")
@@ -2258,14 +2258,19 @@ the nice bullets instead of multiplication symbols
 #+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook 'org-indent-mode)
 #+END_SRC
-** export to html
+** export
+*** export to confluence
+#+BEGIN_SRC emacs-lisp 
+  (require 'ox-confluence)
+ #+END_SRC
+*** export to html
 #+BEGIN_SRC emacs-lisp 
 (setq org-html-checkbox-type 'html)
  #+END_SRC
-*** nice template
+**** nice template
 #+INFOJS_OPT: view:t toc:t ltoc:t mouse:underline buttons:1 path:http://thomasf.github.io/solarized-css/org-info.min.js
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://thomasf.github.io/solarized-css/solarized-light.min.css" />
-** export to nice html
+*** export to nice html
 #+BEGIN_SRC emacs-lisp
   (use-package ox-twbs
     :ensure t
@@ -2297,7 +2302,7 @@ the nice bullets instead of multiplication symbols
 
 
  #+END_SRC
-** export to presentation
+*** export to presentation
 #+BEGIN_SRC emacs-lisp
   ;;(use-package ox-reveal
   ;;  :ensure t)
@@ -2368,7 +2373,7 @@ the nice bullets instead of multiplication symbols
       ;; 3 - prepare for snippet
       (delete-region (line-beginning-position) (line-end-position))
       (shell-command (concat "inkscape_export.sh images_inkscape/" file-name ".svg"))
-      (insert (concat "[[file:images_inkscape/" file-name ".png][" file-name "]]"))
+      (setq temp-file-name-for-snippet file-name)
       ))
 
   (defun inkscape-load-part1 (base-directory)
@@ -2621,14 +2626,14 @@ The problem is that the entry content only includes the tiny reddit-hosted thumb
 ** insert by name                                                 :function:
 #+BEGIN_SRC emacs-lisp 
   (defun yas/insert-by-name (name)
-    (cl-flet ((dummy-prompt
-            (prompt choices &optional display-fn)
-            (declare (ignore prompt))
-            (or (find name choices :key display-fn :test #'string=)
-                (throw 'notfound nil))))
-      (let ((yas/prompt-functions '(dummy-prompt)))
-        (catch 'notfound
-          (yas/insert-snippet t)))))
+  (flet ((dummy-prompt
+          (prompt choices &optional display-fn)
+          (declare (ignore prompt))
+          (or (find name choices :key display-fn :test #'string=)
+              (throw 'notfound nil))))
+    (let ((yas/prompt-functions '(dummy-prompt)))
+      (catch 'notfound
+        (yas/insert-snippet t)))))
  #+END_SRC
 ** auto yasnippets
 - bound in [[global_bindings]]
@@ -3590,8 +3595,12 @@ hides the minor modes that are trivial
  #+END_SRC
 ** global bindings <<global_bindings>>
 #+BEGIN_SRC emacs-lisp 
+  (defun 1488-open ()
+    (interactive)
+    (find-file "~/creamy_seas/1488.org.gpg"))
   (define-prefix-command 'ilya-map)
   (global-set-key (kbd "C-z") 'ilya-map)
+  (define-key ilya-map (kbd "4") (function 1488-open))
   (define-key ilya-map (kbd "m") (function mu4e))
   (define-key ilya-map (kbd "s") (function aya-create))
   (define-key ilya-map (kbd "y") (function aya-expand))

@@ -4,3 +4,4 @@
 # type: command
 # --
 (inkscape-generate default-directory)
+(yas/insert-by-name "ilya-inkscape-org-snippet")
