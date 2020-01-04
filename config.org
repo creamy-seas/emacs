@@ -3,6 +3,20 @@
 #+PROPERTY: header-args :tangle yes
 C-c \ in latex
 =M-x package-refresh-contents= if not installing
+
+* Russian
+#+BEGIN_SRC emacs-lisp 
+  (global-set-key (kbd "C-ч C-ы") (function save-buffer))
+  (global-set-key (kbd "C-ч C-и") (function ido-switch-buffer))
+  (global-set-key (kbd "C-т") (function next-line))
+  (global-set-key (kbd "C-а") (function forward-char))
+  (global-set-key (kbd "C-и") (function backward-char))
+  (global-set-key (kbd "M-а") (function forward-word))
+  (global-set-key (kbd "M-и") (function backward-word))
+  (global-set-key (kbd "C-ф") (function beginning-of-visual-line))
+  (global-set-key (kbd "C-у") (function end-of-visual-line))
+  (global-set-key (kbd "C-з") (function previous-line))
+ #+END_SRC
 * External installs
 |----------+-----------------------+--------|
 | =ispell= | for checking spelling | [[ispell]] |
@@ -155,6 +169,49 @@ for this to work, you *must* install ispell
   (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
   ;; (setq make-backup-files nil)
  #+END_SRC
+* Autocomplete Company
+Autocomplete shoudl only run in certain environments
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :ensure t
+    :hook (progn-mode . company-mode)
+    :config
+    (setq company-tooltip-align-annotations t)
+    (setq company-idle-delay 0.2)
+    (setq company-minimum-prefix-length 4))
+#+END_SRC
+** company colours
+#+BEGIN_SRC emacs-lisp 
+  (use-package company
+    :ensure t
+    :init
+    (custom-set-faces
+     ;; annotation (i.e. function or method)
+     `(company-tooltip-annotation ((t (:foreground "#CFD0E3"))))
+     `(company-tooltip-annotation-selection ((t (:foreground "#334676"))))
+     ;; scrollbar showing position in list
+     `(company-scrollbar-bg ((t (:background "#189a1e1224a2"))))
+     `(company-scrollbar-fg ((t (:background "#41bf505b61e3"))))
+     ;; text being expanded
+     `(company-tooltip-common ((t (:foreground "#33ccff"))))
+     `(company-tooltip-common-selection ((t (:foreground "#3a3a6e" :weight bold))))
+     ;; autocompletion selection
+     `(company-tooltip-selection ((t (:background "orange2" :foreground "#090C42" :weight bold))))
+     ;; change background of the box
+     `(company-tooltip ((t (:inherit default :background "#41bf505b61e3"))))
+     ))
+ #+END_SRC
+
+** keybinding
+remap navigation only if company mode is loaded cancel some keys, and activate others
+#+BEGIN_SRC emacs-lisp 
+  (with-eval-after-load 'company
+    (define-key company-active-map (kbd "M-n") nil)
+    (define-key company-active-map (kbd "M-p") nil)
+    (define-key company-active-map (kbd "C-n") #'company-select-next)
+    (define-key company-active-map (kbd "C-p") #'company-select-previous))
+ #+END_SRC
+
 * Brackets
 ** autoclosing parantheses
 #+BEGIN_SRC emacs-lisp
@@ -194,17 +251,20 @@ Turn on user interface (ui) and allow company autocomplete to access the ui
   (use-package lsp-mode
     :ensure t
     :commands lsp
-    :config
     (require 'lsp-clients))
 
   (use-package lsp-ui :commands lsp-ui-mode)
   (use-package company-lsp :commands company-lsp)
 #+END_SRC
 * Rust
-- [[https://github.com/racer-rust/emacs-racer][racer]] (for tooltip and documentation)
-- [[https://github.com/rust-lang/rls][rls]] (rust language server), must be also installed with =rustup= (see [[*External setup][External setup]])
-- cargo (for compling project)
-- [[https://github.com/brotzeit/rustic][rustic]] mode does compilation, checking and documentation. Can activate later on
+|--------+--------------------------------------------------------------------------|
+| rustup | installation and package managment                                       |
+| [[https://github.com/racer-rust/emacs-racer][racer]]  | for tooltip and documentation                                            |
+| [[https://github.com/rust-lang/rls][rls]]    | rust language server                                                     |
+| cargo  | for compling project                                                     |
+| [[https://github.com/brotzeit/rustic][rustic]] | mode does compilation, checking and documentation. Can activate later on |
+|--------+--------------------------------------------------------------------------|
+
 |-------------+---------------------------------+-------|
 | =C-c C-c ?= | various cargo functions         | cargo |
 |-------------+---------------------------------+-------|
@@ -214,25 +274,23 @@ Turn on user interface (ui) and allow company autocomplete to access the ui
 | =C-c C-d=   | get docs to popup               | racer |
 | =C-c d=     | get docs in buffer              | racer |
 |-------------+---------------------------------+-------|
-** External setup
-Actual rust in installed with (don't forget to add =source ~/.cargo/env= to =.profile=)
-=curl https://sh.rustup.rs -sSf | sh=
+** Installation
+*** Basic install
+=curl -f https://sh.rustup.rs > rust.sh=
 *** Package manager
 The package manager is =rustup=. For cool packages, add nightly toolkit
 =rustup toolchain add nightly=
 *** RLS server
 =rustup component add rls rust-analysis=
 *** Racer
-
-It will need documentation
-=rustup component add  rust-src=
+=rustup component add rust-src=
 
 You will need to =export PATH=~/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src= in order for the source to be specified or =$(rustc --print sysroot)/lib/rustlib/src/rust/src=
 
 Then install racer
 =cargo +nightly install racer=
 
-** Basic install
+** Basic config
 #+BEGIN_SRC emacs-lisp
   (use-package rust-mode
     :hook
@@ -1518,23 +1576,23 @@ which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)=
  #+END_SRC
 ** Actual installation
 #+BEGIN_SRC emacs-lisp 
-  ;;tie backend of company to company-irony
-  (use-package company-irony
-    :ensure t
-    :config
-    (require 'company)
-    (add-to-list 'company-backends 'company-irony))
+  ;; ;;tie backend of company to company-irony
+  ;; (use-package company-irony
+  ;;   :ensure t
+  ;;   :config
+  ;;   (require 'company)
+  ;;   (add-to-list 'company-backends 'company-irony))
 
-  ;;setup company-irony with c++ connection
-  (use-package irony
-    :ensure t
-    :config
-    (add-hook 'c++-mode-hook 'irony-mode)
-    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+  ;; ;;setup company-irony with c++ connection
+  ;; (use-package irony
+  ;;   :ensure t
+  ;;   :config
+  ;;   (add-hook 'c++-mode-hook 'irony-mode)
+  ;;   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 
-  ;;finally ensure that c++-mode-hook is activated when company mode is on
-  (with-eval-after-load 'company
-    (add-hook 'c++-mode-hook 'company-mode))
+  ;; ;;finally ensure that c++-mode-hook is activated when company mode is on
+  ;; (with-eval-after-load 'company
+  ;;   (add-hook 'c++-mode-hook 'company-mode))
  #+END_SRC
 * csv mode
 #+BEGIN_SRC emacs-lisp 
@@ -2547,32 +2605,38 @@ u: mark selected entries as unread
 ** image chaseup
 The problem is that the entry content only includes the tiny reddit-hosted thumbnail and Elfeed doesn't know to chase through the chain of links to get to the actual image that you care about. You could try assigning your own function to elfeed-show-refresh-function that treats reddit posts differently (and calling the default for everything else). You'd need to shr-insert an img element with the full size image as the src.
 * SSH mode
-** setting up trampXS
+| =C-x C-f /-::/directiontofile=                 | connect simple  |
+| =C-x C-f /sudo:134.219.128.96:directiontofile= | connect as sudo |
+when using =/sudo:134.219.128.96= we first login to the proxy via my antonov@134.219.128.96 account, and then | as sudo to the root@134.219.128.96
+** vagrant
+- to craete file =vagrant init archlinux/archlinux=
+- then =vagrant up= to run
+- =vagrant ssh= to enter
+
+** setting up tramp
 #+BEGIN_SRC emacs-lisp
   (use-package tramp
     :ensure t
     :config
     (custom-set-variables
-     '(tramp-default-method "ssh")
-     '(tramp-default-user "antonov")
-     '(tramp-default-host "192.168.0.5")))
-  ;;  (add-to-list 'tramp-default-user-alist
-  ;;               '("ssh" "192\\.168\\.0\\.5#6767" "antonov")))
-    ;;  (custom-set-variables
-    ;;  '(tramp-default-method "ssh")
-  ;;  '(tramp-default-user "antonov")
-     ;;  '(tramp-default-host "134.219.128.96")))
-  ;;   (add-to-list 'tramp-default-proxies-alist
-  ;;	       '("134\\.219\\.128\\.96" "root" ;;"/ssh:antonov@134.219.128.96:"))
-  ;;when using /sudo:134.219.128.96 we first login to the proxy via my antonov@134.219.128.96 account, and then | as sudo to the root@134.219.128.96
-  ;;([host] [username] [proxy])
+     '(tramp-default-method "vagrant")
+     '(tramp-default-user "arch")))
+     ;; '(tramp-default-host "192.168.0.5")))
+
+  (use-package vagrant
+    :ensure t)
+  (use-package vagrant-tramp
+    :ensure t)
+  (eval-after-load 'tramp
+    '(vagrant-tramp-enable))
+
+  ;; (add-to-list 'tramp-default-user-alist
+  ;; 	     '("ssh" "192\\.168\\.0\\.5#6767" "antonov"))
+  ;; (add-to-list 'tramp-default-proxies-alist
+  ;; 	       '("134\\.219\\.128\\.96" "root"))
 #+END_SRC
-** to connect type =C-x C-f /-::/directiontofile=
-** to connect as sudo =C-x C-f /sudo:134.219.128.96:directiontofile=
-   ;;(use-package auth-source
-   ;;  :ensure t
-   ;;  :config
-   ;;  (customize-set-variable 'auth-sources "~/.authinfo"))
+** to connect type 
+** to connect as sudo 
 * Shell and commands
 ** open up interactive shell
 #+BEGIN_SRC emacs-lisp
@@ -2640,49 +2704,6 @@ The problem is that the entry content only includes the tiny reddit-hosted thumb
 #+BEGIN_SRC emacs-lisp 
   (use-package auto-yasnippet
     :ensure t)
- #+END_SRC
-* Autocomplete Company
-Autocomplete shoudl only run in certain environments
-once autocomplete is triggered, =C-d= to get documentation at point
-#+BEGIN_SRC emacs-lisp
-  (use-package company
-    :ensure t
-    :hook (progn-mode . company-mode)
-    :config
-    (setq company-tooltip-align-annotations t)
-    (setq company-idle-delay 0.2)
-    (setq company-minimum-prefix-length 4))
-#+END_SRC
-** company colours
-#+BEGIN_SRC emacs-lisp 
-  (use-package company
-    :ensure t
-    :init
-    (custom-set-faces
-     ;; annotation (i.e. function or method)
-     `(company-tooltip-annotation ((t (:foreground "#CFD0E3"))))
-     `(company-tooltip-annotation-selection ((t (:foreground "#334676"))))
-     ;; scrollbar showing position in list
-     `(company-scrollbar-bg ((t (:background "#189a1e1224a2"))))
-     `(company-scrollbar-fg ((t (:background "#41bf505b61e3"))))
-     ;; text being expanded
-     `(company-tooltip-common ((t (:foreground "#33ccff"))))
-     `(company-tooltip-common-selection ((t (:foreground "#3a3a6e" :weight bold))))
-     ;; autocompletion selection
-     `(company-tooltip-selection ((t (:background "orange2" :foreground "#090C42" :weight bold))))
-     ;; change background of the box
-     `(company-tooltip ((t (:inherit default :background "#41bf505b61e3"))))
-     ))
- #+END_SRC
-
-** keybinding
-remap navigation only if company mode is loaded cancel some keys, and activate others
-#+BEGIN_SRC emacs-lisp 
-  (with-eval-after-load 'company
-    (define-key company-active-map (kbd "M-n") nil)
-    (define-key company-active-map (kbd "M-p") nil)
-    (define-key company-active-map (kbd "C-n") #'company-select-next)
-    (define-key company-active-map (kbd "C-p") #'company-select-previous))
  #+END_SRC
 * Bookmarks
 #+BEGIN_SRC emacs-lisp 
