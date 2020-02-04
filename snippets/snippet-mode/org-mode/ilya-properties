@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: org-properties
+# key: prop
+# --
+:PROPERTIES:
+:EXPORT_TITLE: ${1:title}
+:EXPORT_FILE_NAME: $1
+:END:
+
+$0

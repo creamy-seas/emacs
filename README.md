@@ -1,5 +1,11 @@
 # Boomer setup for emacs #
 
+## Installation
+```
+mv first_file.el ~/.emacs.d/init.el
+emacs
+```
+
 > [Best-Site](https://www.motherfuckingwebsite.com "Best-site")
 
 I've been creating this fully functional baby from scratch. The most useful commands are <kbd>Ctrl</kbd> and <kbd>Meta</kbd>.

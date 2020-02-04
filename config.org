@@ -76,7 +76,7 @@ add folder with some =.el= files that could not be resolved by emacs
 ** Todo highlighting
 #+BEGIN_SRC emacs-lisp 
   (require 'fic-mode)
-  (add-hook 'prog-mode-hook 'turn-on-fic-mode) 
+  (add-hook 'prog-mode-hook 'turn-on-fic-mode)
  #+END_SRC
 * Use-package
 ** Initialize package and add Melpa source
@@ -114,6 +114,13 @@ add folder with some =.el= files that could not be resolved by emacs
  #+END_SRC
 * Essential autism                                                   :darren:
 This stuff should be there by default, but >muh autism prevents this from being so
+** golden ratio
+#+BEGIN_SRC emacs-lisp 
+  (use-package golden-ratio
+    :ensure t
+    :init
+    (golden-ratio-mode 1))
+ #+END_SRC
 ** adding new line to end of file when saving
 #+BEGIN_SRC emacs-lisp 
   (setq require-final-newline    t)
@@ -169,6 +176,25 @@ for this to work, you *must* install ispell
   (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
   ;; (setq make-backup-files nil)
  #+END_SRC
+* Flycheck
+** basic
+#+BEGIN_SRC emacs-lisp 
+  (use-package flycheck
+    :ensure t
+    :init
+    (add-hook 'prog-mode-hook 'flycheck-mode))
+ #+END_SRC
+** colouring
+#+BEGIN_SRC emacs-lisp 
+  (set-face-attribute 'flycheck-error nil
+                      ;; :family "Font Fira"
+                      :background "#bf0004"
+                      :foreground "gold2"
+                      :underline nil
+                      :box '(:color "gold2" :line-width 1))
+  (set-face-attribute 'flycheck-warning nil
+                      :underline "DarkOrange")
+ #+END_SRC
 * Autocomplete Company
 Autocomplete shoudl only run in certain environments
 #+BEGIN_SRC emacs-lisp
@@ -211,7 +237,6 @@ remap navigation only if company mode is loaded cancel some keys, and activate o
     (define-key company-active-map (kbd "C-n") #'company-select-next)
     (define-key company-active-map (kbd "C-p") #'company-select-previous))
  #+END_SRC
-
 * Brackets
 ** autoclosing parantheses
 #+BEGIN_SRC emacs-lisp
@@ -249,21 +274,31 @@ remap navigation only if company mode is loaded cancel some keys, and activate o
 Turn on user interface (ui) and allow company autocomplete to access the ui
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-mode
-    :ensure t
-    :commands lsp
-    (require 'lsp-clients))
+    :ensure t)
 
   (use-package lsp-ui :commands lsp-ui-mode)
   (use-package company-lsp :commands company-lsp)
 #+END_SRC
+* Docker
+#+BEGIN_SRC emacs-lisp 
+  (use-package docker
+    :ensure t
+    :bind 
+    ("C-c d" . docker))
+
+
+  (use-package docker-compose-mode
+    :ensure t)
+ #+END_SRC
 * Rust
-|--------+--------------------------------------------------------------------------|
-| rustup | installation and package managment                                       |
-| [[https://github.com/racer-rust/emacs-racer][racer]]  | for tooltip and documentation                                            |
-| [[https://github.com/rust-lang/rls][rls]]    | rust language server                                                     |
-| cargo  | for compling project                                                     |
-| [[https://github.com/brotzeit/rustic][rustic]] | mode does compilation, checking and documentation. Can activate later on |
-|--------+--------------------------------------------------------------------------|
+https://doc.rust-lang.org/nightly/edition-guide/rust-2018/rustup-for-managing-rust-versions.html see here for installations
+|--------+---------------------------------------------------------------------|
+| rustup | installation and package managment                                  |
+| [[https://github.com/racer-rust/emacs-racer][racer]]  | for tooltip and documentation                                       |
+| [[https://github.com/rust-lang/rls][rls]]    | rust language server                                                |
+| cargo  | for compling project                                                |
+| [[https://github.com/brotzeit/rustic][rustc]]  | does compilation, checking and documentation. Can activate later on |
+|--------+---------------------------------------------------------------------|
 
 |-------------+---------------------------------+-------|
 | =C-c C-c ?= | various cargo functions         | cargo |
@@ -281,21 +316,19 @@ Turn on user interface (ui) and allow company autocomplete to access the ui
 The package manager is =rustup=. For cool packages, add nightly toolkit
 =rustup toolchain add nightly=
 *** RLS server
-=rustup component add rls rust-analysis=
+=rustup component add rls rust-analysis= for language server
 *** Racer
-=rustup component add rust-src=
+=cargo install racer=
+=rustup component add rust-src= for the source code
 
 You will need to =export PATH=~/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src= in order for the source to be specified or =$(rustc --print sysroot)/lib/rustlib/src/rust/src=
-
-Then install racer
-=cargo +nightly install racer=
 
 ** Basic config
 #+BEGIN_SRC emacs-lisp
   (use-package rust-mode
-    :hook
-    (rust-mode . lsp)
-    (rust-mode . company-mode)
+    ;; :hook
+    ;; (rust-mode . lsp)
+    ;; (rust-mode . company-mode)
     :config
     (add-hook 'rust-mode-hook
             (lambda () (setq indent-tabs-mode nil))))
@@ -305,16 +338,16 @@ Then install racer
     :diminish cargo-minor-mode
     :hook (rust-mode . cargo-minor-mode))
 
-  (use-package flycheck-rust
-    :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+  ;; (use-package flycheck-rust
+    ;; :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
-  (setq racer-rust-src-path "~/.rustup/toolchains/nightly-x86_64-apple-darwin/lib/rustlib/src/rust/src")
-  (use-package racer
-    :ensure t
-    :config
-    (add-hook 'rust-mode-hook #'racer-mode)
-    (add-hook 'racer-mode-hook #'eldoc-mode)	;show in minibuffer fuction you are currently writing
-    (add-hook 'racer-mode-hook #'company-mode))
+  ;; (setq racer-rust-src-path "/Users/CCCP/Vagrant_VMs/rust-source-code")
+  ;; (use-package racer
+    ;; :ensure t
+    ;; :config
+    ;; (add-hook 'rust-mode-hook #'racer-mode)
+    ;; (add-hook 'racer-mode-hook #'eldoc-mode)	;show in minibuffer fuction you are currently writing
+    ;; (add-hook 'racer-mode-hook #'company-mode))
 
   ;; (use-package rustic
     ;; :ensure t)
@@ -325,9 +358,9 @@ Then install racer
  #+END_SRC
 ** keybindings
 #+BEGIN_SRC emacs-lisp 
-  (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
-  (define-key rust-mode-map (kbd "C-c C-d") (function racer-describe-tooltip))
-  (define-key rust-mode-map (kbd "C-c d") (function racer-describe))
+  ;; (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
+  ;; (define-key rust-mode-map (kbd "C-c C-d") (function racer-describe-tooltip))
+  ;; (define-key rust-mode-map (kbd "C-c d") (function racer-describe))
  #+END_SRC
 * Python mode
 ** external setup 
@@ -383,7 +416,7 @@ make virtual end with =mkvirtualenv NAME=
     (elpy-enable)
     (setq elpy-shell-use-project-root nil)
     (setq python-shell-completion-native-enable nil) ;remove a warming about native completion
-    )
+    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)))
  #+END_SRC
 *** =autopep8= support
 automatically fix syntax errors upon saving
@@ -462,10 +495,6 @@ automatically fix syntax errors upon saving
 				(define-key elpy-mode-map (kbd "C-c C-r") (function elpy-rpc-restart))
 				(define-key elpy-mode-map (kbd "C-c C-;") (function comment-line))))
  #+END_SRC
-* Docker
-#+BEGIN_SRC emacs-lisp 
-  
- #+END_SRC
 * ag silversearcher
 #+BEGIN_SRC emacs-lisp 
   (use-package ag
@@ -486,7 +515,7 @@ automatically fix syntax errors upon saving
 #+BEGIN_SRC emacs-lisp 
   (use-package emojify
     :ensure t)
-  (global-emojify-mode)
+  ;; (global-emojify-mode)
  #+END_SRC
 
 * ggtags
@@ -864,7 +893,7 @@ smart mode line allows infinite customization
 ** colouring
 #+BEGIN_SRC emacs-lisp 
   (custom-set-faces
-   '(default ((t (:family "Inconsolata" :height 170))))
+   '(default ((t (:family "JetBrains Mono" :height 170))))
    ;; '(default ((t (:family "Inconsolata" :height 170 :background "#2d3743"))))
    ;; `(popup-scroll-bar-background-face ((t (:background "#189a1e1224a2"))))
    ;; `(popup-scroll-bar-foreground-face ((t (:background "#41bf505b61e3"))))
@@ -920,7 +949,40 @@ any changes of a file, will be automatically reloaded
 
 ** greek letters
 #+BEGIN_SRC emacs-lisp
-  (when window-system (global-prettify-symbols-mode t))
+  ;; (use-package pretty-mode
+  ;;   :ensure t
+  ;;   :init
+  ;;   (global-pretty-mode t)
+  ;;   (pretty-activate-groups
+  ;;    '(:sub-and-superscripts :greek :arithmetic-nary)))
+
+
+  (when window-system
+    (global-prettify-symbols-mode t)
+    (add-hook
+     'python-mode-hook
+     (lambda ()
+       (mapc (lambda (pair) (push pair prettify-symbols-alist))
+             '(;; Syntax
+               ("def" .      #x2131)
+               ("in" .       #x2208)
+               ("not in" .   #x2209)
+               ("return" .   #x27fc)
+               ("yield" .    #x27fb)
+               ("for" .      #x2200)
+               ;; Base Types
+               ("int" .      #x2124)
+               ("float" .    #x211d)
+               ("str" .      #x1d54a)
+               ("True" .     #x1d54b)
+               ("False" .    #x1d53d)
+               ;; Mypy
+               ("Dict" .     #x1d507)
+               ("List" .     #x2112)
+               ("Tuple" .    #x2a02)
+               ("Set" .      #x2126)
+               ("Iterable" . #x1d50a)
+               ("Union" .    #x22c3))))))
 #+END_SRC
 ** narrow and widen region
 #+BEGIN_SRC emacs-lisp 
@@ -1890,28 +1952,6 @@ beautiful file browsing
     (define-key ein:notebook-mode-map (kbd "C-c C-;") (function comment-line))
     (define-key ein:notebook-mode-map (kbd "C-c TAB") (function ein:completer-complete)))
  #+END_SRC
-* Flycheck (must be after [[Elpy]])
-- deactivate flymake and use flycheck - syntax is checked ont the fly
-- uses jedi for python
-#+BEGIN_SRC emacs-lisp 
-  (use-package flycheck
-    :ensure t
-    :init
-    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-    (add-hook 'elpy-mode-hook 'flycheck-mode)
-    (add-hook 'c++-mode-hook 'flycheck-mode))
- #+END_SRC
-** colouring
-#+BEGIN_SRC emacs-lisp 
-  (set-face-attribute 'flycheck-error nil
-                      ;; :family "Font Fira"
-                      :background "#bf0004"
-                      :foreground "gold2"
-                      :underline nil
-                      :box '(:color "gold2" :line-width 1))
-  (set-face-attribute 'flycheck-warning nil
-                      :underline "DarkOrange")
- #+END_SRC
 * Markdown mode
 #+BEGIN_SRC emacs-lisp 
   (use-package markdown-mode
@@ -1970,7 +2010,6 @@ beautiful file browsing
   (global-set-key (kbd "M-g M-g") (function hydra-git-gutter/body))
  #+END_SRC
 * Org mode                                                           :darren:
-- (turn-on-cdlatex) to enable latex completions
 ** agenda files
 *** keybinding
 #+BEGIN_SRC emacs-lisp 
@@ -1995,57 +2034,74 @@ beautiful file browsing
 *** org-capture-templates
 #+BEGIN_SRC emacs-lisp 
   (setq org-capture-templates
-        '(
-          ;; random tasks and reminders
-          ("b" "Bloat" entry (id "antlers-bloat")
+        '(("b" "Bloat" entry (id "antlers-bloat")
            "** BLOAT %^{stuff-to-be-done}\nSHEDULED: %^T")
-          ;; copy pasta
+
           ("c" "Copy Pasta" entry (id "copy-pasta") "** %^{Pasta Title} %t\n%?")
-          ;; temporary org file on desktop
+
           ("d" "Draft" plain (file "~/Desktop/.temp.org")
            "%?")
-          ;; tasks for neural network future
+
           ("e" "East-India Data Company")
           ("e2" "2am goals" entry (id "bryan-plan")
            "** %^{TODO-STATE} %^{stuff-to-be-done}\nDEADLINE: %^T")
           ("et" "Time log" table-line (id "bryan-done")
            "| %^u | %^{Project}: %^{task-summary} | %^{hours-worked} hours | |"
            :table-line-pos "@<-1")
-          ;; lukes quotes
-          ("l" "Boomer Entry" item (file+headline "~/creamy_seas/1488.org.gpg" "Becoming a boomer") "%^{What did Luke say} %^G\n%?"
-           (file "~/creamy_seas/1488.org.gpg") "%?")
-          ("p" "PhD Tasks")
-          ("pp" "Photon Counting" entry (id "phd-photon")
+
+          ("l" "Boomer Entry"
+           item (
+                 file+headline "~/creamy_seas/1488.org.gpg" "Becoming a boomer"
+                               ) "%^{What did Luke say} %^G\n%?" (
+                                                                  file "~/creamy_seas/1488.org.gpg")
+                                 "%?")
+          ("p"
+           "PhD Tasks")
+          ("pp"
+           "Photon Counting"
+           entry (id "phd-photon")
            "*** PHD Photn Counting [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
-          ("pt" "Twin Qubit" entry (id "phd-twin")
+          ("pt" "Twin Qubit"
+           entry
+           (id "phd-twin")
            "*** PHD Twin Qubit [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
-          ("px" "xMon" entry (id "phd-xmon")
+          ("px"
+           "xMon"
+           entry (id "phd-xmon")
            "*** PHD xMon [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
-          ("pg" "General" entry (id "phd-general")
+          ("pg"
+           "General"
+           entry (id "phd-general")
            "*** PHD General [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
-          ;; save a really good url
-          ("u" "Save URL" entry (file+headline "~/creamy_seas/1488.org.gpg" "URL too good to throw away")
+
+          ("u"
+           "Save URL"
+           entry
+           (file+headline "~/creamy_seas/1488.org.gpg" "URL too good to throw away")
            "** %^L %? %^G"
            :kill-buffer t)
-          ;; random stories to save
-          ("s" "Stories" entry (id "stories") "** %^{Title} %t\n%?")
+
+          ("s" "Stories"
+           entry
+           (id "stories")
+           "** %^{Title} %t\n%?")))
           ;; tutoring
-          ("t" "Tutoring lessons")
-          ("tw" "Nikhil Lesson (Winchester)" table-line (id "tutoring-nikhil-invoice")
-           "| # | %^u | %^{lesson summary} | 120%? | |"
-           :table-line-pos "III-1")
-          ("tn" "Nathan Lesson" table-line (id "tutoring-nathan-invoice")
-           "| # | %^u | %^{lesson summary} | 45%? | |"
-           :table-line-pos "III-1")
-          ("td" "Darrens Programming" table-line (id "tutoring-darren-invoice")
-           "| # | %^u | %^{lesson summary} | 50%? | |"
-           :table-line-pos "III-1")
-          ("f" "Future Lesson")
-          ("fw" "Nikhil Lesson (Winchester)" entry (id "tutoring-nikhil-lesson")
-           "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
-          ("fn" "Nathan Lesson" entry (id "tutoring-nathan-lesson")
-           "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
-          ))
+          ;; ("t" "Tutoring lessons")
+          ;; ("tw" "Nikhil Lesson (Winchester)" table-line (id "tutoring-nikhil-invoice")
+          ;;  "| # | %^u | %^{lesson summary} | 120%? | |"
+          ;;  :table-line-pos "III-1")
+          ;; ("tn" "Nathan Lesson" table-line (id "tutoring-nathan-invoice")
+          ;;  "| # | %^u | %^{lesson summary} | 45%? | |"
+          ;;  :table-line-pos "III-1")
+          ;; ("td" "Darrens Programming" table-line (id "tutoring-darren-invoice")
+          ;;  "| # | %^u | %^{lesson summary} | 50%? | |"
+          ;;  :table-line-pos "III-1")
+          ;; ("f" "Future Lesson")
+          ;; ("fw" "Nikhil Lesson (Winchester)" entry (id "tutoring-nikhil-lesson")
+          ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
+          ;; ("fn" "Nathan Lesson" entry (id "tutoring-nathan-lesson")
+          ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
+          ;; ))
  #+END_SRC
 *** org capture frame
 capture frame can be called from any application - just map it
@@ -2096,24 +2152,39 @@ capture frame can be called from any application - just map it
  #+END_SRC
 ** todo lists
 #+BEGIN_SRC emacs-lisp 
-  (setq org-todo-keywords '((sequence "TODO(t)" "BLOAT(B)" "BRYAN(z)" "PHD(p)" "DREAMS-AI(a)" "HORSE(h)" "SA36(3)" "WORKFORCE(w)" "SCHOOLS(b)" "TUTORING(l)" "CURRENT(c)" "SKYPE(s)" "|" "DOMINATED(d)")))
+  (setq org-todo-keywords '((sequence "TODO(t)"
+                                      "BLOAT(B)"
+                                      "BRYAN(z)"
+                                      "PHD(p)"
+                                      "DREAMS-AI(a)"
+                                      "HORSE(h)"
+                                      "SA36(3)"
+                                      "WORKFORCE(w)"
+                                      "SCHOOLS(b)"
+                                      "TUTORING(l)"
+                                      "CURRENT(c)"
+                                      "SKYPE(s)"
+                                      "SINO"
+                                      "|"
+                                      "DOMINATED(d)")))
 
-  (setq org-todo-keyword-faces (quote (
-                                       ("STARTED" . "yellow")
-                                       ("CURRENT" . (:foreground "#ffff0a" :background "#754ec1" :weight bold))
-                                       ("DREAMS-AI" . (:foreground "#68c3c1" :background "#fdc989" :weight bold))
-                                       ("SA36" . (:background "#01168a" :foreground "#fdc989" :weight bold))
-                                       ("SKYPE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
-                                       ("HORSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
-                                       ("WORKFORCE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
-                                       ("PHD" . (:foreground "yellow" :background "#FF3333"))
-                                       ("SCHOOLS" . (:foreground "#090C42" :background "#9DFE9D"))
-                                       ("Dominated" . (:foreground "#9DFE9D" :weight bold))
-                                       ("BLOAT" . (:foreground "#000001" :background "#ffffff"))
-                                       ("TUTORING" . (:foreground "#090C42" :background "#FFD700": weight bold))
-                                       ("BRYAN" . (:foreground "#090C42" :background "#33ccff" :weight bold)))))
+    (setq org-todo-keyword-faces (quote (
+                                         ("STARTED" . "yellow")
+                                         ("CURRENT" . (:foreground "#ffff0a" :background "#754ec1" :weight bold))
+                                         ("DREAMS-AI" . (:foreground "#68c3c1" :background "#fdc989" :weight bold))
+                                         ("SA36" . (:background "#01168a" :foreground "#fdc989" :weight bold))
+                                         ("SKYPE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
+                                         ("SINO" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
+                                         ("HORSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
+                                         ("WORKFORCE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
+                                         ("PHD" . (:foreground "yellow" :background "#FF3333"))
+                                         ("SCHOOLS" . (:foreground "#090C42" :background "#9DFE9D"))
+                                         ("Dominated" . (:foreground "#9DFE9D" :weight bold))
+                                         ("BLOAT" . (:foreground "#000001" :background "#ffffff"))
+                                         ("TUTORING" . (:foreground "#090C42" :background "#FFD700": weight bold))
+                                         ("BRYAN" . (:foreground "#090C42" :background "#33ccff" :weight bold)))))
 
-  (setq org-agenda-span 10)
+    (setq org-agenda-span 10)
  #+END_SRC
 ** insert link                                                    :function:
 #+BEGIN_SRC emacs-lisp 
@@ -2619,8 +2690,8 @@ when using =/sudo:134.219.128.96= we first login to the proxy via my antonov@134
     :ensure t
     :config
     (custom-set-variables
-     '(tramp-default-method "vagrant")
-     '(tramp-default-user "arch")))
+     '(tramp-default-method "vagrant")))
+     ;; '(tramp-default-user "arch")))
      ;; '(tramp-default-host "192.168.0.5")))
 
   (use-package vagrant
@@ -2728,56 +2799,59 @@ when using =/sudo:134.219.128.96= we first login to the proxy via my antonov@134
 ibuffer will mean that new buffer is opened in the window that the command was called from
 *** config
 #+BEGIN_SRC emacs-lisp
-    (global-set-key (kbd "C-x b") 'ibuffer)
-    (setq ibuffer-saved-filter-groups
-          (quote (("default"
-                   ("⍫ Magit" (or
-                               (name . "^.*gitignore$")
-                               (name . "^magit.*$")))
-                   ("⚙ Rust" (or
-                               (mode . rust-mode)))
-                   ("ᛔ Jupyter" (or
-                                 (mode . "ein:notebooklist-mode")
-                                 (name . "\\*ein:.*")
-                                 ))
-                   ("ᛥ Dired" (mode . dired-mode))
-                   ("ᚧ Python" (or
-                                (mode . python-mode)
-                                (mode . inferior-python-mode)
-                                (name . "^\\*Python Doc\\*$")
-                                (name . "^matplotlibrc$")
-                                (name . "^.*mplstyle$")
-                                (name . "^\\*Flycheck error messages\\*$")))
-                   ("ᛋᛋ Latex" (or
-                                (name . "^.*tex$")
-                                (name . "^.*bib$")
-                                (name . "^.*log$")
-                                (name . "\\*RefTeX Select\\*")
-                                (name . "^\\*toc\\*$")
-                                (mode . comint-mode)))
-                   ("ᚸ Org" (name . "\\.org"))
-                   ("⚓ Shell" (name . "\\.sh"))
-                   ("෴ PDF" (name . "\\.pdf"))
-                   ("卍 Config" (name . "^\\..*$"))
-                   ("ᛓ Elfeed" (or
-                                (name . "\\*elfeed.*\\*")
-                                (name . "^ef.*$")))
-                   ))))
-    (add-hook 'ibuffer-mode-hook
-              (lambda ()
-                (ibuffer-auto-mode 1)
-                (ibuffer-switch-to-saved-filter-groups "default")))
+  (global-set-key (kbd "C-x b") 'ibuffer)
+  (setq ibuffer-saved-filter-groups
+        (quote (("default"
+                 (" Magit" (or
+                             (name . "^.*gitignore$")
+                             (name . "^magit.*$")))
+                 (" Rust" (or
+                             (mode . rust-mode)))
+                 (" Jupyter" (or
+                               (mode . "ein:notebooklist-mode")
+                               (name . "\\*ein:.*")
+                               ))
+                 ("ᛥ Dired" (mode . dired-mode))
+                 (" Python" (or
+                              (mode . python-mode)
+                              (mode . inferior-python-mode)
+                              (name . "^\\*Python Doc\\*$")
+                              (name . "^matplotlibrc$")
+                              (name . "^.*mplstyle$")
+                              (name . "^\\*Flycheck error messages\\*$")))
+                 (" Latex" (or
+                              (name . "^.*tex$")
+                              (name . "^.*bib$")
+                              (name . "^.*log$")
+                              (name . "\\*RefTeX Select\\*")
+                              (name . "^\\*toc\\*$")
+                              (mode . comint-mode)))
+                 (" Docker" (name . ".*[Dd]ock.*"))
+                 (" Org" (name . "\\.org"))
+                 (" eLisp" (name . "\\.el"))
+                 (" Shell" (name . "\\.sh"))
+                 (" PDF" (name . "\\.pdf"))
+                 ("卍 Config" (name . "^\\..*$"))
+                 (" Elfeed" (or
+                              (name . "\\*elfeed.*\\*")
+                              (name . "^ef.*$")))))))
+  (add-hook 'ibuffer-mode-hook
+            (lambda ()
+              (ibuffer-auto-mode 1)
+              (ibuffer-switch-to-saved-filter-groups "default")
+              (add-to-list `ibuffer-never-show-predicates "*Completions*")
+              (add-to-list `ibuffer-never-show-predicates "*Help*")))
 
-    ;; (" Emacs" (or
-    ;;               (name . "^\\*scratch\\*$")
-    ;;               (name . "^\\*Messages\\*$")
-    ;;               (name . "^\\*Backtrace\\*$")))
-    ;; ("卍 Horter" (or
-    ;;               (name . "^\\*dashboard\\*$")
-    ;;               (mode . emacs-lisp-mode)))
-    ;;(add-to-list `ibuffer-never-show-predicates "*Completions*")
-    ;;  (add-to-list `ibuffer-never-show-predicates "*Help*")
-    ;; (add-to-list `ibuffer-never-show-predicates "*elfeed-log*")
+  ;; (" Emacs" (or
+  ;;               (name . "^\\*scratch\\*$")
+  ;;               (name . "^\\*Messages\\*$")
+  ;;               (name . "^\\*Backtrace\\*$")))
+  ;; ("卍 Horter" (or
+  ;;               (name . "^\\*dashboard\\*$")
+  ;;               (mode . emacs-lisp-mode)))
+  ;;(add-to-list `ibuffer-never-show-predicates "*Completions*")
+  ;;  (add-to-list `ibuffer-never-show-predicates "*Help*")
+  ;; (add-to-list `ibuffer-never-show-predicates "*elfeed-log*")
 #+END_SRC
 *** column lengths
 #+BEGIN_SRC emacs-lisp
@@ -3087,12 +3161,20 @@ when the there are more than two windows =C-x o= will give each window a letter 
     (setq switch-window-input-style 'minibuffer)
     (setq switch-window-increase 8)
     (setq switch-window-threshold 2)
-    (setq switch-window-shortcut-style 'qwerty) 
+    (setq switch-window-shortcut-style 'qwerty)
+    (setq switch-window-multiple-frames t)
     (setq switch-window-qwerty-shortcuts
           '("a" "s" "d" "f" "g" "h" "j"))
     :bind
     ([remap other-window] . switch-window))
-  ;;(global-set-key (kbd "C-M-z") 'switch-window)
+
+  (global-set-key (kbd "s-o") 'switch-window)
+
+  (add-hook 'switch-window-finish-hook (function golden-ratio))
+
+
+  (defadvice golden-ration-after-switch-window (after switch-window activate)
+    (golden-ratio))
 #+END_SRC
 ** move cursor to newly generated window
 becuase initially emacs keeps it in the original window
@@ -3642,13 +3724,13 @@ hides the minor modes that are trivial
   (define-key key-translation-map (kbd "C-x 8 _") (kbd "̲"))
   (define-key key-translation-map (kbd "C-x 8 q") (kbd "\""))
   (global-set-key (kbd "C-c C-;") (function comment-line))
-  (global-set-key (kbd "C-x m")  'rename-file-and-buffer)
+  (global-set-key (kbd "C-x m") (function rename-file-and-buffer))
   (global-unset-key (kbd "C-c q"))
+  (global-unset-key (kbd "s-p"))
   (global-unset-key (kbd "C-x #"))
   (global-unset-key (kbd "C-o"))
   (global-unset-key (kbd "ESC ESC ESC"))
   (global-set-key (kbd "C-x C-i") (function server-edit))
-
  #+END_SRC
 ** function calls
 #+BEGIN_SRC emacs-lisp 

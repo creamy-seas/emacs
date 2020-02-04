@@ -7,6 +7,6 @@
 ;; tangle it
 (org-babel-tangle)
 ;; load it
-(load-file "~/creamy_seas/sync_files/emacs_config/config.el"))
+(load-file "~/creamy_seas/sync_files/emacs_config/config.el")
 ;; finally byte-compile it
 (byte-compile-file "~/creamy_seas/sync_files/emacs_config/config.elc")

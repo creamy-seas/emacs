@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: info
+# key: in
+# --
+info!(target: super::TARGET, "$1"${2:,}$0);
