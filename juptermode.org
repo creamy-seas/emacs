@@ -1,0 +1,288 @@
+#+TITLE: Jupyter Config
+#+STARTUP: overview
+#+PROPERTY: header-args :tangle yes
+
+
+| =C-c C-a/b= | create cell above/below           |
+| =C-c C-c=   | evalute cell                      |
+| =C-c C-e=   | hide evaluation                   |
+| =C-c C-h=   | get python documentation at point |
+| =C-c C-TAB= | autocmplete                       |
+| =C-c C-k=   | kill cell                         |
+| =C-c C-m/s= | merge or split cell               |
+| =C-c C-n/p= | next/previous cell                |
+| =C-c C-o=   | open notebook                     |
+| =C-c C-q=   | close ntebook                     |
+| =C-c C-t=   | change cell format                |
+| =C-c C-w/y= | copy/yank cell                    |
+| =C-c C-z=   | interrupt kernel                  |
+
+- *do not set* =(setq ein:use-smartrep t)= or it doesn't work
+- run command =jt= to set html variables*
+- run =jt notebook password= to set a password
+- =C-c C-h= for tooltip help
+* setup
+#+BEGIN_SRC emacs-lisp
+  (use-package ein
+    :ensure t
+    :init
+    (setq ein:completion-backend 'ein:use-company-backend)
+    (custom-set-variables
+     '(ein:jupyter-default-notebook-directory
+       "~/mydrive")))
+
+  (defun ilya-no-relative-numbering ()
+    "turn off relative numbering"
+    (linum-relative-global-mode -1))
+
+  (add-hook 'ein:notebook-mode-hook (function ilya-no-relative-numbering))
+ #+END_SRC
+* coloring
+#+BEGIN_SRC emacs-lisp
+  (custom-set-faces
+   '(ein:cell-output-area ((t (:foreground "cornsilk4" :background "#2d3743"))))
+   '(ein:cell-input-prompt ((t (:foreground "azure4" :background "#2d3743"))))
+   '(header-line ((t (:foreground "DeepPink1" :background "#2d3743"))))
+   '(ein:notification-tab-normal ((t (:inhert header-line))))
+    '(ein:notification-tab-selected ((t (:inhert header-line :weight bold :foreground "tan1"))))
+   '(ein:cell-heading-1 ((t (:inherit ein:cell-heading-3 :foreground "cornflower blue" :weight bold :height 1.2))))
+   '(ein:cell-heading-2 ((t (:inherit ein:cell-heading-3 :foreground "SteelBlue2" :weight bold :height 1.05))))
+   '(ein:cell-heading-6 ((t (:inherit variable-pitch :foreground "MediumPurple3" :weight bold)))))
+
+ #+END_SRC
+* =ilya-ein-header=
+#+BEGIN_SRC emacs-lisp
+  ;; (defun ilya_ein-header (ws cell type &optional level focus)
+  ;;   "Change the cell type of the current cell.
+  ;; Prompt will appear in the minibuffer.
+
+  ;; When used in as a Lisp function, TYPE (string) should be chose
+  ;; from \"code\", \"hy-code\", \"markdown\", \"raw\" and \"heading\".  LEVEL is
+  ;; an integer used only when the TYPE is \"heading\"."
+  ;;   (interactive
+  ;;    (let* ((ws (ein:worksheet--get-ws-or-error))
+  ;;      (cell (ein:worksheet-get-current-cell))
+  ;;      (choices (case (slot-value ws 'nbformat)
+  ;;                 (2 "cm")
+  ;;                 (3 "cmr123456")
+  ;;                 (4 "chmr123456")))
+  ;;      (key (ein:ask-choice-char
+  ;;            (format "Cell type [%s]: " choices) choices))
+  ;;      (type (case key
+  ;;              (?c "code")
+  ;;              (?h "hy-code")
+  ;;              (?m "markdown")
+  ;;              (?r "raw")
+  ;;              (t "heading")))
+  ;;      (level (when (equal type "heading")
+  ;;               (string-to-number (char-to-string key)))))
+  ;;      (list ws cell type level t)))
+
+  ;;   (let ((new (ein:cell-convert-inplace cell type)))
+  ;;     (when level
+  ;;       (ein:cell-change-level new level))
+  ;;     ))
+
+  ;; (let ((new (ein:cell-convert-inplace cell type)))
+  ;;   (when (ein:codecell-p new)
+  ;;     (setf (slot-value new 'kernel) (slot-value ws 'kernel)))
+  ;;   (when level
+  ;;     (ein:cell-change-level new level))
+  ;;   (ein:worksheet--unshift-undo-list cell)
+  ;; (when focus (ein:cell-goto new relpos)))
+
+
+  ;; (with-eval-after-load "ein-notebook"
+  ;;  (define-key ein:notebook-mode-map (kbd "C-c C-u") (function ilya_ein-header)))
+ #+END_SRC
+* TODO =ilya-login-devel=
+#+BEGIN_SRC emacs-lisp
+  ;; (defun ilya-login-east-india (callback &optional cookie-plist)
+  ;;   "based of ein:notebook-login, but with supplied part to connect to"
+  ;;   (setq url-or-port "https://project02.sinobestech.com.hk")
+  ;;   (interactive `(,(lambda (buffer url-or-port) (pop-to-buffer buffer))
+  ;;                  ,(if current-prefix-arg (ein:notebooklist-ask-user-pw-pair "Cookie name" "Cookie content"))))
+  ;;   (unless callback (setq callback (lambda (buffer url-or-port))))
+
+  ;;   (when cookie-plist
+  ;;     (let* ((parsed-url (url-generic-parse-url (file-name-as-directory url-or-port)))
+  ;;            (domain (url-host parsed-url))
+  ;;            (securep (string-match "^wss://" url-or-port)))
+  ;;       (loop for (name content) on cookie-plist by (function cddr)
+  ;;             for line = (mapconcat #'identity (list domain "FALSE" (car (url-path-and-query parsed-url)) (if securep "TRUE" "FALSE") "0" (symbol-name name) (concat content "\n")) "\t")
+  ;;             do (write-region line nil (request--curl-cookie-jar) 'append))))
+
+
+  ;;   (let ((token (ein:notebooklist-token-or-password url-or-port)))
+  ;;     (cond ((null token) ;; don't know
+  ;;            (ein:notebooklist-login--iteration url-or-port callback nil nil -1 nil))
+  ;;           ((string= token "") ;; all authentication disabled
+  ;;            (ein:log 'verbose "Skipping login %s" url-or-port)
+  ;;            (ein:notebooklist-open* url-or-port nil nil nil callback nil))
+  ;;            (t (ein:notebooklist-login--iteration url-or-port callback nil token 0 nil))
+  ;;            (message "null")
+  ;;           )
+  ;;     )
+  ;;   (switch-to-buffer-other-window "*ein:notebooklist https://project02.sinobestech.com.hk/user/ilya*"))
+
+  ;; (defun ilya-login-jupyter (callback &optional cookie-plist)
+  ;;   "based of ein:notebook-login, but with supplied part to connect to
+  ;; must set the variables
+  ;; ilj-url-or-port:		the url of the notebook server
+  ;; ilj-buffer-name:		of the buffer that will be created
+  ;; "
+  ;;   (setq url-or-port ilj-url-or-port)
+  ;;   (interactive `(,(lambda (buffer ilj-url-or-port) (pop-to-buffer buffer))
+  ;;                  ,(if current-prefix-arg (ein:notebooklist-ask-user-pw-pair "Cookie name" "Cookie content"))))
+  ;;   (unless callback (setq callback (lambda (buffer url-or-port))))
+
+  ;;   (when cookie-plist
+  ;;     (let* ((parsed-url (url-generic-parse-url (file-name-as-directory url-or-port)))
+  ;;            (domain (url-host parsed-url))
+  ;;            (securep (string-match "^wss://" url-or-port)))
+  ;;       (loop for (name content) on cookie-plist by (function cddr)
+  ;;             for line = (mapconcat #'identity (list domain "FALSE" (car (url-path-and-query parsed-url)) (if securep "TRUE" "FALSE") "0" (symbol-name name) (concat content "\n")) "\t")
+  ;;             do (write-region line nil (request--curl-cookie-jar) 'append))))
+
+
+  ;;   (let ((token (ein:notebooklist-token-or-password url-or-port)))
+  ;;     (cond ((null token) ;; don't know
+  ;;            (ein:notebooklist-login--iteration url-or-port callback nil nil -1 nil))
+  ;;           ((string= token "") ;; all authentication disabled
+  ;;            (ein:log 'verbose "Skipping login %s" url-or-port)
+  ;;            (ein:notebooklist-open* url-or-port nil nil nil callback nil))
+  ;;            (t (ein:notebooklist-login--iteration url-or-port callback nil token 0 nil))
+  ;;            (message "null")
+  ;;           )
+  ;;     )
+  ;;   (switch-to-buffer-other-window ilj-buffer-name))
+
+
+  ;; (setq ein:notebooklist-login-timeout 10000)
+
+  ;; (defun ilya-start-jupyter-notebook ()
+  ;;   "Opens up either a local jupyter server or connects to east-india's one"
+  ;;   (interactive)
+  ;;   (let ((choices (list "✇ local" "☉ Jupyter-DreamsAI" "₿ Mayfair")))
+  ;;     (setq temp-chosen-server (ido-completing-read "Portal to open:" choices))
+  ;;     (if (string-equal temp-chosen-server "☉ Jupyter-DreamsAI")
+  ;;         (progn
+  ;;           (setq ilj-url-or-port "jupyter.dreams-ai.com/user/ilya.antonov/lab/workspaces")
+  ;;           (setq ilj-buffer-name "*ein:notebooklist http://jupyter.dreams-ai.com/user/ilya.antonov*")
+  ;;           (call-interactively (function ilya-login-jupyter))
+  ;;           ))
+  ;;     (if (string-equal temp-chosen-server "₿ Mayfair")
+  ;;         (progn
+  ;;           (setq ilj-url-or-port "http://61.92.238.30:8888")
+  ;;           (setq ilj-buffer-name "*ein:notebooklist http://61.92.238:8888*")
+  ;;           (call-interactively (function ilya-login-jupyter))
+  ;;           ))
+  ;;     (if (string-equal temp-chosen-server "✇ local")
+  ;;         (call-interactively (function ein:run)))))
+
+  ;; (global-set-key (kbd "C-x C-j") (function ilya-start-jupyter-notebook))
+ #+END_SRC
+* =ilya-login-east-india=
+#+BEGIN_SRC emacs-lisp
+  (defun ilya-login-east-india (callback &optional cookie-plist)
+    "based of ein:notebook-login, but with supplied part to connect to"
+    (setq url-or-port "https://project02.sinobestech.com.hk")
+    (interactive `(,(lambda (buffer url-or-port) (pop-to-buffer buffer))
+                   ,(if current-prefix-arg (ein:notebooklist-ask-user-pw-pair "Cookie name" "Cookie content"))))
+    (unless callback (setq callback (lambda (buffer url-or-port))))
+
+    (when cookie-plist
+      (let* ((parsed-url (url-generic-parse-url (file-name-as-directory url-or-port)))
+             (domain (url-host parsed-url))
+             (securep (string-match "^wss://" url-or-port)))
+        (loop for (name content) on cookie-plist by (function cddr)
+              for line = (mapconcat #'identity (list domain "FALSE" (car (url-path-and-query parsed-url)) (if securep "TRUE" "FALSE") "0" (symbol-name name) (concat content "\n")) "\t")
+              do (write-region line nil (request--curl-cookie-jar) 'append))))
+
+
+    (let ((token (ein:notebooklist-token-or-password url-or-port)))
+      (cond ((null token) ;; don't know
+             (ein:notebooklist-login--iteration url-or-port callback nil nil -1 nil))
+            ((string= token "") ;; all authentication disabled
+             (ein:log 'verbose "Skipping login %s" url-or-port)
+             (ein:notebooklist-open* url-or-port nil nil nil callback nil))
+             (t (ein:notebooklist-login--iteration url-or-port callback nil token 0 nil))
+             (message "null")
+            )
+      )
+    (switch-to-buffer-other-window "*ein:notebooklist https://project02.sinobestech.com.hk/user/ilya*"))
+ #+END_SRC
+* =ilya-start-jupyter-notebook=
+#+BEGIN_SRC emacs-lisp
+  (setq ein:notebooklist-login-timeout 10000)
+
+  (defun ilya-start-jupyter-notebook ()
+    "Opens up either a local jupyter server or connects to east-india's one"
+    (interactive)
+    (let ((choices (list "✇ local" "₿ east-india-server")))
+      (setq temp-chosen-server (ido-completing-read "Portal to open:" choices))
+      (if (string-equal temp-chosen-server "₿ east-india-server")
+          (call-interactively (function ilya-login-east-india))
+        (call-interactively (function ein:run)))))
+
+  (global-set-key (kbd "C-x C-j") (function ilya-start-jupyter-notebook))
+ #+END_SRC
+* =ilya-save-execute-and-go-to-next=
+#+BEGIN_SRC emacs-lisp
+  (defun ilya-save-exectute-and-goto-next ()
+    "Saves the notebook → execute cell → go to next cell"
+    (interactive)
+    (call-interactively (function ein:notebook-save-notebook-command))
+    (call-interactively (function ein:worksheet-execute-cell-and-goto-next)))
+
+  (defun ilya-save-exectute ()
+    "Saves the notebook → execute cell → go to next cell"
+    (interactive)
+    (call-interactively (function ein:notebook-save-notebook-command))
+    (call-interactively (function ein:worksheet-execute-cell)))
+
+  (with-eval-after-load "ein-notebook"
+    (define-key ein:notebook-mode-map (kbd "<M-return>") (function ilya-save-exectute-and-goto-next))
+    (define-key ein:notebook-mode-map (kbd "C-c C-c") (function ilya-save-exectute)))
+
+ #+END_SRC
+* debug
+#+BEGIN_SRC emacs-lisp
+  (defun temp (url-or-port callback errback token iteration response-status)
+    ;; (ein:log 'debug "Login attempt #%d in response to %s from %s."
+    ;;          iteration response-status url-or-port)
+    ;; (unless callback
+    ;;   (setq callback #'ignore))
+    ;; (unless errback
+    ;;   (setq errback #'ignore))
+    (ein:query-singleton-ajax
+     (list 'notebooklist-login--iteration url-or-port)
+     (ein:url url-or-port "login")
+     :timeout 10000
+     ;; :data (if token (concat "password=" (url-hexify-string token)))
+     ;; :parser #'ein:notebooklist-login--parser
+     ;; :complete (apply-partially #'ein:notebooklist-login--complete url-or-port)
+     ;; :error (apply-partially #'ein:notebooklist-login--error url-or-port token
+     ;;                         callback errback iteration)
+     :success (apply-partially #'ein:notebooklist-login--success url-or-port callback
+                               errback token iteration)
+    ))
+ #+END_SRC
+* key bindings
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load "ein-notebook"
+    (hungry-delete-mode)			;turns off hungry delete
+    ;; (define-key ein:notebook-mode-map (kbd "DEL") (function backward-delete-char))
+    ;; (define-key ein:notebook-mode-map (kbd "DEL") (function python-indent-dedent-line-backspace))
+    ;; (define-key ein:notebook-mode-map (kbd "DEL") (function sp-backward-delete-char))
+    (define-key ein:notebook-mode-map (kbd "'") (function self-insert-command))
+    (define-key ein:notebook-mode-map (kbd "C-c C-d") (function ein:pytools-request-tooltip-or-help))
+    (define-key ein:notebook-mode-map (kbd "C-c C-j") (function ein:notebook-kernel-interrupt-command))
+    ;; (define-key ein:notebook-mode-map (kbd "C-c C-j") (function
+    ;;                                                    (prog
+    ;;                                                     (ein:notebook-kernel-interrupt-command)
+    ;;                                                     (ein:worksheet-clear-all-output))))
+    (define-key ein:notebook-mode-map (kbd "C-:") (function iedit-mode))
+    (define-key ein:notebook-mode-map (kbd "C-c C-;") (function comment-line))
+    (define-key ein:notebook-mode-map (kbd "C-c TAB") (function ein:completer-complete)))
+ #+END_SRC

@@ -1,0 +1,19 @@
+#+TITLE: Docker config
+#+STARTUP: overview
+#+PROPERTY: header-args :tangle yes
+
+* Init
+#+BEGIN_SRC emacs-lisp
+  (use-package docker
+    :ensure t
+    :init (my/add-to-package-list 'docker)
+    :bind
+    ("C-c d" . docker))
+ #+END_SRC
+
+* Docker-compose
+#+BEGIN_SRC emacs-lisp
+  (use-package docker-compose-mode
+    :ensure t
+    :init (my/add-to-package-list 'docker-compose-mode))
+ #+END_SRC

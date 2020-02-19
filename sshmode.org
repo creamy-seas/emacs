@@ -1,0 +1,36 @@
+#+TITLE: SSH Config
+#+STARTUP: overview
+#+PROPERTY: header-args :tangle yes
+
+| =C-x C-f /-::/directiontofile=                 | connect simple  |
+| =C-x C-f /sudo:134.219.128.96:directiontofile= | connect as sudo |
+when using =/sudo:134.219.128.96= we first login to the proxy via my antonov@134.219.128.96 account, and then | as sudo to the root@134.219.128.96
+** vagrant
+- to craete file =vagrant init archlinux/archlinux=
+- then =vagrant up= to run
+- =vagrant ssh= to enter
+
+tramp looks for the env inn =vagrant global-status=. if not showing up, go to that directory and do =vagrant destroy= =vagrant up=
+
+** setting up tramp
+#+BEGIN_SRC emacs-lisp
+  (use-package tramp
+    :ensure t
+    :config
+    (custom-set-variables
+     '(tramp-default-method "vagrant")))
+     ;; '(tramp-default-user "arch")))
+     ;; '(tramp-default-host "192.168.0.5")))
+
+  (use-package vagrant
+    :ensure t)
+  (use-package vagrant-tramp
+    :ensure t)
+  (eval-after-load 'tramp
+    '(vagrant-tramp-enable))
+
+  ;; (add-to-list 'tramp-default-user-alist
+  ;;         '("ssh" "192\\.168\\.0\\.5#6767" "antonov"))
+  ;; (add-to-list 'tramp-default-proxies-alist
+  ;;           '("134\\.219\\.128\\.96" "root"))
+#+END_SRC

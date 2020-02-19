@@ -1,0 +1,19 @@
+#+TITLE: Common things that I forget
+
+* External dependencies
+|-----------------------+-------------------------+---------------------------|
+| =aspell=              | for checking spelling   |                           |
+| =language-tools=      | for syntax checking     | https://languagetool.org/ |
+| =the_silver_searcher= | for searching code      |                           |
+| =figlet=              | for creating ascii text |                           |
+
+* ='=
+prevents evaluation of the block e.g. if you just want to set some variables without evaluating them
+* =#=
+tells compiler to bytecompile it
+* =C-c \= in latex
+* =diff= for file comparisson
+Run =M-x diff= to compare two files.
+- =C-c C-n= to narrow the view to single hunks
+- Use =n= and =p= to navigate through them
+* To run an interactive command =(call-interactively (function functionName))

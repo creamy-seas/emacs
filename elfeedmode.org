@@ -1,0 +1,143 @@
+#+TITLE: RSS feed
+#+STARTUP: overview
+#+PROPERTY: header-args :tangle yes
+
+
+- =elfeed-new-entry-hook= is called each time a new entry is added
+* read from org file
+#+BEGIN_SRC emacs-lisp
+  (use-package elfeed-org
+    :ensure t
+    :config
+    (elfeed-org)
+    (setq rmh-elfeed-org-files (list "~/creamy_seas/sync_files/emacs_config/elfeed.org")))
+#+END_SRC
+* elfeed setup
+#+BEGIN_SRC emacs-lisp
+  (use-package elfeed
+    :ensure t
+    :init
+    (setq elfeed-db-directory "~/creamy_seas/sync_files/emacs_config/elfeeddb")
+    (setq-default elfeed-search-filter "+unread")
+    :bind
+    (:map elfeed-search-mode-map
+          ("*" . bjm/elfeed-star)
+          ("8" . bjm/elfeed-unstar)
+          ("q" . bjm/elfeed-save-db-and-bury)
+          ("h" . make-hydra-elfeed)
+          ("H" . make-hydra-elfeed))
+    )
+#+END_SRC
+* elfeed hydra
+#+BEGIN_SRC emacs-lisp
+  (require 'hydra)
+  (defhydra hydra-elfeed (global-map "<f5>")
+    ""
+    ("p" (elfeed-search-set-filter "+prog") "programming")
+    ("l" (elfeed-search-set-filter "+boomer") "luke boomer")
+    ("s" (elfeed-search-set-filter "+strat") "stratechery")
+    ("i" (elfeed-search-set-filter "+starred") "shiny star")
+    ("*" bjm/elfeed-star "star it" :color pink)
+    ("8" bjm/elfeed-unstar "unstar it" :color pink)
+    ("a" (elfeed-search-set-filter "@5-year-ago") "all")
+    ("u" (elfeed-search-set-filter "+unread") "unread")
+    ("q" bjm/elfeed-save-db-and-bury "quit" :color blue)
+    )
+
+  ;;function that is associated with "H" keybinding in elfeed mode
+  (defun make-hydra-elfeed ()
+    ""
+    (interactive)
+    (hydra-elfeed/body))
+#+END_SRC
+* functions
+#+BEGIN_SRC emacs-lisp
+  (defun bjm/elfeed-star ()
+    "Apply starred to all selected entries."
+    (interactive)
+    (let* ((entries (elfeed-search-selected))
+           (tag (intern "starred")))
+
+      (cl-loop for entry in entries do (elfeed-tag entry tag))
+      (mapc #'elfeed-search-update-entry entries)
+      (unless (use-region-p) (forward-line))))
+
+  (defun bjm/elfeed-unstar ()
+    "Remove starred tag from all selected entries."
+    (interactive)
+    (let* ((entries (elfeed-search-selected))
+           (tag (intern "starred")))
+
+      (cl-loop for entry in entries do (elfeed-untag entry tag))
+      (mapc #'elfeed-search-update-entry entries)
+      (unless (use-region-p) (forward-line))))
+
+  ;;functions to support syncing .elfeed between machines
+  ;;makes sure elfeed reads index from disk before launching
+  (defun bjm/elfeed-load-db-and-open ()
+    "Wrapper to load the elfeed db from disk before opening"
+    (interactive)
+    (elfeed-db-load)
+    (elfeed)
+    (elfeed-search-update--force))
+
+  ;;write to disk when quiting
+  (defun bjm/elfeed-save-db-and-bury ()
+    "Wrapper to save the elfeed db to disk before burying buffer"
+    (interactive)
+    (elfeed-db-save)
+    (quit-window))
+
+  (defun bjm/elfeed-show-all ()
+    (interactive)
+    (bookmark-maybe-load-default-file)
+    (bookmark-jump "elfeed-all"))
+#+END_SRC
+* colouring
+#+BEGIN_SRC emacs-lisp
+  (use-package elfeed-goodies
+    :ensure t
+    :config
+    (elfeed-goodies/setup))
+  elfeed-search-header-function
+  (custom-set-faces
+   '(elfeed-search-date-face
+     ((t :foreground "#11a"
+         :weight bold))))
+   '(elfeed-search-feed-face
+     ((t :foreground "#444"
+         :weight bold)))
+   '(elfeed-search-title-face
+     ((t :foreground "#3ef"
+         :weight bold)))
+
+  (defface elfeed-search-starred-title-face
+    '((t :foreground "#f77"
+         :weight extra-bold
+         :underline t))
+    "marks a starred Elfeed entry")
+
+  (push '(starred elfeed-search-starred-title-face) elfeed-search-face-alist)
+#+END_SRC
+* adding tags to new entries
+=M-x elfeed-apply-hooks-now= to apply this to all exisitng entries
+#+BEGIN_SRC emacs-lisp
+  ;; (add-hook 'elfeed-new-entry-hook
+  ;;          (elfeed-make-tagger :feed-url "stratechery.com/feed/"
+  ;;                              :entry-title '("Exponent Podcast:.*")
+  ;;                              :add 'podcast
+  ;;                              :remove 'unread))
+ #+END_SRC
+* keybinding
+b: open selected entries in your browser (browse-url)
+y: copy selected entries URL to the clipboard
+r: mark selected entries as read
+u: mark selected entries as unread
++: add a specific tag to selected entries
+-: remove a specific tag from selected entries
+
+#+BEGIN_SRC emacs-lisp
+  (define-key my/keymap (kbd "f") (function elfeed))
+ #+END_SRC
+* image chaseup
+The problem is that the entry content only includes the tiny reddit-hosted thumbnail and Elfeed doesn't know to chase through the chain of links to get to the actual image that you care about. You could try assigning your own function to elfeed-show-refresh-function that treats reddit posts differently (and calling the default for everything else). You'd need to shr-insert an img element with the full size image as the src.

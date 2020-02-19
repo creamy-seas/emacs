@@ -1,0 +1,49 @@
+#+TITLE: C++ configuration
+#+STARTUP: overview
+#+PROPERTY: header-args :tangle yes
+
+
+* Preliminary instructions
+1) you need to first check that clang is on computer =clang --version=
+2) then make sure that cmake is also installed =brew install cmake=
+3) after filling out the code below, run =M-x irony-install-server=
+4) this should prepare to run some long command like:
+#+BEGIN_SRC sh
+  /usr/local/bin/cmake -DCMAKE_INSTALL_PREFIX\=/Users/CCCP/.emacs.d/irony/  /Users/CCCP/.emacs.d/elpa/irony-20190516.2348/server && /usr/local/bin/cmake --build . --use-stderr --config Release --target install
+#+END_SRC
+5) *copy this into terminal and evalute. Then it chould be working*
+* habr
+#+BEGIN_SRC emacs-lisp
+  ;; (require 'cedet) ;; использую "вшитую" версию CEDET. Мне хватает...
+  ;; (add-to-list 'semantic-default-submodes 'global-semanticdb-minor-mode)
+  ;; (add-to-list 'semantic-default-submodes 'global-semantic-mru-bookmark-mode)
+  ;; (add-to-list 'semantic-default-submodes 'global-semantic-idle-scheduler-mode)
+  ;; (add-to-list 'semantic-default-submodes 'global-semantic-highlight-func-mode)
+  ;; (add-to-list 'semantic-default-submodes 'global-semantic-idle-completions-mode)
+  ;; (add-to-list 'semantic-default-submodes 'global-semantic-show-parser-state-mode)
+  ;; (semantic-mode   t)
+  ;; (global-ede-mode t)
+  ;; (require 'ede/generic)
+  ;; (require 'semantic/ia)
+  ;; (ede-enable-generic-projects)
+ #+END_SRC
+* Actual installation
+#+BEGIN_SRC emacs-lisp
+  ;; ;;tie backend of company to company-irony
+  ;; (use-package company-irony
+  ;;   :ensure t
+  ;;   :config
+  ;;   (require 'company)
+  ;;   (add-to-list 'company-backends 'company-irony))
+
+  ;; ;;setup company-irony with c++ connection
+  ;; (use-package irony
+  ;;   :ensure t
+  ;;   :config
+  ;;   (add-hook 'c++-mode-hook 'irony-mode)
+  ;;   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+
+  ;; ;;finally ensure that c++-mode-hook is activated when company mode is on
+  ;; (with-eval-after-load 'company
+  ;;   (add-hook 'c++-mode-hook 'company-mode))
+ #+END_SRC

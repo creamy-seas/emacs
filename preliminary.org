@@ -1,0 +1,133 @@
+#+TITLE: First file to load - has almost no dependencies
+#+STARTUP: overview
+#+PROPERTY: header-args :tangle yes
+
+* 1 - Local variables
+Variables that can change from system to system. They should be edited first
+#+BEGIN_SRC emacs-lisp
+  (setq my/config-folder-location "/Users/CCCP/creamy_seas/sync_files/emacs_config/")
+  (setq my/config-files
+        (sort `("preliminary.org"
+                "orgmode.org"
+                "essential-packages.org"
+                "ricing.org"
+                "rustmode.org"
+                "experimental-packages.org"
+                "dockermode.org"
+                "pythonmode.org"
+                "essential-config.org"
+                "emailmode.org"
+                "elfeedmode.org"
+                "cppmode.org"
+                "latexmode.org"
+                "jupytermode.org"
+                "inkscapemode.org"
+                "sshmode.org"
+                ) 'string<))
+  (setq my/el-load-path "/Users/CCCP/creamy_seas/sync_files/emacs_config/ilya_el_manual")
+  (setq user-full-name "Ilya Antonov")
+  (setq user-mail-address "ilya.antonov@dreams-ai.com")
+  (setq my/langtool-location "/Applications/LanguageTool-4.8/languagetool-commandline.jar")
+ #+END_SRC
+** Initial list
+                                            ;; auctex
+                                            ;; cider
+                                            ;; clojure-mode
+                                            ;; company-auctex
+                                            ;; discover-my-major
+                                            ;; dockerfile-mode
+                                            ;; edit-server
+                                            ;; emmet-mode
+                                            ;; eros
+                                            ;; expand-region
+                                            ;; flycheck
+                                            ;; flycheck-color-mode-line
+                                            ;; haskell-mode
+                                            ;; helm
+                                            ;; helm-cider
+                                            ;; helm-dash
+                                            ;; helm-descbinds
+                                            ;; helm-describe-modes
+                                            ;; helm-pages
+                                            ;; helm-projectile
+                                            ;; htmlize
+                                            ;; js2-mode
+                                            ;; json-mode
+                                            ;; key-chord
+                                            ;; less-css-mode
+                                            ;; macrostep
+                                            ;; magit
+                                            ;; markdown-mode
+                                            ;; mediawiki
+                                            ;; multiple-cursors
+                                            ;; page-break-lines
+                                            ;; pdf-tools
+                                            ;; scss-mode
+                                            ;; slime
+                                            ;; slime-company
+                                            ;; toc-org
+                                            ;; use-package
+                                            ;; yaml-mode
+                                            ;; zenburn-theme
+* 2 - Prelimnary Functions
+** =my/add-package-to-list=
+#+BEGIN_SRC emacs-lisp
+  (eval-when-compile (setq my/package-list '()))
+
+  (defun my/add-to-package-list (package-with-apostrophe)
+    "Adds the package to my/package-list.
+  Ensure that it is escaped with apostrophe to avoid evaluation"
+    (setq my/package-list (add-to-list 'my/package-list package-with-apostrophe)))
+ #+END_SRC
+* 3 - Manual loading of =el= files
+Some .el files are downloaded directly and kept in the config folder
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path my/el-load-path)
+#+END_SRC
+* 4 - Repositories
+** List repositories we want to install from
+#+BEGIN_SRC emacs-lisp
+  (setq package-archives '(("org"       . "https://orgmode.org/elpa/")
+                           ("gnu"       . "https://elpa.gnu.org/packages/")
+                           ("melpa"     . "https://melpa.org/packages/")
+                           ("melpa-stable" . "https://stable.melpa.org/packages/")))
+ #+END_SRC
+** Initialize the packages manually instead of running after the init file is loaded
+#+BEGIN_SRC emacs-lisp
+  (setq package-enable-at-startup nil)
+  (package-initialize)
+  (unless package-archive-contents
+    (package-refresh-contents))
+ #+END_SRC
+* 5 - =Use-package=
+- =:init= is executed before the package is loaded
+- =:config= is executed afte the package is loaded
+#+BEGIN_SRC emacs-lisp
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+  (require 'use-package)
+#+END_SRC
+* 6 - =Hydra=
+Used for defining menus in the rest of the config
+#+BEGIN_SRC emacs-lisp
+  (use-package hydra
+    :ensure t
+    :init (my/add-to-package-list 'hydra))
+ #+END_SRC
+* 7 - Getting the system path
+#+BEGIN_SRC emacs-lisp
+  (use-package exec-path-from-shell
+    :ensure t
+    :init (my/add-to-package-list 'exec-path-from-shell)
+    (if (string-equal system-type "darwin")
+        (progn
+                                          ; Specify what env variables to load into emacs
+          (exec-path-from-shell-copy-env "PYTHONPATH"))
+      (warn "Path may not be set if you are an archcuck")))
+ #+END_SRC
+* 8 - Start the server so that other applications can connect          :Down:
+#+BEGIN_SRC emacs-lisp
+  ;; (unless (server-running-p)
+  ;;   (server-start))
+ #+END_SRC

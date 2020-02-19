@@ -1,0 +1,99 @@
+#+TITLE: Experimental packages that do not fully work as expected
+#+STARTUP: overview
+#+PROPERTY: header-args :tangle yes
+
+* LSP
+Language server used in rust
+- https://github.com/emacs-lsp/lsp-mode
+- Turn on user interface (ui) and allow company autocomplete to access the ui
+** Init
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode
+    :ensure t
+    :init
+    (my/add-to-package-list 'lsp-mode)
+    (setq lsp-keymap-prefix "s-l")
+    :commands
+    (lsp lsp-deferred))
+#+END_SRC
+
+** UI
+Higher lever features such as flycheck
+https://github.com/emacs-lsp/lsp-ui
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-ui
+    :ensure t
+    :commands lsp-ui-mode)
+ #+END_SRC
+
+** Company Integration
+Put lsp into the backend of company
+#+BEGIN_SRC emacs-lisp
+  (use-package company-lsp
+    :ensure t
+    :config
+    (push '(company-lsp :with company-yasnippet)
+          company-backends)
+    :commands company-lsp)
+ #+END_SRC
+
+** Ivy Intergration
+To autocomplete in the search buffergpg
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-ivy
+    :ensure t
+    :init (my/add-to-package-list 'lsp-ivy))
+ #+END_SRC
+
+* Langtool
+Grammar and style checker.
+- Will need to download from https://languagetool.org/
+** Init
+#+BEGIN_SRC emacs-lisp
+  (use-package langtool
+    :ensure t
+    :init (my/add-to-package-list 'langtool)
+    :config
+    (setq langtool-language-tool-jar my/langtool-location))
+ #+END_SRC
+** Keybinding
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'langtool-error-exists-hook
+            (lambda ()
+              (langtool-correct-buffer)
+              (langtool-check-done)))
+  (global-set-key "\M-^" 'langtool-check)
+ #+END_SRC
+* Ox-reveal
+Presentations can be hosted from github - look at video no 50
+#+BEGIN_SRC emacs-lisp
+  (use-package ox-reveal
+    :ensure t
+    :init (my/add-to-package-list 'ox-reveal)
+    :config
+    (require 'ox-reveal)
+    (setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
+    (setq org-reveal-mathjax t))
+ #+END_SRC
+* Pretty-mode
+To activate it do =(add-hook 'my-hook 'turn-on-pretty-mode)=
+#+BEGIN_SRC emacs-lisp
+  (use-package pretty-mode
+    :ensure t
+    :init (my/add-to-package-list 'pretty-mode)
+    :config
+    (pretty-activate-groups
+     '(:sub-and-superscripts :greek :arithmetic-nary)))
+ #+END_SRC
+* Mark multiple
+#+BEGIN_SRC emacs-lisp
+  (use-package mark-multiple
+    :ensure t
+    :bind ("C-c q" . mark-next-like-this)
+    :init (my/add-to-package-list 'mark-multiple))
+#+END_SRC
+* Multiple Cursors
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-(") 'mc/mark-next-lines)
+  (global-set-key (kbd "C-)") 'mc/mark-previous-lines)
+#+END_SRC

@@ -1,0 +1,71 @@
+#+TITLE: Inkscape Integration
+#+STARTUP: overview
+#+PROPERTY: header-args :tangle yes
+
+* Inkscape
+- =aspell= must be installed
+- to edit interactively, open =.svg= file → save as → =.pdf= → =omit text= → use exported object size
+- call function with "base-directory argument supplied"
+
+#+BEGIN_SRC emacs-lisp
+  (setq inkscape-generate-location "~/creamy_seas/sync_files/emacs_config/ilya_scripts/inkscape/inkscape_emacs_generate.sh")
+
+  (defun inkscape-generate (base-directory)
+    "Reads the current line and launches an inkscape document under this name. Base directory must end in /"
+    (interactive)
+    (let* (;; a - generate filename
+           (file-name (my/copy-line))	;reads in current line
+           (file-name (replace-regexp-in-string "^\s*" "" file-name))
+          (file-name (downcase file-name)) ;downcase
+          (file-name (replace-regexp-in-string " " "_" file-name)) ;replace spaces
+          ;; b - find root folder and create a directory path
+          (inkscape-dir (concat base-directory "images_inkscape"))
+          ;; c - generate full path name
+          (file-name-full (concat inkscape-dir "/" file-name)))
+
+      ;; 1 - create directory in root folder
+      (ignore-errors (make-directory inkscape-dir))
+
+      ;; 2 - open inkscape with the file-name
+      (shell-command (concat inkscape-generate-location " \"" file-name-full "\""))
+
+      ;; 3 - prepare for snippet
+      (delete-region (line-beginning-position) (line-end-position))
+      (shell-command (concat "inkscape_export.sh images_inkscape/" file-name ".svg"))
+      (setq temp-file-name-for-snippet file-name)
+      ))
+
+  (defun inkscape-load-part1 (base-directory)
+    "Part 1 of the loading image process: store the old default directory and write a new one base-directoy MUST END WITH /"
+
+    ;; 1 - create path to inkscape directory and save the old default directory
+    (setq inkscape-directory (concat base-directory "images_inkscape"))
+    (setq old-default-directory default-directory)
+
+    ;; 2 - reset the default directory to the inkscape one if it exists
+    (if (null (file-directory-p inkscape-directory))
+        (message "卍 But mein führer - they have been exterminated 卍")
+      (setq default-directory inkscape-directory)))
+
+  (defun inkscape-load-part2 (file-name-full)
+    "Uses the currently set default-directory and asks the user to open an image file"
+    (interactive "fWhich image to open: ")
+
+    ;; 1 - cope the last part of the file
+    (setq file-name-full (replace-regexp-in-string "\\..*$" "" file-name-full))
+
+    ;; 2 - reset back to the previous default directory
+    (setq default-directory old-default-directory)
+
+    ;; 3 - open the file for editing
+    (shell-command (concat inkscape-generate-location " " file-name-full))
+    (setq file-name-full (replace-regexp-in-string "^.*/" "" file-name-full))
+
+    (shell-command (concat "inkscape_export.sh images_inkscape/" file-name-full ".svg")))
+
+  (defun inkscape-load (base-directory)
+    "Loads up a user chosen inkscape file"
+    (interactive)
+    (inkscape-load-part1 base-directory)
+    (call-interactively 'inkscape-load-part2))
+ #+END_SRC

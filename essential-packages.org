@@ -1,0 +1,647 @@
+#+TITLE: Essential packages that are not installed by default
+#+STARTUP: overview
+#+PROPERTY: header-args :tangle yes
+
+* Ivy                                                             :Essential:
+A generic autocompletion framework
+| Ivy     | Generic completion                      |
+| Counsel | Ivy-enhanced versions of emacs commands |
+| Swiper  | Alternative search                     |
+
+** Ivy
+*** Init
+#+BEGIN_SRC emacs-lisp
+  (use-package ivy
+    :ensure t
+    :init (my/add-to-package-list 'ivy)
+    (ivy-mode)
+    :config
+    (setq ivy-use-virtual-buffers t
+	  enable-recursive-minibuffers t
+					  ;change how ivy displays autocompletion
+	  ivy-count-format "%d/%d "))
+ #+END_SRC
+
+*** Keybindings
+#+BEGIN_SRC emacs-lisp
+  (define-key my/keymap (kbd "s") (function ivy-resume))
+ #+END_SRC
+** Counsel
+Rebind emacs commands to use ivy https://github.com/abo-abo/swiper#counsel
+#+BEGIN_SRC emacs-lisp
+  (require 'counsel)
+  (counsel-mode)
+ #+END_SRC
+** Swiper
+The superior search mode to the original
+#+BEGIN_SRC emacs-lisp
+  (require 'swiper)
+  (global-set-key (kbd "C-s") 'swiper)
+#+END_SRC
+* Agressive indenting
+To keep code aliged
+#+BEGIN_SRC emacs-lisp
+  (use-package aggressive-indent
+    :ensure t
+    :init
+    (aggressive-indent-global-mode 1)
+    (my/add-to-package-list 'aggressive-indent))
+ #+END_SRC
+*** Disable it in certain modes
+#+BEGIN_SRC emacs-lisp
+  (dolist (mode '(cider-repl-mode
+		  comint-mode
+		  eshell-mode
+		  slime-repl-mode
+		  term-mode))
+    (add-to-list 'aggressive-indent-excluded-modes mode))
+ #+END_SRC
+* Avy
+The superior search method
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+    :ensure t
+    :init
+    (global-set-key (kbd "M-s") 'avy-goto-word-or-subword-1)
+    (setq avy-background t)
+    (my/add-to-package-list 'avy))
+#+END_SRC
+* Beacon
+Fades the current line
+#+BEGIN_SRC emacs-lisp
+  (use-package beacon
+    :ensure t
+    :init
+    (my/add-to-package-list 'beacon)
+    (beacon-mode 1))
+ #+END_SRC
+* CSV
+#+BEGIN_SRC emacs-lisp
+  (use-package csv-mode
+    :ensure t
+    :init (my/add-to-package-list 'csv-mode))
+ #+END_SRC
+* Diminish                                                        :Essential:
+Allows hiding of modes from the modeline
+#+BEGIN_SRC emacs-lisp
+  (use-package diminish
+    :ensure t
+    :init (my/add-to-package-list 'diminish))
+ #+END_SRC
+
+* Company                                                         :Essential:
+In buffer completion framework
+** Init
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :ensure t
+    :init
+    (add-hook 'after-init-hook 'global-company-mode)
+    (my/add-to-package-list 'company)
+    :config
+    (setq company-tooltip-align-annotations t)
+    (setq company-show-numbers t)
+    (setq company-idle-delay 0.2)
+    (setq company-minimum-prefix-length 4))
+#+END_SRC
+** Company colours
+#+BEGIN_SRC emacs-lisp
+  (custom-set-faces
+   ;; annotation (i.e. function or method)
+   `(company-tooltip-annotation ((t (:foreground "#CFD0E3"))))
+   `(company-tooltip-annotation-selection ((t (:foreground "#334676"))))
+   ;; scrollbar showing position in list
+   `(company-scrollbar-bg ((t (:background "#189a1e1224a2"))))
+   `(company-scrollbar-fg ((t (:background "#41bf505b61e3"))))
+   ;; text being expanded
+   `(company-tooltip-common ((t (:foreground "#33ccff"))))
+   `(company-tooltip-common-selection ((t (:foreground "#3a3a6e" :weight bold))))
+   ;; autocompletion selection
+   `(company-tooltip-selection ((t (:background "orange2" :foreground "#090C42" :weight bold))))
+   ;; change background of the box
+   `(company-tooltip ((t (:inherit default :background "#41bf505b61e3")))))
+ #+END_SRC
+** Company popup help
+#+BEGIN_SRC emacs-lisp
+  (use-package company-quickhelp
+    :ensure t
+    :init
+    (company-quickhelp-mode)
+    (my/add-to-package-list 'company-quickhelp))
+
+  ;; do not show popups automatically
+  (customize-set-variable 'company-quickhelp-delay nil)
+ #+END_SRC
+** Keybinding
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load 'company
+    (define-key company-active-map (kbd "M-n") nil)
+    (define-key company-active-map (kbd "M-p") nil)
+    (define-key company-active-map (kbd "C-j") #'company-quickhelp-manual-begin)
+    (define-key company-active-map (kbd "C-n") #'company-select-next)
+    (define-key company-active-map (kbd "C-p") #'company-select-previous))
+ #+END_SRC
+* Doc pop-up
+#+BEGIN_SRC emacs-lisp
+  (use-package quick-peek
+    :ensure t
+    :init (my/add-to-package-list 'quick-peek))
+
+  (set-face-attribute 'quick-peek-border-face nil :height 20)
+
+  (defmacro *-make-doc-command (doc-fun sym-fun)
+    "Return an command that uses `quick-peek' to preview docs.
+
+  DOC-FUN is a unary function that takes a loop-up string and
+  returns the doc string.
+
+  SYM-FUN is a nullary function that gets the symbol at point as a
+  string."
+    `(lambda ()
+       (interactive)
+       (let ((doc (funcall ,doc-fun (funcall ,sym-fun))))
+	 (if (string-empty-p doc)
+	     (message "Unknown symbol, or no documentation available.")
+	   (let ((map (make-sparse-keymap)))
+	     (set-transient-map map
+				(lambda ()
+				  (eq #'mwheel-scroll this-command))
+				(lambda ()
+				  (quick-peek-hide)
+				  (setq this-command #'ignore))))
+	   (let ((pos (save-excursion
+			(beginning-of-line)
+			(point))))
+	     (quick-peek-show doc pos nil (frame-height)))))))
+ #+END_SRC
+* Dired                                                       :ManualInstall:
+Beautiful file browsing. Dired+ is downloaded manually
+#+BEGIN_SRC emacs-lisp
+  (require 'dired+)
+  (my/add-to-package-list 'diminish)
+  (add-hook 'dired-mode-hook (function dired-omit-mode))
+ #+END_SRC
+
+** Keybindings
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-x C-d") (function dired))
+
+  (define-key dired-mode-map (kbd "<right>") (function dired-find-file-other-window))
+ #+END_SRC
+** Bindings Reminder
+| a       | go to file or directory and close dired bufffer |
+| v       | preview                                         |
+| o       | open in new window                              |
+| m/u     | mark/unmark                                     |
+| +       | add directory                                   |
+| r       | rename                                          |
+| R       | move mass                                       |
+| *       | regexp                                          |
+| C-c C-q | rename then =C-c C-c=                           |
+* Dumb Jump
+Have either a =.git= or =.dumbjump= file in the main project directory
+#+BEGIN_SRC emacs-lisp
+  (use-package dumb-jump
+    :ensure t
+    :bind (("M-g o" . dumb-jump-go-other-window)
+	   ("M-g j" . dumb-jump-go)
+	   ("M-g i" . dumb-jump-go-prompt)
+	   ("M-g x" . dumb-jump-go-prefer-external)
+	   ("M-g p" . dumb-jump-back)
+	   ("M-g z" . dumb-jump-go-prefer-external-other-window))
+    :init (my/add-to-package-list 'dumb-jump)
+    :config (setq dumb-jump-selector 'ivy))
+ #+END_SRC
+
+* Expand region
+Allos to expand to word, bracket, sentence, paragraph
+#+BEGIN_SRC emacs-lisp
+  (use-package expand-region
+    :ensure t
+    :init (my/add-to-package-list 'expand-region)
+    :bind ("C-q" . er/expand-region))
+#+END_SRC
+
+* Eyebrowse
+#+BEGIN_SRC emacs-lisp
+  (use-package eyebrowse
+    :ensure t
+    :init (my/add-to-package-list 'eyebrowse)
+    :config
+    (eyebrowse-mode))
+
+  (global-set-key (kbd "s-a") (function eyebrowse-switch-to-window-config-1))
+  (global-set-key (kbd "s-s") (function eyebrowse-switch-to-window-config-2))
+  (global-set-key (kbd "s-d") (function eyebrowse-switch-to-window-config-3))
+ #+END_SRC
+* Fic
+Highlighting of TODOs
+#+BEGIN_SRC emacs-lisp
+  (use-package fic-mode
+    :ensure t
+    :init  (my/add-to-package-list 'fic-mode)
+    :config
+    (add-hook 'prog-mode-hook 'turn-on-fic-mode))
+ #+END_SRC
+* Flycheck                                                        :Essential:
+- Better than the default spellchecker called =flyspell=
+- =M-$= to check word
+** Basic
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck
+    :ensure t
+    :diminish t
+    :init (my/add-to-package-list 'flycheck)
+    :hook
+    (prog-mode . flycheck-mode)
+    (text-mode . flycheck-mode))
+ #+END_SRC
+** Set dictionaries
+#+BEGIN_SRC emacs-lisp
+  (setq ispell-program-name "/usr/local/bin/aspell")
+  (setq ispell-dictionary "en_GB")
+  ;; Save to user dictionary
+  (setq ispell-silently-savep t)
+  (setq ispell-personal-dictionary (my/config-file-path-evaluate "dictionaries/aspell.en.pws"))
+ #+END_SRC
+** Colouring of errors
+#+BEGIN_SRC emacs-lisp
+  ;; (set-face-attribute 'flycheck-error nil
+  ;;                     ;; :family "Font Fira"
+  ;;                     :background "#bf0004"
+  ;;                     :foreground "gold2"
+  ;;                     :underline nil
+  ;;                     :box '(:color "gold2" :line-width 1))
+  ;; (set-face-attribute 'flycheck-warning nil
+  ;;                     :underline "DarkOrange")
+ #+END_SRC
+* Hungry delete                                                    :darren:
+Hungry delete deletes all white space between cursor and the next character
+#+BEGIN_SRC emacs-lisp
+  (use-package hungry-delete
+    :ensure t
+    :init (my/add-to-package-list 'hungry-delete)
+    :config (global-hungry-delete-mode))
+#+END_SRC
+* iedit
+mark and edit all copies of the marked region simultaniously.
+#+BEGIN_SRC emacs-lisp
+  (use-package iedit
+    :ensure t
+    :bind ("C-:" . iedit-mode)
+    :init (my/add-to-package-list 'iedit))
+ #+END_SRC
+
+* Kill ring
+Popup menu when pasting of the past history
+#+BEGIN_SRC emacs-lisp
+  (use-package popup-kill-ring
+    :ensure t
+    :bind ("M-y" . popup-kill-ring)
+    :init (my/add-to-package-list 'popup-kill-ring))
+#+END_SRC
+* Linum
+#+BEGIN_SRC emacs-lisp
+  (use-package linum-relative
+    :ensure t
+    :hook
+    (python-mode . linum-relative-mode-hook)
+    (LaTeX-mode . linum-relative-mode-hook)
+    :init (my/add-to-package-list 'linum-relative)
+    (setq linum-relative-backend 'display-line-numbers-mode))
+#+END_SRC
+* Magit
+** Init
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :ensure t
+    :init (my/add-to-package-list 'magit))
+ #+END_SRC
+** Git Gutter
+This allows to preview changes in files, see difference and restore hunks
+#+BEGIN_SRC emacs-lisp
+  (use-package git-gutter
+    :ensure t
+    :init (my/add-to-package-list 'git-gutter)
+    (global-git-gutter-mode +1))
+ #+END_SRC
+** Time machine
+Allow quickly to browser through the file version. Launch with =M-x git-time-machine=
+#+BEGIN_SRC emacs-lisp
+  (use-package git-timemachine
+    :ensure t)
+ #+END_SRC
+** Hydra
+#+BEGIN_SRC emacs-lisp
+  (defhydra hydra-git-gutter (:body-pre (git-gutter-mode 1)
+					:hint nil)
+    "
+    Git gutter:
+      _j_: next hunk        _s_tage hunk     _q_uit
+      _k_: previous hunk    _r_evert hunk    _Q_uit and deactivate git-gutter
+      ^ ^                   _p_opup hunk
+      _h_: first hunk
+      _l_: last hunk        set start _R_evision
+    "
+    ("j" git-gutter:next-hunk)
+    ("k" git-gutter:previous-hunk)
+    ("h" (progn (goto-char (point-min))
+		(git-gutter:next-hunk 1)))
+    ("l" (progn (goto-char (point-min))
+		(git-gutter:previous-hunk 1)))
+    ("s" git-gutter:stage-hunk)
+    ("r" git-gutter:revert-hunk)
+    ("p" git-gutter:popup-hunk)
+    ("R" git-gutter:set-start-revision)
+    ("q" nil :color blue)
+    ("Q" (progn (git-gutter-mode -1)
+					  ; git-gutter-fringe doesn't seem to
+					  ; clear the markup right away
+		(sit-for 0.1)
+		(with-no-warnings
+		  (git-gutter:clear)
+		  ))
+     :color blue))
+
+  (global-set-key (kbd "M-g M-g") (function hydra-git-gutter/body))
+ #+END_SRC
+* Markdown mode
+#+BEGIN_SRC emacs-lisp
+  (use-package markdown-mode
+    :ensure t
+    :commands (markdown-mode gfm-mode)
+    :mode (("README\\.md\\'" . gfm-mode)
+	   ("\\.md\\'" . markdown-mode)
+	   ("\\.markdown\\'" . markdown-mode))
+    :init (my/add-to-package-list 'markdown-mode)
+    (setq markdown-command "multimarkdown"))
+ #+END_SRC
+* Popwin
+*Help* *Completions* and other buffers are spawned as popups
+#+BEGIN_SRC emacs-lisp
+  (use-package popwin
+    :ensure t
+    :init (my/add-to-package-list 'popwin)
+    (popwin-mode t))
+ #+END_SRC
+* Projectile
+Navigation around a set of project files. There's tons of shortcuts to explore
+https://projectile.readthedocs.io/en/latest/projects/
+
+- Use [[counsel-projectile][Counsel-projectile]] =s-M-p= to explore functions
+- The ones that are useful should be added to the Hydra [[counsel-hydra][Hydra]]
+
+** Base
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :init (my/add-to-package-list 'projectile)
+    :config
+    (projectile-mode))
+
+  (if (string-equal system-type "darwin")
+      (define-key projectile-mode-map (kbd "M-s-π") 'projectile-command-map)
+    (warn "You need to set projectile keybinding if you are an archcuck"))
+ #+END_SRC
+** Counsel-projectile <<counsel-projectile>>
+For better autocompletion
+#+BEGIN_SRC emacs-lisp
+  (use-package counsel-projectile
+    :ensure t
+    :init (my/add-to-package-list 'counsel-projectile)
+    :config
+    (counsel-projectile-mode))
+ #+END_SRC
+** Hydra <<counsel-hydra>>
+#+BEGIN_SRC emacs-lisp
+  (defhydra hydra-projectile-other-window (:color teal)
+    "projectile-other-window"
+    ("f"  projectile-find-file-other-window        "file")
+    ("g"  projectile-find-file-dwim-other-window   "file dwim")
+    ("d"  projectile-find-dir-other-window         "dir")
+    ("b"  projectile-switch-to-buffer-other-window "buffer")
+    ("q"  nil                                      "cancel" :color blue))
+
+  (defhydra hydra-projectile (:color teal
+				     :hint nil)
+    "
+	 PROJECTILE: %(projectile-project-root)
+
+	 Find File            Search/Tags          Buffers                Cache
+    ------------------------------------------------------------------------------------------
+    _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache clear
+     _ff_: file dwim       _g_: update gtags      _b_: switch to buffer  _x_: remove known project
+     _fd_: file curr dir   _o_: multi-occur     _s-k_: Kill all buffers  _X_: cleanup non-existing
+			 _r_: replace regexp                         ^^^^_z_: cache current
+      _d_: dir
+      _R_: run
+
+    "
+    ("R"	 projectile-run-project)
+    ("a"   projectile-ag)
+    ("b"   projectile-switch-to-buffer)
+    ("c"   projectile-invalidate-cache)
+    ("d"   projectile-find-dir)
+    ("s-f" projectile-find-file)
+    ("ff"  projectile-find-file-dwim)
+    ("fd"  projectile-find-file-in-directory)
+    ("g"   ggtags-update-tags)
+    ("s-g" ggtags-update-tags)
+    ("i"   projectile-ibuffer)
+    ("K"   projectile-kill-buffers)
+    ("s-k" projectile-kill-buffers)
+    ("m"   projectile-multi-occur)
+    ("o"   projectile-multi-occur)
+    ("s-p" projectile-switch-project "switch project")
+    ("p"   projectile-switch-project)
+    ("s"   projectile-switch-project)
+    ("r"   projectile-replace-regexp)
+    ("x"   projectile-remove-known-project)
+    ("X"   projectile-cleanup-known-projects)
+    ("z"   projectile-cache-current-file)
+    ("`"   hydra-projectile-other-window/body "other window")
+    ("q"   nil "cancel" :color blue))
+
+  (global-set-key (kbd "s-p") (function hydra-projectile/body))
+ #+END_SRC
+* Rainbow mode
+Colourize codes such as #AF3313
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-mode
+    :ensure t
+    :init
+    (my/add-to-package-list 'rainbow-mode)
+    (rainbow-mode))
+ #+END_SRC
+* Restart
+#+BEGIN_SRC emacs-lisp
+  (use-package restart-emacs
+    :ensure t
+    :init (my/add-to-package-list 'restart-emacs))
+ #+END_SRC
+* Scratch buffer
+** Default load
+#+BEGIN_SRC emacs-lisp
+  (setq initial-scratch-message (concat
+				 "#+Title: Persistent Scratch Buffer"
+				 "\n#\n # Welcome! This’ a place for trying things out. \n"))
+ #+END_SRC
+** Reopen closed scratch
+#+BEGIN_SRC emacs-lisp
+  (defun scratch ()
+    "create a scratch buffer"
+    (interactive)
+    (switch-to-buffer-other-window (get-buffer-create "*scratch*"))
+    (insert initial-scratch-message)
+    (org-mode))
+ #+END_SRC
+** Save content
+#+BEGIN_SRC emacs-lisp
+  (use-package persistent-scratch
+    :ensure t
+    :init (my/add-to-package-list 'persistent-scratch)
+    :config
+    (persistent-scratch-setup-default))
+ #+END_SRC
+* Smartparens
+Smart way of moving around brackets
+#+BEGIN_SRC emacs-lisp
+  (use-package smartparens
+    :ensure t
+    :init (my/add-to-package-list 'smartparens)
+    :config
+    (require 'smartparens-config)
+    (smartparens-global-mode)
+    (show-smartparens-global-mode))
+ #+END_SRC
+** Enforce strict mode in certain modes
+#+BEGIN_SRC emacs-lisp
+  (mapc (lambda (hook)
+	  (add-hook hook #'smartparens-strict-mode))
+	'(markdown-mode-hook
+	  prog-mode-hook))
+ #+END_SRC
+** Keybindings
+#+BEGIN_SRC emacs-lisp
+  (define-key smartparens-mode-map (kbd "C-M-f") #'sp-forward-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-b") #'sp-backward-sexp)
+
+  ;; Up/down
+  (define-key smartparens-mode-map (kbd "C-M-d") #'sp-down-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-e") #'sp-up-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-a") #'sp-backward-down-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-q") #'sp-backward-up-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-`") #'beginning-of-defun)
+
+  ;; Transpose
+  (define-key smartparens-mode-map (kbd "C-M-t") 'sp-transpose-sexp)
+
+  ;; Mark/kill/copy
+  (global-set-key [remap mark-sexp] #'sp-mark-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-k") #'sp-kill-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-w") #'sp-copy-sexp)
+
+  ;; Unwrap
+  (define-key smartparens-mode-map (kbd "M-<delete>") #'sp-unwrap-sexp)
+  (define-key smartparens-mode-map (kbd "M-<backspace>") #'sp-backward-unwrap-sexp)
+
+  ;; Slurp/barf
+  (define-key smartparens-mode-map (kbd "C-<right>") #'sp-forward-slurp-sexp)
+  (define-key smartparens-mode-map (kbd "C-<left>") #'sp-forward-barf-sexp)
+  (define-key smartparens-mode-map (kbd "C-S-<left>") #'sp-backward-slurp-sexp)
+  (define-key smartparens-mode-map (kbd "C-S-<right>") #'sp-backward-barf-sexp)
+
+  (define-key smartparens-mode-map (kbd "C-M-<backspace>") #'sp-splice-sexp-killing-backward)
+  (define-key smartparens-mode-map (kbd "C-S-<backspace>") #'sp-splice-sexp-killing-around)
+
+  ;; Indent
+  (define-key smartparens-mode-map (kbd "C-M-<tab>") #'sp-indent-defun)
+ #+END_SRC
+* Smex                                                                 :Down:
+Command line autocompletion
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package smex
+  ;; :ensure t
+  ;; :init (my/add-to-package-list 'smex)
+  ;; (smex-initialize))
+
+  ;; (global-set-key (kbd "M-x") (function smex))
+ #+END_SRC
+* Sudo-edit
+#+BEGIN_SRC emacs-lisp
+  (use-package sudo-edit
+    :ensure t
+    :init (my/add-to-package-list 'sudo-edit)
+    :bind ("s-e" . sudo-edit))
+ #+END_SRC
+* Undo Tree
+Spawns a tree of all the undos that you have ever made
+#+BEGIN_SRC emacs-lisp
+  (use-package undo-tree
+    :ensure t
+    :init (my/add-to-package-list 'undo-tree)
+    :config
+    (global-undo-tree-mode)
+    (setq undo-tree-visualizer-timestamps t)
+    (setq undo-tree-visualizer-diff t))
+
+  (global-set-key (kbd "M-/") 'undo-tree-visualize)
+#+END_SRC
+* Wgrep
+Allow editing of grep buffers after say =counsel-ag=
+#+BEGIN_SRC emacs-lisp
+  (use-package wgrep
+    :ensure t
+    :init (my/add-to-package-list 'wgrep))
+ #+END_SRC
+* Yasnippet
+Autocompletion by typing in first part of word and tabbing to insert a template
+- yasnippet is the framework
+- yasnippet-snippets is the official collection of snippets
+** Init
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :ensure t
+    :init (my/add-to-package-list 'yasnippet)
+    :config
+    (yas-global-mode)
+					  ; do not user yasnippet in terminal mode
+    (add-hook 'term-mode-hook (lambda ()
+				(yas-minor-mode -1))))
+ #+END_SRC
+** Auto yasnippets                                                    :Read:
+Quickly create disposable yasnippets
+#+BEGIN_SRC emacs-lisp
+  (use-package auto-yasnippet
+    :ensure t
+    :init (my/add-to-package-list 'auto-yasnippet))
+ #+END_SRC
+** Add snippets
+*** Default snippets
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet-snippets
+    :ensure t
+    :init (my/add-to-package-list 'yasnippet-snippets)
+    :config
+    (yas-reload-all))
+ #+END_SRC
+*** Personal snippets
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'yas-snippet-dirs (my/config-file-path-evaluate "personal-snippets"))
+  (yas-reload-all)
+#+END_SRC
+** Insert by name
+Required by the personal snippets to put other snippets in
+#+BEGIN_SRC emacs-lisp
+  (defun yas/insert-by-name (name)
+    (cl-flet ((dummy-prompt
+	       (prompt choices &optional display-fn)
+	       (declare (ignore prompt))
+					  ; this is to supress the warining that 'find' is not available
+	       (with-no-warnings
+		 (or (find name choices :key display-fn :test #'string=)
+		     (throw 'notfound nil)))))
+      (let ((yas-prompt-functions '(dummy-prompt)))
+	(catch 'notfound
+	  (yas-insert-snippet t)))))
+ #+END_SRC

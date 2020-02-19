@@ -1,0 +1,338 @@
+#+TITLE: Essential config that makes life easier
+#+STARTUP: overview
+#+PROPERTY: header-args :tangle yes
+
+* 1 - Keyboard
+** My keymap on =C-i=
+*** Unbind <C-i> from the TAB key
+#+BEGIN_SRC emacs-lisp
+  (if (window-system)
+                                          ; IF we are not in a TTY, unbind C-i from TAB
+                                          ; Set if to the keymap
+      (progn
+        (define-key input-decode-map [?\C-i] [C-i])
+        (message "test"))
+
+    ;; Since TAB and <C-i> cannot be differentiated in TTY emacs,
+    ;; the workaround is to conditionally bind TAB to indent-region
+    ;; when there is an active region selected.
+    (defun my/tab-replacement (&optional START END)
+      (interactive "r")
+      (if (use-region-p)
+                                          ; IF active region, use indent-region
+          (indent-region START END)
+                                          ; ELSE IF no active region, use default tab command
+        (indent-for-tab-command)))
+                                          ; Bind our quick-and-dirty TAB replacement to the TAB key
+    (global-set-key (kbd "TAB") 'my/tab-replacement))
+ #+END_SRC
+*** Bind my keymap
+#+BEGIN_SRC emacs-lisp
+  (define-prefix-command 'my/keymap)
+  (global-set-key (kbd "<C-i>") 'my/keymap)
+ #+END_SRC
+** Russian mappings
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-ч C-ы") (function save-buffer))
+  (global-set-key (kbd "C-ч C-и") (function ido-switch-buffer))
+  (global-set-key (kbd "C-т") (function next-line))
+  (global-set-key (kbd "C-а") (function forward-char))
+  (global-set-key (kbd "C-и") (function backward-char))
+  (global-set-key (kbd "M-а") (function forward-word))
+  (global-set-key (kbd "M-и") (function backward-word))
+  (global-set-key (kbd "C-ф") (function beginning-of-visual-line))
+  (global-set-key (kbd "C-у") (function end-of-visual-line))
+  (global-set-key (kbd "C-з") (function previous-line))
+ #+END_SRC
+* 2 - Functions
+** =my/config-file-open=
+#+BEGIN_SRC emacs-lisp
+  (defun my/config-file-open ()
+    "Prints out the config files and opens the selected one for editing"
+    (interactive)
+    (let ((chosen-file (ido-completing-read "Config file to open:" my/config-files)))
+      (find-file (my/config-file-path-evaluate chosen-file))))
+
+  (global-set-key (kbd "C-c e") (function my/config-file-open))
+ #+END_SRC
+** =my/config-file-path-evaluate=
+#+BEGIN_SRC emacs-lisp
+  (defun my/config-file-path-evaluate (path-from-config-folder)
+    "A shorthand for expanding the name of a file into the config
+  directory with the full location"
+    (concat my/config-folder-location path-from-config-folder))
+ #+END_SRC
+** =my/copy-line=
+#+BEGIN_SRC emacs-lisp
+  (defun my/copy-line ()
+    "Copies the current line of the cursor
+       Returns the current line as a string"
+    (interactive)
+    (buffer-substring (line-beginning-position) (line-end-position)))
+ #+END_SRC
+** =my/copy-line-save-position=
+#+BEGIN_SRC emacs-lisp
+  (defun my/copy-line-save-position ()
+    (interactive)
+    (save-excursion ;;save the cursor position
+      (kill-new            ;;kill the following
+       (buffer-substring ;;from begginin of line to end of line
+        (point-at-bol)
+        (point-at-eol)))))
+  (global-set-key (kbd "C-c w l") (function my/copy-line-save-position))
+#+END_SRC
+
+** =my/extract-string=
+#+BEGIN_SRC emacs-lisp
+  (defun my/extract-string (regexp index string)
+    "Extract a particular part of a regexp from the chosen string
+    -------------------------------------------------------------------
+    regexp     regular expression with individual arguments in \\(\\)
+    index         index match to extract
+    string        string to extract from
+    "
+    (string-match regexp string)
+    (match-string index string))
+ #+END_SRC
+** =my/figlet=
+#+BEGIN_SRC emacs-lisp
+  (defun my/figlet (string-to-convert)
+    "Converts 'string-to-convert' to ascii art and inserts it into buffer
+
+      string-to-convert:	string to turn to art
+      "
+    (interactive "sString to make into art: ")
+    (let* ((ascii-art (shell-command-to-string (concat "figlet -k" " " string-to-convert))))
+      (setq ascii-art (replace-regexp-in-string "^"
+                                                comment-start
+                                                ascii-art))
+      (insert ascii-art)
+      ))
+ #+END_SRC
+** =my/file-name-from-line=
+#+BEGIN_SRC emacs-lisp
+  (defun my/file-name-from-line (prefix suffix)
+    "Copies the current line and elinates all spaces"
+    (interactive)
+    (let* (
+           (file-name (my/copy-line))
+           (file-name (replace-regexp-in-string "^\s*" "" file-name))
+           (file-name (downcase file-name))
+           (file-name (replace-regexp-in-string " " "_" file-name))
+           (file-name (concat prefix file-name suffix)))
+      (message file-name)))
+ #+END_SRC
+** =my/list-packages=
+#+BEGIN_SRC emacs-lisp
+  (defun my/info-installed-package ()
+    "Gets the info for an isntalled package"
+    (interactive)
+    (let ((iter my/package-list)
+                                          ; start with at least 1 element
+          (package-list-as-string (list "use-package")))
+
+      ;; Run through list of packages
+      (while iter
+        (setq package-list-as-string
+              (append
+                                          ; actually there is only one element when the get the 'car' of the current item. But without list appending acts strage
+               (list
+                (prin1-to-string (car iter)))
+               package-list-as-string))
+                                          ; move to next element
+        (setq iter (cdr iter)))
+
+      ;; Get package choice
+      (let ((chosen-package (ido-completing-read "Installed package to describe:" package-list-as-string)))
+        (describe-package chosen-package))))
+
+  (defun my/describe-package (package)
+    "Display the full documentation of PACKAGE (a symbol)."
+    (interactive
+     (let* ((guess (or (function-called-at-point)
+                       (symbol-at-point))))
+       (require 'finder-inf nil t)
+       ;; Load the package list if necessary (but don't activate them).
+       (unless package--initialized
+         (package-initialize t))
+       (let ((packages (append (mapcar 'car my/package-list))))
+         (unless (memq guess packages)
+           (setq guess nil))
+         (setq packages (mapcar 'symbol-name packages))
+         (let ((val
+                (completing-read (if guess
+                                     (format "Describe package (default %s): "
+                                             guess)
+                                   "Describe package: ")
+                                 packages nil t nil nil (when guess
+                                                          (symbol-name guess)))))
+           (list (intern val))))))
+    (if (not (or (package-desc-p package) (and package (symbolp package))))
+        (message "No package specified")
+      (help-setup-xref (list #'describe-package package)
+                       (called-interactively-p 'interactive))
+      (with-help-window (help-buffer)
+        (with-current-buffer standard-output
+          (describe-package-1 package)))))
+ #+END_SRC
+** =my/rename-file-and-buffer=
+#+BEGIN_SRC emacs-lisp
+  (defun my/rename-file-and-buffer ()
+    "Rename the current buffer and file it is visiting."
+    (interactive)
+    (let ((filename (buffer-file-name)))
+      (if (not (and filename (file-exists-p filename)))
+          (message "Buffer is not visiting a file!")
+        (let ((new-name (read-file-name "New name: " filename)))
+          (cond
+           ((vc-backend filename) (vc-rename-file filename new-name))
+           (t
+            (rename-file filename new-name t)
+            (set-visited-file-name new-name t t)))))))
+ #+END_SRC
+** =my/tangle-init=
+If the current buffer is one of the config files, the code-blocks are tangled, and the tangled file is compiled.
+#+BEGIN_SRC emacs-lisp
+  (defun my/tangle-init ()
+    "Should be run after saving every file - check if the name is in the config files and
+    tangle if yes"
+    (let ((current-file (file-name-nondirectory (buffer-file-name))))
+      (when (member current-file my/config-files)
+        (let ((prog-mode-hook nil)		;; Avoid running hooks when tangling.
+              (el-file (replace-regexp-in-string "\.org" "\.el" current-file)))
+          (org-babel-tangle)
+          (let ((el-compiled-file (my/config-file-path-evaluate el-file))
+                (el-emacs-file (concat user-emacs-directory el-file)))
+            (rename-file el-compiled-file el-emacs-file t)
+            (message (concat "Compiled" el-compiled-file))
+            (byte-compile-file el-emacs-file))))))
+
+    (add-hook 'after-save-hook 'my/tangle-init)
+ #+END_SRC
+* 3 - Packages
+** Install missing packages
+#+BEGIN_SRC emacs-lisp
+  (defun *-package-upgrade ()
+    "Refresh, upgrade and delete obsolete packages synchronously."
+    (interactive)
+    (save-window-excursion
+      (let (package-menu-async)
+        (package-list-packages)))
+    (with-current-buffer "*Packages*"
+      (package-menu-mark-upgrades)
+      (package-menu-mark-obsolete-for-deletion)
+      (condition-case err
+          (package-menu-execute t)
+        ;; Don't barf if there is nothing to do
+        (user-error (message "Nothing to do"))
+        ;; But allow other errors through
+        (error (signal (car err) (cdr err))))))
+ #+END_SRC
+** Package hydra
+#+BEGIN_SRC emacs-lisp
+  (defhydra hydra-package (:color blue)
+    "
+  Packages                                                           [_q_] quit
+  ^^---------------------------------------------------------------------------
+  [_d_] describe
+  [_i_] install
+  [_l_] list
+  [_L_] list (no fetch)
+  [_U_] upgrade all
+  "
+  ("d" describe-package nil)
+  ("i" package-install nil)
+  ("l" package-list-packages nil)
+  ("L" package-list-packages-no-fetch nil)
+  ("U" *-package-upgrade nil)
+  ("q" nil nil))
+
+  (define-key my/keymap (kbd "p") (function hydra-package/body))
+ #+END_SRC
+* Aya                                                                  :Read:
+#+BEGIN_SRC emacs-lisp
+  (define-key my/keymap (kbd "s") (function aya-create))
+  (define-key my/keymap (kbd "y") (function aya-expand))
+
+ #+END_SRC
+* Arsist mode
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'artist-mode-hook
+            (lambda ()
+              (local-set-key (kbd "<f1>") 'org-mode)
+              (local-set-key (kbd "<f2>") 'artist-select-op-pen-line) ; f2 = pen mode
+              (local-set-key (kbd "<f3>") 'artist-select-op-line)     ; f3 = line
+              (local-set-key (kbd "<f4>") 'artist-select-op-square)   ; f4 = rectangle
+              (local-set-key (kbd "<f5>") 'artist-select-op-ellipse)  ; f5 = ellipse
+  ))
+ #+END_SRC
+* Bookmarks
+** Config
+#+BEGIN_SRC emacs-lisp
+  ;; save bookmars to file
+  (setq bookmark-save-flag t)
+
+  ;; load boomarks from "~/.emacs.d/bookmarks"
+  (when (file-exists-p (concat user-emacs-directory "bookmarks"))
+    (bookmark-load bookmark-default-file t))
+  (setq bookmark-default-file (concat user-emacs-directory "bookmarks"))
+ #+END_SRC
+** Keybindigs
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "<f6>") 'bookmark-set)
+  (global-set-key (kbd "<f7>") 'bookmark-jump)
+  (global-set-key (kbd "<f8>") 'bookmark-bmenu-list)
+ #+END_SRC
+
+* GPG
+Make emacs prompt for password in the minibuffer
+#+BEGIN_SRC emacs-lisp
+  (setq epa-pinentry-mode 'loopback)
+ #+END_SRC
+* Narrow and widen
+Smarter widen and narrow
+#+BEGIN_SRC emacs-lisp
+  (defun narrow-or-widen-dwim (p)
+    "If the buffer is narrowed, it widens. Otherwise, it narrows intelligently.
+  Intelligently means: region, org-src-block, org-subtree, or defun,
+  whichever applies first.
+  Narrowing to org-src-block actually calls `org-edit-src-code'.
+
+  With prefix P, don't widen, just narrow even if buffer is already
+  narrowed."
+    (interactive "P")
+    (declare (interactive-only))
+    (cond ((and (buffer-narrowed-p) (not p)) (widen))
+          ((region-active-p)
+           (narrow-to-region (region-beginning) (region-end)))
+          ((derived-mode-p 'org-mode)
+           ;; `org-edit-src-code' is not a real narrowing command.
+           ;; Remove this first conditional if you don't want it.
+           (cond ((ignore-errors (org-edit-src-code))
+                  (delete-other-windows))
+                 ((org-at-block-p)
+                  (org-narrow-to-block))
+                 (t (org-narrow-to-subtree))))
+          (t (narrow-to-defun))))
+
+  (global-set-key (kbd "C-x n") (function narrow-or-widen-dwim))
+ #+END_SRC
+* Overwrite selected text when typing
+#+BEGIN_SRC emacs-lisp
+  (delete-selection-mode t)
+ #+END_SRC
+* Reload on the go
+Any changes of a file, will be automatically reloaded
+#+BEGIN_SRC emacs-lisp
+  (global-auto-revert-mode 1)
+
+
+ #+END_SRC
+* Saving hooks
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'before-save-hook #'whitespace-cleanup)
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+                                          ; adding new line to end of file when saving
+  (setq require-final-newline    t)
+  (setq next-line-add-newlines nil)
+ #+END_SRC

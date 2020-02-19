@@ -1,0 +1,90 @@
+#+TITLE: Rust setup
+#+STARTUP: overview
+#+PROPERTY: header-args :tangle yes
+
+On os-x, you need to run =sudo cargo build=
+If you keep getting errors, =cargo clean= and repeat above command
+
+|-------------+---------------------------------+-------|
+| =C-c C-c ?= | various cargo functions         | cargo |
+|-------------+---------------------------------+-------|
+| =C-x . 4=   | open definition in other window | racer |
+| =M-.=       | jump to definition              | racer |
+| =M-,=       | jump back                       | racer |
+| =C-c C-d=   | get docs to popup               | racer |
+| =C-c d=     | get docs in buffer              | racer |
+|-------------+---------------------------------+-------|
+
+* External Installation
+|---------------+---------------------------------------------------------------------|
+| cargo         | for compling project                                                |
+| [[https://github.com/brotzeit/rustic][rustc]]         | does compilation, checking and documentation. Can activate later on |
+| rustup        | installation and package managment                                  |
+| [[https://github.com/rust-lang/rls][rls]]           | rust language server                                                |
+| [[https://github.com/rust-analyzer/rust-analyzer/tree/master/docs/user][rust-analyzer]] | rust language server v2                                             |
+| [[https://github.com/racer-rust/emacs-racer][racer]]         | code completion (rls uses it as a fallback)                         |
+|---------------+---------------------------------------------------------------------|
+** 1 - Install =cargo, rustc, rustup=
+=curl -f https://sh.rustup.rs > rust.sh=
+For arch also install =base-devel=
+** 2 - Use nightly
+The package manager is =rustup=. For cool packages, add nightly toolkit
+=rustup toolchain add nightly=
+** 3 - Install =rls=
+=rustup component add rls rust-analysis= for language server
+=rustup component add rust-src= for the source code
+
+You will need to =export PATH=~/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src= in order for the source to be specified or =$(rustc --print sysroot)/lib/rustlib/src/rust/src=
+** ? - Instal  =racer=
+=cargo install racer=
+
+* Init
+#+BEGIN_SRC emacs-lisp
+  (use-package rust-mode
+    :ensure t
+    :init (my/add-to-package-list 'rust-mode)
+    :config
+    (add-hook 'rust-mode-hook
+              (lambda () (setq indent-tabs-mode nil)))
+    (setq rustic-lsp-server 'rust-analyzer))
+ #+END_SRC
+
+* Flycheck rust
+#+BEGIN_SRC emacs-lisp
+   (use-package flycheck-rust
+    :ensure t
+    :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+ #+END_SRC
+* Cargo
+#+BEGIN_SRC emacs-lisp
+  (use-package cargo
+    :ensure t
+    :init (my/add-to-package-list 'cargo)
+    :diminish cargo-minor-mode
+    :hook (rust-mode . cargo-minor-mode))
+ #+END_SRC
+
+* Bloat
+#+BEGIN_SRC emacs-lisp
+  ;; (setq racer-rust-src-path "/Users/CCCP/Vagrant_VMs/rust-source-code")
+
+  ;; (use-package racer
+  ;;   :ensure t
+  ;;   :config
+  ;;   (add-hook 'rust-mode-hook #'racer-mode)
+  ;;   (add-hook 'racer-mode-hook #'eldoc-mode)	;show in minibuffer fuction you are currently writing
+  ;;   (add-hook 'racer-mode-hook #'company-mode))
+
+  ;; (use-package rustic
+  ;;   :ensure t
+  ;;   :config
+  ;;   (add-hook 'racer-mode-hook 'rustic-mode))
+  ;; ;; (setq rustic-format-trigger 'on-save)
+  ;; ;; (setq rust-format-on-save t))
+ #+END_SRC
+* Keybindings
+#+BEGIN_SRC emacs-lisp
+  ;; (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
+  ;; (define-key rust-mode-map (kbd "C-c C-d") (function racer-describe-tooltip))
+  ;; (define-key rust-mode-map (kbd "C-c d") (function racer-describe))
+ #+END_SRC

@@ -1,0 +1,593 @@
+#+TITLE: LaTeX Config
+#+STARTUP: overview
+#+PROPERTY: header-args :tangle yes
+
+
+* generate file
+#+BEGIN_SRC emacs-lisp
+  (defun ilya-generate-texfile ()
+    "Generates a latex files, placing it in texfiles folder of the current project"
+    (interactive)
+    (setq temp-file-name-for-snippet (my/file-name-from-line "texfiles/" ".tex"))
+    (delete-region (line-beginning-position) (line-end-position)))
+ #+END_SRC
+* latex commands                                           :listOfCommands:
+I will most be using CDLaTeX to type in a command and then autocomplete it
+Yasnippet to add stuff once I am there (like and an extra item) and create own tab commands
+I will use C-c C-f for font changes
+Indenting environment
+|-----------------+------------------------------------------+----------------------------------|
+| TABBING         | -----------------                        | ------------------               |
+| =cdlatex=       | tabbing out common commands              | =cdlatex= help with =C-c ?=      |
+| =yasnippet=     | tabbing out common and personal commands | =yasnippet= =yasnippet-snippets= |
+| CREATE AND FILL | ------------------                       | -------------------              |
+| =C-c C-f=       | change the font                          | =auctex=                         |
+| =C-c C-e=       | create figure environemnt                | =auctex=                         |
+| =C-c C-s=       | create section environment               | =auctex=                         |
+| =`=             | math mode help                           | =LaTeX-math-mode=                |
+| REFFERENCING    | ------------------                       | -------------------              |
+| =C-c (= =C-c )= | create/use refference                    | =reftex=                         |
+| =C-c [=         | refferences a citation                   | =reftex=                         |
+| =C-c ==         | create content list to navigate          | =reftex=                         |
+| AESTHETICS      | ------------                             | --------------                   |
+| =C-c C-o=       | autohide sections                        | =TeX-fold-mode=                  |
+| =C-c C-q C-e=   | indent environment or region             |                                  |
+| COMMENTING      | ------------                             | --------------                   |
+| =C-c '=         | comment paragraph                        |                                  |
+| =C-c ;=         | comment region                           |                                  |
+| COMPILING       | ------------                             | --------------                   |
+| =C-c C-c=       | run next latex generations tep           |                                  |
+| =C-c `=         | look through errors                      |                                  |
+| =C-c C-v=       | Look at pdf                              |                                  |
+|-----------------+------------------------------------------+----------------------------------|
+
+* installing latex packages
+- install =.sty= packages in =/usr/local/texlive/2018/texmf-dist/tex/latex/base=
+- run =sudo -s texhash= to load it up
+- =flyspell= requires ispell to be installed on computer
+* general setup
+#+BEGIN_SRC emacs-lisp
+  (use-package latex
+    :ensure auctex
+    :init
+    (setq TeX-auto-save t)
+    ;; (setq TeX-parse-self t)			;;access imported packages
+    (setq TeX-save-query nil)			;;don't prompt file save
+    (setq-default TeX-show-compilation t)		;;display compulation in a parrallel window
+    (setq TeX-interactive-mode t)
+    (setq Tex-master nil)				;;specify master file for each project
+    :config
+    ;; spell checking
+    (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+
+    ;; display greek symbols
+    (add-hook 'LaTeX-mode-hook
+              (lambda () (TeX-fold-mode 1)))
+
+    ;; ensure that anything inside $ $ is treated as math mode
+    (add-hook 'LaTeX-mode-hook
+              (lambda () (set (make-variable-buffer-local 'TeX-electric-math)
+                         (cons "$" "$"))))
+    :hook
+    ;; type ` to get suggestions
+    (LaTeX-mode-hook . LaTeX-math-mode)
+
+    ;; font highlighting
+    (LaTeX-mode-hook . font-lock-mode))
+ #+END_SRC
+* reftex
+#+BEGIN_SRC emacs-lisp
+  (use-package reftex
+    :ensure t
+    :init
+    (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+    (setq reftex-plug-into-AUCTeX t))
+ #+END_SRC
+* cdlatex (autcompletion)
+#+BEGIN_SRC emacs-lisp
+  (use-package cdlatex
+    :ensure t
+    :config
+    (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex))
+
+  (setq cdlatex-math-modify-alist
+        '(
+          (82 "\\red" "\\red" t nil nil)))
+
+  (setq cdlatex-math-symbol-alist
+        `(
+          (?F ("\\Phi"))))
+
+  (setq cdlatex-env-alist
+        '(("cases" "\\begin{cases}\nAUTOLABEL\n?\n\\end{cases}" nil)
+          ("big-left-right" "\\big(?\\big)" nil)
+          ("left-right-bar" "\\left|?\\right|" nil)
+          ("bigg-left-right" "\\bigg(?\\bigg)" nil)
+          ("left-right-brace" "\\left\\lbrace?\\right\\rbrace" nil)
+          ("theorem" "\\begin{theorem}\nLABEL\n?\n\\end{theorem}\n" nil)))
+
+  ;; last 2 t/nil is whether to activate in text and math modes
+  (setq cdlatex-command-alist
+        '(("blr(" "Insert big left-right brackets"   "" cdlatex-environment ("big-left-right") t t)
+          ("bblr(" "Insert bigg-left-right brackets"   "" cdlatex-environment ("bigg-left-right") t t)
+          ("lr{" "Inserts brace" "" cdlatex-environment ("left-right-brace") t t)
+          ("lr|" "Inserts left and right bars 卍" "" cdlatex-environment ("left-right-bar") t t)
+          ("cases" "Insert case environment"   "" cdlatex-environment ("cases") t t)
+          ("thr" "Insert theorem env" "" cdlatex-environment ("theorem") t nil)))
+ #+END_SRC
+* tailored commands
+*Some important AucTex commands and variables*
+| =TeX-expand-list-builtin= | pair list tying command with a % expression e.g. =%s= -> master latex file |
+| =TeX-expand-list=         | this variables contains the above =TeX-expand-list-builtin                 |
+| =Tex-command-expand=      | "commandInStringForm" 'TeX-master-file TeX-expand-list                     |
+*** generate file =C-c C-m=
+1 - a process name is generated based off the name of the master file
+2 - the actual command calls the =pdf_engine= script in the emacs.d directory
+3 - expansion if performed to change =%s= to the master file name
+#+BEGIN_SRC emacs-lisp
+  (defun ilya_gen-key ()
+    "Command binded to C-c C-C will make the pdf with latexmk"
+    (interactive)
+    (minibuffer-message (concat "ᛋᛋ Generating \"" (TeX-master-file) "\" ᛋᛋ"))
+    (let (
+          ;; 1 - variable definition
+          (command-script (ilya_expand-latex-command "~/creamy_seas/sync_files/emacs_config/ilya_scripts/latex/pdf_engine.sh %s")))
+
+      ;; 2 - prepare for compilation buffer
+      (ilya_latex-compilation-prepare "BuildPDF")
+
+      ;; 3 - launch compilation
+      (ignore-errors
+        (TeX-run-TeX ilya_latex-compilation-process-id command-script (TeX-master-file)))
+
+      ;; 4 - change number of running processes and colour in the modeline
+      (setq ilya_LaTeX-running-compilations (+ ilya_LaTeX-running-compilations 1))
+
+      ;; (custom-set-faces
+      ;; '(mode-line ((t (:background "#2d379a" :foreground "#1eafe1" :box (:line-width 2 :color "red"))))))
+      (custom-set-faces
+       '(mode-line ((t (:box (:line-width 2 :color "red"))))))
+      ))
+
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (define-key LaTeX-mode-map (kbd "C-c C-c") (function ilya_gen-key))))
+ #+END_SRC
+*** exterminate files =C-c C-j=
+1 - kill any running processes on this master files
+2 - delete the buffer that was running that process
+3 - move files into output directory
+4 - close this buffer as well
+
+#+BEGIN_SRC emacs-lisp
+  (defun ilya_jew-key()
+    (interactive)
+
+    (minibuffer-message (concat "===> 卍 Exterminating \"" (ilya_get-master-file-name) "\" 卍"))
+
+    (let ((command-script (ilya_expand-latex-command "~/creamy_seas/sync_files/emacs_config/ilya_scripts/latex/jew_engine.sh %s")))
+
+      ;; 1 - get the buffer names and variables of running process
+      (ilya_latex-compilation-prepare "BuildPDF")
+
+      ;; 2 - delete the "genPDF" process for the current master file
+      ;; (ignore-errors
+      (set-process-query-on-exit-flag (get-process ilya_latex-compilation-process-id) nil)
+      (delete-process (get-process ilya_latex-compilation-process-id))
+        ;; )
+
+      ;; 3 - delete the buffer the process was in (reset the buffer name)
+      ;; (ignore-errors (kill-buffer (TeX-active-buffer)))
+      (ignore-errors (kill-buffer "*TeX Help*"))
+
+      ;; 4 - prepare variables for the gassing
+      (ilya_latex-compilation-prepare "jewGas")
+
+      ;; 5 - the gassing itself
+      (ignore-errors
+        (TeX-run-TeX "jew_process" command-script (TeX-master-file))
+        )
+
+      ;; 6 - change number of running processes and recolour bar if required
+      (setq ilya_LaTeX-running-compilations (- ilya_LaTeX-running-compilations 1))
+
+      (if (eq ilya_LaTeX-running-compilations 0)
+          (custom-set-faces
+         '(mode-line ((t (:box (:line-width 0 :color "red")))))))
+      (sleep-for 2)
+
+      ;; 5 - close this buffer window
+      (kill-buffer (get-buffer "卍 Exterminating 卍"))
+      (minibuffer-message "===> 卍 Extermination complete 卍 - heil!")))
+
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (define-key LaTeX-mode-map (kbd "C-c C-j") (function ilya_jew-key))))
+#+END_SRC
+*** jump to pdf =C-c C-v=
+- skim is run, reading the current line in the emacs buffer and highlighting it in the pdf
+- =syntex.gz= file needs to be in the directory for this to occur, so it's copied
+| unique to skim  |                                                      |
+| =-b=            | inserts a reading bar into the pdf                   |
+| =-g=            | tells it to load in background                       |
+| unique to emacs | commands in TeX-expand-list-builtin in =tex.el= file |
+| =%n=            | is the line number we are on                         |
+| =%o=            | is the output file name                              |
+| =%b=            | is the tex file name                                 |
+
+#+BEGIN_SRC emacs-lisp
+  (setq TeX-view-program-list
+        '(("SkimViewer" "~/creamy_seas/sync_files/emacs_config/ilya_scripts/latex/search_engine.sh %s %n %o %b")))
+
+  (setq TeX-view-program-selection '((output-pdf "SkimViewer")))
+ #+END_SRC
+*** supporting functions and varibles
+#+BEGIN_SRC emacs-lisp
+  (setq ilya_LaTeX-running-compilations 0)
+
+  (defun ilya_LaTeX-compilation-buffer-size ()
+    "Resize the latex compilation buffer when it launches because it is seriosuly bloat"
+
+    (progn
+      ;;1) pdf generation case
+      (if (string-equal ilya_latex-compilation-process-type "BuildPDF")
+          (progn
+            (ignore-errors (rename-buffer ilya_latex-compilation-buffer-name))
+            (setq compilation-window-name (get-buffer-window ilya_latex-compilation-buffer-name))
+            (window-resize-no-error compilation-window-name (- 5 (window-height compilation-window-name "floor")))))
+      ;;2) file clearing case
+      (if (string-equal ilya_compilation-process "jewGas")
+          (progn
+            (ignore-errors (rename-buffer ilya_compilation-name))))))
+
+  ;;  (add-hook 'comint-mode-hook (function ilya_LaTeX-compilation-buffer-size))
+
+  (defun ilya_latex-compilation-prepare (process-type)
+    "Set variables that the latex compilation buffer will use"
+    ;; 1 - get the master file name
+    (setq temp-master-file (ilya_get-master-file-name))
+
+    ;; 2 - generate further variables
+    (setq ilya_latex-compilation-process-id (concat process-type ":" temp-master-file))
+    (setq ilya_latex-compilation-process-type process-type)
+    (setq ilya_latex-compilation-master-file temp-master-file)
+
+    ;; 3 - generate buffer name
+    (if (string-equal process-type "BuildPDF")
+        (setq ilya_latex-compilation-buffer-name (concat "ᛋᛋ Compiling [" temp-master-file "] ᛋᛋ")))
+    (if (string-equal process-type "jewGas")
+        (setq ilya_latex-compilation-buffer-name "卍 Exterminating 卍")))
+
+  (defun ilya_get-master-file-name ()
+    "Get the name of the master latex file in the current project"
+    (interactive)
+    (TeX-command-expand "%s" 'TeX-master-file TeX-expand-list))
+
+  (defun ilya_expand-latex-command (command-script)
+    (interactive)
+    "Expands the latex command by evaluating the % variables in accordance with the system's master file"
+    (TeX-command-expand command-script 'TeX-master-file TeX-expand-list))
+ #+END_SRC
+*** error checking =C-c C-w=
+natively, auctex creates a list of errors once the compiling finishes.
+here we make it do it explictly
+
+#+BEGIN_SRC emacs-lisp
+  (defun ilya_latex-next-error (args)
+    "Reads the compilation buffer and extracts errors to run through"
+    (interactive "p")
+
+    ;; 1 - search for active buffer (assign it to tempvar)
+    (if-let ((tempvar (TeX-active-buffer)))
+
+        ;; 2 - if open, go to that buffer and get all the errors
+        (save-excursion
+          (set-buffer (TeX-active-buffer))
+          (TeX-parse-all-errors)
+
+          ;; 3 - display error list
+          (if TeX-error-list
+              (minibuffer-message "ᛋᛋ Jew hunt finished ᛋᛋ"))
+
+          ;; 4 - iterate through error list
+          (call-interactively (function TeX-next-error))
+          ;; clear region
+          (delete-region (point-min) (point-max))
+          (minibuffer-message "ᛋᛋ Make this totally aryan, free from scheckel mounds ᛋᛋ"))
+
+      (minibuffer-message "ᛋᛋ But mein Führer - there's no-one running ᛋᛋ")))
+
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (local-unset-key (kbd "C-c C-w"))
+                               (local-set-key (kbd "C-c C-w") (function ilya_latex-next-error))))
+
+  (defmacro my-save-excursion (&rest forms)
+    (let ((old-point (gensym "old-point"))
+          (old-buff (gensym "old-buff")))
+      `(let ((,old-point (point))
+             (,old-buff (current-buffer)))
+         (prog1
+             (progn ,@forms)
+           (unless (eq (current-buffer) ,old-buff)
+             (switch-to-buffer ,old-buff))
+           (goto-char ,old-point)))))
+ #+END_SRC
+
+* latex expand text
+#+BEGIN_SRC emacs-lisp
+  (use-package fill-column-indicator
+    :ensure t
+    :config
+    (add-hook 'LaTeX-mode-hook 'fci-mode)
+    (setq fci-rule-color "#248")
+    (setq fci-rule-width 1))
+
+  (defun ilya_buffer-fill-column ()
+    (interactive)
+
+    ;; 1 - get the window width
+    (setq windowWidth (window-width))
+    (setq temp-fill-width (- windowWidth 10))
+
+    ;; 2 - set the fill width to 94 max
+    (if (> 94 temp-fill-width)
+        (set-fill-column temp-fill-width)
+      (set-fill-column 94)))
+ #+END_SRC
+* =hyperref=                                                          :hyp:
+#+BEGIN_SRC emacs-lisp
+  (defun ilya-reftex-reference (&optional type no-insert cut)
+    "Make a LaTeX reference.  Look only for labels of a certain TYPE.
+  With prefix arg, force to rescan buffer for labels.  This should only be
+  necessary if you have recently entered labels yourself without using
+  reftex-label.  Rescanning of the buffer can also be requested from the
+  label selection menu.
+  The function returns the selected label or nil.
+  If NO-INSERT is non-nil, do not insert \\ref command, just return label.
+  When called with 2 C-u prefix args, disable magic word recognition."
+
+    (interactive)
+
+    ;; Check for active recursive edits
+    (reftex-check-recursive-edit)
+
+    ;; Ensure access to scanning info and rescan buffer if prefix is '(4)
+    (reftex-access-scan-info current-prefix-arg)
+
+    (let ((reftex-refstyle (when (and (boundp 'reftex-refstyle) reftex-refstyle)
+                      reftex-refstyle))
+          (reftex-format-ref-function reftex-format-ref-function)
+          (form "\\ref{%s}")
+          label labels sep sep1 style-alist)
+
+      (unless reftex-refstyle
+        (if reftex-ref-macro-prompt
+            (progn
+              ;; Build a temporary list which handles more easily.
+              (dolist (elt reftex-ref-style-alist)
+                (when (member (car elt) (reftex-ref-style-list))
+                  (mapc (lambda (x)
+                          (add-to-list 'style-alist (cons (cadr x) (car x)) t))
+                        (nth 2 elt))))
+              ;; Prompt the user for the macro.
+              (let ((key (reftex-select-with-char
+                          "" (concat "SELECT A REFERENCE FORMAT\n\n"
+                                     (mapconcat
+                                      (lambda (x)
+                                        (format "[%c] %s  %s" (car x)
+                                                (if (> (car x) 31) " " "")
+                                                (cdr x)))
+                                      style-alist "\n")))))
+                (setq reftex-refstyle (cdr (assoc key style-alist)))
+                (unless reftex-refstyle
+                  (error "No reference macro associated with key `%c'" key))))
+          ;; Get the first macro from `reftex-ref-style-alist' which
+          ;; matches the first entry in the list of active styles.
+          (setq reftex-refstyle
+                (or (caar (nth 2 (assoc (car (reftex-ref-style-list))
+                                        reftex-ref-style-alist)))
+                    ;; Use the first entry in r-r-s-a as a last resort.
+                    (caar (nth 2 (car reftex-ref-style-alist)))))))
+
+      (unless type
+        ;; Guess type from context
+        (if (and reftex-guess-label-type
+                 (setq type (reftex-guess-label-type)))
+            (setq cut (cdr type)
+                  type (car type))
+          (setq type (reftex-query-label-type))))
+
+      ;; Have the user select a label
+      (set-marker reftex-select-return-marker (point))
+      (setq labels (save-excursion
+                     (reftex-offer-label-menu type)))
+      (reftex-ensure-compiled-variables)
+      (set-marker reftex-select-return-marker nil)
+      ;; If the first entry is the symbol 'concat, concat all labels.
+      ;; We keep the cdr of the first label for typekey etc information.
+      (if (eq (car labels) 'concat)
+          (setq labels (list (list (mapconcat 'car (cdr labels) ",")
+                                   (cdr (nth 1 labels))))))
+      (setq type (nth 1 (car labels))
+            form (or (cdr (assoc type reftex-typekey-to-format-alist))
+                     form))
+
+      (cond
+       (no-insert
+        ;; Just return the first label
+        (car (car labels)))
+       ((null labels)
+        (message "Quit")
+        nil)
+       (t
+        (while labels
+          (setq label (car (car labels))
+                sep (nth 2 (car labels))
+                sep1 (cdr (assoc sep reftex-multiref-punctuation))
+                labels (cdr labels))
+          (when cut
+            (backward-delete-char cut)
+            (setq cut nil))
+
+          ;; remove ~ if we do already have a space
+          (when (and (= ?~ (string-to-char form))
+                     (member (preceding-char) '(?\ ?\t ?\n ?~)))
+            (setq form (substring form 1)))
+          ;; do we have a special format?
+          (unless (string= reftex-refstyle "\\ref")
+            (setq reftex-format-ref-function 'reftex-format-special))
+          ;; ok, insert the reference
+          (if sep1 (insert sep1))
+          (setq ilya-temp-refference
+           (if reftex-format-ref-function
+               (funcall reftex-format-ref-function label form reftex-refstyle)
+             (format form label label)))
+          (setq ilya-temp-refference (my/extract-string "\\(ref{\\)\\(.*\\)\\(}\\)" 2 ilya-temp-refference))
+          ;; take out the initial ~ for good
+          (and (= ?~ (string-to-char form))
+               (setq form (substring form 1))))
+        (message "")
+        label))))
+ #+END_SRC
+
+* colouring
+#+BEGIN_SRC emacs-lisp
+  (custom-set-faces
+   '(font-latex-bold-face ((t (:inherit bold))))
+   '(font-latex-italic-face ((t (:inherit italic))))
+   '(font-latex-math-face ((t (:foreground "#99c616"))))
+   '(font-latex-sedate-face ((t (:foreground "burlywood")))))
+ #+END_SRC
+* regexp colouring
+*** theory
+*Suppose we want to highlight certain constructs in a document*
+The first thing that would happen, is latex searches for matching expressions - we need to create a rule for it to do so.
+
+It would be a mumble jumble like
+="\\(«\\(.+?\\|\n\\)\\)\\(+?\\)\\(»\\)"=
+
+which can be created by running =(regexp-opt '("string1" "string2" etc) OPTION)= where =OPTIONG= can be (search Emacs Search)
+|-----------+------------------------------------------|
+| .         | matches any character                    |
+| ^ or $    | start or end of line                     |
+| ?         | repeat the previos match 0 or 1 time     |
+| +         | repeat the previous match 1 or more time |
+| *         | repeat previous match 0 or more times    |
+| [^x]      | any symbol appart from x                 |
+| [:ascii:] | match ascii characters                   |
+|-----------+------------------------------------------|
+*** define faces
+#+BEGIN_SRC emacs-lisp
+  (defface ilya_face-latex-background
+    '((t :background "#2d3743"
+         :foreground "#3a3a6e"
+         :weight bold
+         ))
+    "Face for red blocks")
+
+  (defface ilya_face-latex-title
+    '((t :foreground "firebrick1"
+         :slant italic
+         :overline t
+         ))
+    "Face for comments")
+
+  (defface ilya_face-latex-red
+    '((t :background "#964854"
+         :weight bold
+         ))
+    "Face for red blocks")
+
+  (defface ilya_face-latex-gold
+    '((t :background "gold1"
+         :weight bold
+         ))
+    "")
+
+  (defface ilya_face-latex-blue
+    '((t :background "#464896"
+         :weight bold
+         ))
+    "Face for blue blocks")
+ #+END_SRC
+*** matching colour
+#+BEGIN_SRC emacs-lisp
+    ;; (font-lock-add-keywords 'latex-mode
+    ;;                         '(("\\(\\\\red\{\\)\\(\\(.\\|\\Ca\\)*?\\)\\(\}\\\\ec\\)"
+    ;;                            (1 'ilya_face-latex-red t)
+    ;;                            (4 'ilya_face-latex-red t))))
+
+    ;; (font-lock-add-keywords 'latex-mode
+    ;;                         '(("\\(\\\\blue\{\\)\\(\\(.\\|\\Ca\\)*?\\)\\(\}\\\\ec\\)"
+    ;;                            (1 'ilya_face-latex-blue t)
+    ;;                            (4 'ilya_face-latex-blue t))))
+
+    ;; (font-lock-add-keywords 'latex-mode
+    ;;                         '(("\\(\\\\gold\{\\)\\(\\(.\\|\\Ca\\)*?\\)\\(\}\\\\ec\\)"
+    ;;                            (1 'ilya_face-latex-gold t)
+    ;;                            (4 'ilya_face-latex-gold t))))
+
+    ;; ;; %% Comment
+  (font-lock-add-keywords 'latex-mode
+                             '(("\\(%\\{2,\\}\\)\\(\s.*\\)\\($\\)"
+                                (1 'ilya_face-latex-title t)
+                                (2 'ilya_face-latex-title t))))
+ #+END_SRC
+* key bindings
+#+BEGIN_SRC emacs-lisp
+    (add-hook 'LaTeX-mode-hook (lambda ()
+                                 (local-unset-key (kbd "C-c C-a"))
+                                 (local-unset-key (kbd "C-c C-b"))
+                                 (local-unset-key (kbd "C-c C-d"))
+                                 (local-unset-key (kbd "C-c C-k"))
+                                 (local-unset-key (kbd "C-c C-r"))
+                                 (local-unset-key (kbd "C-c C-z"))
+                                 (local-unset-key (kbd "C-c ESC"))
+                                 (local-unset-key (kbd "C-c C-t"))
+                                 (local-unset-key (kbd "C-c <")) ;;index and glossary
+                                 (local-unset-key (kbd "C-c /")) ;;index
+                                 (local-unset-key (kbd "C-c \\")) ;;index
+                                 (local-unset-key (kbd "C-c >")) ;;index
+                                 (local-unset-key (kbd "C-c _")) ;;set master file
+                                 (local-unset-key (kbd "C-c C-n")) ;;normal mode (use C-c #)
+                                 (local-unset-key (kbd "C-c ~")) ;;math mode
+                                 (local-unset-key (kbd "C-c }")) ;;up list
+                                 (local-unset-key (kbd "C-c `")) ;TeX-next-error
+                                 (local-unset-key (kbd "C-c ^")) ;TeX-home-buffer
+                                 (local-unset-key (kbd "C-x `")) ;next-error
+                                 ))
+
+    (defun ilya_latex-save-buffer ()
+      "Save the current buffer and performs indent"
+      (interactive)
+      ;; 1 - fill colum
+      (setq justify-width (ilya_buffer-fill-column))
+
+
+      ;; 3 - perform fill
+      ;; (ignore-errors (LaTeX-fill-environment justify-width))
+
+      ;; 2 - save file
+      (save-buffer))
+
+    (defun ilya_latex-indent-buffer (args)
+      "Indents the full buffer"
+      (interactive "P")
+      ;; 1 - fill the column
+      (setq justify-width (ilya_buffer-fill-column))
+
+      ;; 3 - perform fill
+      (ignore-errors (LaTeX-fill-buffer justify-width))
+      )
+
+    (defun ilya_insert-underscore (args)
+      "Inserts an underscore, because the jews put in dollars around it"
+      (interactive "P")
+      (insert "_"))
+
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (define-key LaTeX-mode-map (kbd "C-c C-n") (function next-error))
+                               (define-key LaTeX-mode-map (kbd "C-c C-;") (function comment-line))
+                               (define-key LaTeX-mode-map (kbd "C-c C-u") (function ilya_insert-underscore))
+                               (define-key LaTeX-mode-map (kbd "C-c C-q") (function ilya_latex-indent-buffer))
+                               (define-key LaTeX-mode-map (kbd "C-c C-h") (function TeX-home-buffer))
+                               (define-key LaTeX-mode-map (kbd "C-x C-s") (function ilya_latex-save-buffer))))
+ #+END_SRC
