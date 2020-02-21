@@ -51,7 +51,7 @@
 
 (make-face 'font-lock-fic-face)
 (modify-face 'font-lock-fic-face fic-foreground-color
-             fic-background-color nil t nil t nil nil)
+	     fic-background-color nil t nil t nil nil)
 
 (defvar fic-search-list-re (regexp-opt fic-highlighted-words 'words)
   "regexp constructed from 'fic-highlighted-words")
@@ -67,11 +67,11 @@
       (while (and (null match-data-to-set)
 		  (re-search-forward fic-search-list-re limit t))
 	(if (and (fic-in-doc/comment-region (match-beginning 0))
-		 (fic-in-doc/comment-region (match-end 0))) 
+		 (fic-in-doc/comment-region (match-end 0)))
 	    (setq match-data-to-set (match-data)))))
     (when match-data-to-set
       (set-match-data match-data-to-set)
-      (goto-char (match-end 0)) 
+      (goto-char (match-end 0))
       t)))
 
 ;;;###autoload
@@ -79,7 +79,7 @@
   :lighter " FIC" :group 'fic-mode
   (let ((kwlist '((fic-search-for-keyword (0 'font-lock-fic-face t)))))
     (if fic-mode
-        (font-lock-add-keywords nil kwlist)
+	(font-lock-add-keywords nil kwlist)
       (font-lock-remove-keywords nil kwlist))))
 
 ;;;###autoload
@@ -89,4 +89,3 @@
   (fic-mode 1))
 
 (provide 'fic-mode)
-

@@ -43,89 +43,89 @@ Nice bullets instead of multiplication symbols
 *** agenda file location
 #+BEGIN_SRC emacs-lisp
   (setq org-agenda-files (list "~/creamy_seas/antlers.org"
-			       "~/mydrive/east-data-company.org"
-			       "~/mydrive/people.org"
-			       "~/mydrive/adv18_sa36_automation/adventure_brief.org"
-			       "~/mydrive/adv17_ext_horseBetting/adventure_brief.org"
-			       "~/mydrive/adv16_sa_onFire/adventure_brief.org"))
+                               "~/mydrive/east-data-company.org"
+                               "~/mydrive/people.org"
+                               "~/mydrive/adv18_sa36_automation/adventure_brief.org"
+                               "~/mydrive/adv17_ext_horseBetting/adventure_brief.org"
+                               "~/mydrive/adv16_sa_onFire/adventure_brief.org"))
  #+END_SRC
 *** agenda layout prompt
 #+BEGIN_SRC emacs-lisp
   (setq org-agenda-custom-commands
-	(quote (("c" "Simple agenda view"
-	   ((agenda ""))))))
+        (quote (("c" "Simple agenda view"
+           ((agenda ""))))))
  #+END_SRC
 *** org-capture-templates
 #+BEGIN_SRC emacs-lisp
   (setq org-capture-templates
-	'(("b" "Bloat" entry (id "antlers-bloat")
-	   "** BLOAT %^{stuff-to-be-done}\nSHEDULED: %^T")
+        '(("b" "Bloat" entry (id "antlers-bloat")
+           "** BLOAT %^{stuff-to-be-done}\nSHEDULED: %^T")
 
-	  ("c" "Copy Pasta" entry (id "copy-pasta") "** %^{Pasta Title} %t\n%?")
+          ("c" "Copy Pasta" entry (id "copy-pasta") "** %^{Pasta Title} %t\n%?")
 
-	  ("d" "Draft" plain (file "~/Desktop/.temp.org")
-	   "%?")
+          ("d" "Draft" plain (file "~/Desktop/.temp.org")
+           "%?")
 
-	  ("e" "East-India Data Company")
-	  ("e2" "2am goals" entry (id "bryan-plan")
-	   "** %^{TODO-STATE} %^{stuff-to-be-done}\nDEADLINE: %^T")
-	  ("et" "Time log" table-line (id "bryan-done")
-	   "| %^u | %^{Project}: %^{task-summary} | %^{hours-worked} hours | |"
-	   :table-line-pos "@<-1")
+          ("e" "East-India Data Company")
+          ("e2" "2am goals" entry (id "bryan-plan")
+           "** %^{TODO-STATE} %^{stuff-to-be-done}\nDEADLINE: %^T")
+          ("et" "Time log" table-line (id "bryan-done")
+           "| %^u | %^{Project}: %^{task-summary} | %^{hours-worked} hours | |"
+           :table-line-pos "@<-1")
 
-	  ("l" "Boomer Entry"
-	   item (
-		 file+headline "~/creamy_seas/1488.org.gpg" "Becoming a boomer"
-			       ) "%^{What did Luke say} %^G\n%?" (
-								  file "~/creamy_seas/1488.org.gpg")
-				 "%?")
-	  ("p"
-	   "PhD Tasks")
-	  ("pp"
-	   "Photon Counting"
-	   entry (id "phd-photon")
-	   "*** PHD Photn Counting [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
-	  ("pt" "Twin Qubit"
-	   entry
-	   (id "phd-twin")
-	   "*** PHD Twin Qubit [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
-	  ("px"
-	   "xMon"
-	   entry (id "phd-xmon")
-	   "*** PHD xMon [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
-	  ("pg"
-	   "General"
-	   entry (id "phd-general")
-	   "*** PHD General [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("l" "Boomer Entry"
+           item (
+                 file+headline "~/creamy_seas/1488.org.gpg" "Becoming a boomer"
+                               ) "%^{What did Luke say} %^G\n%?" (
+                                                                  file "~/creamy_seas/1488.org.gpg")
+                                 "%?")
+          ("p"
+           "PhD Tasks")
+          ("pp"
+           "Photon Counting"
+           entry (id "phd-photon")
+           "*** PHD Photn Counting [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("pt" "Twin Qubit"
+           entry
+           (id "phd-twin")
+           "*** PHD Twin Qubit [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("px"
+           "xMon"
+           entry (id "phd-xmon")
+           "*** PHD xMon [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("pg"
+           "General"
+           entry (id "phd-general")
+           "*** PHD General [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
 
-	  ("u"
-	   "Save URL"
-	   entry
-	   (file+headline "~/creamy_seas/1488.org.gpg" "URL too good to throw away")
-	   "** %^L %? %^G"
-	   :kill-buffer t)
+          ("u"
+           "Save URL"
+           entry
+           (file+headline "~/creamy_seas/1488.org.gpg" "URL too good to throw away")
+           "** %^L %? %^G"
+           :kill-buffer t)
 
-	  ("s" "Stories"
-	   entry
-	   (id "stories")
-	   "** %^{Title} %t\n%?")))
-	  ;; tutoring
-	  ;; ("t" "Tutoring lessons")
-	  ;; ("tw" "Nikhil Lesson (Winchester)" table-line (id "tutoring-nikhil-invoice")
-	  ;;  "| # | %^u | %^{lesson summary} | 120%? | |"
-	  ;;  :table-line-pos "III-1")
-	  ;; ("tn" "Nathan Lesson" table-line (id "tutoring-nathan-invoice")
-	  ;;  "| # | %^u | %^{lesson summary} | 45%? | |"
-	  ;;  :table-line-pos "III-1")
-	  ;; ("td" "Darrens Programming" table-line (id "tutoring-darren-invoice")
-	  ;;  "| # | %^u | %^{lesson summary} | 50%? | |"
-	  ;;  :table-line-pos "III-1")
-	  ;; ("f" "Future Lesson")
-	  ;; ("fw" "Nikhil Lesson (Winchester)" entry (id "tutoring-nikhil-lesson")
-	  ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
-	  ;; ("fn" "Nathan Lesson" entry (id "tutoring-nathan-lesson")
-	  ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
-	  ;; ))
+          ("s" "Stories"
+           entry
+           (id "stories")
+           "** %^{Title} %t\n%?")))
+          ;; tutoring
+          ;; ("t" "Tutoring lessons")
+          ;; ("tw" "Nikhil Lesson (Winchester)" table-line (id "tutoring-nikhil-invoice")
+          ;;  "| # | %^u | %^{lesson summary} | 120%? | |"
+          ;;  :table-line-pos "III-1")
+          ;; ("tn" "Nathan Lesson" table-line (id "tutoring-nathan-invoice")
+          ;;  "| # | %^u | %^{lesson summary} | 45%? | |"
+          ;;  :table-line-pos "III-1")
+          ;; ("td" "Darrens Programming" table-line (id "tutoring-darren-invoice")
+          ;;  "| # | %^u | %^{lesson summary} | 50%? | |"
+          ;;  :table-line-pos "III-1")
+          ;; ("f" "Future Lesson")
+          ;; ("fw" "Nikhil Lesson (Winchester)" entry (id "tutoring-nikhil-lesson")
+          ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
+          ;; ("fn" "Nathan Lesson" entry (id "tutoring-nathan-lesson")
+          ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
+          ;; ))
  #+END_SRC
 *** org capture frame
 capture frame can be called from any application - just map it
@@ -134,13 +134,13 @@ capture frame can be called from any application - just map it
       (after delete-capture-frame activate)
     "Advise capture-finalize to close the frame"
     (if (equal "capture" (frame-parameter nil 'name))
-	(delete-frame)))
+        (delete-frame)))
 
   (defadvice org-capture-destroy
       (after delete-capture-frame activate)
     "Advise capture-destroy to close the frame"
     (if (equal "capture" (frame-parameter nil 'name))
-	(delete-frame)))
+        (delete-frame)))
 
   (use-package noflet
     :ensure t )
@@ -177,38 +177,43 @@ capture frame can be called from any application - just map it
 ** todo lists
 #+BEGIN_SRC emacs-lisp
   (setq org-todo-keywords '((sequence "TODO(t)"
-				      "BLOAT(B)"
-				      "BRYAN(z)"
-				      "PHD(p)"
-				      "DREAMS-AI(a)"
-				      "HORSE(h)"
-				      "SA36(3)"
-				      "WORKFORCE(w)"
-				      "SCHOOLS(b)"
-				      "TUTORING(l)"
-				      "CURRENT(c)"
-				      "SKYPE(s)"
-				      "SINO"
-				      "|"
-				      "DOMINATED(d)")))
+                                      "BLOAT(B)"
+                                      "BRYAN(z)"
+                                      "PHD(p)"
+                                      "DREAMS-AI(a)"
+                                      "HORSE(h)"
+                                      "SA36(3)"
+                                      "WORKFORCE(w)"
+                                      "SCHOOLS(b)"
+                                      "TUTORING(l)"
+                                      "CURRENT(c)"
+                                      "SKYPE(s)"
+                                      "SINO"
+                                      "DOWN"
+                                      "|"
+                                      "DOMINATED(d)"
+                                      "PACKAGE"
+                                      )))
 
-    (setq org-todo-keyword-faces (quote (
-					 ("STARTED" . "yellow")
-					 ("CURRENT" . (:foreground "#ffff0a" :background "#754ec1" :weight bold))
-					 ("DREAMS-AI" . (:foreground "#68c3c1" :background "#fdc989" :weight bold))
-					 ("SA36" . (:background "#01168a" :foreground "#fdc989" :weight bold))
-					 ("SKYPE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
-					 ("SINO" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
-					 ("HORSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
-					 ("WORKFORCE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
-					 ("PHD" . (:foreground "yellow" :background "#FF3333"))
-					 ("SCHOOLS" . (:foreground "#090C42" :background "#9DFE9D"))
-					 ("Dominated" . (:foreground "#9DFE9D" :weight bold))
-					 ("BLOAT" . (:foreground "#000001" :background "#ffffff"))
-					 ("TUTORING" . (:foreground "#090C42" :background "#FFD700": weight bold))
-					 ("BRYAN" . (:foreground "#090C42" :background "#33ccff" :weight bold)))))
+  (setq org-todo-keyword-faces (quote (
+                                       ("STARTED" . "yellow")
+                                       ("CURRENT" . (:foreground "#ffff0a" :background "#754ec1" :weight bold))
+                                       ("DREAMS-AI" . (:foreground "#68c3c1" :background "#fdc989" :weight bold))
+                                       ("SA36" . (:background "#01168a" :foreground "#fdc989" :weight bold))
+                                       ("PACKAGE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
+                                       ("SKYPE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
+                                       ("SINO" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
+                                       ("HORSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
+                                       ("WORKFORCE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
+                                       ("PHD" . (:foreground "yellow" :background "#FF3333"))
+                                       ("DONE" . (:foreground "yellow" :background "#FF3333"))
+                                       ("SCHOOLS" . (:foreground "#090C42" :background "#9DFE9D"))
+                                       ("Dominated" . (:foreground "#9DFE9D" :weight bold))
+                                       ("BLOAT" . (:foreground "#000001" :background "#ffffff"))
+                                       ("TUTORING" . (:foreground "#090C42" :background "#FFD700": weight bold))
+                                       ("BRYAN" . (:foreground "#090C42" :background "#33ccff" :weight bold)))))
 
-    (setq org-agenda-span 10)
+  (setq org-agenda-span 10)
  #+END_SRC
 ** insert link                                                    :function:
 #+BEGIN_SRC emacs-lisp
@@ -254,126 +259,126 @@ capture frame can be called from any application - just map it
   default link description."
     (interactive "P")
     (let* ((wcf (current-window-configuration))
-	   (origbuf (current-buffer))
-	   (region (when (org-region-active-p)
-		     (buffer-substring (region-beginning) (region-end))))
-	   (remove (and region (list (region-beginning) (region-end))))
-	   (desc region)
-	   (link link-location)
-	   (abbrevs org-link-abbrev-alist-local)
-	   entry all-prefixes auto-desc)
+           (origbuf (current-buffer))
+           (region (when (org-region-active-p)
+                     (buffer-substring (region-beginning) (region-end))))
+           (remove (and region (list (region-beginning) (region-end))))
+           (desc region)
+           (link link-location)
+           (abbrevs org-link-abbrev-alist-local)
+           entry all-prefixes auto-desc)
       (cond
        (t
-	;; Read link, with completion for stored links.
-	(org-link-fontify-links-to-this-file)
-	(org-switch-to-buffer-other-window "*Org Links*")
-	(let ((cw (selected-window)))
-	  (select-window (get-buffer-window "*Org Links*" 'visible))
-	  (with-current-buffer "*Org Links*" (setq truncate-lines t))
-	  (unless (pos-visible-in-window-p (point-max))
-	    (org-fit-window-to-buffer))
-	  (and (window-live-p cw) (select-window cw)))
-	(setq all-prefixes (append (mapcar 'car abbrevs)
-				   (mapcar 'car org-link-abbrev-alist)
-				   (org-link-types)))
-	(unwind-protect
-	    ;; Fake a link history, containing the stored links.
-	    (let ((org--links-history
-		   (append (mapcar #'car org-stored-links)
-			   org-insert-link-history)))
-	      (setq link "file")
-	      (unless (org-string-nw-p link) (user-error "No link selected"))
-	      (dolist (l org-stored-links)
-		(when (equal link (cadr l))
-		  (setq link (car l))
-		  (setq auto-desc t)))
-	      (when (or (member link all-prefixes)
-			(and (equal ":" (substring link -1))
-			     (member (substring link 0 -1) all-prefixes)
-			     (setq link (substring link 0 -1))))
-		(setq link (with-current-buffer origbuf
-			     (org-link-try-special-completion link)))))
-	  (set-window-configuration wcf)
-	  (kill-buffer "*Org Links*"))
-	(setq entry (assoc link org-stored-links))
-	(or entry (push link org-insert-link-history))
-	(setq desc (or desc (nth 1 entry)))))
+        ;; Read link, with completion for stored links.
+        (org-link-fontify-links-to-this-file)
+        (org-switch-to-buffer-other-window "*Org Links*")
+        (let ((cw (selected-window)))
+          (select-window (get-buffer-window "*Org Links*" 'visible))
+          (with-current-buffer "*Org Links*" (setq truncate-lines t))
+          (unless (pos-visible-in-window-p (point-max))
+            (org-fit-window-to-buffer))
+          (and (window-live-p cw) (select-window cw)))
+        (setq all-prefixes (append (mapcar 'car abbrevs)
+                                   (mapcar 'car org-link-abbrev-alist)
+                                   (org-link-types)))
+        (unwind-protect
+            ;; Fake a link history, containing the stored links.
+            (let ((org--links-history
+                   (append (mapcar #'car org-stored-links)
+                           org-insert-link-history)))
+              (setq link "file")
+              (unless (org-string-nw-p link) (user-error "No link selected"))
+              (dolist (l org-stored-links)
+                (when (equal link (cadr l))
+                  (setq link (car l))
+                  (setq auto-desc t)))
+              (when (or (member link all-prefixes)
+                        (and (equal ":" (substring link -1))
+                             (member (substring link 0 -1) all-prefixes)
+                             (setq link (substring link 0 -1))))
+                (setq link (with-current-buffer origbuf
+                             (org-link-try-special-completion link)))))
+          (set-window-configuration wcf)
+          (kill-buffer "*Org Links*"))
+        (setq entry (assoc link org-stored-links))
+        (or entry (push link org-insert-link-history))
+        (setq desc (or desc (nth 1 entry)))))
 
       (when (funcall (if (equal complete-file '(64)) 'not 'identity)
-		     (not org-keep-stored-link-after-insertion))
-	(setq org-stored-links (delq (assoc link org-stored-links)
-				     org-stored-links)))
+                     (not org-keep-stored-link-after-insertion))
+        (setq org-stored-links (delq (assoc link org-stored-links)
+                                     org-stored-links)))
 
       (when (and (string-match org-plain-link-re link)
-		 (not (string-match org-ts-regexp link)))
-	;; URL-like link, normalize the use of angular brackets.
-	(setq link (org-unbracket-string "<" ">" link)))
+                 (not (string-match org-ts-regexp link)))
+        ;; URL-like link, normalize the use of angular brackets.
+        (setq link (org-unbracket-string "<" ">" link)))
 
       ;; Check if we are linking to the current file with a search
       ;; option If yes, simplify the link by using only the search
       ;; option.
       (when (and buffer-file-name
-		 (let ((case-fold-search nil))
-		   (string-match "\\`file:\\(.+?\\)::" link)))
-	(let ((path (match-string-no-properties 1 link))
-	      (search (substring-no-properties link (match-end 0))))
-	  (save-match-data
-	    (when (equal (file-truename buffer-file-name) (file-truename path))
-	      ;; We are linking to this same file, with a search option
-	      (setq link search)))))
+                 (let ((case-fold-search nil))
+                   (string-match "\\`file:\\(.+?\\)::" link)))
+        (let ((path (match-string-no-properties 1 link))
+              (search (substring-no-properties link (match-end 0))))
+          (save-match-data
+            (when (equal (file-truename buffer-file-name) (file-truename path))
+              ;; We are linking to this same file, with a search option
+              (setq link search)))))
 
       ;; Check if we can/should use a relative path.  If yes, simplify
       ;; the link.
       (let ((case-fold-search nil))
-	(when (string-match "\\`\\(file\\|docview\\):" link)
-	  (let* ((type (match-string-no-properties 0 link))
-		 (path-start (match-end 0))
-		 (search (and (string-match "::\\(.*\\)\\'" link)
-			      (match-string 1 link)))
-		 (path
-		  (if search
-		      (substring-no-properties
-		       link path-start (match-beginning 0))
-		    (substring-no-properties link (match-end 0))))
-		 (origpath path))
-	    (cond
-	     ((or (eq org-link-file-path-type 'absolute)
-		  (equal complete-file '(16)))
-	      (setq path (abbreviate-file-name (expand-file-name path))))
-	     ((eq org-link-file-path-type 'noabbrev)
-	      (setq path (expand-file-name path)))
-	     ((eq org-link-file-path-type 'relative)
-	      (setq path (file-relative-name path)))
-	     (t
-	      (save-match-data
-		(if (string-match (concat "^" (regexp-quote
-					       (expand-file-name
-						(file-name-as-directory
-						 default-directory))))
-				  (expand-file-name path))
-		    ;; We are linking a file with relative path name.
-		    (setq path (substring (expand-file-name path)
-					  (match-end 0)))
-		  (setq path (abbreviate-file-name (expand-file-name path)))))))
-	    (setq link (concat type path (and search (concat "::" search))))
-	    (when (equal desc origpath)
-	      (setq desc path)))))
+        (when (string-match "\\`\\(file\\|docview\\):" link)
+          (let* ((type (match-string-no-properties 0 link))
+                 (path-start (match-end 0))
+                 (search (and (string-match "::\\(.*\\)\\'" link)
+                              (match-string 1 link)))
+                 (path
+                  (if search
+                      (substring-no-properties
+                       link path-start (match-beginning 0))
+                    (substring-no-properties link (match-end 0))))
+                 (origpath path))
+            (cond
+             ((or (eq org-link-file-path-type 'absolute)
+                  (equal complete-file '(16)))
+              (setq path (abbreviate-file-name (expand-file-name path))))
+             ((eq org-link-file-path-type 'noabbrev)
+              (setq path (expand-file-name path)))
+             ((eq org-link-file-path-type 'relative)
+              (setq path (file-relative-name path)))
+             (t
+              (save-match-data
+                (if (string-match (concat "^" (regexp-quote
+                                               (expand-file-name
+                                                (file-name-as-directory
+                                                 default-directory))))
+                                  (expand-file-name path))
+                    ;; We are linking a file with relative path name.
+                    (setq path (substring (expand-file-name path)
+                                          (match-end 0)))
+                  (setq path (abbreviate-file-name (expand-file-name path)))))))
+            (setq link (concat type path (and search (concat "::" search))))
+            (when (equal desc origpath)
+              (setq desc path)))))
 
       (unless auto-desc
-	(let ((initial-input
-	       (cond
-		(default-description)
-		((not org-make-link-description-function) desc)
-		(t (condition-case nil
-		       (funcall org-make-link-description-function link desc)
-		     (error
-		      (message "Can't get link description from `%s'"
-			       (symbol-name org-make-link-description-function))
-		      (sit-for 2)
-		      nil))))))
-	  (setq desc link)
-	  ;; (setq desc (read-string "Description: " initial-input))
-	  ))
+        (let ((initial-input
+               (cond
+                (default-description)
+                ((not org-make-link-description-function) desc)
+                (t (condition-case nil
+                       (funcall org-make-link-description-function link desc)
+                     (error
+                      (message "Can't get link description from `%s'"
+                               (symbol-name org-make-link-description-function))
+                      (sit-for 2)
+                      nil))))))
+          (setq desc link)
+          ;; (setq desc (read-string "Description: " initial-input))
+          ))
 
       (unless (string-match "\\S-" desc) (setq desc nil))
       (when remove (apply 'delete-region remove))
@@ -389,11 +394,11 @@ capture frame can be called from any application - just map it
 ** begin_src generation
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'org-structure-template-alist
-	       '("el" "#+BEGIN_SRC emacs-lisp \n ? \n #+END_SRC"))
+               '("el" "#+BEGIN_SRC emacs-lisp \n ? \n #+END_SRC"))
   (add-to-list 'org-structure-template-alist
-	       '("py" "#+BEGIN_SRC python \n ? \n #+END_SRC"))
+               '("py" "#+BEGIN_SRC python \n ? \n #+END_SRC"))
   (add-to-list 'org-structure-template-alist
-	       '("sh" "#+BEGIN_SRC shell \n ? \n #+END_SRC"))
+               '("sh" "#+BEGIN_SRC shell \n ? \n #+END_SRC"))
 #+END_SRC
 ** indentation                                                      :darren:
 #+BEGIN_SRC emacs-lisp
@@ -455,23 +460,23 @@ capture frame can be called from any application - just map it
 #+BEGIN_SRC emacs-lisp
   (defmath gradeBand(score)
     (if (< score 1)
-	"DNS"
+        "DNS"
       (if (< score 40)
-	  "Working"
-	(if (< score 50)
-	    "3rd"
-	  (if (< score 60)
-	      "2:2"
-	    (if (< score 70)
-		"2:1"
-	      "1st"))))))
+          "Working"
+        (if (< score 50)
+            "3rd"
+          (if (< score 60)
+              "2:2"
+            (if (< score 70)
+                "2:1"
+              "1st"))))))
  #+END_SRC
 ** latex
 #+BEGIN_SRC emacs-lisp
   (setq org-format-latex-options (plist-put org-format-latex-options
-					    :scale 1.7))
+                                            :scale 1.7))
   (setq org-format-latex-options (plist-put org-format-latex-options
-					    :foreground "#fdab10"))
+                                            :foreground "#fdab10"))
  #+END_SRC
 ** keybindings
 #+BEGIN_SRC emacs-lisp

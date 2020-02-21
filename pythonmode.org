@@ -3,29 +3,44 @@
 #+PROPERTY: header-args :tangle yes
 
 Do not use ipython as it is very buggy
+|-------------------------------+-----------------------------------------------+--------------------|
+| =jedi=                        | autocompletion python (suggest names)         |                    |
+| =autopep8=                    | format the code (indent etc). uses =flake8=   |                    |
+| =flake8=                      | format the code (checks typos, syntax errors) | =~/.config/flake8= |
+| =importmagic=                 | automatic imports                             |                    |
+| =python-language-server[all]= |                                               |                    |
+|-------------------------------+-----------------------------------------------+--------------------|
+| =ipython3=                    | kernel                                        |                    |
+| =yapf=                        | code formatiing                               |                    |
+| =rope=                        | 'refactoring' library                         |                    |
+|-------------------------------+-----------------------------------------------+--------------------|
 
-* external setup
-*** install =virtualenvwrapper=
-**** mac
-- install with pip3
-=pip3 install virtualenv=
-=pip3 install virtualenvwrapper=
-=pip3 install virtualfish=
-
-- load up to fish shell (put it in =config.fish= file)
+* External setup
+:PROPERTIES:
+:VISIBILITY: folded
+:END:
+** =virtualenvwrapper=
+*** os-x
+#+BEGIN_SRC shell
+  pip3 install virtualenv
+  pip3 install virtualenvwrapper
+  pip3 install virtualfish
+ #+END_SRC
+*** Arch
+#+BEGIN_SRC shell
+  sudo pacman -S python-virtualenvwrapper
+ #+END_SRC
+*** Configuration files
+**** Fish (=config.sh=)
 =eval (python3 -m virtualfish)=
 
-- craete env
+Then you can
 =vf new mac_vi=
-**** arch
-=sudo pacman -S python-virtualenvwrapper=
-
-add the following to =bashrc=
+**** Bash
 #+BEGIN_SRC sh
-  export WORKON_HOME=~/creamy_seas/sync_files/python_vi
   source /usr/bin/virtualenvwrapper.sh
 #+END_SRC
-*** setup virtual-env
+** Setting up virtual environment
 make virtual end with =mkvirtualenv NAME=
 |------------------------------------+----------------------------------------------|
 | =source NAMELOCATION/bin/activate= | activate an environment                      |
@@ -35,132 +50,44 @@ make virtual end with =mkvirtualenv NAME=
 | =pip install PACKAGENAME=          | install a package to the virtual environemnt |
 | =echo $VIRTUAL_ENV=                | the currently activate virtual environment   |
 |------------------------------------+----------------------------------------------|
-*** pip install (second part not required)
-|-------------------------------+---------------------------------------------+--------------------|
-| =jedi=                        | autocompletion python (suggest names)       |                    |
-| =autopep8=                    | format the code (indent etc). uses =flake8= |                    |
-| =flake8=                      | linting (checks typos, syntax errors)       | =~/.config/flake8= |
-| =importmagic=                 | automatic imports                           |                    |
-| =python-language-server[all]= |                                             |                    |
-|-------------------------------+---------------------------------------------+--------------------|
-| =ipython3=                    | kernel                                      |                    |
-| =yapf=                        | code formatiing                             |                    |
-| =rope=                        | 'refactoring' library                       |                    |
-|-------------------------------+---------------------------------------------+--------------------|
-
-* elpy
+* Default Python
+#+BEGIN_SRC emacs-lisp
+  (setq python-indent-offset 4)
+ #+END_SRC
+* PACKAGE Elpy
 #+BEGIN_SRC emacs-lisp
   (use-package elpy
     :ensure t
+    :init (my/add-to-package-list 'elpy)
     :config
     (elpy-enable)
-    (setq elpy-shell-starting-directory nil)
-    (setq python-shell-completion-native-enable nil) ;remove a warming about native completion
-    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)))
+    (setq elpy-shell-starting-directory 'project-root)
+                                          ; remove a warming about native completion
+    (setq python-shell-completion-native-enable nil)
+                                          ; remove flymake checking
+    ;; (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+    )
+
+  ;; (add-hook 'elpy-mode-hook #'lsp)
  #+END_SRC
-*** =autopep8= support
-automatically fix syntax errors upon saving
+* PACKAGE Autopep8
+Automatically fix syntax errors upon saving
 #+BEGIN_SRC emacs-lisp
   (use-package py-autopep8
     :ensure t
-    :init
-    (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))
+    :hook (elpy-mode . py-autopep8-enable-on-save)
+    :init (my/add-to-package-list 'py-autopep8))
  #+END_SRC
-* python interrupt
-#+BEGIN_SRC emacs-lisp
-  (defun ilya-python-interrupt ()
-    "Send an interrupt signal to python process"
-    (interactive)
-    (let ((proc (ignore-errors
-                  (python-shell-get-process-or-error))))
-      (when proc
-        (interrupt-process proc))))
- #+END_SRC
-* lsp
-#+BEGIN_SRC emacs-lisp
-  ;; (add-hook 'elpy-mode-hook #'lsp)
- #+END_SRC
-
-* virtual environments
-#+BEGIN_SRC emacs-lisp
-  (defun ilya-pyenv-activate (python-environment-path)
-    "Activate a particular environment"
-    (interactive)
-    (progn
-      (pyvenv-activate python-environment-path)
-      (setq elpy-rpc-python-command "python3.7")
-      (setq python-shell-interpreter "python3.7"
-            python-shell-interpreter-args "-i")
-      (pyvenv-restart-python)))
-
-  (ilya-pyenv-activate "~/.config/python_vi/pro_vi")
- #+END_SRC
-*** hydra (loaded on default load)
-#+BEGIN_SRC emacs-lisp
-  (use-package hydra
-    :ensure t)
-
-  ;; (defhydra hydra-python-vi (:color teal
-  ;;                             :hint nil)
-  ;;   "
-  ;;      PYTHON ENVIRONMENT SELECTION
-  ;; ^^^^^------------------------------------------------------------------------------------------
-  ;; _p_: phd-vi                _r_: restart
-  ;; _n_: neural-network-vi     _d_: devel_vi
-  ;; _o_: pro_vi
-  ;; _s_: scraping_vi
-  ;; ^^
-  ;; ^^
-  ;; "
-  ;;   ("p"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/phd_vi"))
-  ;;   ("o"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/pro_vi"))
-  ;;   ("n"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/nn_vi"))
-  ;;   ("s"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/scraping_vi"))
-  ;;   ("d"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/devel_vi"))
-  ;;   ("r"   pyvenv-restart-python)
-  ;;   ("q"   nil "cancel" :color blue))
-
-  ;; (global-set-key (kbd "<f9>") (function hydra-python-vi/body))
- #+END_SRC
-* binding
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'python-mode-hook (lambda ()
-                                (local-unset-key (kbd "C-c C-j")) ;imenu
-                                (local-unset-key (kbd "C-c C-f")) ;elpy-find-file
-                                (define-key elpy-mode-map (kbd "C-c C-b") nil) ;select current indentation
-
-                                (define-key elpy-mode-map (kbd "C-c C-k") (function ilya-python-interrupt))
-                                (define-key elpy-mode-map (kbd "C-c C-j") (function elpy-shell-kill-all))
-                                (define-key elpy-mode-map (kbd "C-c C-n") (function flycheck-next-error))
-                                (define-key elpy-mode-map (kbd "C-c C-p") (function flycheck-previous-error))
-                                (define-key elpy-mode-map (kbd "C-c C-f") (function elpy-nav-expand-to-indentation))
-                                (define-key elpy-mode-map (kbd "C-c C-r") (function elpy-rpc-restart))
-                                (define-key elpy-mode-map (kbd "C-c C-;") (function comment-line))))
- #+END_SRC
-
-* Yas support
-#+BEGIN_SRC emacs-lisp
- (defun python-args-to-docstring-numpy ()
-  "return docstring format for the python arguments in yas-text"
-  (let* ((args (python-split-args yas-text))
-         (format-arg (lambda(arg)
-                       (concat "    " (nth 0 arg) " : " (if (nth 1 arg) ", optional") "\n")))
-         (formatted-params (mapconcat format-arg args "\n"))
-         (formatted-ret (mapconcat format-arg (list (list "out")) "\n    ")))
-    (unless (string= formatted-params "")
-      (mapconcat 'identity
-                 (list "\n    Parameters\n    ----------" formatted-params
-                       "\n    Returns\n    -------" formatted-ret)
-                 "\n"))))
- #+END_SRC
-* Hydra
+* PACKAGE Hideshow-org
+Allows collapsing of columns
 #+BEGIN_SRC emacs-lisp
   (use-package hideshow-org
-      :ensure t
-      :config
-      (add-hook 'elpy-mode-hook 'hs-minor-mode))
-
-  (defhydra hydra-python-collapse
+    :ensure t
+    :init (my/add-to-package-list 'hideshow-org)
+    :config
+    (add-hook 'elpy-mode-hook 'hs-minor-mode))
+** hydra-python-hideshow
+  (defhydra hydra-python-hideshow
     (:color pink				;all colors pink by default
             :timeout 1488
             :hint nil
@@ -189,5 +116,118 @@ automatically fix syntax errors upon saving
     ("q" nil "quit")
     )
 
-  (define-key elpy-mode-map (kbd "C-c C-h") (function hydra-python-collapse/body))
+  (define-key elpy-mode-map (kbd "C-c C-h") (function hydra-python-hideshow/body))
+ #+END_SRC
+* Functions
+** =my/python/interrupt=
+#+BEGIN_SRC emacs-lisp
+  (defun my/python/interrupt ()
+    "Send an interrupt signal to python process"
+    (interactive)
+    (let ((proc (ignore-errors
+                  (python-shell-get-process-or-error))))
+      (when proc
+        (interrupt-process proc))))
+
+  (define-key elpy-mode-map (kbd "C-c C-k") (function my/python/interrupt))
+ #+END_SRC
+** =my/python/activate-venv=
+#+BEGIN_SRC emacs-lisp
+  (defun my/python/activate-venv (python-environment-path)
+    "Activate a particular environment"
+    (interactive)
+    (progn
+      (pyvenv-activate python-environment-path)
+      (setq elpy-rpc-python-command "python3.7")
+      (setq python-shell-interpreter "python3.7"
+            python-shell-interpreter-args "-i")
+      (pyvenv-restart-python)))
+ #+END_SRC
+*** hydra-python-vi
+#+BEGIN_SRC emacs-lisp
+  ;; (defhydra hydra-python-vi (:color teal
+  ;;                             :hint nil)
+  ;;   "
+  ;;      PYTHON ENVIRONMENT SELECTION
+  ;; ^^^^^------------------------------------------------------------------------------------------
+  ;; _p_: phd-vi                _r_: restart
+  ;; _n_: neural-network-vi     _d_: devel_vi
+  ;; _o_: pro_vi
+  ;; _s_: scraping_vi
+  ;; ^^
+  ;; ^^
+  ;; "
+  ;;   ("p"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/phd_vi"))
+  ;;   ("o"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/pro_vi"))
+  ;;   ("n"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/nn_vi"))
+  ;;   ("s"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/scraping_vi"))
+  ;;   ("d"   (ilya-pyenv-activate "~/creamy_seas/sync_files/python_vi/devel_vi"))
+  ;;   ("r"   pyvenv-restart-python)
+  ;;   ("q"   nil "cancel" :color blue))
+
+  ;; (global-set-key (kbd "<f9>") (function hydra-python-vi/body))
+ #+END_SRC
+* Hide virtualenv in modeline
+#+BEGIN_SRC emacs-lisp
+  (setq pyvenv-mode-line-indicator nil)
+ #+END_SRC
+* Prettify Symbols
+Replaces letters in programming mode
+#+BEGIN_SRC emacs-lisp
+  (defvar my/prettify-symbol-list-python
+    '(
+      ("def" .      #x2131)
+      ("in" .       #x2208)
+      ("not in" .   #x2209)
+      ("return" .   #x27fc)
+      ("yield" .    #x27fb)
+      ("for" .      #x2200)
+      ;; Base Types
+      ("int" .      #x2124)
+      ("float" .    #x211d)
+      ("str" .      #x1d54a)
+      ("True" .     #x1d54b)
+      ("False" .    #x1d53d)
+      ;; Mypy
+      ("Dict" .     #x1d507)
+      ("List" .     #x2112)
+      ("Tuple" .    #x2a02)
+      ("Set" .      #x2126)
+      ("Iterable" . #x1d50a)
+      ("Union" .    #x22c3)
+      ))
+
+  (when window-system
+    (global-prettify-symbols-mode t)
+    (add-hook
+     'python-mode-hook
+     (lambda ()
+       (dolist (pair my/prettify-symbol-list-python)
+         (push pair prettify-symbols-alist)))))
+
+ #+END_SRC
+* DOWN Yasnippet function
+#+BEGIN_SRC emacs-lisp
+  ;; (defun python-args-to-docstring-numpy ()
+  ;;  "return docstring format for the python arguments in yas-text"
+  ;;  (let* ((args (python-split-args yas-text))
+  ;;         (format-arg (lambda(arg)
+  ;;                       (concat "    " (nth 0 arg) " : " (if (nth 1 arg) ", optional") "\n")))
+  ;;         (formatted-params (mapconcat format-arg args "\n"))
+  ;;         (formatted-ret (mapconcat format-arg (list (list "out")) "\n    ")))
+  ;;    (unless (string= formatted-params "")
+  ;;      (mapconcat 'identity
+  ;;                 (list "\n    Parameters\n    ----------" formatted-params
+  ;;                       "\n    Returns\n    -------" formatted-ret)
+  ;;                 "\n"))))
+ #+END_SRC
+* Keybindings
+#+BEGIN_SRC emacs-lisp
+  (define-key elpy-mode-map (kbd "C-c C-j") (function elpy-shell-kill-all))
+  (define-key elpy-mode-map (kbd "C-c C-n") (function flycheck-next-error))
+  (define-key elpy-mode-map (kbd "C-c C-p") (function flycheck-previous-error))
+ #+END_SRC
+* Init
+#+BEGIN_SRC emacs-lisp
+  (my/python/activate-venv "~/.config/python_vi/pro_vi")
  #+END_SRC

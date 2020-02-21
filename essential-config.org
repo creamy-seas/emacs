@@ -1,4 +1,4 @@
-#+TITLE: Essential config that makes life easier
+#+TITLE: Essential config for functions and heavily used packages
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
@@ -31,6 +31,20 @@
   (define-prefix-command 'my/keymap)
   (global-set-key (kbd "<C-i>") 'my/keymap)
  #+END_SRC
+** Symbols mapping
+#+BEGIN_SRC emacs-lisp
+  (define-key key-translation-map (kbd "C-x 8 h") (kbd "卍"))
+  (define-key key-translation-map (kbd "C-x 8 w") (kbd "🐳"))
+  (define-key key-translation-map (kbd "C-x 8 W") (kbd "🐋"))
+  (define-key key-translation-map (kbd "C-x 8 O") (kbd "Ω"))
+  (define-key key-translation-map (kbd "C-x 8 #") (kbd "£"))
+  (define-key key-translation-map (kbd "C-x 8 -") (kbd "→"))
+  (define-key key-translation-map (kbd "C-x 8 t") (kbd "✔"))
+  (define-key key-translation-map (kbd "C-x 8 c") (kbd "✘"))
+  (define-key key-translation-map (kbd "C-x 8 b") (kbd "⦿"))
+  (define-key key-translation-map (kbd "C-x 8 _") (kbd "̲"))
+  (define-key key-translation-map (kbd "C-x 8 q") (kbd "\""))
+ #+END_SRC
 ** Russian mappings
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-ч C-ы") (function save-buffer))
@@ -58,8 +72,7 @@
 ** =my/config-file-path-evaluate=
 #+BEGIN_SRC emacs-lisp
   (defun my/config-file-path-evaluate (path-from-config-folder)
-    "A shorthand for expanding the name of a file into the config
-  directory with the full location"
+    "Expanding the path for a file in the emacs config folder"
     (concat my/config-folder-location path-from-config-folder))
  #+END_SRC
 ** =my/copy-line=
@@ -193,67 +206,86 @@
 ** =my/tangle-init=
 If the current buffer is one of the config files, the code-blocks are tangled, and the tangled file is compiled.
 #+BEGIN_SRC emacs-lisp
-  (defun my/tangle-init ()
+  (defun my/config-file-tangle ()
     "Should be run after saving every file - check if the name is in the config files and
-    tangle if yes"
+      tangle if yes"
     (let ((current-file (file-name-nondirectory (buffer-file-name))))
       (when (member current-file my/config-files)
-        (let ((prog-mode-hook nil)		;; Avoid running hooks when tangling.
+
+                                          ; Avoid running hooks when tangling.
+        (let ((prog-mode-hook nil)
               (el-file (replace-regexp-in-string "\.org" "\.el" current-file)))
+                                          ; Tangle the file
           (org-babel-tangle)
+
+                                          ; Copy over to the emacs directory
           (let ((el-compiled-file (my/config-file-path-evaluate el-file))
                 (el-emacs-file (concat user-emacs-directory el-file)))
             (rename-file el-compiled-file el-emacs-file t)
-            (message (concat "Compiled" el-compiled-file))
-            (byte-compile-file el-emacs-file))))))
 
-    (add-hook 'after-save-hook 'my/tangle-init)
- #+END_SRC
-* 3 - Packages
-** Install missing packages
-#+BEGIN_SRC emacs-lisp
-  (defun *-package-upgrade ()
-    "Refresh, upgrade and delete obsolete packages synchronously."
-    (interactive)
-    (save-window-excursion
-      (let (package-menu-async)
-        (package-list-packages)))
-    (with-current-buffer "*Packages*"
-      (package-menu-mark-upgrades)
-      (package-menu-mark-obsolete-for-deletion)
-      (condition-case err
-          (package-menu-execute t)
-        ;; Don't barf if there is nothing to do
-        (user-error (message "Nothing to do"))
-        ;; But allow other errors through
-        (error (signal (car err) (cdr err))))))
- #+END_SRC
-** Package hydra
-#+BEGIN_SRC emacs-lisp
-  (defhydra hydra-package (:color blue)
-    "
-  Packages                                                           [_q_] quit
-  ^^---------------------------------------------------------------------------
-  [_d_] describe
-  [_i_] install
-  [_l_] list
-  [_L_] list (no fetch)
-  [_U_] upgrade all
-  "
-  ("d" describe-package nil)
-  ("i" package-install nil)
-  ("l" package-list-packages nil)
-  ("L" package-list-packages-no-fetch nil)
-  ("U" *-package-upgrade nil)
-  ("q" nil nil))
+                                          ; Bytecompile
+            (byte-compile-file el-emacs-file t)
+                                          ; Reload config
+            ;; (load-file (concat user-emacs-directory el-emacs-file "c"))
+            (message (concat "Compiled and loaded " el-emacs-file)))))))
 
-  (define-key my/keymap (kbd "p") (function hydra-package/body))
+  (add-hook 'after-save-hook 'my/config-file-tangle)
  #+END_SRC
-* Aya                                                                  :Read:
+* PACKAGE Hydra                                                     :Package:
+Used for defining menus in the rest of the config
 #+BEGIN_SRC emacs-lisp
-  (define-key my/keymap (kbd "s") (function aya-create))
-  (define-key my/keymap (kbd "y") (function aya-expand))
+  (use-package hydra
+    :ensure t
+    :init (my/add-to-package-list 'hydra))
+ #+END_SRC
+* PACKAGE Ivy                                                       :Package:
+A generic autocompletion framework
+| Ivy     | Generic completion                      |
+| Counsel | Ivy-enhanced versions of emacs commands |
+| Swiper  | Alternative search                     |
 
+https://sam217pa.github.io/2016/09/11/nuclear-power-editing-via-ivy-and-ag/
+
+** Ivy
+*** Init
+#+BEGIN_SRC emacs-lisp
+  (use-package ivy
+    :ensure t
+    :init (my/add-to-package-list 'ivy)
+    (ivy-mode)
+    :config
+    (setq ivy-use-virtual-buffers t
+          enable-recursive-minibuffers t
+                                          ;change how ivy displays autocompletion
+          ivy-count-format "%d/%d "))
+ #+END_SRC
+
+*** Keybindings
+#+BEGIN_SRC emacs-lisp
+  (define-key my/keymap (kbd "s") (function ivy-resume))
+ #+END_SRC
+** Counsel
+Rebind emacs commands to use ivy https://github.com/abo-abo/swiper#counsel
+#+BEGIN_SRC emacs-lisp
+  (require 'counsel)
+  (counsel-mode)
+ #+END_SRC
+** Swiper
+The superior search mode to the original
+#+BEGIN_SRC emacs-lisp
+  (require 'swiper)
+  (global-set-key (kbd "C-s") 'swiper)
+#+END_SRC
+* PACKAGE Fic
+Due to errors with fic-mode, we need to do a preloading of the file
+Highlighting of TODOs
+#+BEGIN_SRC emacs-lisp
+  (load-file (my/config-file-path-evaluate "manual_el/fic-mode.el"))
+  (use-package fic-mode
+    :ensure t
+    :init  (my/add-to-package-list 'fic-mode)
+    :config
+    (add-hook 'prog-mode-hook 'turn-on-fic-mode))
  #+END_SRC
 * Arsist mode
 #+BEGIN_SRC emacs-lisp
@@ -283,16 +315,14 @@ If the current buffer is one of the config files, the code-blocks are tangled, a
   (global-set-key (kbd "<f7>") 'bookmark-jump)
   (global-set-key (kbd "<f8>") 'bookmark-bmenu-list)
  #+END_SRC
-
-* GPG
-Make emacs prompt for password in the minibuffer
+* Comment line
 #+BEGIN_SRC emacs-lisp
-  (setq epa-pinentry-mode 'loopback)
+  (global-set-key (kbd "C-c C-;") (function comment-line))
  #+END_SRC
 * Narrow and widen
 Smarter widen and narrow
 #+BEGIN_SRC emacs-lisp
-  (defun narrow-or-widen-dwim (p)
+  (defun my/narrow-or-widen-dwim (p)
     "If the buffer is narrowed, it widens. Otherwise, it narrows intelligently.
   Intelligently means: region, org-src-block, org-subtree, or defun,
   whichever applies first.
@@ -315,7 +345,7 @@ Smarter widen and narrow
                  (t (org-narrow-to-subtree))))
           (t (narrow-to-defun))))
 
-  (global-set-key (kbd "C-x n") (function narrow-or-widen-dwim))
+  (global-set-key (kbd "C-x n") (function my/narrow-or-widen-dwim))
  #+END_SRC
 * Overwrite selected text when typing
 #+BEGIN_SRC emacs-lisp
@@ -325,8 +355,7 @@ Smarter widen and narrow
 Any changes of a file, will be automatically reloaded
 #+BEGIN_SRC emacs-lisp
   (global-auto-revert-mode 1)
-
-
+  (setq load-prefer-newer t)
  #+END_SRC
 * Saving hooks
 #+BEGIN_SRC emacs-lisp

@@ -2,14 +2,14 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-* Application window
+* Application window                                                 :Ricing:
 #+BEGIN_SRC emacs-lisp
   (setq frame-title-format "nsdap")
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
  #+END_SRC
-* Autoclosing brackets
+* Autoclosing brackets                                               :Ricing:
 #+BEGIN_SRC emacs-lisp
    (setq electric-pair-pairs '(
                               (?\( . ?\))
@@ -102,7 +102,7 @@ buffer suggestion is given as a list in the terminal command (after C-x b)
  #+END_SRC
 * Clock
 #+BEGIN_SRC emacs-lisp
-  (display-time-mode 1)
+  ;; (display-time-mode 1)
 #+END_SRC
 * Column Fill
 Set it to 78, so that on an 80-character interface there are 2 whitespaces
@@ -131,7 +131,8 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
   (custom-set-faces
    '(default ((t (:family "JetBrains Mono" :height 170))))
    (custom-set-faces '(eldoc-highlight-function-argument ((t (:inherit font-lock-variable-name-face)))))
-   ;; '(default ((t (:family "Inconsolata" :height 170 :background "#2d3743"))))
+   '(default ((t (:family "Inconsolata" :height 170))))
+   '(default ((t (:family "Fira Code" :height 170))))
    ;; `(popup-scroll-bar-background-face ((t (:background "#189a1e1224a2"))))
    ;; `(popup-scroll-bar-foreground-face ((t (:background "#41bf505b61e3"))))
    ;; `(popup-face ((t (:background "#41bf505b61e3" :foreground "white"))))
@@ -146,6 +147,11 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
 * Fullscreen
 #+BEGIN_SRC emacs-lisp
   (toggle-frame-fullscreen)
+ #+END_SRC
+* GPG prompt
+Make emacs prompt for password in the minibuffer
+#+BEGIN_SRC emacs-lisp
+  (setq epa-pinentry-mode 'loopback)
  #+END_SRC
 * Keeping system up to date
 #+BEGIN_SRC emacs-lisp
@@ -170,7 +176,7 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
   ;; after-init-hook which hides the startup message.
   (add-hook 'after-init-hook 'display-startup-echo-area-message)
  #+END_SRC
-* Highlight brackets                                                :Package:
+* PACKAGE Highlight brackets
 #+BEGIN_SRC emacs-lisp
   (show-paren-mode)
 
@@ -241,7 +247,7 @@ New buffer is opened in the window that the command was called from
   ;;  (add-to-list `ibuffer-never-show-predicates "*Help*")
   ;; (add-to-list `ibuffer-never-show-predicates "*elfeed-log*")
 #+END_SRC
-** column lengths
+** Column lengths
 #+BEGIN_SRC emacs-lisp
   (setq ibuffer-formats
         '((mark
@@ -261,7 +267,7 @@ New buffer is opened in the window that the command was called from
                 ;; " " filename)
         ))
 #+END_SRC
-** collapse by Default
+** Collapse by Default
 #+BEGIN_SRC emacs-lisp
   (setq mp/ibuffer-collapsed-groups (list "Default" "*Internal*" "ᛓ Elfeed"))
   ;; (setq mp/ibuffer-collapsed-groups (list "*Internal*"))
@@ -283,7 +289,7 @@ New buffer is opened in the window that the command was called from
     )
  #+END_SRC
 
-* Key suggestion                                                    :Package:
+* PACKAGE Key suggestion
 #+BEGIN_SRC emacs-lisp
   (use-package which-key
     :ensure t
@@ -356,8 +362,9 @@ New buffer is opened in the window that the command was called from
 
   (global-set-key (kbd "C-h C-s") #'hydra-system-info/body)
  #+END_SRC
-* Modeline                                                          :Package:
-** Doom modeline                                                   :Package:
+* PACKAGE Modeline
+run (all-the-icons-install-fonts) to install the fonts for the modeline
+** Doom modeline
 #+BEGIN_SRC emacs-lisp
   (use-package doom-modeline
     :ensure t
@@ -422,7 +429,7 @@ New buffer is opened in the window that the command was called from
   (setq doom-modeline-enable-word-count nil)
 
   ;; Whether display buffer encoding.
-  (setq doom-modeline-buffer-encoding t)
+  (setq doom-modeline-buffer-encoding nil)
 
   ;; Whether display indentation information.
   (setq doom-modeline-indent-info nil)
@@ -458,9 +465,9 @@ New buffer is opened in the window that the command was called from
   (setq doom-modeline-irc-stylize 'identity)
 
   ;; Whether display environment version or not
-  (setq doom-modeline-env-version t)
+  (setq doom-modeline-env-verion nil)
   ;; Or for individual languages
-  (setq doom-modeline-env-enable-python t)
+  (setq doom-modeline-env-enable-python nil)
   (setq doom-modeline-env-enable-ruby t)
   (setq doom-modeline-env-enable-perl t)
   (setq doom-modeline-env-enable-go t)
@@ -482,7 +489,7 @@ New buffer is opened in the window that the command was called from
   (setq doom-modeline-before-update-env-hook nil)
   (setq doom-modeline-after-update-env-hook nil)
  #+END_SRC
-** Powerline                                                          :Down:
+** DOWN Powerline
 #+BEGIN_SRC emacs-lisp
   ;; (use-package powerline
   ;;   :ensure t
@@ -492,7 +499,7 @@ New buffer is opened in the window that the command was called from
 
   ;; (setq powerline-default-separator 'box)
  #+END_SRC
-** Spaceline                                                          :Down:
+** DOWN Spaceline
 #+BEGIN_SRC emacs-lisp
   ;; (use-package spaceline
   ;;   :ensure t
@@ -502,7 +509,7 @@ New buffer is opened in the window that the command was called from
   ;;   (setq ns-use-srgb-colorspace nil)
   ;;   (spaceline-spacemacs-theme))
 #+END_SRC
-** Smart modeline                                                     :Down:
+** DOWN Smart modeline
 smart mode line allows infinite customization
 *** main setup
 #+BEGIN_SRC emacs-lisp
@@ -557,7 +564,7 @@ smart mode line allows infinite customization
   ;;  '(sml/col-number ((t (:inherit sml/global :underline t))))
   ;;  '(sml/discharging ((t (:inherit sml/global :foreground "Red" :underline t))))
  #+END_SRC
-** Battery
+** PACKAGE Battery
 #+BEGIN_SRC emacs-lisp
   (use-package fancy-battery
     :diminish
@@ -573,46 +580,47 @@ smart mode line allows infinite customization
                  (:background "selectedControlColor"
                   :foreground "DeepSkyBlue1")))))
  #+END_SRC
-* Newer file error
+* DOMINATED Packages Menu                                              :Menu:
+** Install missing packages
 #+BEGIN_SRC emacs-lisp
-  (setq load-prefer-newer t)
+  (defun *-package-upgrade ()
+    "Refresh, upgrade and delete obsolete packages synchronously."
+    (interactive)
+    (save-window-excursion
+      (let (package-menu-async)
+        (package-list-packages)))
+    (with-current-buffer "*Packages*"
+      (package-menu-mark-upgrades)
+      (package-menu-mark-obsolete-for-deletion)
+      (condition-case err
+          (package-menu-execute t)
+        ;; Don't barf if there is nothing to do
+        (user-error (message "Nothing to do"))
+        ;; But allow other errors through
+        (error (signal (car err) (cdr err))))))
  #+END_SRC
-* Prettify Symbols
-Replaces letters in programming mode
+** Package hydra
 #+BEGIN_SRC emacs-lisp
-  (defvar my/prettify-symbol-list-python
-    '(
-      ("def" .      #x2131)
-      ("in" .       #x2208)
-      ("not in" .   #x2209)
-      ("return" .   #x27fc)
-      ("yield" .    #x27fb)
-      ("for" .      #x2200)
-      ;; Base Types
-      ("int" .      #x2124)
-      ("float" .    #x211d)
-      ("str" .      #x1d54a)
-      ("True" .     #x1d54b)
-      ("False" .    #x1d53d)
-      ;; Mypy
-      ("Dict" .     #x1d507)
-      ("List" .     #x2112)
-      ("Tuple" .    #x2a02)
-      ("Set" .      #x2126)
-      ("Iterable" . #x1d50a)
-      ("Union" .    #x22c3)
-      ))
+  (defhydra hydra-package (:color blue)
+    "
+  Packages                                                           [_q_] quit
+  ^^---------------------------------------------------------------------------
+  [_d_] describe
+  [_i_] install
+  [_l_] list
+  [_L_] list (no fetch)
+  [_U_] upgrade all
+  "
+  ("d" describe-package nil)
+  ("i" package-install nil)
+  ("l" package-list-packages nil)
+  ("L" package-list-packages-no-fetch nil)
+  ("U" *-package-upgrade nil)
+  ("q" nil nil))
 
-  (when window-system
-    (global-prettify-symbols-mode t)
-    (add-hook
-     'python-mode-hook
-     (lambda ()
-       (dolist (pair my/prettify-symbol-list-python)
-         (push pair prettify-symbols-alist)))))
-
+  (define-key my/keymap (kbd "p") (function hydra-package/body))
  #+END_SRC
-* Startup
+* DOMINATED Startup
 ** Do not show startup screen
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-screen t)
@@ -621,18 +629,18 @@ Replaces letters in programming mode
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
 #+END_SRC
-* Theme                                                             :Package:
+* PACKAGE Theme
 #+BEGIN_SRC emacs-lisp
   (load-theme 'deeper-blue)
   ;; (load-theme 'doom-vibrant)
  #+END_SRC
-** Extra themes                                                    :Package:
+** PACKAGE Extra themes
 #+BEGIN_SRC emacs-lisp
   (use-package doom-themes
     :ensure t
     :init (my/add-to-package-list 'doom-themes))
  #+END_SRC
-* Toggling modes
+* DOMINATED Toggling modes
 #+BEGIN_SRC emacs-lisp
   (defhydra hydra-toggle (:color amaranth)
     "
@@ -679,17 +687,17 @@ Replaces letters in programming mode
     ("q" nil nil :color blue)
     ("y" yas-global-mode nil))
 
-  (define-key ctl-x-map "t" #'hydra-toggle/body)
+  (define-key my/keymap "t" #'hydra-toggle/body)
  #+END_SRC
-* Windows                                                           :Package:
-** Golden Ratio                                                    :Package:
+* PACKAGE Windows
+** PACKAGE Golden Ratio
 #+BEGIN_SRC emacs-lisp
   (use-package golden-ratio
     :ensure t
     :init (my/add-to-package-list 'golden-ratio)
     (golden-ratio-mode 1))
  #+END_SRC
-** Switch Window                                                   :Package:
+** PACKAGE Switch Window
 When the there are more than two windows =C-x o= will give each window a letter that can be jumped to
 #+BEGIN_SRC emacs-lisp
   (use-package switch-window
@@ -709,9 +717,9 @@ When the there are more than two windows =C-x o= will give each window a letter 
   (global-set-key (kbd "s-o") 'switch-window)
 
   ;; Ensures that it works with golden ratio
-  (defadvice golden-ration-after-switch-window (after switch-window activate)
-    (golden-ratio))
-  ;; (add-hook 'switch-window-finish-hook (function golden-ratio))
+  ;; (defadvice golden-ration-after-switch-window (after switch-window activate)
+  ;; (golden-ratio))
+  (add-hook 'switch-window-finish-hook (function golden-ratio))
 
 
 
@@ -743,11 +751,11 @@ When the there are more than two windows =C-x o= will give each window a letter 
   (global-set-key (kbd "C-M-p") #'scroll-other-window-down)
   (global-set-key (kbd "C-M-n") #'scroll-other-window)
  #+END_SRC
-* Wrapping lines
+* DOMINATED Wrapping lines
 #+BEGIN_SRC emacs-lisp
   (global-visual-line-mode t)
  #+END_SRC
-* Yes-No Alias
+* DOMINATED Yes-No Alias
 #+BEGIN_SRC emacs-lisp
   (defalias 'yes-or-no-p 'y-or-n-p)
  #+END_SRC

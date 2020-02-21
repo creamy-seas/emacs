@@ -2,35 +2,52 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
+|------------------------------------------------+-----------------|
 | =C-x C-f /-::/directiontofile=                 | connect simple  |
 | =C-x C-f /sudo:134.219.128.96:directiontofile= | connect as sudo |
-when using =/sudo:134.219.128.96= we first login to the proxy via my antonov@134.219.128.96 account, and then | as sudo to the root@134.219.128.96
-** vagrant
-- to craete file =vagrant init archlinux/archlinux=
-- then =vagrant up= to run
-- =vagrant ssh= to enter
+|------------------------------------------------+-----------------|
 
-tramp looks for the env inn =vagrant global-status=. if not showing up, go to that directory and do =vagrant destroy= =vagrant up=
+To do multiple passthroughs use the | command
 
-** setting up tramp
+* PACKAGE Tramp
 #+BEGIN_SRC emacs-lisp
   (use-package tramp
     :ensure t
+    :init (my/add-to-package-list 'tramp)
     :config
-    (custom-set-variables
-     '(tramp-default-method "vagrant")))
-     ;; '(tramp-default-user "arch")))
-     ;; '(tramp-default-host "192.168.0.5")))
+    (customize-set-variable 'tramp-default-method "ssh")
+                                          ; specify that when host is arch, we use vagrant
+    (add-to-list 'tramp-default-method-alist '("arch" "" "vagrant"))
+    )
 
-  (use-package vagrant
-    :ensure t)
-  (use-package vagrant-tramp
-    :ensure t)
-  (eval-after-load 'tramp
-    '(vagrant-tramp-enable))
-
-  ;; (add-to-list 'tramp-default-user-alist
-  ;;         '("ssh" "192\\.168\\.0\\.5#6767" "antonov"))
-  ;; (add-to-list 'tramp-default-proxies-alist
-  ;;           '("134\\.219\\.128\\.96" "root"))
+  ;; Set default user for given method and server
+  (add-to-list 'tramp-default-user-alist
+               '("ssh" "project02\\.sinobestech\\.com\\.hk" "programmer"))
+  (add-to-list 'tramp-default-user-alist
+               '("ssh" "project021\\.sinobestech\\.com\\.hk" "ilya"))
+  (add-to-list 'tramp-default-user-alist
+               '("ssh" "dreams-ai\\.com" "ilya"))
 #+END_SRC
+
+* PACKAGE Vagrant
+Tramp looks for the env =vagrant global-status=
+If not showing up, go to that directory and do
+=vagrant halt=
+=vagrant up=
+
+** External setup
+To create file =vagrant init archlinux/archlinux=
+- =vagrant up= to run
+- =vagrant ssh= to enter
+
+** Config
+#+BEGIN_SRC emacs-lisp
+  (use-package vagrant
+    :ensure t
+    :init (my/add-to-package-list 'vagrant))
+  (use-package vagrant-tramp
+    :ensure t
+    :init (my/add-to-package-list 'vagrant-tramp)
+    :config
+    (eval-after-load 'tramp '(vagrant-tramp-add-method)))
+ #+END_SRC

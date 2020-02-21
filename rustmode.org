@@ -1,9 +1,8 @@
 #+TITLE: Rust setup
-#+STARTUP: overview
+#+STARTUP: content
 #+PROPERTY: header-args :tangle yes
 
-On os-x, you need to run =sudo cargo build=
-If you keep getting errors, =cargo clean= and repeat above command
+You cannot compile in Google Drive. Rust throws an error
 
 |-------------+---------------------------------+-------|
 | =C-c C-c ?= | various cargo functions         | cargo |
@@ -38,24 +37,28 @@ You will need to =export PATH=~/.rustup/toolchains/stable-x86_64-apple-darwin/li
 ** ? - Instal  =racer=
 =cargo install racer=
 
-* Init
+* PACKAGE Init
 #+BEGIN_SRC emacs-lisp
   (use-package rust-mode
     :ensure t
-    :init (my/add-to-package-list 'rust-mode)
-    :config
-    (add-hook 'rust-mode-hook
-              (lambda () (setq indent-tabs-mode nil)))
-    (setq rustic-lsp-server 'rust-analyzer))
+    :init (my/add-to-package-list 'rust-mode))
+                                          ; use rust analyzer above the normal lsp server
+  (setq lsp-rust-server 'rust-analyzer)
+                                          ; launch lsp server
+  (add-hook 'rust-mode-hook #'lsp)
+                                          ; indentation
+  (add-hook 'rust-mode-hook
+            (lambda () (setq indent-tabs-mode nil)))
  #+END_SRC
 
-* Flycheck rust
+* PACKAGE Flycheck rust
 #+BEGIN_SRC emacs-lisp
-   (use-package flycheck-rust
+  (use-package flycheck-rust
     :ensure t
+    :init (my/add-to-package-list 'flycheck-rust)
     :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
  #+END_SRC
-* Cargo
+* PACKAGE Cargo
 #+BEGIN_SRC emacs-lisp
   (use-package cargo
     :ensure t
@@ -63,24 +66,28 @@ You will need to =export PATH=~/.rustup/toolchains/stable-x86_64-apple-darwin/li
     :diminish cargo-minor-mode
     :hook (rust-mode . cargo-minor-mode))
  #+END_SRC
+* PACKAGE Racer
+#+BEGIN_SRC emacs-lisp
+  (use-package racer
+    :ensure t
+    :hook
+    (rust-mode . racer-mode)
+    (racer-mode . eldoc-mode)
+                                          ; show current function being typed
+    (racer-mode . company-mode)
+    :init (my/add-to-package-list 'racer))
 
+  (use-package rustic
+    :ensure t
+    :hook
+    (racer-mode . rustic-mode)
+    :init (my/add-to-package-list 'rustic))
+ #+END_SRC
 * Bloat
 #+BEGIN_SRC emacs-lisp
   ;; (setq racer-rust-src-path "/Users/CCCP/Vagrant_VMs/rust-source-code")
-
-  ;; (use-package racer
-  ;;   :ensure t
-  ;;   :config
-  ;;   (add-hook 'rust-mode-hook #'racer-mode)
-  ;;   (add-hook 'racer-mode-hook #'eldoc-mode)	;show in minibuffer fuction you are currently writing
-  ;;   (add-hook 'racer-mode-hook #'company-mode))
-
-  ;; (use-package rustic
-  ;;   :ensure t
-  ;;   :config
-  ;;   (add-hook 'racer-mode-hook 'rustic-mode))
-  ;; ;; (setq rustic-format-trigger 'on-save)
-  ;; ;; (setq rust-format-on-save t))
+  ;; (setq rustic-format-trigger 'on-save)
+  ;; (setq rust-format-on-save t))
  #+END_SRC
 * Keybindings
 #+BEGIN_SRC emacs-lisp

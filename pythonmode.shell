@@ -1,0 +1,5 @@
+pip3 install virtualenv
+pip3 install virtualenvwrapper
+pip3 install virtualfish
+
+sudo pacman -S python-virtualenvwrapper

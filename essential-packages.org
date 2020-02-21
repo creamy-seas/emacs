@@ -2,42 +2,6 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-* Ivy                                                             :Essential:
-A generic autocompletion framework
-| Ivy     | Generic completion                      |
-| Counsel | Ivy-enhanced versions of emacs commands |
-| Swiper  | Alternative search                     |
-
-** Ivy
-*** Init
-#+BEGIN_SRC emacs-lisp
-  (use-package ivy
-    :ensure t
-    :init (my/add-to-package-list 'ivy)
-    (ivy-mode)
-    :config
-    (setq ivy-use-virtual-buffers t
-	  enable-recursive-minibuffers t
-					  ;change how ivy displays autocompletion
-	  ivy-count-format "%d/%d "))
- #+END_SRC
-
-*** Keybindings
-#+BEGIN_SRC emacs-lisp
-  (define-key my/keymap (kbd "s") (function ivy-resume))
- #+END_SRC
-** Counsel
-Rebind emacs commands to use ivy https://github.com/abo-abo/swiper#counsel
-#+BEGIN_SRC emacs-lisp
-  (require 'counsel)
-  (counsel-mode)
- #+END_SRC
-** Swiper
-The superior search mode to the original
-#+BEGIN_SRC emacs-lisp
-  (require 'swiper)
-  (global-set-key (kbd "C-s") 'swiper)
-#+END_SRC
 * Agressive indenting
 To keep code aliged
 #+BEGIN_SRC emacs-lisp
@@ -50,10 +14,10 @@ To keep code aliged
 *** Disable it in certain modes
 #+BEGIN_SRC emacs-lisp
   (dolist (mode '(cider-repl-mode
-		  comint-mode
-		  eshell-mode
-		  slime-repl-mode
-		  term-mode))
+                  comint-mode
+                  eshell-mode
+                  slime-repl-mode
+                  term-mode))
     (add-to-list 'aggressive-indent-excluded-modes mode))
  #+END_SRC
 * Avy
@@ -160,19 +124,19 @@ In buffer completion framework
     `(lambda ()
        (interactive)
        (let ((doc (funcall ,doc-fun (funcall ,sym-fun))))
-	 (if (string-empty-p doc)
-	     (message "Unknown symbol, or no documentation available.")
-	   (let ((map (make-sparse-keymap)))
-	     (set-transient-map map
-				(lambda ()
-				  (eq #'mwheel-scroll this-command))
-				(lambda ()
-				  (quick-peek-hide)
-				  (setq this-command #'ignore))))
-	   (let ((pos (save-excursion
-			(beginning-of-line)
-			(point))))
-	     (quick-peek-show doc pos nil (frame-height)))))))
+         (if (string-empty-p doc)
+             (message "Unknown symbol, or no documentation available.")
+           (let ((map (make-sparse-keymap)))
+             (set-transient-map map
+                                (lambda ()
+                                  (eq #'mwheel-scroll this-command))
+                                (lambda ()
+                                  (quick-peek-hide)
+                                  (setq this-command #'ignore))))
+           (let ((pos (save-excursion
+                        (beginning-of-line)
+                        (point))))
+             (quick-peek-show doc pos nil (frame-height)))))))
  #+END_SRC
 * Dired                                                       :ManualInstall:
 Beautiful file browsing. Dired+ is downloaded manually
@@ -204,11 +168,11 @@ Have either a =.git= or =.dumbjump= file in the main project directory
   (use-package dumb-jump
     :ensure t
     :bind (("M-g o" . dumb-jump-go-other-window)
-	   ("M-g j" . dumb-jump-go)
-	   ("M-g i" . dumb-jump-go-prompt)
-	   ("M-g x" . dumb-jump-go-prefer-external)
-	   ("M-g p" . dumb-jump-back)
-	   ("M-g z" . dumb-jump-go-prefer-external-other-window))
+           ("M-g j" . dumb-jump-go)
+           ("M-g i" . dumb-jump-go-prompt)
+           ("M-g x" . dumb-jump-go-prefer-external)
+           ("M-g p" . dumb-jump-back)
+           ("M-g z" . dumb-jump-go-prefer-external-other-window))
     :init (my/add-to-package-list 'dumb-jump)
     :config (setq dumb-jump-selector 'ivy))
  #+END_SRC
@@ -233,15 +197,6 @@ Allos to expand to word, bracket, sentence, paragraph
   (global-set-key (kbd "s-a") (function eyebrowse-switch-to-window-config-1))
   (global-set-key (kbd "s-s") (function eyebrowse-switch-to-window-config-2))
   (global-set-key (kbd "s-d") (function eyebrowse-switch-to-window-config-3))
- #+END_SRC
-* Fic
-Highlighting of TODOs
-#+BEGIN_SRC emacs-lisp
-  (use-package fic-mode
-    :ensure t
-    :init  (my/add-to-package-list 'fic-mode)
-    :config
-    (add-hook 'prog-mode-hook 'turn-on-fic-mode))
  #+END_SRC
 * Flycheck                                                        :Essential:
 - Better than the default spellchecker called =flyspell=
@@ -300,17 +255,19 @@ Popup menu when pasting of the past history
     :bind ("M-y" . popup-kill-ring)
     :init (my/add-to-package-list 'popup-kill-ring))
 #+END_SRC
-* Linum
+* DOWN Linum
+Relative line numbering
 #+BEGIN_SRC emacs-lisp
-  (use-package linum-relative
-    :ensure t
-    :hook
-    (python-mode . linum-relative-mode-hook)
-    (LaTeX-mode . linum-relative-mode-hook)
-    :init (my/add-to-package-list 'linum-relative)
-    (setq linum-relative-backend 'display-line-numbers-mode))
+  ;; (use-package linum-relative
+  ;;   :ensure t
+  ;;   :hook
+  ;;   (python-mode . linum-relative-mode-hook)
+  ;;   (LaTeX-mode . linum-relative-mode-hook)
+  ;;   :init (my/add-to-package-list 'linum-relative)
+  ;;   (setq linum-relative-backend 'display-line-numbers-mode))
 #+END_SRC
 * Magit
+=git config core.fileMode false=
 ** Init
 #+BEGIN_SRC emacs-lisp
   (use-package magit
@@ -334,7 +291,7 @@ Allow quickly to browser through the file version. Launch with =M-x git-time-mac
 ** Hydra
 #+BEGIN_SRC emacs-lisp
   (defhydra hydra-git-gutter (:body-pre (git-gutter-mode 1)
-					:hint nil)
+                                        :hint nil)
     "
     Git gutter:
       _j_: next hunk        _s_tage hunk     _q_uit
@@ -346,21 +303,21 @@ Allow quickly to browser through the file version. Launch with =M-x git-time-mac
     ("j" git-gutter:next-hunk)
     ("k" git-gutter:previous-hunk)
     ("h" (progn (goto-char (point-min))
-		(git-gutter:next-hunk 1)))
+                (git-gutter:next-hunk 1)))
     ("l" (progn (goto-char (point-min))
-		(git-gutter:previous-hunk 1)))
+                (git-gutter:previous-hunk 1)))
     ("s" git-gutter:stage-hunk)
     ("r" git-gutter:revert-hunk)
     ("p" git-gutter:popup-hunk)
     ("R" git-gutter:set-start-revision)
     ("q" nil :color blue)
     ("Q" (progn (git-gutter-mode -1)
-					  ; git-gutter-fringe doesn't seem to
-					  ; clear the markup right away
-		(sit-for 0.1)
-		(with-no-warnings
-		  (git-gutter:clear)
-		  ))
+                                          ; git-gutter-fringe doesn't seem to
+                                          ; clear the markup right away
+                (sit-for 0.1)
+                (with-no-warnings
+                  (git-gutter:clear)
+                  ))
      :color blue))
 
   (global-set-key (kbd "M-g M-g") (function hydra-git-gutter/body))
@@ -371,8 +328,8 @@ Allow quickly to browser through the file version. Launch with =M-x git-time-mac
     :ensure t
     :commands (markdown-mode gfm-mode)
     :mode (("README\\.md\\'" . gfm-mode)
-	   ("\\.md\\'" . markdown-mode)
-	   ("\\.markdown\\'" . markdown-mode))
+           ("\\.md\\'" . markdown-mode)
+           ("\\.markdown\\'" . markdown-mode))
     :init (my/add-to-package-list 'markdown-mode)
     (setq markdown-command "multimarkdown"))
  #+END_SRC
@@ -384,7 +341,7 @@ Allow quickly to browser through the file version. Launch with =M-x git-time-mac
     :init (my/add-to-package-list 'popwin)
     (popwin-mode t))
  #+END_SRC
-* Projectile
+* PACKAGE Projectile
 Navigation around a set of project files. There's tons of shortcuts to explore
 https://projectile.readthedocs.io/en/latest/projects/
 
@@ -423,16 +380,16 @@ For better autocompletion
     ("q"  nil                                      "cancel" :color blue))
 
   (defhydra hydra-projectile (:color teal
-				     :hint nil)
+                                     :hint nil)
     "
-	 PROJECTILE: %(projectile-project-root)
+         PROJECTILE: %(projectile-project-root)
 
-	 Find File            Search/Tags          Buffers                Cache
+         Find File            Search/Tags          Buffers                Cache
     ------------------------------------------------------------------------------------------
     _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache clear
      _ff_: file dwim       _g_: update gtags      _b_: switch to buffer  _x_: remove known project
      _fd_: file curr dir   _o_: multi-occur     _s-k_: Kill all buffers  _X_: cleanup non-existing
-			 _r_: replace regexp                         ^^^^_z_: cache current
+                         _r_: replace regexp                         ^^^^_z_: cache current
       _d_: dir
       _R_: run
 
@@ -455,7 +412,7 @@ For better autocompletion
     ("s-p" projectile-switch-project "switch project")
     ("p"   projectile-switch-project)
     ("s"   projectile-switch-project)
-    ("r"   projectile-replace-regexp)
+    ("r"   counsel-ag)
     ("x"   projectile-remove-known-project)
     ("X"   projectile-cleanup-known-projects)
     ("z"   projectile-cache-current-file)
@@ -483,8 +440,8 @@ Colourize codes such as #AF3313
 ** Default load
 #+BEGIN_SRC emacs-lisp
   (setq initial-scratch-message (concat
-				 "#+Title: Persistent Scratch Buffer"
-				 "\n#\n # Welcome! This’ a place for trying things out. \n"))
+                                 "#+Title: Persistent Scratch Buffer"
+                                 "\n#\n # Welcome! This’ a place for trying things out. \n"))
  #+END_SRC
 ** Reopen closed scratch
 #+BEGIN_SRC emacs-lisp
@@ -517,9 +474,9 @@ Smart way of moving around brackets
 ** Enforce strict mode in certain modes
 #+BEGIN_SRC emacs-lisp
   (mapc (lambda (hook)
-	  (add-hook hook #'smartparens-strict-mode))
-	'(markdown-mode-hook
-	  prog-mode-hook))
+          (add-hook hook #'smartparens-strict-mode))
+        '(markdown-mode-hook
+          prog-mode-hook))
  #+END_SRC
 ** Keybindings
 #+BEGIN_SRC emacs-lisp
@@ -605,16 +562,19 @@ Autocompletion by typing in first part of word and tabbing to insert a template
     :init (my/add-to-package-list 'yasnippet)
     :config
     (yas-global-mode)
-					  ; do not user yasnippet in terminal mode
+                                          ; do not user yasnippet in terminal mode
     (add-hook 'term-mode-hook (lambda ()
-				(yas-minor-mode -1))))
+                                (yas-minor-mode -1))))
  #+END_SRC
-** Auto yasnippets                                                    :Read:
-Quickly create disposable yasnippets
+** Auto yasnippets
+Quickly create disposable yasnippets with =~=
 #+BEGIN_SRC emacs-lisp
   (use-package auto-yasnippet
     :ensure t
-    :init (my/add-to-package-list 'auto-yasnippet))
+    :init (my/add-to-package-list 'auto-yasnippet)
+    :config
+    (define-key my/keymap (kbd "s") (function aya-create))
+    (define-key my/keymap (kbd "y") (function aya-expand)))
  #+END_SRC
 ** Add snippets
 *** Default snippets
@@ -635,13 +595,13 @@ Required by the personal snippets to put other snippets in
 #+BEGIN_SRC emacs-lisp
   (defun yas/insert-by-name (name)
     (cl-flet ((dummy-prompt
-	       (prompt choices &optional display-fn)
-	       (declare (ignore prompt))
-					  ; this is to supress the warining that 'find' is not available
-	       (with-no-warnings
-		 (or (find name choices :key display-fn :test #'string=)
-		     (throw 'notfound nil)))))
+               (prompt choices &optional display-fn)
+               (declare (ignore prompt))
+                                          ; this is to supress the warining that 'find' is not available
+               (with-no-warnings
+                 (or (find name choices :key display-fn :test #'string=)
+                     (throw 'notfound nil)))))
       (let ((yas-prompt-functions '(dummy-prompt)))
-	(catch 'notfound
-	  (yas-insert-snippet t)))))
+        (catch 'notfound
+          (yas-insert-snippet t)))))
  #+END_SRC

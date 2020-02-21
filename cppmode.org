@@ -2,7 +2,6 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-
 * Preliminary instructions
 1) you need to first check that clang is on computer =clang --version=
 2) then make sure that cmake is also installed =brew install cmake=
@@ -12,7 +11,7 @@
   /usr/local/bin/cmake -DCMAKE_INSTALL_PREFIX\=/Users/CCCP/.emacs.d/irony/  /Users/CCCP/.emacs.d/elpa/irony-20190516.2348/server && /usr/local/bin/cmake --build . --use-stderr --config Release --target install
 #+END_SRC
 5) *copy this into terminal and evalute. Then it chould be working*
-* habr
+* Habr
 #+BEGIN_SRC emacs-lisp
   ;; (require 'cedet) ;; использую "вшитую" версию CEDET. Мне хватает...
   ;; (add-to-list 'semantic-default-submodes 'global-semanticdb-minor-mode)
