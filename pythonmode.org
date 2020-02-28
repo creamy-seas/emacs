@@ -4,6 +4,7 @@
 
 Do not use ipython as it is very buggy
 |-------------------------------+-----------------------------------------------+--------------------|
+| =pylint=                      | used by flycheck                              |                    |
 | =jedi=                        | autocompletion python (suggest names)         |                    |
 | =autopep8=                    | format the code (indent etc). uses =flake8=   |                    |
 | =flake8=                      | format the code (checks typos, syntax errors) | =~/.config/flake8= |
@@ -67,8 +68,6 @@ make virtual end with =mkvirtualenv NAME=
                                           ; remove flymake checking
     ;; (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
     )
-
-  ;; (add-hook 'elpy-mode-hook #'lsp)
  #+END_SRC
 * PACKAGE Autopep8
 Automatically fix syntax errors upon saving
@@ -77,6 +76,38 @@ Automatically fix syntax errors upon saving
     :ensure t
     :hook (elpy-mode . py-autopep8-enable-on-save)
     :init (my/add-to-package-list 'py-autopep8))
+ #+END_SRC
+* Flycheck setup
+#+BEGIN_SRC emacs-lisp
+  ;; (require 'flycheck)
+  ;; (flycheck-add-next-checker 'python-flake8)
+
+ #+END_SRC
+* DOWN LSP
+#+BEGIN_SRC emacs-lisp
+  ;; (add-hook 'elpy-mode-hook #'lsp)
+ #+END_SRC
+* DOWN Blacken
+Altenartive to autopep8
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package blacken
+  ;;   :ensure t
+  ;;   :init (my/add-to-package-list 'blacken))
+ #+END_SRC
+* DOWN Yasnippet function
+#+BEGIN_SRC emacs-lisp
+  ;; (defun python-args-to-docstring-numpy ()
+  ;;  "return docstring format for the python arguments in yas-text"
+  ;;  (let* ((args (python-split-args yas-text))
+  ;;         (format-arg (lambda(arg)
+  ;;                       (concat "    " (nth 0 arg) " : " (if (nth 1 arg) ", optional") "\n")))
+  ;;         (formatted-params (mapconcat format-arg args "\n"))
+  ;;         (formatted-ret (mapconcat format-arg (list (list "out")) "\n    ")))
+  ;;    (unless (string= formatted-params "")
+  ;;      (mapconcat 'identity
+  ;;                 (list "\n    Parameters\n    ----------" formatted-params
+  ;;                       "\n    Returns\n    -------" formatted-ret)
+  ;;                 "\n"))))
  #+END_SRC
 * PACKAGE Hideshow-org
 Allows collapsing of columns
@@ -169,7 +200,7 @@ Allows collapsing of columns
  #+END_SRC
 * Hide virtualenv in modeline
 #+BEGIN_SRC emacs-lisp
-  (setq pyvenv-mode-line-indicator nil)
+  ;; (setq pyvenv-mode-line-indicator nil)
  #+END_SRC
 * Prettify Symbols
 Replaces letters in programming mode
@@ -206,26 +237,12 @@ Replaces letters in programming mode
          (push pair prettify-symbols-alist)))))
 
  #+END_SRC
-* DOWN Yasnippet function
-#+BEGIN_SRC emacs-lisp
-  ;; (defun python-args-to-docstring-numpy ()
-  ;;  "return docstring format for the python arguments in yas-text"
-  ;;  (let* ((args (python-split-args yas-text))
-  ;;         (format-arg (lambda(arg)
-  ;;                       (concat "    " (nth 0 arg) " : " (if (nth 1 arg) ", optional") "\n")))
-  ;;         (formatted-params (mapconcat format-arg args "\n"))
-  ;;         (formatted-ret (mapconcat format-arg (list (list "out")) "\n    ")))
-  ;;    (unless (string= formatted-params "")
-  ;;      (mapconcat 'identity
-  ;;                 (list "\n    Parameters\n    ----------" formatted-params
-  ;;                       "\n    Returns\n    -------" formatted-ret)
-  ;;                 "\n"))))
- #+END_SRC
 * Keybindings
 #+BEGIN_SRC emacs-lisp
   (define-key elpy-mode-map (kbd "C-c C-j") (function elpy-shell-kill-all))
   (define-key elpy-mode-map (kbd "C-c C-n") (function flycheck-next-error))
   (define-key elpy-mode-map (kbd "C-c C-p") (function flycheck-previous-error))
+  (define-key my/keymap (kbd "v") (function pyvenv-workon))
  #+END_SRC
 * Init
 #+BEGIN_SRC emacs-lisp

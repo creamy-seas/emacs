@@ -2,6 +2,9 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
+To get symbols run
+=(all-the-icons-insert)=
+
 * Application window                                                 :Ricing:
 #+BEGIN_SRC emacs-lisp
   (setq frame-title-format "nsdap")
@@ -189,7 +192,7 @@ Make emacs prompt for password in the minibuffer
     (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
  #+END_SRC
 
-* iBuffer
+* PACKAGE iBuffer
 New buffer is opened in the window that the command was called from
 ** Init
 #+BEGIN_SRC emacs-lisp
@@ -200,7 +203,11 @@ New buffer is opened in the window that the command was called from
                              (name . "^.*gitignore$")
                              (name . "^magit.*$")))
                  (" Rust" (or
-                             (mode . rust-mode)))
+                            (name . "Cargo\\.*$")
+                            (name . ".*\\.rs")
+                            (name . ".*rls.*")
+                            (name . ".*rustic.*")
+                            (mode . rust-mode)))
                  (" Jupyter" (or
                                (mode . "ein:notebooklist-mode")
                                (name . "\\*ein:.*")
@@ -214,12 +221,12 @@ New buffer is opened in the window that the command was called from
                               (name . "^.*mplstyle$")
                               (name . "^\\*Flycheck error messages\\*$")))
                  (" Latex" (or
-                              (name . "^.*tex$")
-                              (name . "^.*bib$")
-                              (name . "^.*log$")
-                              (name . "\\*RefTeX Select\\*")
-                              (name . "^\\*toc\\*$")
-                              (mode . comint-mode)))
+                             (name . "^.*tex$")
+                             (name . "^.*bib$")
+                             (name . "^.*log$")
+                             (name . "\\*RefTeX Select\\*")
+                             (name . "^\\*toc\\*$")
+                             (mode . comint-mode)))
                  (" Docker" (name . ".*[Dd]ock.*"))
                  (" Org" (name . "\\.org"))
                  (" eLisp" (name . "\\.el"))
@@ -618,7 +625,7 @@ smart mode line allows infinite customization
   ("U" *-package-upgrade nil)
   ("q" nil nil))
 
-  (define-key my/keymap (kbd "p") (function hydra-package/body))
+  (define-key my/keymap (kbd "P") (function hydra-package/body))
  #+END_SRC
 * DOMINATED Startup
 ** Do not show startup screen

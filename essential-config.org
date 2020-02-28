@@ -357,6 +357,9 @@ Any changes of a file, will be automatically reloaded
   (global-auto-revert-mode 1)
   (setq load-prefer-newer t)
  #+END_SRC
+* Test structures
+#+BEGIN_SRC emacs-lisp
+ #+END_SRC
 * Saving hooks
 #+BEGIN_SRC emacs-lisp
   (add-hook 'before-save-hook #'whitespace-cleanup)

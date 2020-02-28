@@ -2,7 +2,7 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-* Init
+* PACKAGE Docker
 #+BEGIN_SRC emacs-lisp
   (use-package docker
     :ensure t
@@ -11,9 +11,27 @@
     ("C-c d" . docker))
  #+END_SRC
 
-* Docker-compose
+* PACKAGE Docker-compose
 #+BEGIN_SRC emacs-lisp
   (use-package docker-compose-mode
     :ensure t
     :init (my/add-to-package-list 'docker-compose-mode))
+ #+END_SRC
+
+* Hydra
+#+BEGIN_SRC emacs-lisp
+  (defhydra hydra-docker-compose (:color teal
+                                         :hint nil)
+    "
+     Docker Compose
+    ------------------------------------------------------------------------------------------
+     _u_: up-single
+     _U_: up-all
+    "
+
+    ("u" docker-compose-run-action-for-one-service)
+    ("U" docker-compose-up)
+    ("q"   nil "cancel" :color blue))
+
+  (define-key my/keymap (kbd "d") (function hydra-docker-compose/body))
  #+END_SRC

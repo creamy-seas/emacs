@@ -5,7 +5,8 @@
 * 1 - Local variables
 Variables that can change from system to system. They should be edited first
 #+BEGIN_SRC emacs-lisp
-  (setq my/config-folder-location "/Users/CCCP/creamy_seas/sync_files/emacs_con/")
+
+  (setq my/config-folder-location "/Users/CCCP/creamy_seas/sync_files/emacs_config/")
   (setq my/config-files
         (sort `("baseplatform.org"
                 "orgmode.org"
@@ -23,6 +24,7 @@ Variables that can change from system to system. They should be edited first
                 "jupytermode.org"
                 "inkscapemode.org"
                 "sshmode.org"
+                "gitmode.org"
                 ) 'string<))
   (setq user-full-name "Ilya Antonov")
   (setq user-mail-address "ilya.antonov@dreams-ai.com")
@@ -77,7 +79,9 @@ Some .el files are downloaded directly and kept in the config folder
     (if (string-equal system-type "darwin")
         (progn
                                           ; Specify what env variables to load into emacs
-          (exec-path-from-shell-copy-env "PYTHONPATH"))
+          (exec-path-from-shell-copy-env "PYTHONPATH")
+          (exec-path-from-shell-copy-env "WORKON_HOME")
+          )
       (warn "Path may not be set if you are an archcuck")))
  #+END_SRC
 * 7 - Emacs server

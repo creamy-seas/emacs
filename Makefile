@@ -10,6 +10,6 @@ init:
 
 	# Generate
 build:
-	for file in base.el orgmode.el essential-packages.el ricing.el rustmode.el experimental-packages.el dockermode.el pythonmode.el essential-config.el emailmode.el elfeedmode.el latexmode.el cppmode.el jupytermode.el inkscapemode.el sshmode.el; do \
+	for file in base.el orgmode.el essential-packages.el ricing.el rustmode.el experimental-packages.el dockermode.el pythonmode.el essential-config.el emailmode.el elfeedmode.el latexmode.el cppmode.el jupytermode.el inkscapemode.el sshmode.el gitmode.el; do \
 	    touch ~/.emacs.d/"$(EMACS_DIR)"/$$file ; \
 	done

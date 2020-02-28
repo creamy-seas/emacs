@@ -23,6 +23,7 @@ Variables that can change from system to system. They should be edited first
                 "jupytermode.org"
                 "inkscapemode.org"
                 "sshmode.org"
+                "gitmode.org"
                 ) 'string<))
   (setq user-full-name "Ilya Antonov")
   (setq user-mail-address "ilya.antonov@dreams-ai.com")

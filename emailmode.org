@@ -337,12 +337,13 @@ One of the following options can be chosen to preview html
 =msmtp --host=smtp.office365.com --port=587 --serverinfo --tls --tls-certcheck=off=
 
 #+BEGIN_SRC emacs-lisp
-  ;; (setq message-send-mail-function (function message-send-mail-with-sendmail))
-  ;; (setq sendmail-program "/usr/local/bin/msmtp")
+  (setq message-send-mail-function (function message-send-mail-with-sendmail))
+  (setq sendmail-program "/usr/local/bin/msmtp")
 
   ;; Use the correct account context when sending mail based on the from header.
-  ;; (setq message-sendmail-envelope-from 'header)
+  (setq message-sendmail-envelope-from 'header)
   ;; (add-hook 'message-send-mail-hook 'choose-msmtp-account)
+
  #+END_SRC
 *** Composing Mail
 #+BEGIN_SRC emacs-lisp

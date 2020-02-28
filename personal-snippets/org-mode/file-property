@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: file-property
+# key: pfile
+# --
+:PROPERTIES:
+:EXPORT_TITLE: ${1:Title of export}
+:EXPORT_FILE_NAME: ${2:Name of export}
+:END:
