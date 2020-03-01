@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: my-base64
+# key: b64
+# --
+#+BEGIN_SRC emacs-lisp :results html :exports results
+  (my/tob64 ${1:image-path.png} ${2:850})
+#+END_SRC
