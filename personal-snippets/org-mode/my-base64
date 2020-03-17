@@ -3,5 +3,5 @@
 # key: b64
 # --
 #+BEGIN_SRC emacs-lisp :results html :exports results
-  (my/tob64 ${1:image-path.png} ${2:850})
+(my/org/tob64 "${1:`(my/org/image-select)`}" ${2:850})
 #+END_SRC

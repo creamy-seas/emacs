@@ -165,7 +165,7 @@ Allows collapsing of columns
 ** =my/python/activate-venv=
 #+BEGIN_SRC emacs-lisp
   (defun my/python/activate-venv (python-environment-path)
-    "Activate a particular environment"
+    "Activate a particular environment from a path"
     (interactive)
     (progn
       (pyvenv-activate python-environment-path)

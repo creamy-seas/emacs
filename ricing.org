@@ -5,14 +5,14 @@
 To get symbols run
 =(all-the-icons-insert)=
 
-* Application window                                                 :Ricing:
+* Application window
 #+BEGIN_SRC emacs-lisp
   (setq frame-title-format "nsdap")
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
  #+END_SRC
-* Autoclosing brackets                                               :Ricing:
+* Autoclosing brackets
 #+BEGIN_SRC emacs-lisp
    (setq electric-pair-pairs '(
                               (?\( . ?\))
@@ -33,6 +33,15 @@ To get symbols run
 * Backup files
 #+BEGIN_SRC emacs-lisp
    (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+ #+END_SRC
+* PACKAGE Beacon
+Fades the current line
+#+BEGIN_SRC emacs-lisp
+  (use-package beacon
+    :ensure t
+    :init
+    (my/add-to-package-list 'beacon)
+    (beacon-mode 1))
  #+END_SRC
 * Bell
 #+BEGIN_SRC emacs-lisp
@@ -117,7 +126,20 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
   (set-default 'cursor-type 'hollow)
   (set-cursor-color "#ffd700")
  #+END_SRC
-* Dashboard                                                         :Package:
+-> ricing.org
+   post-load.org
+   adventure_brief.org|adv19_sinobestech
+   server.rs
+   resolver.rs
+   state_machine.rs
+   cerials.rs
+   *ag search text:api_endpoint dir:/Users/CCCP/Desktop/automation-vm-api/*
+   ping.rs
+   *ag search text:display dir:/Users/CCCP/Desktop/automation-vm-api/*
+   east-data-company.org
+   *Org Agenda*
+   ...
+* PACKAGE Dashboard
 #+BEGIN_SRC emacs-lisp
   (use-package dashboard
     :ensure t
@@ -129,6 +151,21 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
     (setq dashboard-banner-length 300)
     (setq dashboard-banner-logo-title "Привет от Леонта!"))
  #+END_SRC
+* PACKAGE Eyebrowse
+#+BEGIN_SRC emacs-lisp
+  (use-package eyebrowse
+    :ensure t
+    :init (my/add-to-package-list 'eyebrowse)
+    :config
+    (eyebrowse-mode))
+
+  (global-set-key (kbd "s-a") (function eyebrowse-switch-to-window-config-1))
+  (global-set-key (kbd "s-s") (function eyebrowse-switch-to-window-config-2))
+  (global-set-key (kbd "s-d") (function eyebrowse-switch-to-window-config-3))
+  (global-set-key (kbd "s-f") (function eyebrowse-switch-to-window-config-4))
+  (global-set-key (kbd "s-g") (function eyebrowse-switch-to-window-config-5))
+ #+END_SRC
+
 * Fonts
 #+BEGIN_SRC emacs-lisp
   (custom-set-faces
@@ -147,37 +184,47 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
    )
 
  #+END_SRC
-* Fullscreen
+* Generating test projects
 #+BEGIN_SRC emacs-lisp
-  (toggle-frame-fullscreen)
+  (setq my/templates
+        (sort `(" rust"
+                " python"
+                ) 'string<))
+
+  (defun my/generate-template ()
+    "generate a blank template for the chosen language"
+    (interactive)
+    (let ((chosen-file (ido-completing-read "Language to generate: " my/templates))
+          ;; (chosen-project-name (concat (format-time-string "%Y-%m-%d_") (read-string "Name of the test project: "))))
+          (chosen-project-name (read-string "Name of the test project: ")))
+      (message chosen-project-name)
+      (cond (
+             (string= chosen-file " rust")
+             (let ((temp-dir (concat "~/temp-and-test/rust/" chosen-project-name)))
+               (shell-command (concat "mkdir -p " temp-dir " && cd " temp-dir "&& cargo init"))
+               (find-file (concat temp-dir "/src/main.rs"))))
+
+            ((string= chosen-file " python")
+             (let ((temp-dir (concat "~/temp-and-test/python/" chosen-project-name)))
+               (shell-command (concat "mkdir -p " temp-dir " && touch " temp-dir "/main.py"))
+               (find-file (concat temp-dir "/main.py"))))
+
+            )))
+
+  (define-key my/keymap (kbd "g") (function my/generate-template))
+ #+END_SRC
+** latex
+#+BEGIN_SRC emacs-lisp
+  (defun ilya-generate-texfile ()
+    "Generates a latex files, placing it in texfiles folder of the current project"
+    (interactive)
+    (setq temp-file-name-for-snippet (my/file-name-from-line "texfiles/" ".tex"))
+    (delete-region (line-beginning-position) (line-end-position)))
  #+END_SRC
 * GPG prompt
 Make emacs prompt for password in the minibuffer
 #+BEGIN_SRC emacs-lisp
   (setq epa-pinentry-mode 'loopback)
- #+END_SRC
-* Keeping system up to date
-#+BEGIN_SRC emacs-lisp
-  (defun my/stay-up-to-date ()
-    "Ensure that OS and Emacs pacakges are up to date.
-     Takes ~5 secons when everything is up to date."
-
-    (if (string-equal system-type "darwin")
-        (async-shell-command "/usr/local/bin/brew update && /usr/local/bin/brew upgrade"))
-
-    (other-window 1)
-    (rename-buffer "Keeping-system-up-to-date")
-
-    (package-refresh-contents)
-    (insert "Emacs packages have been updated.")
-
-    (other-window 1))
-
-  (add-hook 'after-init-hook 'my/stay-up-to-date)
-
-  ;; For now, doing this since I'm also calling my/stay-up-to-date with
-  ;; after-init-hook which hides the startup message.
-  (add-hook 'after-init-hook 'display-startup-echo-area-message)
  #+END_SRC
 * PACKAGE Highlight brackets
 #+BEGIN_SRC emacs-lisp
@@ -587,26 +634,9 @@ smart mode line allows infinite customization
                  (:background "selectedControlColor"
                   :foreground "DeepSkyBlue1")))))
  #+END_SRC
-* DOMINATED Packages Menu                                              :Menu:
-** Install missing packages
-#+BEGIN_SRC emacs-lisp
-  (defun *-package-upgrade ()
-    "Refresh, upgrade and delete obsolete packages synchronously."
-    (interactive)
-    (save-window-excursion
-      (let (package-menu-async)
-        (package-list-packages)))
-    (with-current-buffer "*Packages*"
-      (package-menu-mark-upgrades)
-      (package-menu-mark-obsolete-for-deletion)
-      (condition-case err
-          (package-menu-execute t)
-        ;; Don't barf if there is nothing to do
-        (user-error (message "Nothing to do"))
-        ;; But allow other errors through
-        (error (signal (car err) (cdr err))))))
- #+END_SRC
-** Package hydra
+* Packages Menu
+[[file:essential-config.org::*=my/package-upgrade=][Depends on the function =my/package-upgrade=]]
+
 #+BEGIN_SRC emacs-lisp
   (defhydra hydra-package (:color blue)
     "
@@ -622,20 +652,47 @@ smart mode line allows infinite customization
   ("i" package-install nil)
   ("l" package-list-packages nil)
   ("L" package-list-packages-no-fetch nil)
-  ("U" *-package-upgrade nil)
+  ("U" my/package-upgrade nil)
   ("q" nil nil))
 
   (define-key my/keymap (kbd "P") (function hydra-package/body))
  #+END_SRC
-* DOMINATED Startup
-** Do not show startup screen
+* PACKAGE Rainbow mode
+Colourize codes such as #AF3313
 #+BEGIN_SRC emacs-lisp
-  (setq inhibit-startup-screen t)
-#+END_SRC
-** Maximise to full screen
+  (use-package rainbow-mode
+    :ensure t
+    :init
+    (my/add-to-package-list 'rainbow-mode)
+    (rainbow-mode))
+ #+END_SRC
+
+* PACKAGE Scratch buffer
+** Default load
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'default-frame-alist '(fullscreen . maximized))
-#+END_SRC
+  ;; (setq initial-major-mode 'org-mode)
+  (setq initial-scratch-message (concat
+                                 "#+Title: Persistent Scratch Buffer"))
+ #+END_SRC
+** Reopen closed scratch
+#+BEGIN_SRC emacs-lisp
+  (defun my/scratch ()
+    "create a scratch buffer"
+    (interactive)
+    (switch-to-buffer-other-window (get-buffer-create "*scratch*"))
+    (insert initial-scratch-message)
+    (emacs-lisp-mode))
+
+(define-key my/keymap (kbd "S") (function my/scratch))
+ #+END_SRC
+** PACKAGE Save content
+#+BEGIN_SRC emacs-lisp
+  (use-package persistent-scratch
+    :ensure t
+    :init (my/add-to-package-list 'persistent-scratch)
+    :config
+    (persistent-scratch-setup-default))
+ #+END_SRC
 * PACKAGE Theme
 #+BEGIN_SRC emacs-lisp
   (load-theme 'deeper-blue)
@@ -646,6 +703,20 @@ smart mode line allows infinite customization
   (use-package doom-themes
     :ensure t
     :init (my/add-to-package-list 'doom-themes))
+ #+END_SRC
+* PACKAGE Treemacs
+#+BEGIN_SRC emacs-lisp
+  (use-package treemacs
+    :ensure t
+    :init (my/add-to-package-list 'treemacs)
+    :config
+                                          ; a bit too wide
+    (setq treemacs-width 30)
+    (define-key my/keymap (kbd "D") (function treemacs-add-and-display-current-project))
+    (define-key treemacs-mode-map (kbd "j") (function treemacs-next-line))
+    (define-key treemacs-mode-map (kbd "k") (function treemacs-previous-line)))
+
+
  #+END_SRC
 * DOMINATED Toggling modes
 #+BEGIN_SRC emacs-lisp

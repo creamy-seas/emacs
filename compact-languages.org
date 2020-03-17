@@ -1,0 +1,27 @@
+#+TITLE: Languages config not large enough for separate org file
+#+STARTUP: overview
+#+PROPERTY: header-args :tangle yes
+
+* PACKAGE CSV
+#+BEGIN_SRC emacs-lisp
+  (use-package csv-mode
+    :ensure t
+    :init (my/add-to-package-list 'csv-mode))
+ #+END_SRC
+* PACKAGE Markdown mode
+#+BEGIN_SRC emacs-lisp
+  (use-package markdown-mode
+    :ensure t
+    :commands (markdown-mode gfm-mode)
+    :mode (("README\\.md\\'" . gfm-mode)
+           ("\\.md\\'" . markdown-mode)
+           ("\\.markdown\\'" . markdown-mode))
+    :init (my/add-to-package-list 'markdown-mode)
+    (setq markdown-command "multimarkdown")
+    :config
+    (define-key markdown-mode-map (kbd "C-c C-b") nil))
+ #+END_SRC
+* Javascript mode
+#+BEGIN_SRC emacs-lisp
+  (smart-tabs-insinuate 'c 'javascript)
+ #+END_SRC

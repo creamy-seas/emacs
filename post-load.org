@@ -1,0 +1,36 @@
+#+TITLE: Things to run as the last load command
+#+STARTUP: overview
+#+PROPERTY: header-args :tangle yes
+
+* Keeping system up to date
+#+BEGIN_SRC emacs-lisp
+  (defun my/stay-up-to-date ()
+    "Ensure that OS and Emacs pacakges are up to date.
+       Takes ~5 secons when everything is up to date."
+
+    (if (string-equal system-type "darwin")
+        (async-shell-command "/usr/local/bin/brew update && /usr/local/bin/brew upgrade"))
+
+    (other-window 1)
+    (rename-buffer "Keeping-system-up-to-date")
+
+
+    (package-refresh-contents)
+    ;; (my/package-upgrade)
+    (insert "Emacs packages have been updated.")
+
+    (other-window 1))
+
+    (add-hook 'after-init-hook 'my/stay-up-to-date)
+    ;; For now, doing this since I'm also calling my/stay-up-to-date with
+    ;; after-init-hook which hides the startup message.
+    (add-hook 'after-init-hook 'display-startup-echo-area-message)
+ #+END_SRC
+* Do not show startup screen
+#+BEGIN_SRC emacs-lisp
+  (setq inhibit-startup-screen t)
+#+END_SRC
+* Maximise to full screen
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'default-frame-alist '(fullscreen . maximized))
+#+END_SRC

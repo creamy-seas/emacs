@@ -2,7 +2,78 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-* LSP
+* Arsist mode
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'artist-mode-hook
+            (lambda ()
+              (local-set-key (kbd "<f1>") 'org-mode)
+              (local-set-key (kbd "<f2>") 'artist-select-op-pen-line) ; f2 = pen mode
+              (local-set-key (kbd "<f3>") 'artist-select-op-line)     ; f3 = line
+              (local-set-key (kbd "<f4>") 'artist-select-op-square)   ; f4 = rectangle
+              (local-set-key (kbd "<f5>") 'artist-select-op-ellipse)  ; f5 = ellipse
+  ))
+ #+END_SRC
+* DOWN Dumb Jump
+Have either a =.git= or =.dumbjump= file in the main project directory
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package dumb-jump
+  ;;   :ensure t
+  ;;   :bind (("M-g o" . dumb-jump-go-other-window)
+  ;;          ("M-g j" . dumb-jump-go)
+  ;;          ("M-g i" . dumb-jump-go-prompt)
+  ;;          ("M-g x" . dumb-jump-go-prefer-external)
+  ;;          ("M-g p" . dumb-jump-back)
+  ;;          ("M-g z" . dumb-jump-go-prefer-external-other-window))
+  ;;   :init (my/add-to-package-list 'dumb-jump)
+  ;;   :config (setq dumb-jump-selector 'ivy))
+ #+END_SRC
+
+* PACKAGE Doc pop-up
+#+BEGIN_SRC emacs-lisp
+  (use-package quick-peek
+    :ensure t
+    :init (my/add-to-package-list 'quick-peek))
+
+  (set-face-attribute 'quick-peek-border-face nil :height 50)
+
+  (defmacro *-make-doc-command (doc-fun sym-fun)
+    "Return an command that uses `quick-peek' to preview docs.
+
+  DOC-FUN is a unary function that takes a loop-up string and
+  returns the doc string.
+
+  SYM-FUN is a nullary function that gets the symbol at point as a
+  string."
+    `(lambda ()
+       (interactive)
+       (let ((doc (funcall ,doc-fun (funcall ,sym-fun))))
+         (if (string-empty-p doc)
+             (message "Unknown symbol, or no documentation available.")
+           (let ((map (make-sparse-keymap)))
+             (set-transient-map map
+                                (lambda ()
+                                  (eq #'mwheel-scroll this-command))
+                                (lambda ()
+                                  (quick-peek-hide)
+                                  (setq this-command #'ignore))))
+           (let ((pos (save-excursion
+                        (beginning-of-line)
+                        (point))))
+             (quick-peek-show doc pos nil (frame-height)))))))
+ #+END_SRC
+
+* DOWN Linum
+Relative line numbering
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package linum-relative
+  ;;   :ensure t
+  ;;   :hook
+  ;;   (python-mode . linum-relative-mode-hook)
+  ;;   (LaTeX-mode . linum-relative-mode-hook)
+  ;;   :init (my/add-to-package-list 'linum-relative)
+  ;;   (setq linum-relative-backend 'display-line-numbers-mode))
+#+END_SRC
+* PACKAGE LSP
 Language server used in rust
 - https://github.com/emacs-lsp/lsp-mode
 - Turn on user interface (ui) and allow company autocomplete to access the ui
@@ -44,8 +115,7 @@ To autocomplete in the search buffergpg
     :ensure t
     :init (my/add-to-package-list 'lsp-ivy))
  #+END_SRC
-
-* Langtool
+* PACKAGE Langtool
 Grammar and style checker.
 - Will need to download from https://languagetool.org/
 ** Init
@@ -64,7 +134,7 @@ Grammar and style checker.
               (langtool-check-done)))
   (global-set-key "\M-^" 'langtool-check)
  #+END_SRC
-* Ox-reveal
+* PACKAGE Ox-reveal
 Presentations can be hosted from github - look at video no 50
 #+BEGIN_SRC emacs-lisp
   (use-package ox-reveal
@@ -75,7 +145,7 @@ Presentations can be hosted from github - look at video no 50
     (setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
     (setq org-reveal-mathjax t))
  #+END_SRC
-* Pretty-mode
+* PACKAGE Pretty-mode
 To activate it do =(add-hook 'my-hook 'turn-on-pretty-mode)=
 #+BEGIN_SRC emacs-lisp
   (use-package pretty-mode
@@ -85,15 +155,102 @@ To activate it do =(add-hook 'my-hook 'turn-on-pretty-mode)=
     (pretty-activate-groups
      '(:sub-and-superscripts :greek :arithmetic-nary)))
  #+END_SRC
-* Mark multiple
+* PACKAGE Smart-tabs
+- Tabs are only used at the beginning of lines. Everything else, like ASCII art and tables, should be formatted with spaces.
+- Tabs are only used for expressing the indentation level. One tab per “block” – any remaining whitespace is spaces only.
 #+BEGIN_SRC emacs-lisp
-  (use-package mark-multiple
+  (use-package smart-tabs-mode
     :ensure t
-    :bind ("C-c q" . mark-next-like-this)
-    :init (my/add-to-package-list 'mark-multiple))
-#+END_SRC
-* Multiple Cursors
+    :init (my/add-to-package-list 'smart-tabs-mode))
+ #+END_SRC
+* PACKAGE Smartparens
+Smart way of moving around brackets
 #+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-(") 'mc/mark-next-lines)
-  (global-set-key (kbd "C-)") 'mc/mark-previous-lines)
+  (use-package smartparens
+    :ensure t
+    :init (my/add-to-package-list 'smartparens)
+    :config
+    (require 'smartparens-config)
+    (smartparens-global-mode)
+    (show-smartparens-global-mode))
+ #+END_SRC
+** Enforce strict mode in certain modes
+#+BEGIN_SRC emacs-lisp
+  (mapc (lambda (hook)
+          (add-hook hook #'smartparens-strict-mode))
+        '(markdown-mode-hook
+          prog-mode-hook))
+ #+END_SRC
+** Keybindings
+#+BEGIN_SRC emacs-lisp
+  (define-key smartparens-mode-map (kbd "C-M-f") #'sp-forward-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-b") #'sp-backward-sexp)
+
+  ;; Up/down
+  (define-key smartparens-mode-map (kbd "C-M-d") #'sp-down-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-e") #'sp-up-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-a") #'sp-backward-down-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-q") #'sp-backward-up-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-`") #'beginning-of-defun)
+
+  ;; Transpose
+  (define-key smartparens-mode-map (kbd "C-M-t") 'sp-transpose-sexp)
+
+  ;; Mark/kill/copy
+  (global-set-key [remap mark-sexp] #'sp-mark-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-k") #'sp-kill-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-w") #'sp-copy-sexp)
+
+  ;; Unwrap
+  (define-key smartparens-mode-map (kbd "M-<delete>") #'sp-unwrap-sexp)
+  (define-key smartparens-mode-map (kbd "M-<backspace>") #'sp-backward-unwrap-sexp)
+
+  ;; Slurp/barf
+  (define-key smartparens-mode-map (kbd "C-<right>") #'sp-forward-slurp-sexp)
+  (define-key smartparens-mode-map (kbd "C-<left>") #'sp-forward-barf-sexp)
+  (define-key smartparens-mode-map (kbd "C-S-<left>") #'sp-backward-slurp-sexp)
+  (define-key smartparens-mode-map (kbd "C-S-<right>") #'sp-backward-barf-sexp)
+
+  (define-key smartparens-mode-map (kbd "C-M-<backspace>") #'sp-splice-sexp-killing-backward)
+  (define-key smartparens-mode-map (kbd "C-S-<backspace>") #'sp-splice-sexp-killing-around)
+
+  ;; Indent
+  (define-key smartparens-mode-map (kbd "C-M-<tab>") #'sp-indent-defun)
+ #+END_SRC
+* DOWN Highlight multiple
+Highlight matching text
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package mark-multiple
+  ;;   :ensure t
+  ;;   :bind ("C-c q" . mark-next-like-this)
+  ;;   :init (my/add-to-package-list 'mark-multiple))
 #+END_SRC
+* DOWN Multiple Cursors
+#+BEGIN_SRC emacs-lisp
+  ;; (global-set-key (kbd "C-(") 'mc/mark-next-lines)
+  ;; (global-set-key (kbd "C-)") 'mc/mark-previous-lines)
+#+END_SRC
+* DOWN Smex
+Command line autocompletion
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package smex
+  ;; :ensure t
+  ;; :init (my/add-to-package-list 'smex)
+  ;; (smex-initialize))
+
+  ;; (global-set-key (kbd "M-x") (function smex))
+ #+END_SRC
+* PACKAGE Sudo-edit
+#+BEGIN_SRC emacs-lisp
+  (use-package sudo-edit
+    :ensure t
+    :init (my/add-to-package-list 'sudo-edit)
+    :bind ("s-e" . sudo-edit))
+ #+END_SRC
+* PACKAGE Wgrep
+Allow editing of grep buffers after say =counsel-ag=
+#+BEGIN_SRC emacs-lisp
+  (use-package wgrep
+    :ensure t
+    :init (my/add-to-package-list 'wgrep))
+ #+END_SRC

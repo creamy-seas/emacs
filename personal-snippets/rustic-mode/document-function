@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: document-function
+# key: com
+# --
+/**
+ * ${1:text-goes-here}$0
+ */

@@ -9,8 +9,9 @@ Variables that can change from system to system. They should be edited first
   (setq my/config-folder-location "/Users/CCCP/creamy_seas/sync_files/emacs_config/")
   (setq my/config-files
         (sort `("baseplatform.org"
+                "mac.org"
                 "orgmode.org"
-                "essential-packages.org"
+                "post-load.org"
                 "ricing.org"
                 "rustmode.org"
                 "experimental-packages.org"
@@ -25,12 +26,12 @@ Variables that can change from system to system. They should be edited first
                 "inkscapemode.org"
                 "sshmode.org"
                 "gitmode.org"
+                "compact-languages.org"
                 ) 'string<))
   (setq user-full-name "Ilya Antonov")
   (setq user-mail-address "ilya.antonov@dreams-ai.com")
 
   (setq my/langtool-location "/Applications/LanguageTool-4.8/languagetool-commandline.jar")
-
  #+END_SRC
 
 * 2 - Manual loading of =el= files
