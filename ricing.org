@@ -151,6 +151,14 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
     (setq dashboard-banner-length 300)
     (setq dashboard-banner-logo-title "Привет от Леонта!"))
  #+END_SRC
+* PACKAGE Emojify
+#+BEGIN_SRC emacs-lisp
+  (use-package emojify
+    :ensure t
+    :init (my/add-to-package-list 'emojify))
+
+  (add-hook 'after-init-hook #'global-emojify-mode)
+ #+END_SRC
 * PACKAGE Eyebrowse
 #+BEGIN_SRC emacs-lisp
   (use-package eyebrowse
@@ -213,13 +221,13 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
 
   (define-key my/keymap (kbd "g") (function my/generate-template))
  #+END_SRC
-** latex
+** DOWN latex
 #+BEGIN_SRC emacs-lisp
-  (defun ilya-generate-texfile ()
-    "Generates a latex files, placing it in texfiles folder of the current project"
-    (interactive)
-    (setq temp-file-name-for-snippet (my/file-name-from-line "texfiles/" ".tex"))
-    (delete-region (line-beginning-position) (line-end-position)))
+  ;; (defun ilya-generate-texfile ()
+  ;;   "Generates a latex files, placing it in texfiles folder of the current project"
+  ;;   (interactive)
+  ;;   (setq temp-file-name-for-snippet (my/file-name-from-line "texfiles/" ".tex"))
+  ;;   (delete-region (line-beginning-position) (line-end-position)))
  #+END_SRC
 * GPG prompt
 Make emacs prompt for password in the minibuffer
@@ -663,8 +671,8 @@ Colourize codes such as #AF3313
   (use-package rainbow-mode
     :ensure t
     :init
-    (my/add-to-package-list 'rainbow-mode)
-    (rainbow-mode))
+    (my/add-to-package-list 'rainbow-mode))
+  (rainbow-mode)
  #+END_SRC
 
 * PACKAGE Scratch buffer
@@ -774,6 +782,9 @@ Colourize codes such as #AF3313
     :ensure t
     :init (my/add-to-package-list 'golden-ratio)
     (golden-ratio-mode 1))
+
+  (add-to-list 'golden-ratio-exclude-modes 'treemacs-mode)
+  (add-to-list 'golden-ratio-exclude-buffer-names "Treemacs")
  #+END_SRC
 ** PACKAGE Switch Window
 When the there are more than two windows =C-x o= will give each window a letter that can be jumped to

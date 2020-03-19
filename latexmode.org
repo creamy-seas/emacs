@@ -2,6 +2,9 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
+#+BEGIN_SRC emacs-lisp
+  (defvar max-latex-fill-width 120)
+ #+END_SRC
 * Installing Latex Packages
 - Install =.sty= packages in =/usr/local/texlive/2018/texmf-dist/tex/latex/base=
 - Run =sudo -s texhash= to load it up
@@ -127,7 +130,7 @@ Autocompletion and other shortcuts
           ("cases" "Insert case environment"   "" cdlatex-environment ("cases") t t)
           ("thr" "Insert theorem env" "" cdlatex-environment ("theorem") t nil)))
  #+END_SRC
-* Compilation commands
+* Compilation
 *Some important AucTex commands and variables*
 | =TeX-expand-list-builtin= | pair list tying command with a % expression e.g. =%s= -> master latex file |
 | =TeX-expand-list=         | this variables contains the above =TeX-expand-list-builtin                 |
@@ -170,10 +173,14 @@ Autocompletion and other shortcuts
   (defun my/latex/modeline-colour ()
     "Reads the env variale my/latex/active-compilations and colours the modeline according to how many compilations are running"
     (if (> my/latex/active-compilations 0)
-        (message (concat " Still running " my/latex/active-compilations "compilations"))
-      (message " No more running compilations")))
+        (progn
+          ;; (setq global-mode-string (concat "[" (number-to-string my/latex/active-compilations) "]"))
+          (message (concat " Still running " my/latex/active-compilations "compilations")))
+      (progn
+        (setq global-mode-string "")
+        (message " No more running compilations"))))
  #+END_SRC
-** =my/latex/compile=
+** =my/latex/compile=           =C-c C-c=
 1) a process name is generated based off the name of the master file
 2) the actual command calls the =pdf_engine= script
 3) expansion if performed to change =%s= to the master file name
@@ -206,7 +213,7 @@ Autocompletion and other shortcuts
   (add-hook 'LaTeX-mode-hook (lambda ()
                                (define-key LaTeX-mode-map (kbd "C-c C-c") (function  my/latex/compile))))
  #+END_SRC
-** =my/latex/exterminate=
+** =my/latex/exterminate=       =C-c C-j=
 1) kill any running processes on this master files
 2) delete the buffer that was running that process
 3) move files into output directory
@@ -260,45 +267,7 @@ Autocompletion and other shortcuts
   (add-hook 'LaTeX-mode-hook (lambda ()
                                (define-key LaTeX-mode-map (kbd "C-c C-j") (function my/latex/exterminate))))
 #+END_SRC
-** jump to pdf =C-c C-v=
-- skim is run, reading the current line in the emacs buffer and highlighting it in the pdf
-- =syntex.gz= file needs to be in the directory for this to occur, so it's copied
-| unique to skim  |                                                      |
-| =-b=            | inserts a reading bar into the pdf                   |
-| =-g=            | tells it to load in background                       |
-| unique to emacs | commands in TeX-expand-list-builtin in =tex.el= file |
-| =%n=            | is the line number we are on                         |
-| =%o=            | is the output file name                              |
-| =%b=            | is the tex file name                                 |
-
-#+BEGIN_SRC emacs-lisp
-  ;; (setq TeX-view-program-list
-  ;;       '(("SkimViewer" "~/creamy_seas/sync_files/emacs_config/ilya_scripts/latex/search_engine.sh %s %n %o %b")))
-
-  ;; (setq TeX-view-program-selection '((output-pdf "SkimViewer")))
- #+END_SRC
-** supporting functions and varibles
-#+BEGIN_SRC emacs-lisp
-  ;; (setq ilya_LaTeX-running-compilations 0)
-
-  ;; (defun ilya_LaTeX-compilation-buffer-size ()
-  ;;   "Resize the latex compilation buffer when it launches because it is seriosuly bloat"
-
-  ;;   (progn
-  ;;     ;;1) pdf generation case
-  ;;     (if (string-equal my/latex/compilation-process-type "BuildPDF")
-  ;;         (progn
-  ;;           (ignore-errors (rename-buffer ilya_latex-compilation-buffer-name))
-  ;;           (setq compilation-window-name (get-buffer-window ilya_latex-compilation-buffer-name))
-  ;;           (window-resize-no-error compilation-window-name (- 5 (window-height compilation-window-name "floor")))))
-  ;;     ;;2) file clearing case
-  ;;     (if (string-equal ilya_compilation-process "DestroyPDF")
-  ;;         (progn
-  ;;           (ignore-errors (rename-buffer ilya_compilation-name))))))
-
-  ;; ;;  (add-hook 'comint-mode-hook (function ilya_LaTeX-compilation-buffer-size))
- #+END_SRC
-** error checking =C-c C-w=
+** TODO error checking =C-c C-w=
 natively, auctex creates a list of errors once the compiling finishes.
 here we make it do it explictly
 
@@ -342,6 +311,30 @@ here we make it do it explictly
   ;;            (switch-to-buffer ,old-buff))
   ;;          (goto-char ,old-point)))))
  #+END_SRC
+* MANUAL-PACKAGE Viewing in Skim (os-x only)    =C-c C-v=
+- skim is run, reading the current line in the emacs buffer and highlighting it in the pdf
+- =syntex.gz= file needs to be in the directory for this to occur, so it's copied
+|-------------------+------------------------------------------------------|
+| *Unique to skim*  |                                                      |
+| =-b=              | inserts a reading bar into the pdf                   |
+| =-g=              | tells it to load in background                       |
+|-------------------+------------------------------------------------------|
+| *Unique to emacs* | commands in TeX-expand-list-builtin in =tex.el= file |
+| =%n=              | is the line number we are on                         |
+| =%o=              | is the output file name                              |
+| =%b=              | is the tex file name                                 |
+|-------------------+------------------------------------------------------|
+
+#+BEGIN_SRC emacs-lisp
+  (if (string-equal system-type "darwin")
+      (progn
+        (setq TeX-view-program-list
+              '(("SkimViewer" (my/config-file-path-evaluate "my-scripts/latex/search_engine.sh %s %n %o %b"))))
+
+        (setq TeX-view-program-selection '((output-pdf "SkimViewer"))))
+    (warn "Path may not be set if you are an archcuck"))
+ #+END_SRC
+
 * PACKAGE fill-column-indicator
 This is to show what the current fill column is
 #+BEGIN_SRC emacs-lisp
@@ -443,7 +436,7 @@ It would be a mumble jumble like with a lot of escapes
     (interactive)
 
     (let ((initial-fill-width (- (window-width) 10))
-          (max-fill-width 94))
+          (max-fill-width max-latex-fill-width))
 
       ;; 1- set the width to 94 max
       (if (> max-fill-width initial-fill-width)
@@ -459,6 +452,7 @@ It would be a mumble jumble like with a lot of escapes
     ;; 1 - update fill column
     (my/latex/buffer-fill-column)
 
+    (my/latex/indent-buffer)
     ;; 2 - save file
     (save-buffer))
 
@@ -466,9 +460,9 @@ It would be a mumble jumble like with a lot of escapes
  #+END_SRC
 ** =my/latex/indent-buffer=
 #+BEGIN_SRC emacs-lisp
-  (defun my/latex/indent-buffer (args)
+  (defun my/latex/indent-buffer ()
     "Indents the full buffer"
-    (interactive "P")
+    (interactive)
     (let ((fill-width (my/latex/buffer-fill-column)))
       (ignore-errors (LaTeX-fill-buffer fill-width))))
  #+END_SRC
@@ -588,32 +582,33 @@ It would be a mumble jumble like with a lot of escapes
         (message "")
         label))))
  #+END_SRC
-* key bindings
+* Key Bindings
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'LaTeX-mode-hook (lambda ()
-                               (local-unset-key (kbd "C-c C-a"))
-                               (local-unset-key (kbd "C-c C-b"))
-                               (local-unset-key (kbd "C-c C-d"))
-                               (local-unset-key (kbd "C-c C-k"))
-                               (local-unset-key (kbd "C-c C-r"))
-                               (local-unset-key (kbd "C-c C-z"))
-                               (local-unset-key (kbd "C-c ESC"))
-                               (local-unset-key (kbd "C-c C-t"))
-                               (local-unset-key (kbd "C-c <")) ;;index and glossary
-                               (local-unset-key (kbd "C-c /")) ;;index
-                               (local-unset-key (kbd "C-c \\")) ;;index
-                               (local-unset-key (kbd "C-c >")) ;;index
-                               (local-unset-key (kbd "C-c _")) ;;set master file
-                               (local-unset-key (kbd "C-c C-n")) ;;normal mode (use C-c #)
-                               (local-unset-key (kbd "C-c ~")) ;;math mode
-                               (local-unset-key (kbd "C-c }")) ;;up list
-                               (local-unset-key (kbd "C-c `")) ;TeX-next-error
-                               (local-unset-key (kbd "C-c ^")) ;TeX-home-buffer
-                               (local-unset-key (kbd "C-x `")) ;next-error
-                               ))
+  ;;(ad d-hook 'LaTeX-mode-hook (lambda ()
+  ;;                              (local-unset-key (kbd "C-c C-a"))
+  ;;                              (local-unset-key (kbd "C-c C-b"))
+  ;;                              (local-unset-key (kbd "C-c C-d"))
+  ;;                              (local-unset-key (kbd "C-c C-k"))
+  ;;                              (local-unset-key (kbd "C-c C-r"))
+  ;;                              (local-unset-key (kbd "C-c C-z"))
+  ;;                              (local-unset-key (kbd "C-c ESC"))
+  ;;                              (local-unset-key (kbd "C-c C-t"))
+  ;;                              (local-unset-key (kbd "C-c <")) ;;index and glossary
+  ;;                              (local-unset-key (kbd "C-c /")) ;;index
+  ;;                              (local-unset-key (kbd "C-c \\")) ;;index
+  ;;                              (local-unset-key (kbd "C-c >")) ;;index
+  ;;                              (local-unset-key (kbd "C-c _")) ;;set master file
+  ;;                              (local-unset-key (kbd "C-c C-n")) ;;normal mode (use C-c #)
+  ;;                              (local-unset-key (kbd "C-c ~")) ;;math mode
+  ;;                              (local-unset-key (kbd "C-c }")) ;;up list
+  ;;                              (local-unset-key (kbd "C-c `")) ;TeX-next-error
+  ;;                              (local-unset-key (kbd "C-c ^")) ;TeX-home-buffer
+  ;;                              (local-unset-key (kbd "C-x `")) ;next-error
+  ;;                              ))
 
-  ;; (add-hook 'LaTeX-mode-hook (lambda ()
-  ;;                              (define-key LaTeX-mode-map (kbd "C-c C-n") (function next-error))
+  ;; ;; (add-hook 'LaTeX-mode-hook (lambda ()
+  ;; ;;
+  (define-key LaTeX-mode-map (kbd "C-c C-n") (function next-error))
   ;;                              (define-key LaTeX-mode-map (kbd "C-c C-;") (function comment-line))
   ;;                              (define-key LaTeX-mode-map (kbd "C-c C-u") (lambda () (insert "_")))
   ;;                              (define-key LaTeX-mode-map (kbd "C-c C-q") (function my/latex/indent-buffer))

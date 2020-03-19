@@ -3,16 +3,14 @@
 #+PROPERTY: header-args :tangle yes
 
 If offlineimap is giving an error, it is probably picking up python3.7
-Delete all python3.7 email-related libraries
-
-- Find the site libraries
+Delete all python3.7 email-related libraries:
+1) Find the site libraries
 #+BEGIN_SRC shell
   python3 -m site
  #+END_SRC
-- Remove all =imap= packages
-
-- https://etienne.depar.is/emacs.d/mu4e.html
-- http://kitchingroup.cheme.cmu.edu/blog/2016/10/29/Sending-html-emails-from-org-mode-with-org-mime/
+2) [@2] Remove all =imap= packages
+3) https://etienne.depar.is/emacs.d/mu4e.html
+4) http://kitchingroup.cheme.cmu.edu/blog/2016/10/29/Sending-html-emails-from-org-mode-with-org-mime/
 
 #+BEGIN_SRC emacs-lisp
   (setq my/mu4e-load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
@@ -78,7 +76,7 @@ Create a new label in Google Mail. Next time it will sync to computer
   (add-to-list 'load-path
                (expand-file-name my/mu4e-load-path))
  #+END_SRC
-* Init
+* MANUAL-PACKAGE Init
 #+BEGIN_SRC emacs-lisp
   (require 'mu4e)
   (my/add-to-package-list 'mu4e)
@@ -112,8 +110,10 @@ Create a new label in Google Mail. Next time it will sync to computer
                  (mu4e-trash-folder . "/ilya_DREAMSAI/[Gmail].Bin")
                  (mu4e-refile-folder . "/ilya_DREAMSAI/[Gmail].Starred")
                  (mu4e-compose-signature . (concat
-                                            "Ilya Antonov,\n"
-                                            "☁ DREAMSAI\n"))
+                                            "Ilya Antonov\n\n"
+                                            "Physics Handyman\n\n"
+                                            "+825 56856958\n\n"
+                                            "☁ DREAMSAI"))
                  (mu4e-compose-format-flowed . t))))
  #+END_SRC
 ** *ilya.antonov24@ntlworld*

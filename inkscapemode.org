@@ -2,70 +2,145 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-* Inkscape
-- =aspell= must be installed
-- to edit interactively, open =.svg= file → save as → =.pdf= → =omit text= → use exported object size
-- call function with "base-directory argument supplied"
+To export an inkscape image for latex interactively, open =.svg= file → save as → =.pdf= → =omit text= → use exported object size
 
 #+BEGIN_SRC emacs-lisp
-  (setq inkscape-generate-location "~/creamy_seas/sync_files/emacs_config/ilya_scripts/inkscape/inkscape_emacs_generate.sh")
+  (defvar my/inkscape/generate-script (my/config-file-path-evaluate "my-scripts/inkscape/inkscape_generate.sh"))
+  (defvar my/inkscape/template-file (my/config-file-path-evaluate "my-scripts/inkscape/inkscape_template.svg"))
+  ;;(defvar my/inkscape/export-script (my/config-file-path-evaluate "my-scripts/inkscape/inkscape_export.sh"))
+ #+END_SRC
 
-  (defun inkscape-generate (base-directory)
-    "Reads the current line and launches an inkscape document under this name. Base directory must end in /"
-    (interactive)
-    (let* (;; a - generate filename
-           (file-name (my/copy-line))	;reads in current line
-           (file-name (replace-regexp-in-string "^\s*" "" file-name))
-          (file-name (downcase file-name)) ;downcase
-          (file-name (replace-regexp-in-string " " "_" file-name)) ;replace spaces
-          ;; b - find root folder and create a directory path
-          (inkscape-dir (concat base-directory "images_inkscape"))
-          ;; c - generate full path name
-          (file-name-full (concat inkscape-dir "/" file-name)))
+* Latex
+** =my/inkscape/latex/prepare=
+#+BEGIN_SRC emacs-lisp
+  (defvar my/inkscape/latex/file-name "default-file-name")
 
-      ;; 1 - create directory in root folder
-      (ignore-errors (make-directory inkscape-dir))
+  (defun my/inkscape/latex/prepare ()
+    "Uses the characters on the current line to
+  1) Construct a valid filename and store it in 'my/inkscape/latex/file-name'
+  2) Insert figure snippet with the the filename filled out"
+    (let (
+          ;; 0 - evaluate filename from the current line
+          (file-name (my/generate-filename-from-line)))
 
-      ;; 2 - open inkscape with the file-name
-      (shell-command (concat inkscape-generate-location " \"" file-name-full "\""))
+      ;; 1 - set the 'generated-filename' to be used in the snippet
+      (setq my/inkscape/latex/file-name file-name)
 
-      ;; 3 - prepare for snippet
+      ;; 2 - clear the line
       (delete-region (line-beginning-position) (line-end-position))
-      (shell-command (concat "inkscape_export.sh images_inkscape/" file-name ".svg"))
-      (setq temp-file-name-for-snippet file-name)
-      ))
 
-  (defun inkscape-load-part1 (base-directory)
-    "Part 1 of the loading image process: store the old default directory and write a new one base-directoy MUST END WITH /"
+      ;; 3 - insert snippet
+      (yas-expand-snippet (yas-lookup-snippet "my-inkscape-latex-snippet"))))
+ #+END_SRC
+** =my/inkscape/latex/generate=
+#+BEGIN_SRC emacs-lisp
+  (defvar my/inkscape/latex/running-processes nil)
 
-    ;; 1 - create path to inkscape directory and save the old default directory
-    (setq inkscape-directory (concat base-directory "images_inkscape"))
-    (setq old-default-directory default-directory)
+  (defun my/inkscape/latex/generate (filename)
+    "1) Copies an svg template to './images_inkscape/file-name.svg' (relative to the root directory of the latex project)
+  2) Runs the 'my/inkscape/generate-script' that will open the file and track changes to it
 
-    ;; 2 - reset the default directory to the inkscape one if it exists
-    (if (null (file-directory-p inkscape-directory))
-        (message "卍 But mein führer - they have been exterminated 卍")
-      (setq default-directory inkscape-directory)))
+  ,** 'filename' must be a pure string without extensions **
 
-  (defun inkscape-load-part2 (file-name-full)
-    "Uses the currently set default-directory and asks the user to open an image file"
-    (interactive "fWhich image to open: ")
+  There is a lot of file name preparation - I decided to keep the bash script as clean as possible so evaluate file paths here"
+    (let* (
+           (latex-project-path (expand-file-name (TeX-master-directory)))
+           (inkscape-dir-path (concat latex-project-path "images_inkscape"))
+           (file-path (concat inkscape-dir-path "/" filename))
+           (inkscape-process-name (concat "InkscapeGenerating:" filename)))
 
-    ;; 1 - cope the last part of the file
-    (setq file-name-full (replace-regexp-in-string "\\..*$" "" file-name-full))
+      ;; 1 - create inscape directory
+      (ignore-errors (make-directory inkscape-dir-path))
 
-    ;; 2 - reset back to the previous default directory
-    (setq default-directory old-default-directory)
+      ;; 2 - add to list of running processes
+      (add-to-list 'my/inkscape/latex/running-processes inkscape-process-name)
 
-    ;; 3 - open the file for editing
-    (shell-command (concat inkscape-generate-location " " file-name-full))
-    (setq file-name-full (replace-regexp-in-string "^.*/" "" file-name-full))
-
-    (shell-command (concat "inkscape_export.sh images_inkscape/" file-name-full ".svg")))
-
-  (defun inkscape-load (base-directory)
-    "Loads up a user chosen inkscape file"
+      ;; 3 - run the inkscape
+      (async-shell-command
+       (concat my/inkscape/generate-script " " file-path " " my/inkscape/template-file)
+       inkscape-process-name)))
+ #+END_SRC
+** =my/inkscape/latex/launch= (combination of the above commands)
+#+BEGIN_SRC emacs-lisp
+  (defun my/inkscape/latex/launch ()
+    "Runs file-name preparation step and then launched the generation command"
     (interactive)
-    (inkscape-load-part1 base-directory)
-    (call-interactively 'inkscape-load-part2))
+    (my/inkscape/latex/prepare)
+    (my/inkscape/latex/generate my/inkscape/latex/file-name))
+ #+END_SRC
+** =my/inkscape/latex/load=
+#+BEGIN_SRC emacs-lisp
+  (defun my/inkscape/latex/load ()
+    "Prompts user to select an .svg file from the 'images_inkscape' directory and opens it"
+    (interactive)
+    (let* ((svg-file-list (directory-files "images_inkscape" nil ".*\.svg"))
+           (svg-selected (ido-completing-read "🦑 Inkscape file to open: " svg-file-list))
+           (base-filename (replace-regexp-in-string "\.svg" "" svg-selected)))
+      (my/inkscape/latex/generate base-filename)))
+ #+END_SRC
+** =my/inkscape/latex/kill=
+#+BEGIN_SRC emacs-lisp
+  (defun my/inkscape/latex/kill ()
+    "Kills an running inkscape process and delete is from list of running inkscape trackers"
+    (interactive)
+    (let* ((process-buffer-name (ido-completing-read "🦑 Inkscape process to kill:" my/inkscape/latex/running-processes)))
+
+      ;; 1 - kill the buffer and process
+      (my/kill-buffer-process process-buffer-name)
+
+      ;; 2 - delete from compulation list
+      (setq my/inkscape/latex/running-processes (delete process-buffer-name my/inkscape/latex/running-processes))
+
+      (message (concat "🦑 Killed " process-buffer-name))))
+
+
+  (defun my/inkscape/latex/killall ()
+    "Kills all the inkscape processes"
+    (interactive)
+    ;; 1 - iterate through the list
+    (while my/inkscape/latex/running-processes
+
+      ;; 2 - get the process
+      (let* ((process-buffer-name (car my/inkscape/latex/running-processes)))
+
+        ;; 3 - kill it
+        (my/kill-buffer-process process-buffer-name))
+      (setq my/inkscape/latex/running-processes (cdr my/inkscape/latex/running-processes))
+      )
+
+    (message "🦑 Killed all processes"))
+ #+END_SRC
+* PACKAGE Hydra
+#+BEGIN_SRC emacs-lisp
+  (defhydra hydra-inkscape (
+                            :pre (progn
+                                   (set-face-background 'hl-line "#5d478b")
+                                   (set-cursor-color "#8b5742"))
+                            :post (progn
+                                    (set-face-background 'hl-line "#3e4446")
+                                    (set-cursor-color "yellow"))
+                            :timeout 10
+                            :hint nil)
+    "
+      🦑 Inkscape                                                              [_q_] quit
+      ^^---------------------------------------------------------------------------
+      [_g_] Generate image (uses the current line to generate filename)
+      [_l_] Load image
+      [_k_] Kill single inkscape process		    [_K_] Kill ALL inkscape processes
+
+      ^^---------------------------------------------------------------------------
+      "
+    ("g" my/inkscape/latex/launch :exit t)
+    ("l" my/inkscape/latex/load)
+    ("k" my/inkscape/latex/kill)
+    ("K" my/inkscape/latex/killall :exit t)
+    ("q" nil nil))
+
+  (define-key my/keymap (kbd "i") #'hydra-inkscape/body)
+ #+END_SRC
+* Supress showing inkscape generation buffer
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'display-buffer-alist
+               '("InkscapeGenerating.*"
+                 (display-buffer-no-window)))
  #+END_SRC

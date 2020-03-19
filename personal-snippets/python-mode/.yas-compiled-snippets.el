@@ -11,4 +11,4 @@
 		       ("com" "\"\"\"${1:description of function does}\n${2:__ Parameters __\n${3:parameter me up}}\n\n${4:__ Return __\n${5:any return values}}$0\n\"\"\"\n" "comment" nil nil nil "/Users/CCCP/creamy_seas/sync_files/emacs_config/personal-snippets/python-mode/comment" nil nil)))
 
 
-;;; Do not edit! File generated at Thu Mar 12 18:00:37 2020
+;;; Do not edit! File generated at Thu Mar 19 16:34:19 2020

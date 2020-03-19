@@ -64,4 +64,4 @@
 		       ("allow" "#[allow(${1:lint})]" "#[allow(lint)]" nil nil nil "/Users/CCCP/creamy_seas/sync_files/emacs_config/personal-snippets/rustic-mode/allow" nil nil)))
 
 
-;;; Do not edit! File generated at Thu Mar 12 18:00:37 2020
+;;; Do not edit! File generated at Thu Mar 19 16:34:19 2020

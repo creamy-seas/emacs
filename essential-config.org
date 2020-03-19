@@ -57,8 +57,22 @@
   (global-set-key (kbd "C-ф") (function beginning-of-visual-line))
   (global-set-key (kbd "C-у") (function end-of-visual-line))
   (global-set-key (kbd "C-з") (function previous-line))
+  (global-set-key (kbd "C-н") (function yank))
+  (global-set-key (kbd "C-в") (function sp-delete-char))
+
  #+END_SRC
 * 2 - Functions
+** =my/kill-buffer-process=
+#+BEGIN_SRC emacs-lisp
+  (defun my/kill-buffer-process (process-buffer-name)
+    "Kills the process running in the current 'buffer-name'"
+
+    ;; 1 - evaluate the process running in the buffer
+    (let* ((process (get-buffer-process process-buffer-name)))
+      ;; 2 - close buffer and ignore warnings
+      (ignore-errors (set-process-query-on-exit-flag process nil)
+                     (kill-buffer process-buffer-name))))
+ #+END_SRC
 ** =my/package-upgrade=
 #+BEGIN_SRC emacs-lisp
   (defun my/package-upgrade ()
@@ -277,7 +291,15 @@ Smarter widen and narrow
 
   (global-set-key (kbd "C-x n") (function my/narrow-or-widen-dwim))
  #+END_SRC
-
+** =my/generate-filename-from-line=
+#+BEGIN_SRC emacs-lisp
+  (defun my/generate-filename-from-line ()
+    "Reads in the current line and generates a valid filename with an underscore"
+    (let* (;reads in current line
+           (file-name (my/copy-line)))
+      ;; Trim leading whitespaces -> downcase -> replace spaces with underscore
+      (replace-regexp-in-string " " "_" (downcase (replace-regexp-in-string "^\s*" "" file-name)))))
+ #+END_SRC
 * Bookmarks
 ** Config
 #+BEGIN_SRC emacs-lisp
@@ -714,19 +736,4 @@ Quickly create disposable yasnippets with =~=
     :config
     (define-key my/keymap (kbd "s") (function aya-create))
     (define-key my/keymap (kbd "y") (function aya-expand)))
- #+END_SRC
-** =yas/insert-nby-name=
-Required by the personal snippets to put other snippets in
-#+BEGIN_SRC emacs-lisp
-  (defun yas/insert-by-name (name)
-    (cl-flet ((dummy-prompt
-               (prompt choices &optional display-fn)
-               (declare (ignore prompt))
-                                          ; this is to supress the warining that 'find' is not available
-               (with-no-warnings
-                 (or (find name choices :key display-fn :test #'string=)
-                     (throw 'notfound nil)))))
-      (let ((yas-prompt-functions '(dummy-prompt)))
-        (catch 'notfound
-          (yas-insert-snippet t)))))
  #+END_SRC

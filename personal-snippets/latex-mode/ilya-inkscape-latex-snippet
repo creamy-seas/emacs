@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: ilya-inkscape-latex-snippet
-# --
-\begin{figure}[h]
-  \centering
-  \inkfig{${1:width}$0cm}{`temp-file-name-for-snippet`}
-  \caption{\small ${3:caption-text}\label{fig:`temp-file-name-for-snippet`}}
-\end{figure}

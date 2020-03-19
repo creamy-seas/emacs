@@ -27,4 +27,4 @@
 		       ("pfile" ":PROPERTIES:\n:EXPORT_TITLE: ${1:Title of export}\n:EXPORT_FILE_NAME: ${2:Name of export}\n:END:" "file-property" nil nil nil "/Users/CCCP/creamy_seas/sync_files/emacs_config/personal-snippets/org-mode/file-property" nil nil)))
 
 
-;;; Do not edit! File generated at Thu Mar 12 18:00:37 2020
+;;; Do not edit! File generated at Thu Mar 19 16:34:19 2020
