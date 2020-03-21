@@ -6,11 +6,6 @@
   (defvar max-latex-fill-width 120)
 #+END_SRC
 
-Since =tex-buf.el= is only loaded upon entry, I explicitly set a requirement here to resolve warnings during compilation
-#+BEGIN_SRC emacs-lisp
-  ;; (require 'tex-buf)
- #+END_SRC
-
 * Installing Latex Packages
 - Install =.sty= packages in =/usr/local/texlive/2018/texmf-dist/tex/latex/base=
 - Run =sudo -s texhash= to load it up
@@ -100,7 +95,11 @@ Although there is a package called =auctex= there is no =auctex.el= file.
     (add-hook 'LaTeX-mode-hook 'font-lock-mode)
     (message "⦿⦿⦿⦿⦿⦿⦿⦿⦿⦿"))
  #+END_SRC
-
+** Setup for further
+Since =tex-buf.el= is only loaded upon entry, I explicitly set a requirement here to resolve warnings during compilation
+#+BEGIN_SRC emacs-lisp
+  (require 'tex-buf)
+ #+END_SRC
 * PACKAGE Reftex
 Referencing and bibliography
 #+BEGIN_SRC emacs-lisp

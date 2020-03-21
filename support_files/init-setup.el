@@ -2,7 +2,7 @@
 
 (defun init/fetch-config-files ()
   (with-temp-buffer
-    (insert-file-contents "./support_files/my_org_files.txt")
+    (insert-file-contents (concat user-emacs-directory "./support_files/my_org_files.txt"))
     (sort
      (split-string
 					; select the whole buffer
@@ -16,20 +16,22 @@
   "Go through each config file and tangle it"
   (dolist (org-file (init/fetch-config-files))
     (let ((prog-mode-hook nil)
+	  (org-file-path (concat user-emacs-directory org-file))
 	  (el-file-path (concat
 			 user-emacs-directory
 			 (replace-regexp-in-string "\.org" "\.el" org-file))))
 
 					; Tangle the file -> get name of file -> move it to folder
       (rename-file
-       (car (org-babel-tangle-file org-file))
+       (car (org-babel-tangle-file org-file-path))
        el-file-path t)
       (message (concat ">>>>>>>>>> Compiled and loaded " el-file-path)))))
 (init/compile-config-files)
 
 (defun init/overwrite ()
   "Replace content of this file with the init-final"
-  (copy-file "./support_files/init-final.el"
-	     "init.el" t)
-  (load-file "init.el"))
+  (copy-file (concat user-emacs-directory "./support_files/init-final.el")
+	     (concat user-emacs-directory "init.el")
+	      t)
+  (load-file (concat user-emacs-directory "init.el")))
 (init/overwrite)
