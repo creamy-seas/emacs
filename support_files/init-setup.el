@@ -25,7 +25,6 @@
       (rename-file
        (car (org-babel-tangle-file org-file-path))
        el-file-path t)
-      (byte-compile-file el-file-path t)
       (message (concat ">>>>>>>>>> Compiled and loaded " el-file-path)))))
 (init/compile-config-files)
 

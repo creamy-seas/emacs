@@ -146,11 +146,20 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
     :init (my/add-to-package-list 'dashboard)
     :config
     (dashboard-setup-startup-hook)
-    (add-to-list 'dashboard-items '(agenda) t)
+    (setq dashboard-set-heading-icons t)
+    (setq dashboard-set-file-icons t)
+    (setq dashboard-set-navigator t)
     (setq dashboard-items '((recents . 40)))
     (setq dashboard-startup-banner (my/config-file-path-evaluate "support_files/unaboomer.png"))
-    (setq dashboard-banner-length 300)
+    (setq dashboard-banner-length 250)
+    (setq dashboard-center-content t)
     (setq dashboard-banner-logo-title "Привет от Леонта!"))
+
+  (setq dashboard-items '((agenda . 5)
+                          (recents  . 5)
+                          (projects . 5)
+                          (registers . 5)
+                          (bookmarks . 5)))
  #+END_SRC
 * PACKAGE Emojify
 #+BEGIN_SRC emacs-lisp
