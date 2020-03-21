@@ -1,9 +1,9 @@
-*
-!emojis
-!manual_el
-!my-files
-!my-scripts
-!my-snippets
-!support_files
+/*
+!/emojis
+!/manual_el
+!/my-files
+!/my-scripts
+!/my-snippets
+!/support_files
 !*.org
 !Makefile
