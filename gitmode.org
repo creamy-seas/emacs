@@ -10,6 +10,8 @@ To ignore file chmod changes
   (use-package magit
     :ensure t
     :init (my/add-to-package-list 'magit))
+
+  (global-set-key (kbd "C-x g") (function magit))
  #+END_SRC
 * PACKAGE Git Gutter
 This allows to preview changes in files, see difference and restore hunks

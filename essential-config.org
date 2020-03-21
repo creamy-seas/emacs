@@ -714,6 +714,8 @@ For better autocompletion
 * PACKAGE Undo Tree
 Spawns a tree of all the undos that you have ever made
 #+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path (concat my/config-folder-location "manual_el/undo-tree-0.6.5"))
+
   (use-package undo-tree
     :ensure t
     :init (my/add-to-package-list 'undo-tree)
