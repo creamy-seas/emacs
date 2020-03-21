@@ -2,13 +2,25 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
+*Dependencies*
+| =biber= and some kind of tex(texlive, mactex) |                                        |
+| =kbordermatrix.sty=                           | https://www.ctan.org/pkg/kbordermatrix |
+
+Copy over the =.sty= files to your latex directory
+- For mac
+#+BEGIN_SRC shell :tangle no
+  sudo cp $STYFILE /usr/local/texlive/2018/texmf-dist/tex/latex/base
+ #+END_SRC
+- For linux
+#+BEGIN_SRC shell :tangle no
+  sudo cp $STYFILE /usr/share/texmf-dist/tex/latex/base
+ #+END_SRC
+
+Run =sudo -s texhash= to load them up
+
 #+BEGIN_SRC emacs-lisp
   (defvar max-latex-fill-width 120)
 #+END_SRC
-
-* Installing Latex Packages
-- Install =.sty= packages in =/usr/local/texlive/2018/texmf-dist/tex/latex/base=
-- Run =sudo -s texhash= to load it up
 
 * LaTeX commands
 I will most be using CDLaTeX to type in a command and then autocomplete it
@@ -60,40 +72,37 @@ Although there is a package called =auctex= there is no =auctex.el= file.
 ** Test if installed
 #+BEGIN_SRC emacs-lisp
   ;; (condition-case nil
-  ;;     (require 'tex-site)
+  ;;     (require 'tex-buf)
   ;;   (error (error ">>>>>>>>>> Install auctex manually by running list-packages <<<<<<<<<<")))
  #+END_SRC
 ** Basic setup
 #+BEGIN_SRC emacs-lisp
-  (use-package tex-site
-    :ensure auctex
-    :init (my/add-to-package-list 'auctex)
-    :config
-    (setq TeX-auto-save t)
+  (add-to-list 'load-path (my/config-file-path-evaluate "manual_el/auctex-12.2.0"))
+  (my/add-to-package-list 'auctex)
+  (setq TeX-auto-save t)
                                           ; access imported packages
-    (setq TeX-parse-self t)
+  (setq TeX-parse-self t)
                                           ; don't prompt file save
-    (setq TeX-save-query nil)
+  (setq TeX-save-query nil)
                                           ; display compilation in a parrallel window
-    (setq-default TeX-show-compilation t)
+  (setq-default TeX-show-compilation t)
 
-    (setq TeX-interactive-mode t)
+  (setq TeX-interactive-mode t)
 
-    ;; spell checking
-    (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+  ;; spell checking
+  (add-hook 'LaTeX-mode-hook 'flyspell-mode)
 
-    ;; folding
-    (add-hook 'LaTeX-mode-hook
-              (lambda () (TeX-fold-mode 1)))
+  ;; folding
+  (add-hook 'LaTeX-mode-hook
+            (lambda () (TeX-fold-mode 1)))
 
-    ;; ensure that anything inside $ $ is treated as math mode
-    (add-hook 'LaTeX-mode-hook
-              (lambda () (set (make-variable-buffer-local 'TeX-electric-math)
-                         (cons "$" "$"))))
+  ;; ensure that anything inside $ $ is treated as math mode
+  (add-hook 'LaTeX-mode-hook
+            (lambda () (set (make-variable-buffer-local 'TeX-electric-math)
+                       (cons "$" "$"))))
 
-    ;; font highlighting
-    (add-hook 'LaTeX-mode-hook 'font-lock-mode)
-    (message "⦿⦿⦿⦿⦿⦿⦿⦿⦿⦿"))
+  ;; font highlighting
+  (add-hook 'LaTeX-mode-hook 'font-lock-mode)
  #+END_SRC
 ** Setup for further
 Since =tex-buf.el= is only loaded upon entry, I explicitly set a requirement here to resolve warnings during compilation
@@ -150,7 +159,7 @@ Autocompletion and other shortcuts
           ("cases" "Insert case environment"   "" cdlatex-environment ("cases") t t)
           ("thr" "Insert theorem env" "" cdlatex-environment ("theorem") t nil)))
  #+END_SRC
-* MANUAL-PACKAGE Viewing in Skim (os-x only)    =C-c C-v=
+* MANUAL-PACKAGE View program)    =C-c C-v=
 - skim is run, reading the current line in the emacs buffer and highlighting it in the pdf
 - =syntex.gz= file needs to be in the directory for this to occur, so it's copied
 |-------------------+------------------------------------------------------|
@@ -165,13 +174,13 @@ Autocompletion and other shortcuts
 |-------------------+------------------------------------------------------|
 
 #+BEGIN_SRC emacs-lisp
-  (if (string-equal system-type "darwin")
-      (progn
-        (setq TeX-view-program-list
-              '(("SkimViewer" (my/config-file-path-evaluate "my-scripts/latex/search_engine.sh %s %n %o %b"))))
+  (setq TeX-view-program-list TeX-view-program-list-builtin)
+  (add-to-list 'TeX-view-program-list
+               '(("SkimViewer" (my/config-file-path-evaluate "my-scripts/latex/search_engine.sh %s %n %o %b"))))
 
-        (setq TeX-view-program-selection '((output-pdf "SkimViewer"))))
-    (warn "Path may not be set if you are an archcuck"))
+  (if (string-equal system-type "darwin")
+      (setq TeX-view-program-selection '((output-pdf "SkimViewer")))
+    (setq TeX-view-program-selection '((output-pdf "Zathura"))))
  #+END_SRC
 
 * PACKAGE fill-column-indicator
@@ -313,9 +322,9 @@ This is to show what the current fill column is
         (kill-buffer "*TeX Help*"))
 
       ;; 4 - switch to the termination window
-      (other-window 1)
-      (sleep-for 1)
-      (kill-buffer-and-window)
+      ;; (other-window 1)
+      ;; (sleep-for 1)
+      ;; (kill-buffer-and-window)
 
       ;; 5 - change number of running processes and recolour bar if required
       (setq my/latex/active-compilations (- my/latex/active-compilations 1))

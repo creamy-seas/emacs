@@ -2,6 +2,15 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
+#+BEGIN_SRC emacs-lisp
+  (setq org-agenda-files (list "~/creamy_seas/antlers.org"
+                               "~/mydrive/east-data-company.org"
+                               "~/mydrive/people.org"
+                               "~/mydrive/adv18_sa36_automation/adventure_brief.org"
+                               "~/mydrive/adv17_ext_horseBetting/adventure_brief.org"
+                               "~/mydrive/adv16_sa_onFire/adventure_brief.org"))
+ #+END_SRC
+
 * Allow alphabetic enumeration
 #+BEGIN_SRC emacs-lisp
   (setq org-list-allow-alphabetical t)
@@ -39,15 +48,6 @@ Nice bullets instead of multiplication symbols
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-c c") (function org-capture))
   (global-set-key (kbd "C-c a") (function org-agenda))
- #+END_SRC
-** agenda file location
-#+BEGIN_SRC emacs-lisp
-  (setq org-agenda-files (list "~/creamy_seas/antlers.org"
-                               "~/mydrive/east-data-company.org"
-                               "~/mydrive/people.org"
-                               "~/mydrive/adv18_sa36_automation/adventure_brief.org"
-                               "~/mydrive/adv17_ext_horseBetting/adventure_brief.org"
-                               "~/mydrive/adv16_sa_onFire/adventure_brief.org"))
  #+END_SRC
 ** agenda layout prompt
 #+BEGIN_SRC emacs-lisp

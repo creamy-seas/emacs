@@ -15,9 +15,9 @@ To get symbols run
 * Autoclosing brackets
 #+BEGIN_SRC emacs-lisp
    (setq electric-pair-pairs '(
-                              (?\( . ?\))
-                              (?\" . ?\")
-                              ))
+			      (?\( . ?\))
+			      (?\" . ?\")
+			      ))
 
   (add-hook 'org-mode-hook 'electric-pair-mode)
   (add-hook 'emacs-lisp-mode-hook 'electric-pair-mode)
@@ -26,9 +26,9 @@ To get symbols run
 ** Disable autoclosing for latex
 #+BEGIN_SRC emacs-lisp
   (add-hook 'LaTex-mode-hook (lambda ()
-                               (setq-local electric-pair-inhibit-predicate
-                                           `(lambda (c)
-                                              (if (char-equal c ?{) t (,electric-pair-inhibit-predicate c))))))
+			       (setq-local electric-pair-inhibit-predicate
+					   `(lambda (c)
+					      (if (char-equal c ?{) t (,electric-pair-inhibit-predicate c))))))
  #+END_SRC
 * Backup files
 #+BEGIN_SRC emacs-lisp
@@ -79,12 +79,12 @@ For some reason this is not the default way of killing buffers
   (defun my/unpop-to-mark-command ()
     "Unpop off mark ring. Does nothing if mark ring is empty."
     (interactive)
-        (when mark-ring
-          (setq mark-ring (cons (copy-marker (mark-marker)) mark-ring))
-          (set-marker (mark-marker) (car (last mark-ring)) (current-buffer))
-          (when (null (mark t)) (ding))
-          (setq mark-ring (nbutlast mark-ring))
-          (goto-char (marker-position (car (last mark-ring))))))
+	(when mark-ring
+	  (setq mark-ring (cons (copy-marker (mark-marker)) mark-ring))
+	  (set-marker (mark-marker) (car (last mark-ring)) (current-buffer))
+	  (when (null (mark t)) (ding))
+	  (setq mark-ring (nbutlast mark-ring))
+	  (goto-char (marker-position (car (last mark-ring))))))
 
   (global-set-key (kbd "s-,") 'my/pop-local-mark-ring)
   (global-set-key (kbd "s-.") 'my/unpop-to-mark-command)
@@ -155,10 +155,10 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
     (setq dashboard-banner-logo-title "Привет от Леонта!"))
 
   (setq dashboard-items '((agenda . 5)
-                          (recents  . 5)
-                          (projects . 5)
-                          (registers . 5)
-                          (bookmarks . 5)))
+			  (recents  . 5)
+			  (projects . 5)
+			  (registers . 5)
+			  (bookmarks . 5)))
  #+END_SRC
 ** PACKAGE Page-Break-Lines (for dashboard)
 #+BEGIN_SRC emacs-lisp
@@ -201,43 +201,43 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
 #+BEGIN_SRC emacs-lisp
   (defvar my/templates
     (sort `(" rust"
-            " python"
-            " latex"
-            ) 'string<))
+	    " python"
+	    " latex"
+	    ) 'string<))
 
   (defun my/generate-template ()
     "generate a blank template for the chosen language"
     (interactive)
     (let ((chosen-file (ido-completing-read "Language to generate: " my/templates))
-          ;; (chosen-project-name (concat (format-time-string "%Y-%m-%d_") (read-string "Name of the test project: "))))
-          (chosen-project-name (read-string "Name of the test project: ")))
+	  ;; (chosen-project-name (concat (format-time-string "%Y-%m-%d_") (read-string "Name of the test project: "))))
+	  (chosen-project-name (read-string "Name of the test project: ")))
       (message chosen-project-name)
       (cond (
-             (string= chosen-file " rust")
-             (let ((temp-dir (concat "~/temp-and-test/rust/" chosen-project-name)))
-               (shell-command (concat "mkdir -p " temp-dir " && cd " temp-dir "&& cargo init"))
-               (find-file (concat temp-dir "/src/main.rs"))))
+	     (string= chosen-file " rust")
+	     (let ((temp-dir (concat "~/temp-and-test/rust/" chosen-project-name)))
+	       (shell-command (concat "mkdir -p " temp-dir " && cd " temp-dir "&& cargo init"))
+	       (find-file (concat temp-dir "/src/main.rs"))))
 
-            ((string= chosen-file " python")
-             (let ((temp-dir (concat "~/temp-and-test/python/" chosen-project-name)))
-               (shell-command (concat "mkdir -p " temp-dir " && touch " temp-dir "/main.py"))
-               (find-file (concat temp-dir "/main.py"))))
+	    ((string= chosen-file " python")
+	     (let ((temp-dir (concat "~/temp-and-test/python/" chosen-project-name)))
+	       (shell-command (concat "mkdir -p " temp-dir " && touch " temp-dir "/main.py"))
+	       (find-file (concat temp-dir "/main.py"))))
 
-            ((string= chosen-file " latex")
-             (let* ((temp-dir (concat "~/temp-and-test/latex/" chosen-project-name))
-                    (main-tex-file (concat temp-dir "/" chosen-project-name ".tex")))
-               (shell-command (format "mkdir -p %s && cp -r %s %s && mv %s %s"
-                                      temp-dir
-                                      (my/config-file-path-evaluate "my-files/latex/*")
-                                      temp-dir
-                                      (concat temp-dir "/template.tex")
-                                      main-tex-file))
+	    ((string= chosen-file " latex")
+	     (let* ((temp-dir (concat "~/temp-and-test/latex/" chosen-project-name))
+		    (main-tex-file (concat temp-dir "/" chosen-project-name ".tex")))
+	       (shell-command (format "mkdir -p %s && cp -r %s %s && mv %s %s"
+				      temp-dir
+				      (my/config-file-path-evaluate "my-files/latex/*")
+				      temp-dir
+				      (concat temp-dir "/template.tex")
+				      main-tex-file))
 
-               ;; Open file -> go to line 5 -> run compilation
-               (find-file main-tex-file)
-               (forward-line 5)
-               (end-of-visual-line)
-               (my/latex/compile))))))
+	       ;; Open file -> go to line 5 -> run compilation
+	       (find-file main-tex-file)
+	       (forward-line 5)
+	       (end-of-visual-line)
+	       (my/latex/compile))))))
 
   (define-key my/keymap (kbd "g") (function my/generate-template))
  #+END_SRC
@@ -273,50 +273,50 @@ New buffer is opened in the window that the command was called from
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-x b") 'ibuffer)
   (setq ibuffer-saved-filter-groups
-        (quote (("default"
-                 (" Magit" (or
-                             (name . "^.*gitignore$")
-                             (name . "^magit.*$")))
-                 (" Rust" (or
-                            (name . "Cargo\\.*$")
-                            (name . ".*\\.rs")
-                            (name . ".*rls.*")
-                            (name . ".*rustic.*")
-                            (mode . rust-mode)))
-                 (" Jupyter" (or
-                               (mode . "ein:notebooklist-mode")
-                               (name . "\\*ein:.*")
-                               ))
-                 ("ᛥ Dired" (mode . dired-mode))
-                 (" Python" (or
-                              (mode . python-mode)
-                              (mode . inferior-python-mode)
-                              (name . "^\\*Python Doc\\*$")
-                              (name . "^matplotlibrc$")
-                              (name . "^.*mplstyle$")
-                              (name . "^\\*Flycheck error messages\\*$")))
-                 (" Latex" (or
-                             (name . "^.*tex$")
-                             (name . "^.*bib$")
-                             (name . "^.*log$")
-                             (name . "\\*RefTeX Select\\*")
-                             (name . "^\\*toc\\*$")
-                             (mode . comint-mode)))
-                 (" Docker" (name . ".*[Dd]ock.*"))
-                 (" Org" (name . "\\.org"))
-                 (" eLisp" (name . "\\.el"))
-                 (" Shell" (name . "\\.sh"))
-                 (" PDF" (name . "\\.pdf"))
-                 ("卍 Config" (name . "^\\..*$"))
-                 (" Elfeed" (or
-                              (name . "\\*elfeed.*\\*")
-                              (name . "^ef.*$")))))))
+	(quote (("default"
+		 (" Magit" (or
+			     (name . "^.*gitignore$")
+			     (name . "^magit.*$")))
+		 (" Rust" (or
+			    (name . "Cargo\\.*$")
+			    (name . ".*\\.rs")
+			    (name . ".*rls.*")
+			    (name . ".*rustic.*")
+			    (mode . rust-mode)))
+		 (" Jupyter" (or
+			       (mode . "ein:notebooklist-mode")
+			       (name . "\\*ein:.*")
+			       ))
+		 ("ᛥ Dired" (mode . dired-mode))
+		 (" Python" (or
+			      (mode . python-mode)
+			      (mode . inferior-python-mode)
+			      (name . "^\\*Python Doc\\*$")
+			      (name . "^matplotlibrc$")
+			      (name . "^.*mplstyle$")
+			      (name . "^\\*Flycheck error messages\\*$")))
+		 (" Latex" (or
+			     (name . "^.*tex$")
+			     (name . "^.*bib$")
+			     (name . "^.*log$")
+			     (name . "\\*RefTeX Select\\*")
+			     (name . "^\\*toc\\*$")
+			     (mode . comint-mode)))
+		 (" Docker" (name . ".*[Dd]ock.*"))
+		 (" Org" (name . "\\.org"))
+		 (" eLisp" (name . "\\.el"))
+		 (" Shell" (name . "\\.sh"))
+		 (" PDF" (name . "\\.pdf"))
+		 ("卍 Config" (name . "^\\..*$"))
+		 (" Elfeed" (or
+			      (name . "\\*elfeed.*\\*")
+			      (name . "^ef.*$")))))))
   (add-hook 'ibuffer-mode-hook
-            (lambda ()
-              (ibuffer-auto-mode 1)
-              (ibuffer-switch-to-saved-filter-groups "default")
-              (add-to-list `ibuffer-never-show-predicates "*Completions*")
-              (add-to-list `ibuffer-never-show-predicates "*Help*")))
+	    (lambda ()
+	      (ibuffer-auto-mode 1)
+	      (ibuffer-switch-to-saved-filter-groups "default")
+	      (add-to-list `ibuffer-never-show-predicates "*Completions*")
+	      (add-to-list `ibuffer-never-show-predicates "*Help*")))
 
   ;; (" Emacs" (or
   ;;               (name . "^\\*scratch\\*$")
@@ -332,22 +332,22 @@ New buffer is opened in the window that the command was called from
 ** Column lengths
 #+BEGIN_SRC emacs-lisp
   (setq ibuffer-formats
-        '((mark
-           modified
-           "   "
-           (mode 20 30 :left)
-           "   "
-           ;; (size 9 -1 :right)
-           (name 10 70 :left);; :elide)
-           "   "
-           )
-                ;; " "
-                ;; (mode 50 50 :left :elide)
-                ;; " " filename-and-process)
-          ;; (mark " "
-                ;; (name 16 -1)
-                ;; " " filename)
-        ))
+	'((mark
+	   modified
+	   "   "
+	   (mode 20 30 :left)
+	   "   "
+	   ;; (size 9 -1 :right)
+	   (name 10 70 :left);; :elide)
+	   "   "
+	   )
+		;; " "
+		;; (mode 50 50 :left :elide)
+		;; " " filename-and-process)
+	  ;; (mark " "
+		;; (name 16 -1)
+		;; " " filename)
+	))
 #+END_SRC
 ** Collapse by Default
 #+BEGIN_SRC emacs-lisp
@@ -356,16 +356,16 @@ New buffer is opened in the window that the command was called from
 
   (defadvice ibuffer (after collapse-helm)
     (dolist (group my/ibuffer-collapsed-groups)
-            (progn
-              (goto-char 1)
-              (when (search-forward (concat "[ " group " ]") (point-max) t)
-                (progn
-                  (move-beginning-of-line nil)
-                  (ibuffer-toggle-filter-group)
-                  )
-                )
-              )
-            )
+	    (progn
+	      (goto-char 1)
+	      (when (search-forward (concat "[ " group " ]") (point-max) t)
+		(progn
+		  (move-beginning-of-line nil)
+		  (ibuffer-toggle-filter-group)
+		  )
+		)
+	      )
+	    )
       (goto-char 1)
       (search-forward "[ " (point-max) t)
     )
@@ -458,8 +458,8 @@ New buffer is opened in the window that the command was called from
     "
   About Emacs                                                        [_q_] quit
   ^^---------------------------------------------------------------------------
-           PID:    %s(emacs-pid)
-        Uptime:    %s(emacs-uptime)
+	   PID:    %s(emacs-pid)
+	Uptime:    %s(emacs-uptime)
      Init time:    %s(emacs-init-time)
      Directory:    %s(identity user-emacs-directory)
   Invoked from:    %s(concat invocation-directory invocation-name)
@@ -489,20 +489,20 @@ New buffer is opened in the window that the command was called from
 
   Memory
   ^^---------------------------------------------------------------------------
-             Used:    %s(format \"%0.0f percent\"
-                                (* 100 (- 1 (/ (cl-second (memory-info))
-                                               (float (cl-first (memory-info)))))))
-         Free RAM:    %s(format \"%0.1f GB (of %0.1f GB)\"
-                                (/ (float (cl-second (memory-info))) 1048576)
-                                (/ (float (cl-first (memory-info))) 1048576))
-        Free swap:    %s(format \"%0.1f GB (of %0.1f GB)\"
-                                (/ (float (cl-fourth (memory-info))) 1048576)
-                                (/ (float (cl-third (memory-info))) 1048576))
+	     Used:    %s(format \"%0.0f percent\"
+				(* 100 (- 1 (/ (cl-second (memory-info))
+					       (float (cl-first (memory-info)))))))
+	 Free RAM:    %s(format \"%0.1f GB (of %0.1f GB)\"
+				(/ (float (cl-second (memory-info))) 1048576)
+				(/ (float (cl-first (memory-info))) 1048576))
+	Free swap:    %s(format \"%0.1f GB (of %0.1f GB)\"
+				(/ (float (cl-fourth (memory-info))) 1048576)
+				(/ (float (cl-third (memory-info))) 1048576))
       Pure memory:    %s(format \"%0.1f GB\" (/ (float pure-bytes-used) 1048576))
 
   Garbage Collection
   ^^---------------------------------------------------------------------------
-         GCs done:    %`gcs-done
+	 GCs done:    %`gcs-done
       GCs elapsed:    %s(format-seconds \"%M, %S\" gc-elapsed)
    Cons threshold:    %`gc-cons-threshold
   Cons percentage:    %`gc-cons-percentage
@@ -727,8 +727,8 @@ smart mode line allows infinite customization
 #+BEGIN_SRC emacs-lisp
   (custom-set-faces
    '(mode-line ((t
-                 (:background "selectedControlColor"
-                  :foreground "DeepSkyBlue1")))))
+		 (:background "selectedControlColor"
+		  :foreground "DeepSkyBlue1")))))
  #+END_SRC
 * Packages Menu
 [[file:essential-config.org::*=my/package-upgrade=][Depends on the function =my/package-upgrade=]]
@@ -756,10 +756,9 @@ smart mode line allows infinite customization
 * PACKAGE Rainbow mode
 Colourize codes such as #AF3313
 #+BEGIN_SRC emacs-lisp
-  (use-package rainbow-mode
-    :ensure t
-    :init
-    (my/add-to-package-list 'rainbow-mode))
+  (add-to-list 'load-path (my/config-file-path-evaluate "manual_el/rainbow-mode-1.0.1"))
+  (require 'rainbow-mode)
+  (my/add-to-package-list 'rainbow-mode)
   (rainbow-mode)
  #+END_SRC
 
@@ -768,7 +767,7 @@ Colourize codes such as #AF3313
 #+BEGIN_SRC emacs-lisp
   ;; (setq initial-major-mode 'org-mode)
   (setq initial-scratch-message (concat
-                                 "#+Title: Persistent Scratch Buffer"))
+				 "#+Title: Persistent Scratch Buffer"))
  #+END_SRC
 ** Reopen closed scratch
 #+BEGIN_SRC emacs-lisp
@@ -806,7 +805,7 @@ Colourize codes such as #AF3313
     :ensure t
     :init (my/add-to-package-list 'treemacs)
     :config
-                                          ; a bit too wide
+					  ; a bit too wide
     (setq treemacs-width 30)
     (define-key my/keymap (kbd "D") (function treemacs-add-and-display-current-project))
     (define-key treemacs-mode-map (kbd "j") (function treemacs-next-line))
@@ -887,7 +886,7 @@ When the there are more than two windows =C-x o= will give each window a letter 
     (setq switch-window-shortcut-style 'qwerty)
     (setq switch-window-multiple-frames t)
     (setq switch-window-qwerty-shortcuts
-          '("a" "s" "d" "f" "g" "h" "j"))
+	  '("a" "s" "d" "f" "g" "h" "j"))
     :bind
     ([remap other-window] . switch-window))
 

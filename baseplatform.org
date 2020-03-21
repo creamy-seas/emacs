@@ -53,14 +53,16 @@ Some .el files are downloaded directly and kept in the config folder
 #+BEGIN_SRC emacs-lisp
   (use-package exec-path-from-shell
     :ensure t
-    :config (my/add-to-package-list 'exec-path-from-shell)
-    (if (string-equal system-type "darwin")
-        (progn
+    :config (my/add-to-package-list 'exec-path-from-shell))
+
+  (if (string-equal system-type "darwin")
+      (progn
                                           ; Specify what env variables to load into emacs
-          (exec-path-from-shell-copy-env "PYTHONPATH")
-          (exec-path-from-shell-copy-env "WORKON_HOME")
-          )
-      (warn "Path may not be set if you are an archcuck")))
+        (exec-path-from-shell-copy-env "PYTHONPATH")
+        (exec-path-from-shell-copy-env "WORKON_HOME")
+        ))
+
+  (exec-path-from-shell-initialize)
  #+END_SRC
 * 7 - Emacs server
 #+BEGIN_SRC emacs-lisp

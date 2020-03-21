@@ -21,7 +21,3 @@
     :config
     (define-key markdown-mode-map (kbd "C-c C-b") nil))
  #+END_SRC
-* Javascript mode
-#+BEGIN_SRC emacs-lisp
-  (smart-tabs-insinuate 'c 'javascript)
- #+END_SRC

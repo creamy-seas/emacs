@@ -5,12 +5,12 @@
 * Arsist mode
 #+BEGIN_SRC emacs-lisp
   (add-hook 'artist-mode-hook
-            (lambda ()
-              (local-set-key (kbd "<f1>") 'org-mode)
-              (local-set-key (kbd "<f2>") 'artist-select-op-pen-line) ; f2 = pen mode
-              (local-set-key (kbd "<f3>") 'artist-select-op-line)     ; f3 = line
-              (local-set-key (kbd "<f4>") 'artist-select-op-square)   ; f4 = rectangle
-              (local-set-key (kbd "<f5>") 'artist-select-op-ellipse)  ; f5 = ellipse
+	    (lambda ()
+	      (local-set-key (kbd "<f1>") 'org-mode)
+	      (local-set-key (kbd "<f2>") 'artist-select-op-pen-line) ; f2 = pen mode
+	      (local-set-key (kbd "<f3>") 'artist-select-op-line)     ; f3 = line
+	      (local-set-key (kbd "<f4>") 'artist-select-op-square)   ; f4 = rectangle
+	      (local-set-key (kbd "<f5>") 'artist-select-op-ellipse)  ; f5 = ellipse
   ))
  #+END_SRC
 * DOWN Dumb Jump
@@ -47,19 +47,19 @@ Have either a =.git= or =.dumbjump= file in the main project directory
     `(lambda ()
        (interactive)
        (let ((doc (funcall ,doc-fun (funcall ,sym-fun))))
-         (if (string-empty-p doc)
-             (message "Unknown symbol, or no documentation available.")
-           (let ((map (make-sparse-keymap)))
-             (set-transient-map map
-                                (lambda ()
-                                  (eq #'mwheel-scroll this-command))
-                                (lambda ()
-                                  (quick-peek-hide)
-                                  (setq this-command #'ignore))))
-           (let ((pos (save-excursion
-                        (beginning-of-line)
-                        (point))))
-             (quick-peek-show doc pos nil (frame-height)))))))
+	 (if (string-empty-p doc)
+	     (message "Unknown symbol, or no documentation available.")
+	   (let ((map (make-sparse-keymap)))
+	     (set-transient-map map
+				(lambda ()
+				  (eq #'mwheel-scroll this-command))
+				(lambda ()
+				  (quick-peek-hide)
+				  (setq this-command #'ignore))))
+	   (let ((pos (save-excursion
+			(beginning-of-line)
+			(point))))
+	     (quick-peek-show doc pos nil (frame-height)))))))
  #+END_SRC
 
 * DOWN Linum
@@ -104,7 +104,7 @@ Put lsp into the backend of company
     :ensure t
     :config
     (push '(company-lsp :with company-yasnippet)
-          company-backends)
+	  company-backends)
     :commands company-lsp)
  #+END_SRC
 
@@ -115,56 +115,56 @@ To autocomplete in the search buffergpg
     :ensure t
     :init (my/add-to-package-list 'lsp-ivy))
  #+END_SRC
-* PACKAGE Langtool
+* DOWN PACKAGE Langtool
 Grammar and style checker.
 - Will need to download from https://languagetool.org/
 #+BEGIN_SRC emacs-lisp
-  (setq my/langtool-location "/Applications/LanguageTool-4.8/languagetool-commandline.jar")
+  ;; (setq my/langtool-location "/Applications/LanguageTool-4.8/languagetool-commandline.jar")
  #+END_SRC
 ** Init
 #+BEGIN_SRC emacs-lisp
-  (use-package langtool
-    :ensure t
-    :init (my/add-to-package-list 'langtool)
-    :config
-    (setq langtool-language-tool-jar my/langtool-location))
+  ;; (use-package langtool
+  ;;   :ensure t
+  ;;   :init (my/add-to-package-list 'langtool)
+  ;;   :config
+  ;;   (setq langtool-language-tool-jar my/langtool-location))
  #+END_SRC
 ** Keybinding
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'langtool-error-exists-hook
-            (lambda ()
-              (langtool-correct-buffer)
-              (langtool-check-done)))
-  (global-set-key "\M-^" 'langtool-check)
+  ;; (add-hook 'langtool-error-exists-hook
+  ;;           (lambda ()
+  ;;             (langtool-correct-buffer)
+  ;;             (langtool-check-done)))
+  ;; (global-set-key "\M-^" 'langtool-check)
  #+END_SRC
-* PACKAGE Ox-reveal
+* DOWN Ox-reveal
 Presentations can be hosted from github - look at video no 50
 #+BEGIN_SRC emacs-lisp
-  (use-package ox-reveal
-    :ensure t
-    :init (my/add-to-package-list 'ox-reveal)
-    :config
-    (require 'ox-reveal)
-    (setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
-    (setq org-reveal-mathjax t))
+  ;; (use-package ox-reveal
+  ;;   :ensure t
+  ;;   :init (my/add-to-package-list 'ox-reveal)
+  ;;   :config
+  ;;   (require 'ox-reveal)
+  ;;   (setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
+  ;;   (setq org-reveal-mathjax t))
  #+END_SRC
-* PACKAGE Pretty-mode
+* DOWN Pretty-mode
 To activate it do =(add-hook 'my-hook 'turn-on-pretty-mode)=
 #+BEGIN_SRC emacs-lisp
-  (use-package pretty-mode
-    :ensure t
-    :init (my/add-to-package-list 'pretty-mode)
-    :config
-    (pretty-activate-groups
-     '(:sub-and-superscripts :greek :arithmetic-nary)))
+  ;; (use-package pretty-mode
+  ;;   :ensure t
+  ;;   :init (my/add-to-package-list 'pretty-mode)
+  ;;   :config
+  ;;   (pretty-activate-groups
+  ;;    '(:sub-and-superscripts :greek :arithmetic-nary)))
  #+END_SRC
-* PACKAGE Smart-tabs
+* DOWN Smart-tabs
 - Tabs are only used at the beginning of lines. Everything else, like ASCII art and tables, should be formatted with spaces.
 - Tabs are only used for expressing the indentation level. One tab per “block” – any remaining whitespace is spaces only.
 #+BEGIN_SRC emacs-lisp
-  (use-package smart-tabs-mode
-    :ensure t
-    :init (my/add-to-package-list 'smart-tabs-mode))
+  ;; (use-package smart-tabs-mode
+  ;;   :ensure t
+  ;;   :init (my/add-to-package-list 'smart-tabs-mode))
  #+END_SRC
 * PACKAGE Smartparens
 Smart way of moving around brackets
@@ -180,9 +180,9 @@ Smart way of moving around brackets
 ** Enforce strict mode in certain modes
 #+BEGIN_SRC emacs-lisp
   (mapc (lambda (hook)
-          (add-hook hook #'smartparens-strict-mode))
-        '(markdown-mode-hook
-          prog-mode-hook))
+	  (add-hook hook #'smartparens-strict-mode))
+	'(markdown-mode-hook
+	  prog-mode-hook))
  #+END_SRC
 ** Keybindings
 #+BEGIN_SRC emacs-lisp
