@@ -5,7 +5,7 @@
 If offlineimap is giving an error, it is probably picking up python3.7
 Delete all python3.7 email-related libraries:
 1) Find the site libraries
-#+BEGIN_SRC shell
+#+BEGIN_SRC shell :tangle no
   python3 -m site
  #+END_SRC
 2) [@2] Remove all =imap= packages
@@ -56,7 +56,7 @@ https://www.offlineimap.org/doc/FAQ.html#does-offlineimap-verify-ssl-certificate
 - first part gets the certificate
 - second part gets information from certificate - the fingerprint
 
-#+BEGIN_SRC sh
+#+BEGIN_SRC sh :tangle no
   SSL_CERT_DIR="" openssl s_client -connect imap.SERVERTHATYOUCHOOSE.com:993 < /dev/null 2>/dev/null | openssl x509 -fingerprint -noout -text -in /dev/stdin
 #+END_SRC
 

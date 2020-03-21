@@ -146,8 +146,9 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
     :init (my/add-to-package-list 'dashboard)
     :config
     (dashboard-setup-startup-hook)
+    (add-to-list 'dashboard-items '(agenda) t)
     (setq dashboard-items '((recents . 40)))
-    (setq dashboard-startup-banner (my/config-file-path-evaluate "assets/unaboomer.png"))
+    (setq dashboard-startup-banner (my/config-file-path-evaluate "support_files/unaboomer.png"))
     (setq dashboard-banner-length 300)
     (setq dashboard-banner-logo-title "Привет от Леонта!"))
  #+END_SRC
@@ -177,27 +178,79 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
 * Fonts
 #+BEGIN_SRC emacs-lisp
   (custom-set-faces
-   '(default ((t (:family "JetBrains Mono" :height 170))))
-   (custom-set-faces '(eldoc-highlight-function-argument ((t (:inherit font-lock-variable-name-face)))))
-   '(default ((t (:family "Inconsolata" :height 170))))
    '(default ((t (:family "Fira Code" :height 170))))
-   ;; `(popup-scroll-bar-background-face ((t (:background "#189a1e1224a2"))))
-   ;; `(popup-scroll-bar-foreground-face ((t (:background "#41bf505b61e3"))))
-   ;; `(popup-face ((t (:background "#41bf505b61e3" :foreground "white"))))
-   ;; selection on autocomplete
-   ;; `(popup-menu-selection-face ((t (:background "orange2" :foreground "#3a3a6e" :weight semibold))))
-   ;; rest of autocomplete
-   ;; `(popup-menu-face ((t (:inherit default :background "#41bf505b61e3"))))
-   ;; `(popup-menu-summary-face ((t (:inherit default :background "#41bf505b61e3"))))
+   ;; '(default ((t (:family "Inconsolata" :height 170))))
+   ;; '(default ((t (:family "Fira Code" :height 170))))
    )
+
+  (defun fira-code-mode--make-alist (list)
+    "Generate prettify-symbols alist from LIST."
+    (let ((idx -1))
+      (mapcar
+       (lambda (s)
+         (setq idx (1+ idx))
+         (let* ((code (+ #Xe100 idx))
+                (width (string-width s))
+                (prefix ())
+                (suffix '(?\s (Br . Br)))
+                (n 1))
+           (while (< n width)
+             (setq prefix (append prefix '(?\s (Br . Bl))))
+             (setq n (1+ n)))
+           (cons s (append prefix suffix (list (decode-char 'ucs code))))))
+       list)))
+
+  (defconst fira-code-mode--ligatures
+    '("www" "**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\"
+      "{-" "[]" "::" ":::" ":=" "!!" "!=" "!==" "-}"
+      "--" "---" "-->" "->" "->>" "-<" "-<<" "-~"
+      "#{" "#[" "##" "###" "####" "#(" "#?" "#_" "#_("
+      ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*"
+      "/**" "/=" "/==" "/>" "//" "///" "&&" "||" "||="
+      "|=" "|>" "^=" "$>" "++" "+++" "+>" "=:=" "=="
+      "===" "==>" "=>" "=>>" "<=" "=<<" "=/=" ">-" ">="
+      ">=>" ">>" ">>-" ">>=" ">>>" "<*" "<*>" "<|" "<|>"
+      "<$" "<$>" "<!--" "<-" "<--" "<->" "<+" "<+>" "<="
+      "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<" "<~"
+      "<~~" "</" "</>" "~@" "~-" "~=" "~>" "~~" "~~>" "%%"
+      "x" ":" "+" "+" "*"))
+
+  (defvar fira-code-mode--old-prettify-alist)
+
+  (defun fira-code-mode--enable ()
+    "Enable Fira Code ligatures in current buffer."
+    (setq-local fira-code-mode--old-prettify-alist prettify-symbols-alist)
+    (setq-local prettify-symbols-alist (append (fira-code-mode--make-alist fira-code-mode--ligatures) fira-code-mode--old-prettify-alist))
+    (prettify-symbols-mode t))
+
+  (defun fira-code-mode--disable ()
+    "Disable Fira Code ligatures in current buffer."
+    (setq-local prettify-symbols-alist fira-code-mode--old-prettify-alist)
+    (prettify-symbols-mode -1))
+
+  (define-minor-mode fira-code-mode
+    "Fira Code ligatures minor mode"
+    :lighter " Fira Code"
+    (setq-local prettify-symbols-unprettify-at-point 'right-edge)
+    (if fira-code-mode
+        (fira-code-mode--enable)
+      (fira-code-mode--disable)))
+
+  (defun fira-code-mode--setup ()
+    "Setup Fira Code Symbols"
+    (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol"))
+
+  (provide 'fira-code-mode)
+  (add-hook 'prog-mode-hook (function fira-code-mode))
 
  #+END_SRC
 * Generating test projects
 #+BEGIN_SRC emacs-lisp
-  (setq my/templates
-        (sort `(" rust"
-                " python"
-                ) 'string<))
+  (defvar my/templates
+    (sort `(" rust"
+            " python"
+            " latex"
+            ) 'string<))
 
   (defun my/generate-template ()
     "generate a blank template for the chosen language"
@@ -217,7 +270,21 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
                (shell-command (concat "mkdir -p " temp-dir " && touch " temp-dir "/main.py"))
                (find-file (concat temp-dir "/main.py"))))
 
-            )))
+            ((string= chosen-file " latex")
+             (let* ((temp-dir (concat "~/temp-and-test/latex/" chosen-project-name))
+                    (main-tex-file (concat temp-dir "/" chosen-project-name ".tex")))
+               (shell-command (format "mkdir -p %s && cp -r %s %s && mv %s %s"
+                                      temp-dir
+                                      (my/config-file-path-evaluate "my-files/latex/*")
+                                      temp-dir
+                                      (concat temp-dir "/template.tex")
+                                      main-tex-file))
+
+               ;; Open file -> go to line 5 -> run compilation
+               (find-file main-tex-file)
+               (forward-line 5)
+               (end-of-visual-line)
+               (my/latex/compile))))))
 
   (define-key my/keymap (kbd "g") (function my/generate-template))
  #+END_SRC
@@ -331,11 +398,11 @@ New buffer is opened in the window that the command was called from
 #+END_SRC
 ** Collapse by Default
 #+BEGIN_SRC emacs-lisp
-  (setq mp/ibuffer-collapsed-groups (list "Default" "*Internal*" "ᛓ Elfeed"))
-  ;; (setq mp/ibuffer-collapsed-groups (list "*Internal*"))
+  (defvar my/ibuffer-collapsed-groups (list "Default" "*Internal*" "ᛓ Elfeed"))
+  ;; (setq my/ibuffer-collapsed-groups (list "*Internal*"))
 
   (defadvice ibuffer (after collapse-helm)
-    (dolist (group mp/ibuffer-collapsed-groups)
+    (dolist (group my/ibuffer-collapsed-groups)
             (progn
               (goto-char 1)
               (when (search-forward (concat "[ " group " ]") (point-max) t)
@@ -363,6 +430,11 @@ New buffer is opened in the window that the command was called from
   (global-hl-line-mode 1)
   (set-face-background 'hl-line "#3e4446")
   (set-cursor-color "yellow")
+#+END_SRC
+* Prettify-symbols
+#+BEGIN_SRC emacs-lisp
+  (global-prettify-symbols-mode 1)
+  (setq prettify-symbols-unprettify-at-point t)
 #+END_SRC
 * Menus, Popups
 ** About Emacs
@@ -628,6 +700,7 @@ smart mode line allows infinite customization
  #+END_SRC
 ** PACKAGE Battery
 #+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path (concat my/config-folder-location "manual_el/fancy-battery-0.2"))
   (use-package fancy-battery
     :diminish
     :init (my/add-to-package-list 'fancy-battery)

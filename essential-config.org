@@ -2,6 +2,11 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
+[[https://stackoverflow.com/questions/134887/when-to-use-or-quote-in-lisp][A must read post about quoting]]
+='= are used to not evalute the symbols. whatever you typed in is what you will see
+=`= are use before a bracketed region () - anything escaped with a comma =,= will be evaluated.
+
+
 * 1 - Keyboard
 ** My keymap on =C-i=
 *** Unbind <C-i> from the TAB key
@@ -61,7 +66,22 @@
   (global-set-key (kbd "C-в") (function sp-delete-char))
 
  #+END_SRC
-* 2 - Functions
+* 2 - Functions of top priority
+** =my/fetch-config-files=
+#+BEGIN_SRC emacs-lisp
+  (defun my/fetch-config-files ()
+    (with-temp-buffer
+      (insert-file-contents (concat my/config-folder-location "support_files/my_org_files.txt"))
+      (sort
+       (split-string
+                                          ; select the whole buffer
+        (buffer-substring-no-properties
+         (point-min)
+         (point-max))
+        "\n" t)
+       'string<)))
+ #+END_SRC
+* 3 - Lesser functions
 ** =my/kill-buffer-process=
 #+BEGIN_SRC emacs-lisp
   (defun my/kill-buffer-process (process-buffer-name)
@@ -96,10 +116,11 @@
   (defun my/config-file-open ()
     "Prints out the config files and opens the selected one for editing"
     (interactive)
-    (let ((chosen-file (ido-completing-read "Config file to open:" my/config-files)))
+    (let ((chosen-file (ido-completing-read "Config file to open:"
+                                            (my/fetch-config-files))))
       (find-file (my/config-file-path-evaluate chosen-file))))
 
-  (global-set-key (kbd "C-c e") (function my/config-file-open))
+    (global-set-key (kbd "C-c e") (function my/config-file-open))
  #+END_SRC
 ** =my/config-file-path-evaluate=
 #+BEGIN_SRC emacs-lisp
@@ -241,25 +262,22 @@ If the current buffer is one of the config files, the code-blocks are tangled, a
   (defun my/config-file-tangle ()
     "Should be run after saving every file - check if the name is in the config files and
       tangle if yes"
-    (let ((current-file (file-name-nondirectory (buffer-file-name))))
-      (when (member current-file my/config-files)
-
+    (let ((current-org-file (file-name-nondirectory (buffer-file-name))))
+      (when (member current-org-file (my/fetch-config-files))
                                           ; Avoid running hooks when tangling.
         (let ((prog-mode-hook nil)
-              (el-file (replace-regexp-in-string "\.org" "\.el" current-file)))
-                                          ; Tangle the file
-          (org-babel-tangle)
-
-                                          ; Copy over to the emacs directory
-          (let ((el-compiled-file (my/config-file-path-evaluate el-file))
-                (el-emacs-file (concat user-emacs-directory el-file)))
-            (rename-file el-compiled-file el-emacs-file t)
-
+              (el-file (concat
+                        user-emacs-directory
+                        (replace-regexp-in-string "\.org" "\.el" current-org-file))))
+                                          ; Tangle the file -> get name of file -> rename
+          (rename-file
+           (car (org-babel-tangle-file current-org-file))
+           el-file t)
                                           ; Bytecompile
-            (byte-compile-file el-emacs-file t)
+          (byte-compile-file el-file t)
                                           ; Reload config
-            ;; (load-file (concat user-emacs-directory el-emacs-file "c"))
-            (message (concat "Compiled and loaded " el-emacs-file)))))))
+          ;; (load-file (concat user-emacs-directory el-emacs-file "c"))
+          (message (concat " Compiled and loaded " el-file))))))
 
   (add-hook 'after-save-hook 'my/config-file-tangle)
  #+END_SRC
@@ -575,8 +593,11 @@ https://sam217pa.github.io/2016/09/11/nuclear-power-editing-via-ivy-and-ag/
 ** PACKAGE Counsel
 Rebind emacs commands to use ivy https://github.com/abo-abo/swiper#counsel
 #+BEGIN_SRC emacs-lisp
-  (require 'counsel)
-  (counsel-mode)
+  (use-package counsel
+    :ensure t
+    :init (my/add-to-package-list 'counsel)
+    :config
+    (counsel-mode))
  #+END_SRC
 ** PACKAGE Swiper
 The superior search mode to the original
@@ -628,6 +649,12 @@ For better autocompletion
     :config
     (counsel-projectile-mode))
  #+END_SRC
+** Ag
+#+BEGIN_SRC emacs-lisp
+  (use-package ag
+    :ensure t
+    :init (my/add-to-package-list 'ag))
+ #+END_SRC
 ** Hydra <<counsel-hydra>>
 #+BEGIN_SRC emacs-lisp
   (defhydra hydra-projectile-other-window (:color teal)
@@ -646,7 +673,7 @@ For better autocompletion
          Find File            Search/Tags          Buffers                Cache
     ------------------------------------------------------------------------------------------
     _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache clear
-     _ff_: file dwim       _g_: update gtags      _b_: switch to buffer  _x_: remove known project
+     _ff_: file dwim       _b_: switch to buffer  _x_: remove known project
      _fd_: file curr dir   _o_: multi-occur     _s-k_: Kill all buffers  _X_: cleanup non-existing
                          _r_: replace regexp                         ^^^^_z_: cache current
       _d_: dir
@@ -661,8 +688,6 @@ For better autocompletion
     ("s-f" projectile-find-file)
     ("ff"  projectile-find-file-dwim)
     ("fd"  projectile-find-file-in-directory)
-    ("g"   ggtags-update-tags-single)
-    ("s-g" ggtags-update-tags-single)
     ("i"   projectile-ibuffer)
     ("K"   projectile-kill-buffers)
     ("s-k" projectile-kill-buffers)
@@ -724,7 +749,7 @@ Autocompletion by typing in first part of word and tabbing to insert a template
  #+END_SRC
 ** Paths to snippets
 #+BEGIN_SRC emacs-lisp
-  (setq yas-snippet-dirs (list 'yasnippet-snippets-dir (my/config-file-path-evaluate "personal-snippets")))
+  (setq yas-snippet-dirs (list 'yasnippet-snippets-dir (my/config-file-path-evaluate "my-snippets")))
   (yas-reload-all)
  #+END_SRC
 ** PACKAGE Auto yasnippets

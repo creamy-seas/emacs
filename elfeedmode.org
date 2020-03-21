@@ -17,16 +17,8 @@
   (use-package elfeed
     :ensure t
     :init
-    (setq elfeed-db-directory "~/creamy_seas/sync_files/emacs_config/elfeeddb")
-    (setq-default elfeed-search-filter "+unread")
-    :bind
-    (:map elfeed-search-mode-map
-          ("*" . bjm/elfeed-star)
-          ("8" . bjm/elfeed-unstar)
-          ("q" . bjm/elfeed-save-db-and-bury)
-          ("h" . make-hydra-elfeed)
-          ("H" . make-hydra-elfeed))
-    )
+    (setq elfeed-db-directory (my/config-file-path-evaluate "my-elfeeddb"))
+    (setq-default elfeed-search-filter "+unread"))
 #+END_SRC
 * elfeed hydra
 #+BEGIN_SRC emacs-lisp
@@ -103,19 +95,21 @@
   (custom-set-faces
    '(elfeed-search-date-face
      ((t :foreground "#11a"
-         :weight bold))))
-   '(elfeed-search-feed-face
-     ((t :foreground "#444"
          :weight bold)))
-   '(elfeed-search-title-face
-     ((t :foreground "#3ef"
-         :weight bold)))
+   )
+  '(elfeed-search-feed-face
+    ((t :foreground "#444"
+        :weight bold)))
+  '(elfeed-search-title-face
+    ((t :foreground "#3ef"
+        :weight bold)))
 
   (defface elfeed-search-starred-title-face
     '((t :foreground "#f77"
          :weight extra-bold
          :underline t))
-    "marks a starred Elfeed entry")
+    "marks a starred Elfeed entry"
+    :group 'my-face-elfeed)
 
   (push '(starred elfeed-search-starred-title-face) elfeed-search-face-alist)
 #+END_SRC
@@ -137,6 +131,12 @@ u: mark selected entries as unread
 -: remove a specific tag from selected entries
 
 #+BEGIN_SRC emacs-lisp
+  (define-key elfeed-search-mode-map (kbd "*") (function bjm/elfeed-star))
+  (define-key elfeed-search-mode-map (kbd "8") (function bjm/elfeed-unstar))
+  (define-key elfeed-search-mode-map (kbd "q") (function bjm/elfeed-save-db-and-bury))
+  (define-key elfeed-search-mode-map (kbd "h") (function make-hydra-elfeed))
+  (define-key elfeed-search-mode-map (kbd "H") (function make-hydra-elfeed))
+
   (define-key my/keymap (kbd "f") (function elfeed))
  #+END_SRC
 * image chaseup

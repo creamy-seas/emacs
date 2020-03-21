@@ -22,13 +22,13 @@ Do not use ipython as it is very buggy
 :END:
 ** =virtualenvwrapper=
 *** os-x
-#+BEGIN_SRC shell
+#+BEGIN_SRC shell :tangle no
   pip3 install virtualenv
   pip3 install virtualenvwrapper
   pip3 install virtualfish
  #+END_SRC
 *** Arch
-#+BEGIN_SRC shell
+#+BEGIN_SRC shell :tangle no
   sudo pacman -S python-virtualenvwrapper
  #+END_SRC
 *** Configuration files
@@ -38,7 +38,7 @@ Do not use ipython as it is very buggy
 Then you can
 =vf new mac_vi=
 **** Bash
-#+BEGIN_SRC sh
+#+BEGIN_SRC sh :tangle no
   source /usr/bin/virtualenvwrapper.sh
 #+END_SRC
 ** Setting up virtual environment

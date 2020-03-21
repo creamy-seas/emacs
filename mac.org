@@ -1,5 +1,0 @@
-#+TITLE: Only load on a mac
-#+STARTUP: overview
-#+PROPERTY: header-args :tangle yes
-
-* Sketchbook

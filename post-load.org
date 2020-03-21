@@ -14,17 +14,13 @@
     (other-window 1)
     (rename-buffer "Keeping-system-up-to-date")
 
-
     (package-refresh-contents)
     ;; (my/package-upgrade)
     (insert "Emacs packages have been updated.")
 
     (other-window 1))
 
-    (add-hook 'after-init-hook 'my/stay-up-to-date)
-    ;; For now, doing this since I'm also calling my/stay-up-to-date with
-    ;; after-init-hook which hides the startup message.
-    (add-hook 'after-init-hook 'display-startup-echo-area-message)
+  ;; (add-hook 'after-init-hook 'my/stay-up-to-date)
  #+END_SRC
 * Do not show startup screen
 #+BEGIN_SRC emacs-lisp
@@ -34,3 +30,11 @@
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
 #+END_SRC
+* Message display
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'after-init-hook 'display-startup-echo-area-message)
+ #+END_SRC
+* Load env
+#+BEGIN_SRC emacs-lisp
+  (exec-path-from-shell-initialize)
+ #+END_SRC

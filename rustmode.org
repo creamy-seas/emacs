@@ -1,5 +1,5 @@
 #+TITLE: Rust setup
-#+STARTUP: content
+#+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
 You cannot compile in Google Drive. Rust throws an error

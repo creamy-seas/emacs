@@ -156,7 +156,7 @@ capture frame can be called from any application - just map it
 ** org capture frame supplementary installed
 - =brew install coreutils=
 - Automator -> new shell script
-#+BEGIN_SRC sh
+#+BEGIN_SRC sh :tangle no
   socketfile=$(lsof -c Emacs | grep server | tr -s " " | cut -d' ' -f 8); /usr/local/bin/emacsclient -ne "(make-capture-frame)" -s $socketfile
 #+END_SRC
 * autocomplete in org mode (when typing #+)

@@ -4,7 +4,13 @@
 
 #+BEGIN_SRC emacs-lisp
   (defvar max-latex-fill-width 120)
+#+END_SRC
+
+Since =tex-buf.el= is only loaded upon entry, I explicitly set a requirement here to resolve warnings during compilation
+#+BEGIN_SRC emacs-lisp
+  ;; (require 'tex-buf)
  #+END_SRC
+
 * Installing Latex Packages
 - Install =.sty= packages in =/usr/local/texlive/2018/texmf-dist/tex/latex/base=
 - Run =sudo -s texhash= to load it up
@@ -37,18 +43,34 @@ Yasnippet to add stuff once I am there (like and an extra item) and create own t
 | =C-c C-v=       | Look at pdf                              |                                  |
 |-----------------+------------------------------------------+----------------------------------|
 * PACKAGE Auctex
+The default =TeX mode= package of emacs has modes which are redefined by auctex
+|----------------+-------------|
+| *Auctex*       | *Tex*       |
+|----------------+-------------|
+| plain-TeX-mode | plain-tex-m |
+| ams-TeX-mode   |             |
+| ConTeXt-mode   | slitex-mode |
+| Texinfo-mode   |             |
+| docTeX-mode    | doctex-mode |
+|----------------+-------------|
+| Tex-mode       | tex-mode    |
+| LaTeX-mode     | latex-mode  |
+|----------------+-------------|
+
+/If AUCTEX is installed from ELPA, the installation procedure already cares about loading AUCTEX correctly and you must not have the line above in your init file./
+
 Although there is a package called =auctex= there is no =auctex.el= file.
 
 *Therefore we first need to test if auctex has been installed by calling one if it's =.el= files*
 ** Test if installed
 #+BEGIN_SRC emacs-lisp
   (condition-case nil
-      (require 'latex)
+      (require 'tex-site)
     (error (error ">>>>>>>>>> Install auctex manually by running list-packages <<<<<<<<<<")))
  #+END_SRC
 ** Basic setup
 #+BEGIN_SRC emacs-lisp
-  (use-package latex
+  (use-package tex-site
     :ensure auctex
     :init (my/add-to-package-list 'auctex)
     :config
@@ -65,12 +87,9 @@ Although there is a package called =auctex= there is no =auctex.el= file.
     ;; spell checking
     (add-hook 'LaTeX-mode-hook 'flyspell-mode)
 
-    ;; display greek symbols
+    ;; folding
     (add-hook 'LaTeX-mode-hook
               (lambda () (TeX-fold-mode 1)))
-
-    ;; type ` to get suggestions for math
-    (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
 
     ;; ensure that anything inside $ $ is treated as math mode
     (add-hook 'LaTeX-mode-hook
@@ -78,8 +97,10 @@ Although there is a package called =auctex= there is no =auctex.el= file.
                          (cons "$" "$"))))
 
     ;; font highlighting
-    (add-hook 'LaTeX-mode-hook 'font-lock-mode))
+    (add-hook 'LaTeX-mode-hook 'font-lock-mode)
+    (message "⦿⦿⦿⦿⦿⦿⦿⦿⦿⦿"))
  #+END_SRC
+
 * PACKAGE Reftex
 Referencing and bibliography
 #+BEGIN_SRC emacs-lisp
@@ -130,12 +151,55 @@ Autocompletion and other shortcuts
           ("cases" "Insert case environment"   "" cdlatex-environment ("cases") t t)
           ("thr" "Insert theorem env" "" cdlatex-environment ("theorem") t nil)))
  #+END_SRC
-* Compilation
+* MANUAL-PACKAGE Viewing in Skim (os-x only)    =C-c C-v=
+- skim is run, reading the current line in the emacs buffer and highlighting it in the pdf
+- =syntex.gz= file needs to be in the directory for this to occur, so it's copied
+|-------------------+------------------------------------------------------|
+| *Unique to skim*  |                                                      |
+| =-b=              | inserts a reading bar into the pdf                   |
+| =-g=              | tells it to load in background                       |
+|-------------------+------------------------------------------------------|
+| *Unique to emacs* | commands in TeX-expand-list-builtin in =tex.el= file |
+| =%n=              | is the line number we are on                         |
+| =%o=              | is the output file name                              |
+| =%b=              | is the tex file name                                 |
+|-------------------+------------------------------------------------------|
+
+#+BEGIN_SRC emacs-lisp
+  (if (string-equal system-type "darwin")
+      (progn
+        (setq TeX-view-program-list
+              '(("SkimViewer" (my/config-file-path-evaluate "my-scripts/latex/search_engine.sh %s %n %o %b"))))
+
+        (setq TeX-view-program-selection '((output-pdf "SkimViewer"))))
+    (warn "Path may not be set if you are an archcuck"))
+ #+END_SRC
+
+* PACKAGE fill-column-indicator
+This is to show what the current fill column is
+#+BEGIN_SRC emacs-lisp
+  (use-package fill-column-indicator
+    :ensure t
+    :config
+    (add-hook 'LaTeX-mode-hook 'fci-mode)
+                                          ; colour for the fill colum
+    (setq fci-rule-color "#248")
+                                          ; width of the indicator
+    (setq fci-rule-width 1))
+ #+END_SRC
+* Colouring
+#+BEGIN_SRC emacs-lisp
+  (custom-set-faces
+   '(font-latex-bold-face ((t (:inherit bold))))
+   '(font-latex-italic-face ((t (:inherit italic))))
+   '(font-latex-math-face ((t (:foreground "#99c616"))))
+   '(font-latex-sedate-face ((t (:foreground "burlywood")))))
+ #+END_SRC
+* Function Compilation
 *Some important AucTex commands and variables*
 | =TeX-expand-list-builtin= | pair list tying command with a % expression e.g. =%s= -> master latex file |
 | =TeX-expand-list=         | this variables contains the above =TeX-expand-list-builtin                 |
 | =Tex-command-expand=      | "commandInStringForm" 'TeX-master-file TeX-expand-list                     |
-
 ** supporing functions
 #+BEGIN_SRC emacs-lisp
   (defvar my/latex/active-compilations 0 "Number of running latex compilation processes")
@@ -209,9 +273,6 @@ Autocompletion and other shortcuts
 
       ;; 3 - if there are more than 1 process, change the colour
       (my/latex/modeline-colour)))
-
-  (add-hook 'LaTeX-mode-hook (lambda ()
-                               (define-key LaTeX-mode-map (kbd "C-c C-c") (function  my/latex/compile))))
  #+END_SRC
 ** =my/latex/exterminate=       =C-c C-j=
 1) kill any running processes on this master files
@@ -263,9 +324,6 @@ Autocompletion and other shortcuts
 
       ;; 6 - close this buffer window
       (minibuffer-message "卍 Extermination complete")))
-
-  (add-hook 'LaTeX-mode-hook (lambda ()
-                               (define-key LaTeX-mode-map (kbd "C-c C-j") (function my/latex/exterminate))))
 #+END_SRC
 ** TODO error checking =C-c C-w=
 natively, auctex creates a list of errors once the compiling finishes.
@@ -311,49 +369,157 @@ here we make it do it explictly
   ;;            (switch-to-buffer ,old-buff))
   ;;          (goto-char ,old-point)))))
  #+END_SRC
-* MANUAL-PACKAGE Viewing in Skim (os-x only)    =C-c C-v=
-- skim is run, reading the current line in the emacs buffer and highlighting it in the pdf
-- =syntex.gz= file needs to be in the directory for this to occur, so it's copied
-|-------------------+------------------------------------------------------|
-| *Unique to skim*  |                                                      |
-| =-b=              | inserts a reading bar into the pdf                   |
-| =-g=              | tells it to load in background                       |
-|-------------------+------------------------------------------------------|
-| *Unique to emacs* | commands in TeX-expand-list-builtin in =tex.el= file |
-| =%n=              | is the line number we are on                         |
-| =%o=              | is the output file name                              |
-| =%b=              | is the tex file name                                 |
-|-------------------+------------------------------------------------------|
-
+* Functions General
+** =my/latex/buffer-fill-column=
 #+BEGIN_SRC emacs-lisp
-  (if (string-equal system-type "darwin")
-      (progn
-        (setq TeX-view-program-list
-              '(("SkimViewer" (my/config-file-path-evaluate "my-scripts/latex/search_engine.sh %s %n %o %b"))))
+  (defun my/latex/buffer-fill-column ()
+    "Evaluate the width that the fill column should be set to and set it"
+    (interactive)
 
-        (setq TeX-view-program-selection '((output-pdf "SkimViewer"))))
-    (warn "Path may not be set if you are an archcuck"))
+    (let ((initial-fill-width (- (window-width) 10))
+          (max-fill-width max-latex-fill-width))
+
+      ;; 1- set the width to 94 max
+      (if (> max-fill-width initial-fill-width)
+          (set-fill-column initial-fill-width)
+        (set-fill-column max-fill-width))))
  #+END_SRC
+** =my/latex/save-buffer=       =C-x C-s=
+#+BEGIN_SRC emacs-lisp
+  (defun my/latex/save-buffer ()
+    "Save the current buffer and performs indent"
+    (interactive)
 
-* PACKAGE fill-column-indicator
-This is to show what the current fill column is
-#+BEGIN_SRC emacs-lisp
-  (use-package fill-column-indicator
-    :ensure t
-    :config
-    (add-hook 'LaTeX-mode-hook 'fci-mode)
-                                          ; colour for the fill colum
-    (setq fci-rule-color "#248")
-                                          ; width of the indicator
-    (setq fci-rule-width 1))
+    ;; 1 - update fill column
+    (my/latex/buffer-fill-column)
+
+    (my/latex/indent-buffer)
+    ;; 2 - save file
+    (save-buffer))
  #+END_SRC
-* Colouring
+** =my/latex/indent-buffer=
 #+BEGIN_SRC emacs-lisp
-  (custom-set-faces
-   '(font-latex-bold-face ((t (:inherit bold))))
-   '(font-latex-italic-face ((t (:inherit italic))))
-   '(font-latex-math-face ((t (:foreground "#99c616"))))
-   '(font-latex-sedate-face ((t (:foreground "burlywood")))))
+  (defun my/latex/indent-buffer ()
+    "Indents the full buffer"
+    (interactive)
+    (let ((fill-width (my/latex/buffer-fill-column)))
+      (ignore-errors (LaTeX-fill-buffer fill-width))))
+ #+END_SRC
+** =my/latex/reftex-reference=
+#+BEGIN_SRC emacs-lisp
+  ;; (defun my/latex/reftex-reference (&optional type no-insert cut)
+  ;;   "Make a LaTeX reference.  Look only for labels of a certain TYPE.
+  ;; With prefix arg, force to rescan buffer for labels.  This should only be
+  ;; necessary if you have recently entered labels yourself without using
+  ;; reftex-label.  Rescanning of the buffer can also be requested from the
+  ;; label selection menu.
+  ;; The function returns the selected label or nil.
+  ;; If NO-INSERT is non-nil, do not insert \\ref command, just return label.
+  ;; When called with 2 C-u prefix args, disable magic word recognition."
+
+  ;;   (interactive)
+
+  ;;   ;; Check for active recursive edits
+  ;;   (reftex-check-recursive-edit)
+
+  ;;   ;; Ensure access to scanning info and rescan buffer if prefix is '(4)
+  ;;   (reftex-access-scan-info current-prefix-arg)
+
+  ;;   (let ((reftex-refstyle (when (and (boundp 'reftex-refstyle) reftex-refstyle)
+  ;;                            reftex-refstyle))
+  ;;         (reftex-format-ref-function reftex-format-ref-function)
+  ;;         (form "\\ref{%s}")
+  ;;         label labels sep sep1 style-alist)
+
+  ;;     (unless reftex-refstyle
+  ;;       (if reftex-ref-macro-prompt
+  ;;           (progn
+  ;;             ;; Build a temporary list which handles more easily.
+  ;;             (dolist (elt reftex-ref-style-alist)
+  ;;               (when (member (car elt) (reftex-ref-style-list))
+  ;;                 (mapc (lambda (x)
+  ;;                         (add-to-list 'style-alist (cons (cadr x) (car x)) t))
+  ;;                       (nth 2 elt))))
+  ;;             ;; Prompt the user for the macro.
+  ;;             (let ((key (reftex-select-with-char
+  ;;                         "" (concat "SELECT A REFERENCE FORMAT\n\n"
+  ;;                                    (mapconcat
+  ;;                                     (lambda (x)
+  ;;                                       (format "[%c] %s  %s" (car x)
+  ;;                                               (if (> (car x) 31) " " "")
+  ;;                                               (cdr x)))
+  ;;                                     style-alist "\n")))))
+  ;;               (setq reftex-refstyle (cdr (assoc key style-alist)))
+  ;;               (unless reftex-refstyle
+  ;;                 (error "No reference macro associated with key `%c'" key))))
+  ;;         ;; Get the first macro from `reftex-ref-style-alist' which
+  ;;         ;; matches the first entry in the list of active styles.
+  ;;         (setq reftex-refstyle
+  ;;               (or (caar (nth 2 (assoc (car (reftex-ref-style-list))
+  ;;                                       reftex-ref-style-alist)))
+  ;;                   ;; Use the first entry in r-r-s-a as a last resort.
+  ;;                   (caar (nth 2 (car reftex-ref-style-alist)))))))
+
+  ;;     (unless type
+  ;;       ;; Guess type from context
+  ;;       (if (and reftex-guess-label-type
+  ;;                (setq type (reftex-guess-label-type)))
+  ;;           (setq cut (cdr type)
+  ;;                 type (car type))
+  ;;         (setq type (reftex-query-label-type))))
+
+  ;;     ;; Have the user select a label
+  ;;     (set-marker reftex-select-return-marker (point))
+  ;;     (setq labels (save-excursion
+  ;;                    (reftex-offer-label-menu type)))
+  ;;     (reftex-ensure-compiled-variables)
+  ;;     (set-marker reftex-select-return-marker nil)
+  ;;     ;; If the first entry is the symbol 'concat, concat all labels.
+  ;;     ;; We keep the cdr of the first label for typekey etc information.
+  ;;     (if (eq (car labels) 'concat)
+  ;;         (setq labels (list (list (mapconcat 'car (cdr labels) ",")
+  ;;                                  (cdr (nth 1 labels))))))
+  ;;     (setq type (nth 1 (car labels))
+  ;;           form (or (cdr (assoc type reftex-typekey-to-format-alist))
+  ;;                    form))
+
+  ;;     (cond
+  ;;      (no-insert
+  ;;       ;; Just return the first label
+  ;;       (car (car labels)))
+  ;;      ((null labels)
+  ;;       (message "Quit")
+  ;;       nil)
+  ;;      (t
+  ;;       (while labels
+  ;;         (setq label (car (car labels))
+  ;;               sep (nth 2 (car labels))
+  ;;               sep1 (cdr (assoc sep reftex-multiref-punctuation))
+  ;;               labels (cdr labels))
+  ;;         (when cut
+  ;;           (backward-delete-char cut)
+  ;;           (setq cut nil))
+
+  ;;         ;; remove ~ if we do already have a space
+  ;;         (when (and (= ?~ (string-to-char form))
+  ;;                    (member (preceding-char) '(?\ ?\t ?\n ?~)))
+  ;;           (setq form (substring form 1)))
+  ;;         ;; do we have a special format?
+  ;;         (unless (string= reftex-refstyle "\\ref")
+  ;;           (setq reftex-format-ref-function 'reftex-format-special))
+  ;;         ;; ok, insert the reference
+  ;;         (if sep1 (insert sep1))
+  ;;         (let ((temp-refference
+  ;;                (if reftex-format-ref-function
+  ;;                    (funcall reftex-format-ref-function label form reftex-refstyle)
+  ;;                  (format form label label))))
+  ;;           (setq temp-refference (my/extract-string "\\(ref{\\)\\(.*\\)\\(}\\)" 2 temp-refference)))
+
+  ;;         ;; take out the initial ~ for good
+  ;;         (and (= ?~ (string-to-char form))
+  ;;              (setq form (substring form 1))))
+  ;;       (message "")
+  ;;       label))))
  #+END_SRC
 * Regexp colouring
 *Suppose we want to highlight certain constructs in a document*
@@ -414,173 +580,21 @@ It would be a mumble jumble like with a lot of escapes
          :foreground "#3a3a6e"
          :weight bold
          ))
-    "Face for red blocks")
+    "Face for red blocks"
+    :group 'my-latex)
 
   (defface my/face/latex-title
     '((t :foreground "firebrick1"
          :slant italic
          :overline t
          ))
-    "Face for comments")
+    "Face for comments"
+    :group 'my-latex)
 
   (font-lock-add-keywords 'latex-mode
                           '(("\\(%\\{2,\\}\\)\\(\s.*\\)\\($\\)"
                              (1 'my/face/latex-title t)
                              (2 'my/face/latex-title t))))
- #+END_SRC
-* Functions
-** =my/latex/buffer-fill-column=
-#+BEGIN_SRC emacs-lisp
-  (defun my/latex/buffer-fill-column ()
-    "Evaluate the width that the fill column should be set to and set it"
-    (interactive)
-
-    (let ((initial-fill-width (- (window-width) 10))
-          (max-fill-width max-latex-fill-width))
-
-      ;; 1- set the width to 94 max
-      (if (> max-fill-width initial-fill-width)
-          (set-fill-column initial-fill-width)
-        (set-fill-column max-fill-width))))
- #+END_SRC
-** =my/latex/save-buffer=       =C-x C-s=
-#+BEGIN_SRC emacs-lisp
-  (defun my/latex/save-buffer ()
-    "Save the current buffer and performs indent"
-    (interactive)
-
-    ;; 1 - update fill column
-    (my/latex/buffer-fill-column)
-
-    (my/latex/indent-buffer)
-    ;; 2 - save file
-    (save-buffer))
-
-  (define-key LaTeX-mode-map (kbd "C-x C-s") (function my/latex/save-buffer))
- #+END_SRC
-** =my/latex/indent-buffer=
-#+BEGIN_SRC emacs-lisp
-  (defun my/latex/indent-buffer ()
-    "Indents the full buffer"
-    (interactive)
-    (let ((fill-width (my/latex/buffer-fill-column)))
-      (ignore-errors (LaTeX-fill-buffer fill-width))))
- #+END_SRC
-** =my/latex/reftex-reference=
-#+BEGIN_SRC emacs-lisp
-  (defun my/latex/reftex-reference (&optional type no-insert cut)
-    "Make a LaTeX reference.  Look only for labels of a certain TYPE.
-  With prefix arg, force to rescan buffer for labels.  This should only be
-  necessary if you have recently entered labels yourself without using
-  reftex-label.  Rescanning of the buffer can also be requested from the
-  label selection menu.
-  The function returns the selected label or nil.
-  If NO-INSERT is non-nil, do not insert \\ref command, just return label.
-  When called with 2 C-u prefix args, disable magic word recognition."
-
-    (interactive)
-
-    ;; Check for active recursive edits
-    (reftex-check-recursive-edit)
-
-    ;; Ensure access to scanning info and rescan buffer if prefix is '(4)
-    (reftex-access-scan-info current-prefix-arg)
-
-    (let ((reftex-refstyle (when (and (boundp 'reftex-refstyle) reftex-refstyle)
-                             reftex-refstyle))
-          (reftex-format-ref-function reftex-format-ref-function)
-          (form "\\ref{%s}")
-          label labels sep sep1 style-alist)
-
-      (unless reftex-refstyle
-        (if reftex-ref-macro-prompt
-            (progn
-              ;; Build a temporary list which handles more easily.
-              (dolist (elt reftex-ref-style-alist)
-                (when (member (car elt) (reftex-ref-style-list))
-                  (mapc (lambda (x)
-                          (add-to-list 'style-alist (cons (cadr x) (car x)) t))
-                        (nth 2 elt))))
-              ;; Prompt the user for the macro.
-              (let ((key (reftex-select-with-char
-                          "" (concat "SELECT A REFERENCE FORMAT\n\n"
-                                     (mapconcat
-                                      (lambda (x)
-                                        (format "[%c] %s  %s" (car x)
-                                                (if (> (car x) 31) " " "")
-                                                (cdr x)))
-                                      style-alist "\n")))))
-                (setq reftex-refstyle (cdr (assoc key style-alist)))
-                (unless reftex-refstyle
-                  (error "No reference macro associated with key `%c'" key))))
-          ;; Get the first macro from `reftex-ref-style-alist' which
-          ;; matches the first entry in the list of active styles.
-          (setq reftex-refstyle
-                (or (caar (nth 2 (assoc (car (reftex-ref-style-list))
-                                        reftex-ref-style-alist)))
-                    ;; Use the first entry in r-r-s-a as a last resort.
-                    (caar (nth 2 (car reftex-ref-style-alist)))))))
-
-      (unless type
-        ;; Guess type from context
-        (if (and reftex-guess-label-type
-                 (setq type (reftex-guess-label-type)))
-            (setq cut (cdr type)
-                  type (car type))
-          (setq type (reftex-query-label-type))))
-
-      ;; Have the user select a label
-      (set-marker reftex-select-return-marker (point))
-      (setq labels (save-excursion
-                     (reftex-offer-label-menu type)))
-      (reftex-ensure-compiled-variables)
-      (set-marker reftex-select-return-marker nil)
-      ;; If the first entry is the symbol 'concat, concat all labels.
-      ;; We keep the cdr of the first label for typekey etc information.
-      (if (eq (car labels) 'concat)
-          (setq labels (list (list (mapconcat 'car (cdr labels) ",")
-                                   (cdr (nth 1 labels))))))
-      (setq type (nth 1 (car labels))
-            form (or (cdr (assoc type reftex-typekey-to-format-alist))
-                     form))
-
-      (cond
-       (no-insert
-        ;; Just return the first label
-        (car (car labels)))
-       ((null labels)
-        (message "Quit")
-        nil)
-       (t
-        (while labels
-          (setq label (car (car labels))
-                sep (nth 2 (car labels))
-                sep1 (cdr (assoc sep reftex-multiref-punctuation))
-                labels (cdr labels))
-          (when cut
-            (backward-delete-char cut)
-            (setq cut nil))
-
-          ;; remove ~ if we do already have a space
-          (when (and (= ?~ (string-to-char form))
-                     (member (preceding-char) '(?\ ?\t ?\n ?~)))
-            (setq form (substring form 1)))
-          ;; do we have a special format?
-          (unless (string= reftex-refstyle "\\ref")
-            (setq reftex-format-ref-function 'reftex-format-special))
-          ;; ok, insert the reference
-          (if sep1 (insert sep1))
-          (let ((temp-refference
-                 (if reftex-format-ref-function
-                     (funcall reftex-format-ref-function label form reftex-refstyle)
-                   (format form label label))))
-            (setq temp-refference (my/extract-string "\\(ref{\\)\\(.*\\)\\(}\\)" 2 temp-refference)))
-
-          ;; take out the initial ~ for good
-          (and (= ?~ (string-to-char form))
-               (setq form (substring form 1))))
-        (message "")
-        label))))
  #+END_SRC
 * Key Bindings
 #+BEGIN_SRC emacs-lisp
@@ -606,9 +620,13 @@ It would be a mumble jumble like with a lot of escapes
   ;;                              (local-unset-key (kbd "C-x `")) ;next-error
   ;;                              ))
 
+  (with-eval-after-load "latex"
+    (define-key LaTeX-mode-map (kbd "C-x C-s") (function my/latex/save-buffer))
+    (define-key LaTeX-mode-map (kbd "C-c C-j") (function my/latex/exterminate))
+    (define-key LaTeX-mode-map (kbd "C-c C-c") (function  my/latex/compile)))
   ;; ;; (add-hook 'LaTeX-mode-hook (lambda ()
   ;; ;;
-  (define-key LaTeX-mode-map (kbd "C-c C-n") (function next-error))
+  ;; (define-key LaTeX-mode-map (kbd "C-c C-n") (function next-error))
   ;;                              (define-key LaTeX-mode-map (kbd "C-c C-;") (function comment-line))
   ;;                              (define-key LaTeX-mode-map (kbd "C-c C-u") (lambda () (insert "_")))
   ;;                              (define-key LaTeX-mode-map (kbd "C-c C-q") (function my/latex/indent-buffer))

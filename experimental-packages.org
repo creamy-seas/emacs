@@ -118,6 +118,9 @@ To autocomplete in the search buffergpg
 * PACKAGE Langtool
 Grammar and style checker.
 - Will need to download from https://languagetool.org/
+#+BEGIN_SRC emacs-lisp
+  (setq my/langtool-location "/Applications/LanguageTool-4.8/languagetool-commandline.jar")
+ #+END_SRC
 ** Init
 #+BEGIN_SRC emacs-lisp
   (use-package langtool
