@@ -31,6 +31,5 @@
   "Replace content of this file with the init-final"
   (copy-file "./support_files/init-final.el"
 	     "init.el" t)
-  (load-file (concat user-emacs-directory "init.el")))
-
+  (load-file "init.el"))
 (init/overwrite)

@@ -1,3 +1,2 @@
-config.el
-config.sh
-elfeeddb/data
+*.el
+*.elc

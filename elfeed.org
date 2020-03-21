@@ -1,6 +1,0 @@
-* quality feeds                                                      :elfeed:
-** [[https://lukesmith.xyz/rss.xml][Unaboomer]]                                                  :boomer:
-** [[http://stratechery.com/feed/][Stratechery]]                                                       :strat:
-** [[http://tonsky.me/blog/atom.xml][Tonsky]]                                                             :prog:
-** [[http://josephg.com/blog/rss/][MuhElectrum]]                                                        :prog:
-

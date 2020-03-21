@@ -135,8 +135,10 @@ To export an inkscape image for latex interactively, open =.svg= file → save a
     ("k" my/inkscape/latex/kill)
     ("K" my/inkscape/latex/killall :exit t)
     ("q" nil nil))
-
-  (define-key my/keymap (kbd "i") #'hydra-inkscape/body)
+ #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load "latex"
+    (define-key LaTeX-mode-map (kbd "C-x i") (function hydra-inkscape/body)))
  #+END_SRC
 * Supress showing inkscape generation buffer
 #+BEGIN_SRC emacs-lisp

@@ -4,20 +4,25 @@
 
 
 - =elfeed-new-entry-hook= is called each time a new entry is added
+#+BEGIN_SRC emacs-lisp
+  (setq config/elfeed-org-file-location "/Users/CCCP/creamy_seas/sync_files/elfeed/elfeed.org")
+  (setq config/elfeed-db "/Users/CCCP/creamy_seas/sync_files/elfeed/elfeeddb")
+ #+END_SRC
+
 * read from org file
 #+BEGIN_SRC emacs-lisp
   (use-package elfeed-org
     :ensure t
     :config
     (elfeed-org)
-    (setq rmh-elfeed-org-files (list "~/creamy_seas/sync_files/emacs_config/elfeed.org")))
+    (setq rmh-elfeed-org-files (list config/elfeed-org-file-location)))
 #+END_SRC
 * elfeed setup
 #+BEGIN_SRC emacs-lisp
   (use-package elfeed
     :ensure t
     :init
-    (setq elfeed-db-directory (my/config-file-path-evaluate "my-elfeeddb"))
+    (setq elfeed-db-directory config/elfeed-db)
     (setq-default elfeed-search-filter "+unread"))
 #+END_SRC
 * elfeed hydra

@@ -64,9 +64,9 @@ Although there is a package called =auctex= there is no =auctex.el= file.
 *Therefore we first need to test if auctex has been installed by calling one if it's =.el= files*
 ** Test if installed
 #+BEGIN_SRC emacs-lisp
-  (condition-case nil
-      (require 'tex-site)
-    (error (error ">>>>>>>>>> Install auctex manually by running list-packages <<<<<<<<<<")))
+  ;; (condition-case nil
+  ;;     (require 'tex-site)
+  ;;   (error (error ">>>>>>>>>> Install auctex manually by running list-packages <<<<<<<<<<")))
  #+END_SRC
 ** Basic setup
 #+BEGIN_SRC emacs-lisp
