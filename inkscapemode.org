@@ -4,6 +4,7 @@
 
 *Dependencies*
 =fswatch=
+=inkscape=
 
 To export an inkscape image for latex interactively, open =.svg= file → save as → =.pdf= → =omit text= → use exported object size
 

@@ -176,7 +176,7 @@ Autocompletion and other shortcuts
 #+BEGIN_SRC emacs-lisp
   (setq TeX-view-program-list TeX-view-program-list-builtin)
   (add-to-list 'TeX-view-program-list
-               '(("SkimViewer" (my/config-file-path-evaluate "my-scripts/latex/search_engine.sh %s %n %o %b"))))
+               '("SkimViewer" (my/config-file-path-evaluate "my-scripts/latex/search_engine.sh %s %n %o %b")))
 
   (if (string-equal system-type "darwin")
       (setq TeX-view-program-selection '((output-pdf "SkimViewer")))
