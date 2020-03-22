@@ -77,32 +77,62 @@ Although there is a package called =auctex= there is no =auctex.el= file.
  #+END_SRC
 ** Basic setup
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'load-path (my/config-file-path-evaluate "manual_el/auctex-12.2.0"))
-  (my/add-to-package-list 'auctex)
-  (setq TeX-auto-save t)
+(use-package tex-site
+    :ensure auctex
+    :init (my/add-to-package-list 'auctex)
+    :config
+    (setq TeX-auto-save t)
                                           ; access imported packages
-  (setq TeX-parse-self t)
+    (setq TeX-parse-self t)
                                           ; don't prompt file save
-  (setq TeX-save-query nil)
+    (setq TeX-save-query nil)
                                           ; display compilation in a parrallel window
-  (setq-default TeX-show-compilation t)
+    (setq-default TeX-show-compilation t)
 
-  (setq TeX-interactive-mode t)
+    (setq TeX-interactive-mode t)
 
-  ;; spell checking
-  (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+    ;; spell checking
+    (add-hook 'LaTeX-mode-hook 'flyspell-mode)
 
-  ;; folding
-  (add-hook 'LaTeX-mode-hook
-            (lambda () (TeX-fold-mode 1)))
+    ;; folding
+    (add-hook 'LaTeX-mode-hook
+              (lambda () (TeX-fold-mode 1)))
 
-  ;; ensure that anything inside $ $ is treated as math mode
-  (add-hook 'LaTeX-mode-hook
-            (lambda () (set (make-variable-buffer-local 'TeX-electric-math)
-                       (cons "$" "$"))))
+    ;; ensure that anything inside $ $ is treated as math mode
+    (add-hook 'LaTeX-mode-hook
+              (lambda () (set (make-variable-buffer-local 'TeX-electric-math)
+                         (cons "$" "$"))))
 
-  ;; font highlighting
-  (add-hook 'LaTeX-mode-hook 'font-lock-mode)
+    ;; font highlighting
+    (add-hook 'LaTeX-mode-hook 'font-lock-mode)
+    (message "⦿⦿⦿⦿⦿⦿⦿⦿⦿⦿"))
+
+;; (add-to-list 'load-path (my/config-file-path-evaluate "manual_el/auctex-12.2.0"))
+;; (my/add-to-package-list 'auctex)
+;; (setq TeX-auto-save t)
+;;                                         ; access imported packages
+;; (setq TeX-parse-self t)
+;;                                         ; don't prompt file save
+;; (setq TeX-save-query nil)
+;;                                         ; display compilation in a parrallel window
+;; (setq-default TeX-show-compilation t)
+;;
+;; (setq TeX-interactive-mode t)
+;;
+;; ;; spell checking
+;; (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+;;
+;; ;; folding
+;; (add-hook 'LaTeX-mode-hook
+;;           (lambda () (TeX-fold-mode 1)))
+;;
+;; ;; ensure that anything inside $ $ is treated as math mode
+;; (add-hook 'LaTeX-mode-hook
+;;           (lambda () (set (make-variable-buffer-local 'TeX-electric-math)
+;;                      (cons "$" "$"))))
+;;
+;; ;; font highlighting
+;; (add-hook 'LaTeX-mode-hook 'font-lock-mode)
  #+END_SRC
 ** Setup for further
 Since =tex-buf.el= is only loaded upon entry, I explicitly set a requirement here to resolve warnings during compilation
@@ -176,7 +206,7 @@ Autocompletion and other shortcuts
 #+BEGIN_SRC emacs-lisp
   (setq TeX-view-program-list TeX-view-program-list-builtin)
   (add-to-list 'TeX-view-program-list
-               '(("SkimViewer" (my/config-file-path-evaluate "my-scripts/latex/search_engine.sh %s %n %o %b"))))
+               '("SkimViewer" (my/config-file-path-evaluate "my-scripts/latex/search_engine.sh %s %n %o %b")))
 
   (if (string-equal system-type "darwin")
       (setq TeX-view-program-selection '((output-pdf "SkimViewer")))
