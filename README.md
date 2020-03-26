@@ -23,7 +23,11 @@ make init
 
 # Personal customization #
 See the top sections of the following files to set personal customization
-- [latex configuration](./latexmode.org)
 - [email configuration](./emailmode.org)
 - [orgmode configuration](./org-config.org)
 - [python configuration](./pythonmode.org)
+
+Moreover, you can always go into the init.el file and comment out the modes you do not want to load
+
+# TODO
+- email mode

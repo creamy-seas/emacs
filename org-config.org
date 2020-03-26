@@ -4,13 +4,11 @@
 
 This is just an example config that works well for me. You will need to tune it for yourself to really get the most out of orgmode
 
-|-----------+-----------------------------------------------------+---------------------|
-| =C-c c=   | Entering capture mode where templates are available | [[*Capturing templates =C-c c=][Capturing templates]] |
-| =C-c C-t= | Add a todo to an org-heading                        | [[*Todo lists =C-c C-t=][Todo lists]]          |
+| [[*Capturing templates =C-c c=][Capturing templates]] | =C-c c=   | Entering capture mode where templates are available |
+| [[*Todo lists =C-c C-t=][Todo lists]]          | =C-c C-t= | Add a todo to an org-heading                        |
 
 
-* General Parameters
-There are my org files - you probably want to comment them out
+* Org files to monitor
 #+BEGIN_SRC emacs-lisp
   (setq org-agenda-files (list "~/creamy_seas/antlers.org"
                                "~/mydrive/east-data-company.org"
@@ -19,107 +17,7 @@ There are my org files - you probably want to comment them out
                                "~/mydrive/adv17_ext_horseBetting/adventure_brief.org"
                                "~/mydrive/adv16_sa_onFire/adventure_brief.org"))
  #+END_SRC
-Emacs/orgmode has an intense feature where you can quickly call upon templates to:
-- Generate new files
-- Create new org subheadings
-- In any file you want
-** Capture Templates
-Here is a bloated definition of the available templates.
 
-It usually follows the form
-- keymapping
-- description
-- file/org-id of where to insert the template. If using ids, you must include the file in [[*General Parameters][General Parameters]]
-- template to insert
-
-*Once again, you will probably want to delete these as they are specific to my config files*
-#+BEGIN_SRC emacs-lisp
-  (setq org-capture-templates
-        '(("b"
-           "Bloat"
-           entry (id "antlers-bloat")
-           "** BLOAT %^{stuff-to-be-done}\nSHEDULED: %^T")
-
-          ("c"
-           "Copy Pasta"
-           entry (id "copy-pasta")
-           "** %^{Pasta Title} %t\n%?")
-
-          ("d"
-           "Draft"
-           plain (file "~/Desktop/.temp.org")
-           "%?")
-
-                                          ; this creates a subheirachy
-          ("e"
-           "East-India Data Company")
-
-          ("e2"
-           "2am goals"
-           entry (id "bryan-plan")
-           "** %^{TODO-STATE} %^{stuff-to-be-done}\nDEADLINE: %^T")
-
-          ("et"
-           "Time log"
-           table-line (id "bryan-done")
-           "| %^u | %^{Project}: %^{task-summary} | %^{hours-worked} hours | |"
-           :table-line-pos "@<-1")
-
-          ("l" "Boomer Entry"
-           item (
-                 file+headline "~/creamy_seas/1488.org.gpg" "Becoming a boomer"
-                 ) "%^{What did Luke say} %^G\n%?" (
-                 file "~/creamy_seas/1488.org.gpg")
-           "%?")
-
-          ("p"
-           "PhD Tasks")
-          ("pp"
-           "Photon Counting"
-           entry (id "phd-photon")
-           "*** PHD Photn Counting [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
-          ("pt" "Twin Qubit"
-           entry
-           (id "phd-twin")
-           "*** PHD Twin Qubit [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
-          ("px"
-           "xMon"
-           entry (id "phd-xmon")
-           "*** PHD xMon [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
-          ("pg"
-           "General"
-           entry (id "phd-general")
-           "*** PHD General [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
-
-          ("u"
-           "Save URL"
-           entry
-           (file+headline "~/creamy_seas/1488.org.gpg" "URL too good to throw away")
-           "** %^L %? %^G"
-           :kill-buffer t)
-
-          ("s" "Stories"
-           entry
-           (id "stories")
-           "** %^{Title} %t\n%?")))
-          ;; tutoring
-          ;; ("t" "Tutoring lessons")
-          ;; ("tw" "Nikhil Lesson (Winchester)" table-line (id "tutoring-nikhil-invoice")
-          ;;  "| # | %^u | %^{lesson summary} | 120%? | |"
-          ;;  :table-line-pos "III-1")
-          ;; ("tn" "Nathan Lesson" table-line (id "tutoring-nathan-invoice")
-          ;;  "| # | %^u | %^{lesson summary} | 45%? | |"
-          ;;  :table-line-pos "III-1")
-          ;; ("td" "Darrens Programming" table-line (id "tutoring-darren-invoice")
-          ;;  "| # | %^u | %^{lesson summary} | 50%? | |"
-          ;;  :table-line-pos "III-1")
-          ;; ("f" "Future Lesson")
-          ;; ("fw" "Nikhil Lesson (Winchester)" entry (id "tutoring-nikhil-lesson")
-          ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
-          ;; ("fn" "Nathan Lesson" entry (id "tutoring-nathan-lesson")
-          ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
-          ;; ))
- #+END_SRC
 * Capturing templates   =C-c c=
 Emacs/orgmode has an intense feature where you can quickly call upon templates to insert into your org files.
 
@@ -235,6 +133,7 @@ Evaluate of grade for Brilliant Club
  #+END_SRC
 * Todo lists    =C-c C-t=
 These todo blocks can be put in front of any org heading with =C-c C-t=
+- Must be capital letters
 #+BEGIN_SRC emacs-lisp
   (setq org-todo-keywords '((sequence "TODO(t)"
                                       "BLOAT(B)"
@@ -254,6 +153,7 @@ These todo blocks can be put in front of any org heading with =C-c C-t=
                                       "DOMINATED(d)"
                                       "PACKAGE"
                                       "MANUAL-PACKAGE"
+                                      "CONFIG"
                                       )))
 
   (setq org-todo-keyword-faces (quote (
@@ -273,7 +173,9 @@ These todo blocks can be put in front of any org heading with =C-c C-t=
                                        ("Dominated" . (:foreground "#9DFE9D" :weight bold))
                                        ("BLOAT" . (:foreground "#000001" :background "#ffffff"))
                                        ("TUTORING" . (:foreground "#090C42" :background "#FFD700": weight bold))
-                                       ("BRYAN" . (:foreground "#090C42" :background "#33ccff" :weight bold)))))
+                                       ("BRYAN" . (:foreground "#090C42" :background "#33ccff" :weight bold))
+                                       ("CONFIG" . (:foreground "#090C42" :background "#33ccff" :weight bold))
+                                       )))
 
   (setq org-agenda-span 10)
  #+END_SRC

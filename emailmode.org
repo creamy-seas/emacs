@@ -2,6 +2,16 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
+* CONFIG General Parameters
+#+BEGIN_SRC emacs-lisp
+  (setq my/mu4e-load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
+  (setq mu4e-mu-binary "/usr/local/bin/mu")
+  (setq my/mu4e-mail-dir "~/db_mail")
+  (setq my/mu4e-save-dir "~/Dropbox/mail")
+  (setq sendmail-program "/usr/local/bin/msmtp")
+ #+END_SRC
+
+* External setup
 If offlineimap is giving an error, it is probably picking up python3.7
 Delete all python3.7 email-related libraries:
 1) Find the site libraries
@@ -11,14 +21,6 @@ Delete all python3.7 email-related libraries:
 2) [@2] Remove all =imap= packages
 3) https://etienne.depar.is/emacs.d/mu4e.html
 4) http://kitchingroup.cheme.cmu.edu/blog/2016/10/29/Sending-html-emails-from-org-mode-with-org-mime/
-
-#+BEGIN_SRC emacs-lisp
-  (setq my/mu4e-load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
-  (setq mu4e-mu-binary "/usr/local/bin/mu")
-  (setq my/mu4e-mail-dir "~/db_mail")
-  (setq my/mu4e-save-dir "~/Dropbox/mail")
-  (setq sendmail-program "/usr/local/bin/msmtp")
- #+END_SRC
 
 * Theory
 ** To read
