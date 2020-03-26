@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: recipe-row
+# key: rr
+# --
+| | /${1:Process}/ | ${2:=${3:Equipment}=} | ${4:Materials}| | ${5:param-1} | ${6:param-2} | ${7:param-3} | ${8:param-4} |

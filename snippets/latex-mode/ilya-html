@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: html
+# key: html
+# --
+\begin{html}
+${1:html-here}
+\end{html}

@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: ilya-texfile-generate
+# binding: C-c t
+# type: command
+# --
+(ilya-generate-texfile)
+(yas/insert-by-name "ilya-texfile-generate-snippet-part1")
+(with-temp-buffer (write-file temp-file-name-for-snippet))
+(setq temp-texmaster (concat "% -*- TeX-master:\"../" (TeX-master-file) ".tex\" -*-\n\n"))
+(append-to-file temp-texmaster nil temp-file-name-for-snippet)
+(find-file temp-file-name-for-snippet)
+(end-of-buffer)
+(LaTeX-section 2)

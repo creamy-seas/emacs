@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: ilya-picture-centered
+# key: picc
+# --
+\begin{center}
+  \includegraphics[height=${1:height}]{${2:example-image-c}}
+  
+  {\small ${3:caption-text}\label{fig:$2}}
+\end{center}
+
+\noindent $0

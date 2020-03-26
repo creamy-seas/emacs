@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: command
+# key: cm
+# --
+\cmd{${1:command}} $0

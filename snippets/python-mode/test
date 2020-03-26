@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: test
+# key: pltx
+# --
+plt.plot(x,y,marker="${1:insertmehere}")
+plt.show()

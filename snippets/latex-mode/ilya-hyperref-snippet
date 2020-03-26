@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# name: ilya-hyperref-snippet
+# --
+\hyperref[`ilya-temp-refference`]{\underline{${1:display-name}$0}}

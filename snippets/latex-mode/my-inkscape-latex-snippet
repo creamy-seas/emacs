@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: my-inkscape-latex-snippet
+# --
+\begin{figure}[h]
+  \centering
+  \inkfig{${1:width}$0cm}{`my/inkscape/latex/file-name`}
+  \caption{\small ${3:caption-text}\label{fig:`my/inkscape/latex/file-name`}}
+\end{figure}

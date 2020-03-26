@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: quote
+# key: iq
+# --
+\quote{${1:text-to-quote}}$0

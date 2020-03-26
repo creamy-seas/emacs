@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: use-package
+# key: up
+# --
+(use-package ${1:package-name}
+:ensure t
+:init (my/add-to-package-list '$1)$0)

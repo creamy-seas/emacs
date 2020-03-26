@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: my-base64-roided
+# key: b64r
+# --
+#+BEGIN_SRC emacs-lisp :results html :exports results
+(my/org/tob64-roided "${1:`(my/org/image-select)`}" "${2:caption}" ${3:850})
+#+END_SRC

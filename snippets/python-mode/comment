@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: comment
+# key: com
+# --
+"""${1:description of function does}
+${2:__ Parameters __
+${3:parameter me up}}
+
+${4:__ Return __
+${5:any return values}}$0
+"""

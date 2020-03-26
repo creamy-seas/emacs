@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: ilya-two-column-raw
+# key: itcr
+# --
+\iTwoColumnsRAW{
+  ${1:left-hand-side}
+ }
+ {
+  ${2:right-hand-side}
+ }$0

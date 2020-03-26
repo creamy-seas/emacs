@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: framed 
+# key: ifr
+# --
+\begin{framed}\noindent
+	${1:frame-contnent}$0
+\end{framed}

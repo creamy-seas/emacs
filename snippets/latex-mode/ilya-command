@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ilya-command
+# key: icmd
+# --
+\cmd{${1:enter-command}}$0

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: ilya-hyperref
+# key: hyp
+# type: command
+# --
+(ilya-reftex-reference)
+(yas/insert-by-name "ilya-hyperref-snippet")

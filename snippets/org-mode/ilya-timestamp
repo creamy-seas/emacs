@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: time-stamp
+# key: ts
+# --
+${1:00}:${2:00}:${3:00}$0

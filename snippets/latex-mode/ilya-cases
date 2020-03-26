@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: cases
+# key: cas
+# --
+\begin{cases}${1:\label{eq:${2:label}}}
+ ${3:cases-content}$0
+\end{cases}
