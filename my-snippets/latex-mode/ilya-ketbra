@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: ilya-ketbra
-# key: ikb
-# --
-
-\iketbra{${1:ket-part}}{${2:bra-part}}$0

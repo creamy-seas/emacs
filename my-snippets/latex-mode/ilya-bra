@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: ilya-bra
-# key: ib
-# --
-\ibra{${1:bra-variable}}$0

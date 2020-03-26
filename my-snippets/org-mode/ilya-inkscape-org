@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: ilya-inkscape-org
-# binding: C-c i
-# type: command
-# --
-(inkscape-generate default-directory)
-(yas/insert-by-name "ilya-inkscape-org-snippet")

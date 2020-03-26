@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name: ilya-graphic-centered
-# key: igc
-# --
-\begin{center}
-   \includegraphics[height=${1:height}cm]{${2:example-image-a}}
-\end{center}
-
-\noindent $0

@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: pic
-# key: pic
-# --
-<img src="${1:images_inkscape/${2:image_to_embed}}" style="width: ${3:1000}px;">

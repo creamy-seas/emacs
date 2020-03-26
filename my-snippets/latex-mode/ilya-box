@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: ilya-box
-# key: ibx
-# --
-\ibox{${1:put-it-into-box}}

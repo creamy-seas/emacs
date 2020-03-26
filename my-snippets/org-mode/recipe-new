@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: recipe-new
-# key: rn
-# --
-|-
-| | Process | Equipment | Material | | Param-1 | Param-2 | Param-3 | Param-4 |
-| / | <> | <> | < | | | | | > |
-$0

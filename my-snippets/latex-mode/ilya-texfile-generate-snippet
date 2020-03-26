@@ -1,4 +1,0 @@
-# -*- mode: snippet -*-
-# name: ilya-texfile-generate-snippet-part1
-# --
-\newpage\include{`temp-file-name-for-snippet`}

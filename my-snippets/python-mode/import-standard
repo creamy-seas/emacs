@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name: import-standard
-# key: imp
-# --
-import numpy as np
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-
-$0

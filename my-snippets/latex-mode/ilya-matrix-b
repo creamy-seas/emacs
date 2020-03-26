@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: ilya-matrix-b
-# key: imatb
-# --
-\\begin{bmatrix}
-${1} & ${2}\\
-${3} & ${4}
-\\end{bmatrix}$0

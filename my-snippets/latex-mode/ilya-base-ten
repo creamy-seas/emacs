@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: ilya-base-ten
-# key: bt
-# --
-\ibaseten{${1:power-input}}$0

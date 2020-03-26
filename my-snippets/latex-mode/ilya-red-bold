@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: red-bold
-# key: redb
-# --
-\red{\textbf{${1:text-in-red}}}\ec$0

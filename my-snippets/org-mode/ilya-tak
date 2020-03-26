@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: task
-# key: task
-# --
-<<Task: ${1:task-name}>>

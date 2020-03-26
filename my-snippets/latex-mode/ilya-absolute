@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: ilya-absolute
-# key: iab
-# --
-\iabs{${1:math-value}} $0

@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: minipage
-# key: mini
-# --
-\begin{minipage}{${1:${2:width}\textwidth}}
-${3:text}
-\end{minipage}

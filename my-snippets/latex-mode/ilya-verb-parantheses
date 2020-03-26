@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: ilya-verb-parantheses
-# key: pt
-# --
-\verb|${1:`${2:enter-here-chad}'}|

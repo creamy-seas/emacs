@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: info-error
-# key: ine
-# --
-error!(target: super::TARGET, "$1"${2:,}$0)

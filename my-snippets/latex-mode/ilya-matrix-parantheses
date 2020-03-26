@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: matrix-parantheses
-# key: matp
-# --
-\begin{pmatrix}
-	${1:matrix-value}
-\end{pmatrix}$0

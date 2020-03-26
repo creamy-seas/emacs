@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: blue
-# key: blue
-# --
-\blue{${1:text-in-blue}}$0

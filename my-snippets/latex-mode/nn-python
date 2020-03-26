@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: nn-python
-# key: nnp
-# --
-\lstset{language=python,        backgroundcolor=\color{python},        frame=tb, tabsize=4,basicstyle=\small, showstringspaces=false,commentstyle=\color{red!70}}
-\begin{lstlisting}
- ${1:code-goes-here}
-\end{lstlisting}

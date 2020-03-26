@@ -406,6 +406,13 @@ capture frame can be called from any application - just map it
 #+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook 'org-indent-mode)
 #+END_SRC
+* PACKAGE Htmlize
+Allows export into html
+#+BEGIN_SRC emacs-lisp
+  (use-package htmlize
+    :ensure t
+    :init (my/add-to-package-list 'htmlize))
+ #+END_SRC
 * export
 #+BEGIN_SRC emacs-lisp
   (setq org-export-with-toc nil)
@@ -457,8 +464,6 @@ capture frame can be called from any application - just map it
 *** export to presentation
 #+BEGIN_SRC emacs-lisp
   ;;(use-package ox-reveal
-  ;;  :ensure t)
-  ;;(use-package htmlize
   ;;  :ensure t)
   ;;(setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
 #+END_SRC

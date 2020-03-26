@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: ilya-rightarrow-text
-# key: rat
-# --
-\iratext{${1:arrow-overtext}}$0

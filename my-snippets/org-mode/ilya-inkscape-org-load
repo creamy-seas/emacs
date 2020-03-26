@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: ilya-inkscape-org-load
-# type: command
-# binding: C-c d
-# --
-(inkscape-load default-directory)
