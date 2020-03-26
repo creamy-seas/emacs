@@ -20,9 +20,9 @@ Some .el files are downloaded directly and kept in the config folder
 ** List repositories we want to install from
 #+BEGIN_SRC emacs-lisp
   (setq package-archives '(("org"       . "https://orgmode.org/elpa/")
-                           ("gnu"       . "https://elpa.gnu.org/packages/")
-                           ("melpa"     . "https://melpa.org/packages/")
-                           ("melpa-stable" . "https://stable.melpa.org/packages/")))
+			   ("gnu"       . "https://elpa.gnu.org/packages/")
+			   ("melpa"     . "https://melpa.org/packages/")
+			   ("melpa-stable" . "https://stable.melpa.org/packages/")))
  #+END_SRC
 ** Initialize the packages manually instead of running after the init file is loaded
 #+BEGIN_SRC emacs-lisp
@@ -42,12 +42,12 @@ Some .el files are downloaded directly and kept in the config folder
 #+END_SRC
 * 5 - =my/add-package-to-list=
 #+BEGIN_SRC emacs-lisp
-  (eval-when-compile (setq my/package-list '()))
+  (defvar my/package-list (make-hash-table :test 'equal))
 
   (defun my/add-to-package-list (package-with-apostrophe)
-    "Adds the package to my/package-list.
+    "Adds the package to my/package-list hashmap.
   Ensure that it is escaped with apostrophe to avoid evaluation"
-    (setq my/package-list (add-to-list 'my/package-list package-with-apostrophe)))
+    (puthash (format "%s" package-with-apostrophe) package-with-apostrophe my/package-list))
  #+END_SRC
 * 6 - Getting the system path
 #+BEGIN_SRC emacs-lisp
@@ -57,10 +57,10 @@ Some .el files are downloaded directly and kept in the config folder
 
   (if (string-equal system-type "darwin")
       (progn
-                                          ; Specify what env variables to load into emacs
-        (exec-path-from-shell-copy-env "PYTHONPATH")
-        (exec-path-from-shell-copy-env "WORKON_HOME")
-        ))
+					  ; Specify what env variables to load into emacs for an os-x system
+	(exec-path-from-shell-copy-env "PYTHONPATH")
+	(exec-path-from-shell-copy-env "WORKON_HOME")
+	))
 
   (exec-path-from-shell-initialize)
  #+END_SRC

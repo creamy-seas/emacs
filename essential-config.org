@@ -190,56 +190,13 @@
  #+END_SRC
 ** =my/list-packages=
 #+BEGIN_SRC emacs-lisp
-  (defun my/info-installed-package ()
+  (defun my/list-packages ()
     "Gets the info for an isntalled package"
     (interactive)
-    (let ((iter my/package-list)
-                                          ; start with at least 1 element
-          (package-list-as-string (list "use-package")))
-
-      ;; Run through list of packages
-      (while iter
-        (setq package-list-as-string
-              (append
-                                          ; actually there is only one element when the get the 'car' of the current item. But without list appending acts strage
-               (list
-                (prin1-to-string (car iter)))
-               package-list-as-string))
-                                          ; move to next element
-        (setq iter (cdr iter)))
-
-      ;; Get package choice
-      (let ((chosen-package (ido-completing-read "Installed package to describe:" package-list-as-string)))
-        (describe-package chosen-package))))
-
-  (defun my/describe-package (package)
-    "Display the full documentation of PACKAGE (a symbol)."
-    (interactive
-     (let* ((guess (or (function-called-at-point)
-                       (symbol-at-point))))
-       (require 'finder-inf nil t)
-       ;; Load the package list if necessary (but don't activate them).
-       (unless package--initialized
-         (package-initialize t))
-       (let ((packages (append (mapcar 'car my/package-list))))
-         (unless (memq guess packages)
-           (setq guess nil))
-         (setq packages (mapcar 'symbol-name packages))
-         (let ((val
-                (completing-read (if guess
-                                     (format "Describe package (default %s): "
-                                             guess)
-                                   "Describe package: ")
-                                 packages nil t nil nil (when guess
-                                                          (symbol-name guess)))))
-           (list (intern val))))))
-    (if (not (or (package-desc-p package) (and package (symbolp package))))
-        (message "No package specified")
-      (help-setup-xref (list #'describe-package package)
-                       (called-interactively-p 'interactive))
-      (with-help-window (help-buffer)
-        (with-current-buffer standard-output
-          (describe-package-1 package)))))
+    (let ((chosen-package (ido-completing-read " Package to describe: " (sort
+                                                                          (hash-table-keys my/package-list)
+                                                                          'string<))))
+      (describe-package (gethash chosen-package my/package-list))))
  #+END_SRC
 ** =my/rename-file-and-buffer=
 #+BEGIN_SRC emacs-lisp
@@ -404,20 +361,20 @@ Completion. With a dropdown box.
 #+END_SRC
 ** Company colours
 #+BEGIN_SRC emacs-lisp
-  (custom-set-faces
-   ;; annotation (i.e. function or method)
-   `(company-tooltip-annotation ((t (:foreground "#CFD0E3"))))
-   `(company-tooltip-annotation-selection ((t (:foreground "#334676"))))
-   ;; scrollbar showing position in list
-   `(company-scrollbar-bg ((t (:background "#189a1e1224a2"))))
-   `(company-scrollbar-fg ((t (:background "#41bf505b61e3"))))
-   ;; text being expanded
-   `(company-tooltip-common ((t (:foreground "#33ccff"))))
-   `(company-tooltip-common-selection ((t (:foreground "#3a3a6e" :weight bold))))
-   ;; autocompletion selection
-   `(company-tooltip-selection ((t (:background "orange2" :foreground "#090C42" :weight bold))))
-   ;; change background of the box
-   `(company-tooltip ((t (:inherit default :background "#41bf505b61e3")))))
+  ;; (custom-set-faces
+  ;;  ;; annotation (i.e. function or method)
+  ;;  `(company-tooltip-annotation ((t (:foreground "#CFD0E3"))))
+  ;;  `(company-tooltip-annotation-selection ((t (:foreground "#334676"))))
+  ;;  ;; scrollbar showing position in list
+  ;;  `(company-scrollbar-bg ((t (:background "#189a1e1224a2"))))
+  ;;  `(company-scrollbar-fg ((t (:background "#41bf505b61e3"))))
+  ;;  ;; text being expanded
+  ;;  `(company-tooltip-common ((t (:foreground "#33ccff"))))
+  ;;  `(company-tooltip-common-selection ((t (:foreground "#3a3a6e" :weight bold))))
+  ;;  ;; autocompletion selection
+  ;;  `(company-tooltip-selection ((t (:background "orange2" :foreground "#090C42" :weight bold))))
+  ;;  ;; change background of the box
+  ;;  `(company-tooltip ((t (:inherit default :background "#41bf505b61e3")))))
  #+END_SRC
 ** Company popup help
 #+BEGIN_SRC emacs-lisp
