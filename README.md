@@ -13,8 +13,17 @@ make
 Upon the first load of emacs, all the required packages will be downloaded. There may be manual tweaking required as described in the section below
 
 # Required installations ##
-| projectile cross-project search     | `the_silver_searcher`                                      |
-| tracking inkscape files for changes | `fswatch`                                                  |
+
+|                                     |                                 |   |
+| [Essential Config](./latexmode.org) |                                 |   |
+|:------------------------------------|:--------------------------------|---|
+| `the_silver_searcher`               | projectile cross-project search |   |
+| `fswatch`                           |                                 |   |
+|                                     |                                 |   |
+|                                     |                                 |   |
+
+
+| tracking inkscape files for changes |                                                  |
 | latex documents                     | `latex`, `biber`                                           |
 | updating the keyring                | `gnu-elpa-keyring-update` through emacsa `package-install` |
 | for pretty symbols in the modeline  | `emacs-all-the-icons` through yay                          |
