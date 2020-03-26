@@ -234,9 +234,9 @@
            (file-name (concat prefix file-name suffix)))
       (message file-name)))
  #+END_SRC
-** =my/list-packages=
+** =my/describe-packages=
 #+BEGIN_SRC emacs-lisp
-  (defun my/list-packages ()
+  (defun my/describe-packages ()
     "Gets the info for an isntalled package"
     (interactive)
     (let ((chosen-package (ido-completing-read " Package to describe: " (sort

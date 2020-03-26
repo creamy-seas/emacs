@@ -154,7 +154,7 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
     (setq dashboard-center-content t)
     (setq dashboard-banner-logo-title "Привет от Леонта!"))
 
-  (setq dashboard-items '((agenda . 5)
+  (setq dashboard-items '((agenda . 10)
                           (recents  . 5)
                           (projects . 5)
                           (registers . 5)
@@ -191,11 +191,11 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
 
 * Fonts
 #+BEGIN_SRC emacs-lisp
-;;  (custom-set-faces
+  (custom-set-faces
    ;; '(default ((t (:family "JetBrains Mono" :height 170))))
    ;; '(default ((t (:family "Fira Code" :height 170))))
-;;   '(default ((t (:family "Inconsolata" :height 170))))
-;;   )
+   '(default ((t (:family "Inconsolata" :height 177))))
+   )
  #+END_SRC
 * Generating test projects
 #+BEGIN_SRC emacs-lisp

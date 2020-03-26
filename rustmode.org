@@ -93,8 +93,10 @@ You will need to =export PATH=~/.rustup/toolchains/stable-x86_64-apple-darwin/li
  #+END_SRC
 * PACKAGE Hydra
 #+BEGIN_SRC emacs-lisp
-    (defhydra hydra-rust ()
-      "
+  (setq cargo-process--command-doc-open "doc --no-deps --open")
+  (setq cargo-process--command-doc "doc --no-deps")
+  (defhydra hydra-rust ()
+    "
       Cargo                                                              [_q_] quit
       ^^---------------------------------------------------------------------------
       [_b_] Build
@@ -114,22 +116,22 @@ You will need to =export PATH=~/.rustup/toolchains/stable-x86_64-apple-darwin/li
       [_i_] init a new project
       [_n_] init a new project with a name
       "
-      ("r" cargo-process-run nil)
-      ("R" cargo-process-run-bin nil)
-      ("b" cargo-process-build nil)
-      ("f" cargo-process-fmt nil)
-      ("D" cargo-process-doc nil)
-      ("d" cargo-process-doc-open nil)
-      ("t" cargo-process-current-test nil)
-      ("T" cargo-process-test nil)
-      ("n" cargo-process-new nil)
-      ("l" cargo-process-clean nil)
-      ("c" cargo-process-clippy nil)
-      ("a" cargo-process-rm nil)
-      ("A" cargo-process-add nil)
-      ("e" cargo-process-run-example nil)
-      ("i" cargo-process-init nil)
-      ("q" nil nil))
+    ("r" cargo-process-run nil)
+    ("R" cargo-process-run-bin nil)
+    ("b" cargo-process-build nil)
+    ("f" cargo-process-fmt nil)
+    ("D" cargo-process-doc nil)
+    ("d" cargo-process-doc-open nil)
+    ("t" cargo-process-current-test nil)
+    ("T" cargo-process-test nil)
+    ("n" cargo-process-new nil)
+    ("l" cargo-process-clean nil)
+    ("c" cargo-process-clippy nil)
+    ("a" cargo-process-rm nil)
+    ("A" cargo-process-add nil)
+    ("e" cargo-process-run-example nil)
+    ("i" cargo-process-init nil)
+    ("q" nil nil))
 
   (define-key my/keymap (kbd "c") #'hydra-rust/body)
 
