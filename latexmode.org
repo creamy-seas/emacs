@@ -2,53 +2,46 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-*Dependencies*
-| =biber= and some kind of tex(texlive, mactex) |                                        |
-| =kbordermatrix.sty=                           | https://www.ctan.org/pkg/kbordermatrix |
+* Dependencies
+#+BEGIN_SRC emacs-lisp
+                                          ; for refferencing
+  (my/add-dependency "biber")
+                                          ; for compilation
+  (my/add-dependency "latexmk")
+                                          ; for instant preview
+  (my/add-dependency "pdf2dsc")
+ #+END_SRC
 
-Copy over the =.sty= files to your latex directory
-- For mac
+| =kbordermatrix.sty=                                            | https://www.ctan.org/pkg/kbordermatrix |
+1. Copy over the =.sty= files to your latex directory
+For mac
 #+BEGIN_SRC shell :tangle no
   sudo cp $STYFILE /usr/local/texlive/2018/texmf-dist/tex/latex/base
  #+END_SRC
-- For linux
+For linux
 #+BEGIN_SRC shell :tangle no
   sudo cp $STYFILE /usr/share/texmf-dist/tex/latex/base
  #+END_SRC
 
-Run =sudo -s texhash= to load them up
+2. [@2] Run =sudo -s texhash= to load them up
 
+* Warning about auctex
+It is important not to launch certain =.el= files manually:
+- =tex.el=
+- =latex.el=
+There should only be loaded by the auctex hooks, otherwise features such as:
+- linting
+- funcions
+will not properly load
+
+*Therefore, when adding new features of functionality make sure that you either use*:
+- =(with-eval-after-load "tex" <BODY>)=
+- =(add-hook 'LaTeX-mode-hook (function <FUNCTION>))=
+
+* General Parameters
 #+BEGIN_SRC emacs-lisp
   (defvar max-latex-fill-width 120)
-#+END_SRC
-
-* LaTeX commands
-I will most be using CDLaTeX to type in a command and then autocomplete it
-Yasnippet to add stuff once I am there (like and an extra item) and create own tab commands
-|-----------------+------------------------------------------+----------------------------------|
-| TABBING         | -----------------                        | ------------------               |
-| =cdlatex=       | tabbing out common commands              | =cdlatex= help with =C-c ?=      |
-| =yasnippet=     | tabbing out common and personal commands | =yasnippet= =yasnippet-snippets= |
-| CREATE AND FILL | ------------------                       | -------------------              |
-| =C-c C-f=       | change the font                          | =auctex=                         |
-| =C-c C-e=       | create figure environemnt                | =auctex=                         |
-| =C-c C-s=       | create section environment               | =auctex=                         |
-| =`=             | math mode help                           | =LaTeX-math-mode=                |
-| REFFERENCING    | ------------------                       | -------------------              |
-| =C-c (= =C-c )= | create/use refference                    | =reftex=                         |
-| =C-c [=         | refferences a citation                   | =reftex=                         |
-| =C-c ==         | create content list to navigate          | =reftex=                         |
-| AESTHETICS      | ------------                             | --------------                   |
-| =C-c C-o=       | autohide sections                        | =TeX-fold-mode=                  |
-| =C-c C-q C-e=   | indent environment or region             |                                  |
-| COMMENTING      | ------------                             | --------------                   |
-| =C-c '=         | comment paragraph                        |                                  |
-| =C-c ;=         | comment region                           |                                  |
-| COMPILING       | ------------                             | --------------                   |
-| =C-c C-c=       | run next latex generations tep           |                                  |
-| =C-c `=         | look through errors                      |                                  |
-| =C-c C-v=       | Look at pdf                              |                                  |
-|-----------------+------------------------------------------+----------------------------------|
+ #+END_SRC
 * PACKAGE Auctex
 The default =TeX mode= package of emacs has modes which are redefined by auctex
 |----------------+-------------|
@@ -64,21 +57,23 @@ The default =TeX mode= package of emacs has modes which are redefined by auctex
 | LaTeX-mode     | latex-mode  |
 |----------------+-------------|
 
-/If AUCTEX is installed from ELPA, the installation procedure already cares about loading AUCTEX correctly and you must not have the line above in your init file./
-
+** Test if installed
 Although there is a package called =auctex= there is no =auctex.el= file.
 
 *Therefore we first need to test if auctex has been installed by calling one if it's =.el= files*
-** Test if installed
+
 #+BEGIN_SRC emacs-lisp
-  ;; (condition-case nil
-  ;;     (require 'tex-buf)
-  ;;   (error (error ">>>>>>>>>> Install auctex manually by running list-packages <<<<<<<<<<")))
+  (fset 'my-auctex-install
+     (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([134217848 108 105 115 116 45 112 97 99 107 97 103 101 115 return 19 97 117 99 116 101 120 return 105 120 121 113] 0 "%d")) arg)))
+
+  (condition-case nil
+      (require 'tex-site)
+    (error
+     (message ">>>>>>>>>> Installing auctex manually by running list-packages - Avoid closing emacs<<<<<<<<<<")
+     (my-auctex-install)))
  #+END_SRC
 ** Basic setup
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'load-path (my/config-file-path-evaluate "manual_el/auctex-12.2.0"))
-  (my/add-to-package-list 'auctex)
   (setq TeX-auto-save t)
                                           ; access imported packages
   (setq TeX-parse-self t)
@@ -88,39 +83,20 @@ Although there is a package called =auctex= there is no =auctex.el= file.
   (setq-default TeX-show-compilation t)
 
   (setq TeX-interactive-mode t)
-
-  ;; spell checking
+                                          ; spell checking
   (add-hook 'LaTeX-mode-hook 'flyspell-mode)
-
-  ;; folding
+                                          ; folding
   (add-hook 'LaTeX-mode-hook
             (lambda () (TeX-fold-mode 1)))
-
-  ;; ensure that anything inside $ $ is treated as math mode
+                                          ; ensure that anything inside $ $ is treated as math mode
   (add-hook 'LaTeX-mode-hook
             (lambda () (set (make-variable-buffer-local 'TeX-electric-math)
                        (cons "$" "$"))))
-
-  ;; font highlighting
+                                          ; font highlighting
   (add-hook 'LaTeX-mode-hook 'font-lock-mode)
- #+END_SRC
-** Setup for further
-Since =tex-buf.el= is only loaded upon entry, I explicitly set a requirement here to resolve warnings during compilation
-#+BEGIN_SRC emacs-lisp
-  (require 'tex-buf)
- #+END_SRC
-* PACKAGE Reftex
-Referencing and bibliography
-#+BEGIN_SRC emacs-lisp
-  (use-package reftex
-    :ensure t
-    :init
-    (my/add-to-package-list 'reftex)
-    (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-    (setq reftex-plug-into-AUCTeX t))
- #+END_SRC
+ #+END_SRC**
 * PACKAGE Cdlatex
-Autocompletion and other shortcuts
+Autocompletion and environments
 #+BEGIN_SRC emacs-lisp
   (use-package cdlatex
     :ensure t
@@ -128,7 +104,7 @@ Autocompletion and other shortcuts
     :config
     (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex))
  #+END_SRC
-** Quick symbols
+** Math symbols
 #+BEGIN_SRC emacs-lisp
   (setq cdlatex-math-symbol-alist
         `(
@@ -159,31 +135,7 @@ Autocompletion and other shortcuts
           ("cases" "Insert case environment"   "" cdlatex-environment ("cases") t t)
           ("thr" "Insert theorem env" "" cdlatex-environment ("theorem") t nil)))
  #+END_SRC
-* MANUAL-PACKAGE View program)    =C-c C-v=
-- skim is run, reading the current line in the emacs buffer and highlighting it in the pdf
-- =syntex.gz= file needs to be in the directory for this to occur, so it's copied
-|-------------------+------------------------------------------------------|
-| *Unique to skim*  |                                                      |
-| =-b=              | inserts a reading bar into the pdf                   |
-| =-g=              | tells it to load in background                       |
-|-------------------+------------------------------------------------------|
-| *Unique to emacs* | commands in TeX-expand-list-builtin in =tex.el= file |
-| =%n=              | is the line number we are on                         |
-| =%o=              | is the output file name                              |
-| =%b=              | is the tex file name                                 |
-|-------------------+------------------------------------------------------|
-
-#+BEGIN_SRC emacs-lisp
-  (setq TeX-view-program-list TeX-view-program-list-builtin)
-  (add-to-list 'TeX-view-program-list
-               '("SkimViewer" (my/config-file-path-evaluate "my-scripts/latex/search_engine.sh %s %n %o %b")))
-
-  (if (string-equal system-type "darwin")
-      (setq TeX-view-program-selection '((output-pdf "SkimViewer")))
-    (setq TeX-view-program-selection '((output-pdf "Zathura"))))
- #+END_SRC
-
-* PACKAGE fill-column-indicator
+* PACKAGE Fill-column-indicator
 This is to show what the current fill column is
 #+BEGIN_SRC emacs-lisp
   (use-package fill-column-indicator
@@ -195,19 +147,30 @@ This is to show what the current fill column is
                                           ; width of the indicator
     (setq fci-rule-width 1))
  #+END_SRC
+
+* PACKAGE Reftex
+Referencing and bibliography
+#+BEGIN_SRC emacs-lisp
+  (use-package reftex
+    :ensure t
+    :init
+    (my/add-to-package-list 'reftex)
+    (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+    (setq reftex-plug-into-AUCTeX t))
+ #+END_SRC
 * Colouring
 #+BEGIN_SRC emacs-lisp
-  (custom-set-faces
-   '(font-latex-bold-face ((t (:inherit bold))))
-   '(font-latex-italic-face ((t (:inherit italic))))
-   '(font-latex-math-face ((t (:foreground "#99c616"))))
-   '(font-latex-sedate-face ((t (:foreground "burlywood")))))
+  ;; (custom-set-faces
+  ;;  '(font-latex-bold-face ((t (:inherit bold))))
+  ;;  '(font-latex-italic-face ((t (:inherit italic))))
+  ;;  '(font-latex-math-face ((t (:foreground "#99c616"))))
+  ;;  '(font-latex-sedate-face ((t (:foreground "burlywood")))))
  #+END_SRC
 * Function Compilation
 *Some important AucTex commands and variables*
-| =TeX-expand-list-builtin= | pair list tying command with a % expression e.g. =%s= -> master latex file |
-| =TeX-expand-list=         | this variables contains the above =TeX-expand-list-builtin                 |
-| =Tex-command-expand=      | "commandInStringForm" 'TeX-master-file TeX-expand-list                     |
+| =TeX-expand-list-builtin= | pair list tying command with a % expression e.g. =%s= -> evalutes the master latex file |
+| =TeX-expand-list=         | this variables contains the above =TeX-expand-list-builtin                              |
+| =Tex-command-expand=      | =(Tex-command-expand "commandInStringForm" 'TeX-master-file TeX-expand-list)=           |
 ** supporing functions
 #+BEGIN_SRC emacs-lisp
   (defvar my/latex/active-compilations 0 "Number of running latex compilation processes")
@@ -223,19 +186,7 @@ This is to show what the current fill column is
 
       (list
        (concat process-type ":" master-file)
-       )
-      ;; 1 - set env variables
-      ;; (setq my/latex/compilation-process-id (concat process-type ":" master-file))
-      ;; (setq my/latex/compilation-process-type process-type)
-      ;; (setq my/latex/compilation-master-file master-file)
-
-      ;; 2 - update buffer name
-      ;; (if (string-equal process-type "BuildPDF")
-      ;; (setq ilya_latex-compilation-buffer-name (concat "ᛋᛋ Compiling [" temp-master-file "] ᛋᛋ")))
-      ;; (if (string-equal process-type "DestroyPDF")
-      ;; (setq ilya_latex-compilation-buffer-name "卍 Exterminating 卍"))
-      )
-    )
+       )))
 
   (defun my/latex/get-master-file-name ()
     "Get the name of the master latex file in the current project"
@@ -247,23 +198,22 @@ This is to show what the current fill column is
     (if (> my/latex/active-compilations 0)
         (progn
           ;; (setq global-mode-string (concat "[" (number-to-string my/latex/active-compilations) "]"))
-          (message (concat " Still running " my/latex/active-compilations "compilations")))
+          (message (format " Still running %s compilations" my/latex/active-compilations)))
       (progn
         (setq global-mode-string "")
         (message " No more running compilations"))))
  #+END_SRC
 ** =my/latex/compile=           =C-c C-c=
-1) a process name is generated based off the name of the master file
-2) the actual command calls the =pdf_engine= script
-3) expansion if performed to change =%s= to the master file name
+
 
 #+BEGIN_SRC emacs-lisp
   (defun my/latex/compile ()
-    "Generate pdf with latexmk"
+    "Generate pdf with latexmk
+  1) a process name is generated based off the name of the master file
+  2) the actual command calls the =pdf_engine= script
+  3) expansion if performed to change =%s= to the master file name"
     (interactive)
-
     (minibuffer-message (concat " Generating \"" (TeX-master-file) "\""))
-
     (let* (
                                           ; evaluate information for compilation
            (compilation-info (my/latex/prepare-for-compilation "Compile-PDF"))
@@ -276,23 +226,21 @@ This is to show what the current fill column is
         ;; 1 - run compilation script
         (TeX-run-TeX compilation-process-id compilation-script (TeX-master-file))
         ;; 2 - increment number of running compilations
-        (setq my/latex/active-compilations (+ my/latex/active-compilations 1))
-        )
+        (setq my/latex/active-compilations (+ my/latex/active-compilations 1)))
 
-      ;; 3 - if there are more than 1 process, change the colour
+      ;; 3 - update modeline
       (my/latex/modeline-colour)))
  #+END_SRC
 ** =my/latex/exterminate=       =C-c C-j=
-1) kill any running processes on this master files
-2) delete the buffer that was running that process
-3) move files into output directory
-4) close this buffer as well
-
 #+BEGIN_SRC emacs-lisp
   (defun my/latex/exterminate()
-    "Kill the compile process for this project"
-    (interactive)
+    "Kill the compile process for this project
+  1) kill any running processes on this master files
+  2) delete the buffer that was running that process
+  3) move files into output directory
+  4) close this buffer as well"
 
+    (interactive)
     (minibuffer-message (concat " Exterminating \"" (my/latex/get-master-file-name) "\""))
 
     (let* (
@@ -322,12 +270,12 @@ This is to show what the current fill column is
         (kill-buffer "*TeX Help*"))
 
       ;; 4 - switch to the termination window
-      ;; (other-window 1)
-      ;; (sleep-for 1)
-      ;; (kill-buffer-and-window)
+      (other-window 1)
+      (sleep-for 1)
+      (kill-buffer-and-window)
 
       ;; 5 - change number of running processes and recolour bar if required
-      (setq my/latex/active-compilations (- my/latex/active-compilations 1))
+      (setq my/latex/active-compilations (max (- my/latex/active-compilations 1) 0))
       (my/latex/modeline-colour)
 
       ;; 6 - close this buffer window
@@ -604,7 +552,67 @@ It would be a mumble jumble like with a lot of escapes
                              (1 'my/face/latex-title t)
                              (2 'my/face/latex-title t))))
  #+END_SRC
+* View program    =C-c C-v=
+*Skim on os-x*
+- skim is run, reading the current line in the emacs buffer and highlighting it in the pdf
+- =syntex.gz= file needs to be in the directory for this to occur, so it's copied
+|-------------------+------------------------------------------------------|
+| *Unique to skim*  |                                                      |
+| =-b=              | inserts a reading bar into the pdf                   |
+| =-g=              | tells it to load in background                       |
+|-------------------+------------------------------------------------------|
+| *Unique to emacs* | commands in TeX-expand-list-builtin in =tex.el= file |
+| =%s=              | master latex file                                    |
+| =%n=              | is the line number we are on                         |
+| =%o=              | is the output file name                              |
+| =%b=              | is the tex file name                                 |
+|-------------------+------------------------------------------------------|
+
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load "tex"
+    (setq TeX-view-program-list TeX-view-program-list-builtin)
+
+    (if (string-equal system-type "darwin")
+        (progn
+          (let ((skim-view-script (my/config-file-path-evaluate "my-scripts/latex/skim_view.sh %s %n %o %b")))
+            (add-to-list 'TeX-view-program-list
+                                          ; over here I escape (`) the bracketed region. Anything I want to evaluate I prepend with a comma
+                         `("SkimViewer" ,skim-view-script))
+            (setq TeX-view-program-selection '((output-pdf "SkimViewer")))))
+      (progn
+        (setq TeX-view-program-selection '((output-pdf "Zathura")))
+        (my/add-dependency "zathura"))))
+ #+END_SRC
 * Key Bindings
+** Table of useful bindings
+I will most be using CDLaTeX to type in a command and then autocomplete it
+Yasnippet to add stuff once I am there (like and an extra item) and create own tab commands
+|-----------------+------------------------------------------+----------------------------------|
+| =C-c C-p <kbd>= | Preview directly in the latex buffer     |                                  |
+| TABBING         | -----------------                        | ------------------               |
+| =cdlatex=       | tabbing out common commands              | =cdlatex= help with =C-c ?=      |
+| =yasnippet=     | tabbing out common and personal commands | =yasnippet= =yasnippet-snippets= |
+| CREATE AND FILL | ------------------                       | -------------------              |
+| =C-c C-f=       | change the font                          | =auctex=                         |
+| =C-c C-e=       | create figure environemnt                | =auctex=                         |
+| =C-c C-s=       | create section environment               | =auctex=                         |
+| =`=             | math mode help                           | =LaTeX-math-mode=                |
+| REFFERENCING    | ------------------                       | -------------------              |
+| =C-c (= =C-c )= | create/use refference                    | =reftex=                         |
+| =C-c [=         | refferences a citation                   | =reftex=                         |
+| =C-c ==         | create content list to navigate          | =reftex=                         |
+| AESTHETICS      | ------------                             | --------------                   |
+| =C-c C-o=       | autohide sections                        | =TeX-fold-mode=                  |
+| =C-c C-q C-e=   | indent environment or region             |                                  |
+| COMMENTING      | ------------                             | --------------                   |
+| =C-c '=         | comment paragraph                        |                                  |
+| =C-c ;=         | comment region                           |                                  |
+| COMPILING       | ------------                             | --------------                   |
+| =C-c C-c=       | run next latex generations tep           |                                  |
+| =C-c `=         | look through errors                      |                                  |
+| =C-c C-v=       | Look at pdf                              |                                  |
+|-----------------+------------------------------------------+----------------------------------|
+** Custom bindings
 #+BEGIN_SRC emacs-lisp
   ;;(ad d-hook 'LaTeX-mode-hook (lambda ()
   ;;                              (local-unset-key (kbd "C-c C-a"))

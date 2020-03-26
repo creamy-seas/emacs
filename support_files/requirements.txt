@@ -1,0 +1,9 @@
+ag
+biber
+cargo
+latexmk
+pdf2dsc
+rls
+rustc
+rustup
+zathura

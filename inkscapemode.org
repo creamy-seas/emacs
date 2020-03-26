@@ -11,7 +11,6 @@ To export an inkscape image for latex interactively, open =.svg= file → save a
 #+BEGIN_SRC emacs-lisp
   (defvar my/inkscape/generate-script (my/config-file-path-evaluate "my-scripts/inkscape/inkscape_generate.sh"))
   (defvar my/inkscape/template-file (my/config-file-path-evaluate "my-scripts/inkscape/inkscape_template.svg"))
-  ;;(defvar my/inkscape/export-script (my/config-file-path-evaluate "my-scripts/inkscape/inkscape_export.sh"))
  #+END_SRC
 
 * Latex

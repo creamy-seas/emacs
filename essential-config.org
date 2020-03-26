@@ -67,10 +67,56 @@
 
  #+END_SRC
 * 2 - Functions of top priority
+** =my/write-list-into-current-buffer=
+#+BEGIN_SRC emacs-lisp
+  (defun my/write-list-into-current-buffer (list-to-write)
+    "Inserts elements of a simple list 1-by-1 into the current file"
+    (while list-to-write
+      (insert (format "%s\n" (car list-to-write)))
+      (setq list-to-write (cdr list-to-write))))
+ #+END_SRC
+** =my/drop-duplicates-in-list=
+#+BEGIN_SRC emacs-lisp
+  (defun my/drop-duplicates-in-list (list)
+    (let ((new-list nil))
+      (while list
+        (when (and (car list) (not (member (car list) new-list)))
+          (setq new-list (cons (car list) new-list)))
+        (setq list (cdr list)))
+      (nreverse new-list)))
+ #+END_SRC
+** =my/add-dependency=
+#+BEGIN_SRC emacs-lisp
+  (defun my/add-dependency (new-dependency)
+    "Add the chosen package as a dependency. It will be checked by the makefile"
+    (interactive)
+    (let* ((requirement-file (concat my/config-folder-location "support_files/requirements.txt"))
+           (updated-depencies
+            (with-temp-buffer
+                                          ; 1 - add the new dependency to the buffer
+              (insert (concat new-dependency "\n"))
+                                          ; 2 - add the previous dependecies
+              (insert-file-contents requirement-file)
+              (sort
+               (split-string
+                                          ; 2 - select the whole buffer and read into list
+                (buffer-substring-no-properties
+                 (point-min)
+                 (point-max))
+                "\n" t)
+               'string<))))
+                                          ; 3 - drop dupliactes IMPORTANT
+      (setq updated-depencies (my/drop-duplicates-in-list updated-depencies))
+                                          ; 4 - open file and write the new list
+      (with-temp-file requirement-file
+        (my/write-list-into-current-buffer updated-depencies))
+
+      (message (format " Dependecy list: %s" updated-depencies))))
+ #+END_SRC
 ** =my/fetch-config-files=
 #+BEGIN_SRC emacs-lisp
   (defun my/fetch-config-files ()
-    (with-temp-buffer
+  (with-temp-buffer
       (insert-file-contents (concat my/config-folder-location "support_files/my_org_files.txt"))
       (sort
        (split-string
@@ -190,56 +236,13 @@
  #+END_SRC
 ** =my/list-packages=
 #+BEGIN_SRC emacs-lisp
-  (defun my/info-installed-package ()
+  (defun my/list-packages ()
     "Gets the info for an isntalled package"
     (interactive)
-    (let ((iter my/package-list)
-                                          ; start with at least 1 element
-          (package-list-as-string (list "use-package")))
-
-      ;; Run through list of packages
-      (while iter
-        (setq package-list-as-string
-              (append
-                                          ; actually there is only one element when the get the 'car' of the current item. But without list appending acts strage
-               (list
-                (prin1-to-string (car iter)))
-               package-list-as-string))
-                                          ; move to next element
-        (setq iter (cdr iter)))
-
-      ;; Get package choice
-      (let ((chosen-package (ido-completing-read "Installed package to describe:" package-list-as-string)))
-        (describe-package chosen-package))))
-
-  (defun my/describe-package (package)
-    "Display the full documentation of PACKAGE (a symbol)."
-    (interactive
-     (let* ((guess (or (function-called-at-point)
-                       (symbol-at-point))))
-       (require 'finder-inf nil t)
-       ;; Load the package list if necessary (but don't activate them).
-       (unless package--initialized
-         (package-initialize t))
-       (let ((packages (append (mapcar 'car my/package-list))))
-         (unless (memq guess packages)
-           (setq guess nil))
-         (setq packages (mapcar 'symbol-name packages))
-         (let ((val
-                (completing-read (if guess
-                                     (format "Describe package (default %s): "
-                                             guess)
-                                   "Describe package: ")
-                                 packages nil t nil nil (when guess
-                                                          (symbol-name guess)))))
-           (list (intern val))))))
-    (if (not (or (package-desc-p package) (and package (symbolp package))))
-        (message "No package specified")
-      (help-setup-xref (list #'describe-package package)
-                       (called-interactively-p 'interactive))
-      (with-help-window (help-buffer)
-        (with-current-buffer standard-output
-          (describe-package-1 package)))))
+    (let ((chosen-package (ido-completing-read " Package to describe: " (sort
+                                                                          (hash-table-keys my/package-list)
+                                                                          'string<))))
+      (describe-package (gethash chosen-package my/package-list))))
  #+END_SRC
 ** =my/rename-file-and-buffer=
 #+BEGIN_SRC emacs-lisp
@@ -404,20 +407,20 @@ Completion. With a dropdown box.
 #+END_SRC
 ** Company colours
 #+BEGIN_SRC emacs-lisp
-  (custom-set-faces
-   ;; annotation (i.e. function or method)
-   `(company-tooltip-annotation ((t (:foreground "#CFD0E3"))))
-   `(company-tooltip-annotation-selection ((t (:foreground "#334676"))))
-   ;; scrollbar showing position in list
-   `(company-scrollbar-bg ((t (:background "#189a1e1224a2"))))
-   `(company-scrollbar-fg ((t (:background "#41bf505b61e3"))))
-   ;; text being expanded
-   `(company-tooltip-common ((t (:foreground "#33ccff"))))
-   `(company-tooltip-common-selection ((t (:foreground "#3a3a6e" :weight bold))))
-   ;; autocompletion selection
-   `(company-tooltip-selection ((t (:background "orange2" :foreground "#090C42" :weight bold))))
-   ;; change background of the box
-   `(company-tooltip ((t (:inherit default :background "#41bf505b61e3")))))
+  ;; (custom-set-faces
+  ;;  ;; annotation (i.e. function or method)
+  ;;  `(company-tooltip-annotation ((t (:foreground "#CFD0E3"))))
+  ;;  `(company-tooltip-annotation-selection ((t (:foreground "#334676"))))
+  ;;  ;; scrollbar showing position in list
+  ;;  `(company-scrollbar-bg ((t (:background "#189a1e1224a2"))))
+  ;;  `(company-scrollbar-fg ((t (:background "#41bf505b61e3"))))
+  ;;  ;; text being expanded
+  ;;  `(company-tooltip-common ((t (:foreground "#33ccff"))))
+  ;;  `(company-tooltip-common-selection ((t (:foreground "#3a3a6e" :weight bold))))
+  ;;  ;; autocompletion selection
+  ;;  `(company-tooltip-selection ((t (:background "orange2" :foreground "#090C42" :weight bold))))
+  ;;  ;; change background of the box
+  ;;  `(company-tooltip ((t (:inherit default :background "#41bf505b61e3")))))
  #+END_SRC
 ** Company popup help
 #+BEGIN_SRC emacs-lisp
@@ -746,9 +749,8 @@ Autocompletion by typing in first part of word and tabbing to insert a template
     :config
     (yas-reload-all))
  #+END_SRC
-** Paths to snippets
 #+BEGIN_SRC emacs-lisp
-  (setq yas-snippet-dirs (list 'yasnippet-snippets-dir (my/config-file-path-evaluate "my-snippets")))
+  (setq yas-snippet-dirs (list 'yasnippet-snippets-dir (my/config-file-path-evaluate "snippets")))
   (yas-reload-all)
  #+END_SRC
 ** PACKAGE Auto yasnippets
