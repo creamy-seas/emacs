@@ -562,6 +562,7 @@ It would be a mumble jumble like with a lot of escapes
 | =-g=              | tells it to load in background                       |
 |-------------------+------------------------------------------------------|
 | *Unique to emacs* | commands in TeX-expand-list-builtin in =tex.el= file |
+| =%s=              | master latex file                                    |
 | =%n=              | is the line number we are on                         |
 | =%o=              | is the output file name                              |
 | =%b=              | is the tex file name                                 |
@@ -573,10 +574,11 @@ It would be a mumble jumble like with a lot of escapes
 
     (if (string-equal system-type "darwin")
         (progn
-                                          ; os-x
-          (add-to-list 'TeX-view-program-list
-                       '("SkimViewer" (my/config-file-path-evaluate "my-scripts/latex/search_engine.sh %s %n %o %b")))
-          )
+          (let ((skim-view-script (my/config-file-path-evaluate "my-scripts/latex/skim_view.sh %s %n %o %b")))
+            (add-to-list 'TeX-view-program-list
+                                          ; over here I escape (`) the bracketed region. Anything I want to evaluate I prepend with a comma
+                         `("SkimViewer" ,skim-view-script))
+            (setq TeX-view-program-selection '((output-pdf "SkimViewer")))))
       (progn
         (setq TeX-view-program-selection '((output-pdf "Zathura")))
         (my/add-dependency "zathura"))))
