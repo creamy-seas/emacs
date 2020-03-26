@@ -14,13 +14,21 @@ You cannot compile in Google Drive. Rust throws an error
 | =C-c d=     | get docs in buffer              | racer |
 |-------------+---------------------------------+-------|
 
-* External Installation
+* Dependencies
+#+BEGIN_SRC emacs-lisp
+  (my/add-dependency "rustc")
+  (my/add-dependency "cargo")
+  (my/add-dependency "rustup")
+  (my/add-dependency "rls")
+ #+END_SRC
+
 |---------------+---------------------------------------------------------------------|
 | cargo         | for compling project                                                |
 | [[https://github.com/brotzeit/rustic][rustc]]         | does compilation, checking and documentation. Can activate later on |
 | rustup        | installation and package managment                                  |
 | [[https://github.com/rust-lang/rls][rls]]           | rust language server                                                |
 | [[https://github.com/rust-analyzer/rust-analyzer/tree/master/docs/user][rust-analyzer]] | rust language server v2                                             |
+|---------------+---------------------------------------------------------------------|
 | [[https://github.com/racer-rust/emacs-racer][racer]]         | code completion (rls uses it as a fallback)                         |
 |---------------+---------------------------------------------------------------------|
 ** 1 - Install =cargo, rustc, rustup=
