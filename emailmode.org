@@ -426,7 +426,7 @@ I run a dummy command on a dummy file that prompts for the password
          (signal (car error) (cdr error))))))
 
   (add-hook 'message-send-hook (lambda ()
-                                 (my/epa-decrypt-file (my/config-file-path-evaluate "support_files/load_password_dummy_file.gpg")
+                                 (my/epa-decrypt-file (my/config-file-path-evaluate "my-files/gpg/load_password_dummy_file.gpg")
                                                       "/dev/null")))
  #+END_SRC
 
@@ -444,7 +444,7 @@ I run a dummy command on a dummy file that prompts for the password
        (exec-path-from-shell-initialize)
 
        ;; (message ">>>> decrypting dummy file")
-       (my/epa-decrypt-file (my/config-file-path-evaluate "support_files/load_password_dummy_file.gpg")
+       (my/epa-decrypt-file (my/config-file-path-evaluate "my-files/gpg/load_password_dummy_file.gpg")
                             "/dev/null")
 
        ;; (message ">>>> updating")
