@@ -2,18 +2,37 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-*Dependencies*
-=fswatch=
-=inkscape=
-
 To export an inkscape image for latex interactively, open =.svg= file → save as → =.pdf= → =omit text= → use exported object size
 
+* Dependencies
+#+BEGIN_SRC emacs-lisp
+  (my/add-dependency "fswatch")
+  (my/add-dependency "inkscape")
+ #+END_SRC
+
+|------------+-------------------------------------------------------------------------------------|
+| =inkscape= | old but versatile svg editor                                                        |
+| =fswatch=  | used to monitor a file for changes and triggering a command in [[file:my-scripts/inkscape/inkscape_generate.sh][inkscape_generate.sh]] |
+|------------+-------------------------------------------------------------------------------------|
+
+* General Parameters
 #+BEGIN_SRC emacs-lisp
   (defvar my/inkscape/generate-script (my/config-file-path-evaluate "my-scripts/inkscape/inkscape_generate.sh"))
   (defvar my/inkscape/template-file (my/config-file-path-evaluate "my-scripts/inkscape/inkscape_template.svg"))
  #+END_SRC
 
 * Latex
+** =my/kill-buffer-process=
+#+BEGIN_SRC emacs-lisp
+  (defun my/kill-buffer-process (process-buffer-name)
+    "Kills the process running in the current 'buffer-name'"
+
+    ;; 1 - evaluate the process running in the buffer
+    (let* ((process (get-buffer-process process-buffer-name)))
+      ;; 2 - close buffer and ignore warnings
+      (ignore-errors (set-process-query-on-exit-flag process nil)
+                     (kill-buffer process-buffer-name))))
+ #+END_SRC
 ** =my/inkscape/latex/prepare=
 #+BEGIN_SRC emacs-lisp
   (defvar my/inkscape/latex/file-name "default-file-name")
@@ -138,8 +157,7 @@ To export an inkscape image for latex interactively, open =.svg= file → save a
     ("k" my/inkscape/latex/kill)
     ("K" my/inkscape/latex/killall :exit t)
     ("q" nil nil))
- #+END_SRC
-#+BEGIN_SRC emacs-lisp
+
   (with-eval-after-load "latex"
     (define-key LaTeX-mode-map (kbd "C-x i") (function hydra-inkscape/body)))
  #+END_SRC

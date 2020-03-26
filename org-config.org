@@ -1,0 +1,279 @@
+#+TITLE: Personal config of orgmode
+#+STARTUP: overview
+#+PROPERTY: header-args :tangle yes
+
+This is just an example config that works well for me. You will need to tune it for yourself to really get the most out of orgmode
+
+|-----------+-----------------------------------------------------+---------------------|
+| =C-c c=   | Entering capture mode where templates are available | [[*Capturing templates =C-c c=][Capturing templates]] |
+| =C-c C-t= | Add a todo to an org-heading                        | [[*Todo lists =C-c C-t=][Todo lists]]          |
+
+
+* General Parameters
+There are my org files - you probably want to comment them out
+#+BEGIN_SRC emacs-lisp
+  (setq org-agenda-files (list "~/creamy_seas/antlers.org"
+                               "~/mydrive/east-data-company.org"
+                               "~/mydrive/people.org"
+                               "~/mydrive/adv18_sa36_automation/adventure_brief.org"
+                               "~/mydrive/adv17_ext_horseBetting/adventure_brief.org"
+                               "~/mydrive/adv16_sa_onFire/adventure_brief.org"))
+ #+END_SRC
+Emacs/orgmode has an intense feature where you can quickly call upon templates to:
+- Generate new files
+- Create new org subheadings
+- In any file you want
+** Capture Templates
+Here is a bloated definition of the available templates.
+
+It usually follows the form
+- keymapping
+- description
+- file/org-id of where to insert the template. If using ids, you must include the file in [[*General Parameters][General Parameters]]
+- template to insert
+
+*Once again, you will probably want to delete these as they are specific to my config files*
+#+BEGIN_SRC emacs-lisp
+  (setq org-capture-templates
+        '(("b"
+           "Bloat"
+           entry (id "antlers-bloat")
+           "** BLOAT %^{stuff-to-be-done}\nSHEDULED: %^T")
+
+          ("c"
+           "Copy Pasta"
+           entry (id "copy-pasta")
+           "** %^{Pasta Title} %t\n%?")
+
+          ("d"
+           "Draft"
+           plain (file "~/Desktop/.temp.org")
+           "%?")
+
+                                          ; this creates a subheirachy
+          ("e"
+           "East-India Data Company")
+
+          ("e2"
+           "2am goals"
+           entry (id "bryan-plan")
+           "** %^{TODO-STATE} %^{stuff-to-be-done}\nDEADLINE: %^T")
+
+          ("et"
+           "Time log"
+           table-line (id "bryan-done")
+           "| %^u | %^{Project}: %^{task-summary} | %^{hours-worked} hours | |"
+           :table-line-pos "@<-1")
+
+          ("l" "Boomer Entry"
+           item (
+                 file+headline "~/creamy_seas/1488.org.gpg" "Becoming a boomer"
+                 ) "%^{What did Luke say} %^G\n%?" (
+                 file "~/creamy_seas/1488.org.gpg")
+           "%?")
+
+          ("p"
+           "PhD Tasks")
+          ("pp"
+           "Photon Counting"
+           entry (id "phd-photon")
+           "*** PHD Photn Counting [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("pt" "Twin Qubit"
+           entry
+           (id "phd-twin")
+           "*** PHD Twin Qubit [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("px"
+           "xMon"
+           entry (id "phd-xmon")
+           "*** PHD xMon [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("pg"
+           "General"
+           entry (id "phd-general")
+           "*** PHD General [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+
+          ("u"
+           "Save URL"
+           entry
+           (file+headline "~/creamy_seas/1488.org.gpg" "URL too good to throw away")
+           "** %^L %? %^G"
+           :kill-buffer t)
+
+          ("s" "Stories"
+           entry
+           (id "stories")
+           "** %^{Title} %t\n%?")))
+          ;; tutoring
+          ;; ("t" "Tutoring lessons")
+          ;; ("tw" "Nikhil Lesson (Winchester)" table-line (id "tutoring-nikhil-invoice")
+          ;;  "| # | %^u | %^{lesson summary} | 120%? | |"
+          ;;  :table-line-pos "III-1")
+          ;; ("tn" "Nathan Lesson" table-line (id "tutoring-nathan-invoice")
+          ;;  "| # | %^u | %^{lesson summary} | 45%? | |"
+          ;;  :table-line-pos "III-1")
+          ;; ("td" "Darrens Programming" table-line (id "tutoring-darren-invoice")
+          ;;  "| # | %^u | %^{lesson summary} | 50%? | |"
+          ;;  :table-line-pos "III-1")
+          ;; ("f" "Future Lesson")
+          ;; ("fw" "Nikhil Lesson (Winchester)" entry (id "tutoring-nikhil-lesson")
+          ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
+          ;; ("fn" "Nathan Lesson" entry (id "tutoring-nathan-lesson")
+          ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
+          ;; ))
+ #+END_SRC
+* Capturing templates   =C-c c=
+Emacs/orgmode has an intense feature where you can quickly call upon templates to insert into your org files.
+
+*The structure of the template is the following*:
+- keymapping
+- description
+- file/org-id of where to insert the template. If using ids, you must include the file in [[*General Parameters][General Parameters]]
+- template to insert
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-capture-templates
+        '(("b"
+           "Bloat"
+           entry (id "antlers-bloat")
+           "** BLOAT %^{stuff-to-be-done}\nSHEDULED: %^T")
+
+          ("c"
+           "Copy Pasta"
+           entry (id "copy-pasta")
+           "** %^{Pasta Title} %t\n%?")
+
+          ("d"
+           "Draft"
+           plain (file "~/Desktop/.temp.org")
+           "%?")
+
+                                          ; this creates a subheirachy
+          ("e"
+           "East-India Data Company")
+
+          ("e2"
+           "2am goals"
+           entry (id "bryan-plan")
+           "** %^{TODO-STATE} %^{stuff-to-be-done}\nDEADLINE: %^T")
+
+          ("et"
+           "Time log"
+           table-line (id "bryan-done")
+           "| %^u | %^{Project}: %^{task-summary} | %^{hours-worked} hours | |"
+           :table-line-pos "@<-1")
+
+          ("l" "Boomer Entry"
+           item (
+                 file+headline "~/creamy_seas/1488.org.gpg" "Becoming a boomer"
+                 ) "%^{What did Luke say} %^G\n%?" (
+                 file "~/creamy_seas/1488.org.gpg")
+           "%?")
+
+          ("p"
+           "PhD Tasks")
+          ("pp"
+           "Photon Counting"
+           entry (id "phd-photon")
+           "*** PHD Photn Counting [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("pt" "Twin Qubit"
+           entry
+           (id "phd-twin")
+           "*** PHD Twin Qubit [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("px"
+           "xMon"
+           entry (id "phd-xmon")
+           "*** PHD xMon [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("pg"
+           "General"
+           entry (id "phd-general")
+           "*** PHD General [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+
+          ("u"
+           "Save URL"
+           entry
+           (file+headline "~/creamy_seas/1488.org.gpg" "URL too good to throw away")
+           "** %^L %? %^G"
+           :kill-buffer t)
+
+          ("s" "Stories"
+           entry
+           (id "stories")
+           "** %^{Title} %t\n%?")))
+          ;; tutoring
+          ;; ("t" "Tutoring lessons")
+          ;; ("tw" "Nikhil Lesson (Winchester)" table-line (id "tutoring-nikhil-invoice")
+          ;;  "| # | %^u | %^{lesson summary} | 120%? | |"
+          ;;  :table-line-pos "III-1")
+          ;; ("tn" "Nathan Lesson" table-line (id "tutoring-nathan-invoice")
+          ;;  "| # | %^u | %^{lesson summary} | 45%? | |"
+          ;;  :table-line-pos "III-1")
+          ;; ("td" "Darrens Programming" table-line (id "tutoring-darren-invoice")
+          ;;  "| # | %^u | %^{lesson summary} | 50%? | |"
+          ;;  :table-line-pos "III-1")
+          ;; ("f" "Future Lesson")
+          ;; ("fw" "Nikhil Lesson (Winchester)" entry (id "tutoring-nikhil-lesson")
+          ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
+          ;; ("fn" "Nathan Lesson" entry (id "tutoring-nathan-lesson")
+          ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
+          ;; ))
+ #+END_SRC
+* Tables
+** =gradeBand=
+Evaluate of grade for Brilliant Club
+#+BEGIN_SRC emacs-lisp
+  (defmath gradeBand(score)
+    (if (< score 1)
+        "DNS"
+      (if (< score 40)
+          "Working"
+        (if (< score 50)
+            "3rd"
+          (if (< score 60)
+              "2:2"
+            (if (< score 70)
+                "2:1"
+              "1st"))))))
+ #+END_SRC
+* Todo lists    =C-c C-t=
+These todo blocks can be put in front of any org heading with =C-c C-t=
+#+BEGIN_SRC emacs-lisp
+  (setq org-todo-keywords '((sequence "TODO(t)"
+                                      "BLOAT(B)"
+                                      "BRYAN(z)"
+                                      "PHD(p)"
+                                      "DREAMS-AI(a)"
+                                      "HORSE(h)"
+                                      "SA36(3)"
+                                      "WORKFORCE(w)"
+                                      "SCHOOLS(b)"
+                                      "TUTORING(l)"
+                                      "CURRENT(c)"
+                                      "SKYPE(s)"
+                                      "SINO"
+                                      "DOWN"
+                                      "|"
+                                      "DOMINATED(d)"
+                                      "PACKAGE"
+                                      "MANUAL-PACKAGE"
+                                      )))
+
+  (setq org-todo-keyword-faces (quote (
+                                       ("STARTED" . "yellow")
+                                       ("CURRENT" . (:foreground "#ffff0a" :background "#754ec1" :weight bold))
+                                       ("DREAMS-AI" . (:foreground "#68c3c1" :background "#fdc989" :weight bold))
+                                       ("SA36" . (:background "#01168a" :foreground "#fdc989" :weight bold))
+                                       ("PACKAGE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
+                                       ("MANUAL-PACKAGE" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
+                                       ("SKYPE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
+                                       ("SINO" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
+                                       ("HORSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
+                                       ("WORKFORCE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
+                                       ("PHD" . (:foreground "yellow" :background "#FF3333"))
+                                       ("DONE" . (:foreground "yellow" :background "#FF3333"))
+                                       ("SCHOOLS" . (:foreground "#090C42" :background "#9DFE9D"))
+                                       ("Dominated" . (:foreground "#9DFE9D" :weight bold))
+                                       ("BLOAT" . (:foreground "#000001" :background "#ffffff"))
+                                       ("TUTORING" . (:foreground "#090C42" :background "#FFD700": weight bold))
+                                       ("BRYAN" . (:foreground "#090C42" :background "#33ccff" :weight bold)))))
+
+  (setq org-agenda-span 10)
+ #+END_SRC

@@ -2,24 +2,22 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-Do not use ipython as it is very buggy
-|-------------------------------+-----------------------------------------------+--------------------|
-| =pylint=                      | used by flycheck                              |                    |
-| =jedi=                        | autocompletion python (suggest names)         |                    |
-| =autopep8=                    | format the code (indent etc). uses =flake8=   |                    |
-| =flake8=                      | format the code (checks typos, syntax errors) | =~/.config/flake8= |
-| =importmagic=                 | automatic imports                             |                    |
-| =python-language-server[all]= |                                               |                    |
-|-------------------------------+-----------------------------------------------+--------------------|
-| =ipython3=                    | kernel                                        |                    |
-| =yapf=                        | code formatiing                               |                    |
-| =rope=                        | 'refactoring' library                         |                    |
-|-------------------------------+-----------------------------------------------+--------------------|
-
-* External setup
+* Dependencies
 :PROPERTIES:
 :VISIBILITY: folded
 :END:
+
+|------------+-----------------------------------------------------------+---------------------|
+| =pylint=   | code checking and suggestion according to [[https://www.python.org/dev/peps/pep-0008/][PEP8]] guidelines |                     |
+| =jedi=     | documentation                                             |                     |
+| =flake8=   | code checking                                             | worse than =pylint= |
+|------------+-----------------------------------------------------------+---------------------|
+| =ipython3= | kernel                                                    | buggy               |
+| =yapf=     | code formatiing                                           | bloat               |
+| =rope=     | refactoring library                                       | bloat               |
+|------------+-----------------------------------------------------------+---------------------|
+
+
 ** =virtualenvwrapper=
 *** os-x
 #+BEGIN_SRC shell :tangle no
@@ -62,15 +60,15 @@ make virtual end with =mkvirtualenv NAME=
     :init (my/add-to-package-list 'elpy)
     :config
     (elpy-enable)
+
     (setq elpy-shell-starting-directory 'project-root)
                                           ; remove a warming about native completion
     (setq python-shell-completion-native-enable nil)
-                                          ; remove flymake checking
-    ;; (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-    )
+                                          ; remove flymake checking -> flycheck is the new best friend
+    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)))
  #+END_SRC
 * PACKAGE Autopep8
-Automatically fix syntax errors upon saving
+Automatically fix syntax errors upon saving. Uses =flake8=
 #+BEGIN_SRC emacs-lisp
   (use-package py-autopep8
     :ensure t

@@ -31,6 +31,7 @@ You cannot compile in Google Drive. Rust throws an error
 |---------------+---------------------------------------------------------------------|
 | [[https://github.com/racer-rust/emacs-racer][racer]]         | code completion (rls uses it as a fallback)                         |
 |---------------+---------------------------------------------------------------------|
+
 ** 1 - Install =cargo, rustc, rustup=
 =curl -f https://sh.rustup.rs > rust.sh=
 For arch also install =base-devel=
@@ -93,8 +94,10 @@ You will need to =export PATH=~/.rustup/toolchains/stable-x86_64-apple-darwin/li
  #+END_SRC
 * PACKAGE Hydra
 #+BEGIN_SRC emacs-lisp
+                                          ; do not compile documentation for external packages
   (setq cargo-process--command-doc-open "doc --no-deps --open")
   (setq cargo-process--command-doc "doc --no-deps")
+
   (defhydra hydra-rust ()
     "
       Cargo                                                              [_q_] quit

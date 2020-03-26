@@ -1,5 +1,6 @@
 baseplatform.org
 orgmode.org
+org-config.org
 post-load.org
 ricing.org
 rustmode.org

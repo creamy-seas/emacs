@@ -17,8 +17,7 @@ To do multiple passthroughs use the | command
     :config
     (customize-set-variable 'tramp-default-method "ssh")
                                           ; specify that when host is arch, we use vagrant
-    (add-to-list 'tramp-default-method-alist '("arch" "" "vagrant"))
-    )
+    (add-to-list 'tramp-default-method-alist '("arch" "" "vagrant")))
 
   ;; Set default user for given method and server
   (add-to-list 'tramp-default-user-alist
@@ -30,11 +29,15 @@ To do multiple passthroughs use the | command
 #+END_SRC
 
 * PACKAGE Vagrant
-Tramp looks for the env =vagrant global-status=
+Tramp looks for the env =vagrant global-status= in order to find vagrant-handled virtual machines
 If not showing up, go to that directory and do
 =vagrant halt=
 =vagrant up=
 
+** Dependency
+#+BEGIN_SRC emacs-lisp
+  (my/add-dependency "vagrant")
+ #+END_SRC
 ** External setup
 To create file =vagrant init archlinux/archlinux=
 - =vagrant up= to run

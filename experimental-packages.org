@@ -3,14 +3,15 @@
 #+PROPERTY: header-args :tangle yes
 
 * Arsist mode
+To dooble in a file
 #+BEGIN_SRC emacs-lisp
   (add-hook 'artist-mode-hook
-	    (lambda ()
-	      (local-set-key (kbd "<f1>") 'org-mode)
-	      (local-set-key (kbd "<f2>") 'artist-select-op-pen-line) ; f2 = pen mode
-	      (local-set-key (kbd "<f3>") 'artist-select-op-line)     ; f3 = line
-	      (local-set-key (kbd "<f4>") 'artist-select-op-square)   ; f4 = rectangle
-	      (local-set-key (kbd "<f5>") 'artist-select-op-ellipse)  ; f5 = ellipse
+            (lambda ()
+              (local-set-key (kbd "<f1>") 'org-mode)
+              (local-set-key (kbd "<f2>") 'artist-select-op-pen-line) ; f2 = pen mode
+              (local-set-key (kbd "<f3>") 'artist-select-op-line)     ; f3 = line
+              (local-set-key (kbd "<f4>") 'artist-select-op-square)   ; f4 = rectangle
+              (local-set-key (kbd "<f5>") 'artist-select-op-ellipse)  ; f5 = ellipse
   ))
  #+END_SRC
 * DOWN Dumb Jump
@@ -47,19 +48,19 @@ Have either a =.git= or =.dumbjump= file in the main project directory
     `(lambda ()
        (interactive)
        (let ((doc (funcall ,doc-fun (funcall ,sym-fun))))
-	 (if (string-empty-p doc)
-	     (message "Unknown symbol, or no documentation available.")
-	   (let ((map (make-sparse-keymap)))
-	     (set-transient-map map
-				(lambda ()
-				  (eq #'mwheel-scroll this-command))
-				(lambda ()
-				  (quick-peek-hide)
-				  (setq this-command #'ignore))))
-	   (let ((pos (save-excursion
-			(beginning-of-line)
-			(point))))
-	     (quick-peek-show doc pos nil (frame-height)))))))
+         (if (string-empty-p doc)
+             (message "Unknown symbol, or no documentation available.")
+           (let ((map (make-sparse-keymap)))
+             (set-transient-map map
+                                (lambda ()
+                                  (eq #'mwheel-scroll this-command))
+                                (lambda ()
+                                  (quick-peek-hide)
+                                  (setq this-command #'ignore))))
+           (let ((pos (save-excursion
+                        (beginning-of-line)
+                        (point))))
+             (quick-peek-show doc pos nil (frame-height)))))))
  #+END_SRC
 
 * DOWN Linum
@@ -73,49 +74,7 @@ Relative line numbering
   ;;   :init (my/add-to-package-list 'linum-relative)
   ;;   (setq linum-relative-backend 'display-line-numbers-mode))
 #+END_SRC
-* PACKAGE LSP
-Language server used in rust
-- https://github.com/emacs-lsp/lsp-mode
-- Turn on user interface (ui) and allow company autocomplete to access the ui
-** Init
-#+BEGIN_SRC emacs-lisp
-  (use-package lsp-mode
-    :ensure t
-    :init
-    (my/add-to-package-list 'lsp-mode)
-    (setq lsp-keymap-prefix "s-l")
-    :commands
-    (lsp lsp-deferred))
-#+END_SRC
-
-** UI
-Higher lever features such as flycheck
-https://github.com/emacs-lsp/lsp-ui
-#+BEGIN_SRC emacs-lisp
-  (use-package lsp-ui
-    :ensure t
-    :commands lsp-ui-mode)
- #+END_SRC
-
-** Company Integration
-Put lsp into the backend of company
-#+BEGIN_SRC emacs-lisp
-  (use-package company-lsp
-    :ensure t
-    :config
-    (push '(company-lsp :with company-yasnippet)
-	  company-backends)
-    :commands company-lsp)
- #+END_SRC
-
-** Ivy Intergration
-To autocomplete in the search buffergpg
-#+BEGIN_SRC emacs-lisp
-  (use-package lsp-ivy
-    :ensure t
-    :init (my/add-to-package-list 'lsp-ivy))
- #+END_SRC
-* DOWN PACKAGE Langtool
+* DOWN Langtool
 Grammar and style checker.
 - Will need to download from https://languagetool.org/
 #+BEGIN_SRC emacs-lisp
@@ -149,7 +108,6 @@ Presentations can be hosted from github - look at video no 50
   ;;   (setq org-reveal-mathjax t))
  #+END_SRC
 * DOWN Pretty-mode
-To activate it do =(add-hook 'my-hook 'turn-on-pretty-mode)=
 #+BEGIN_SRC emacs-lisp
   ;; (use-package pretty-mode
   ;;   :ensure t
@@ -165,60 +123,6 @@ To activate it do =(add-hook 'my-hook 'turn-on-pretty-mode)=
   ;; (use-package smart-tabs-mode
   ;;   :ensure t
   ;;   :init (my/add-to-package-list 'smart-tabs-mode))
- #+END_SRC
-* PACKAGE Smartparens
-Smart way of moving around brackets
-#+BEGIN_SRC emacs-lisp
-  (use-package smartparens
-    :ensure t
-    :init (my/add-to-package-list 'smartparens)
-    :config
-    (require 'smartparens-config)
-    (smartparens-global-mode)
-    (show-smartparens-global-mode))
- #+END_SRC
-** Enforce strict mode in certain modes
-#+BEGIN_SRC emacs-lisp
-  (mapc (lambda (hook)
-	  (add-hook hook #'smartparens-strict-mode))
-	'(markdown-mode-hook
-	  prog-mode-hook))
- #+END_SRC
-** Keybindings
-#+BEGIN_SRC emacs-lisp
-  (define-key smartparens-mode-map (kbd "C-M-f") #'sp-forward-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-b") #'sp-backward-sexp)
-
-  ;; Up/down
-  (define-key smartparens-mode-map (kbd "C-M-d") #'sp-down-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-e") #'sp-up-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-a") #'sp-backward-down-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-q") #'sp-backward-up-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-`") #'beginning-of-defun)
-
-  ;; Transpose
-  (define-key smartparens-mode-map (kbd "C-M-t") 'sp-transpose-sexp)
-
-  ;; Mark/kill/copy
-  (global-set-key [remap mark-sexp] #'sp-mark-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-k") #'sp-kill-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-w") #'sp-copy-sexp)
-
-  ;; Unwrap
-  (define-key smartparens-mode-map (kbd "M-<delete>") #'sp-unwrap-sexp)
-  (define-key smartparens-mode-map (kbd "M-<backspace>") #'sp-backward-unwrap-sexp)
-
-  ;; Slurp/barf
-  (define-key smartparens-mode-map (kbd "C-<right>") #'sp-forward-slurp-sexp)
-  (define-key smartparens-mode-map (kbd "C-<left>") #'sp-forward-barf-sexp)
-  (define-key smartparens-mode-map (kbd "C-S-<left>") #'sp-backward-slurp-sexp)
-  (define-key smartparens-mode-map (kbd "C-S-<right>") #'sp-backward-barf-sexp)
-
-  (define-key smartparens-mode-map (kbd "C-M-<backspace>") #'sp-splice-sexp-killing-backward)
-  (define-key smartparens-mode-map (kbd "C-S-<backspace>") #'sp-splice-sexp-killing-around)
-
-  ;; Indent
-  (define-key smartparens-mode-map (kbd "C-M-<tab>") #'sp-indent-defun)
  #+END_SRC
 * DOWN Highlight multiple
 Highlight matching text

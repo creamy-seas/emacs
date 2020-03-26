@@ -2,17 +2,45 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
+|-----------------+------------------------------------------+----------------------------------|
+| =C-c C-p <kbd>= | Preview directly in the latex buffer     |                                  |
+| TABBING         | -----------------                        | ------------------               |
+| =cdlatex=       | tabbing out common commands              | =cdlatex= help with =C-c ?=      |
+| =yasnippet=     | tabbing out common and personal commands | =yasnippet= =yasnippet-snippets= |
+| CREATE AND FILL | ------------------                       | -------------------              |
+| =C-c C-f=       | change the font                          | =auctex=                         |
+| =C-c C-e=       | create figure environemnt                | =auctex=                         |
+| =C-c C-s=       | create section environment               | =auctex=                         |
+| =`=             | math mode help                           | =LaTeX-math-mode=                |
+| REFFERENCING    | ------------------                       | -------------------              |
+| =C-c (= =C-c )= | create/use refference                    | =reftex=                         |
+| =C-c [=         | refferences a citation                   | =reftex=                         |
+| =C-c ==         | create content list to navigate          | =reftex=                         |
+| AESTHETICS      | ------------                             | --------------                   |
+| =C-c C-o=       | autohide sections                        | =TeX-fold-mode=                  |
+| =C-c C-q C-e=   | indent environment or region             |                                  |
+| COMMENTING      | ------------                             | --------------                   |
+| =C-c '=         | comment paragraph                        |                                  |
+| =C-c ;=         | comment region                           |                                  |
+| COMPILING       | ------------                             | --------------                   |
+| =C-c C-c=       | run next latex generations tep           |                                  |
+| =C-c `=         | look through errors                      |                                  |
+| =C-c C-v=       | Look at pdf                              | See [[*View program =C-c C-v=][View program]]                 |
+|-----------------+------------------------------------------+----------------------------------|
+
 * Dependencies
 #+BEGIN_SRC emacs-lisp
-                                          ; for refferencing
   (my/add-dependency "biber")
-                                          ; for compilation
   (my/add-dependency "latexmk")
-                                          ; for instant preview
   (my/add-dependency "pdf2dsc")
  #+END_SRC
 
-| =kbordermatrix.sty=                                            | https://www.ctan.org/pkg/kbordermatrix |
+| =latexmk=           | perform the compilation                    |
+| =biber=             | referencing                                |
+| =pdf2dsv=           | generation of preview in the .tex document |
+| =kbordermatrix.sty= | https://www.ctan.org/pkg/kbordermatrix     |
+
+** Instuctions for =.sty= files
 1. Copy over the =.sty= files to your latex directory
 For mac
 #+BEGIN_SRC shell :tangle no
@@ -583,36 +611,7 @@ It would be a mumble jumble like with a lot of escapes
         (setq TeX-view-program-selection '((output-pdf "Zathura")))
         (my/add-dependency "zathura"))))
  #+END_SRC
-* Key Bindings
-** Table of useful bindings
-I will most be using CDLaTeX to type in a command and then autocomplete it
-Yasnippet to add stuff once I am there (like and an extra item) and create own tab commands
-|-----------------+------------------------------------------+----------------------------------|
-| =C-c C-p <kbd>= | Preview directly in the latex buffer     |                                  |
-| TABBING         | -----------------                        | ------------------               |
-| =cdlatex=       | tabbing out common commands              | =cdlatex= help with =C-c ?=      |
-| =yasnippet=     | tabbing out common and personal commands | =yasnippet= =yasnippet-snippets= |
-| CREATE AND FILL | ------------------                       | -------------------              |
-| =C-c C-f=       | change the font                          | =auctex=                         |
-| =C-c C-e=       | create figure environemnt                | =auctex=                         |
-| =C-c C-s=       | create section environment               | =auctex=                         |
-| =`=             | math mode help                           | =LaTeX-math-mode=                |
-| REFFERENCING    | ------------------                       | -------------------              |
-| =C-c (= =C-c )= | create/use refference                    | =reftex=                         |
-| =C-c [=         | refferences a citation                   | =reftex=                         |
-| =C-c ==         | create content list to navigate          | =reftex=                         |
-| AESTHETICS      | ------------                             | --------------                   |
-| =C-c C-o=       | autohide sections                        | =TeX-fold-mode=                  |
-| =C-c C-q C-e=   | indent environment or region             |                                  |
-| COMMENTING      | ------------                             | --------------                   |
-| =C-c '=         | comment paragraph                        |                                  |
-| =C-c ;=         | comment region                           |                                  |
-| COMPILING       | ------------                             | --------------                   |
-| =C-c C-c=       | run next latex generations tep           |                                  |
-| =C-c `=         | look through errors                      |                                  |
-| =C-c C-v=       | Look at pdf                              |                                  |
-|-----------------+------------------------------------------+----------------------------------|
-** Custom bindings
+* Keybindings
 #+BEGIN_SRC emacs-lisp
   ;;(ad d-hook 'LaTeX-mode-hook (lambda ()
   ;;                              (local-unset-key (kbd "C-c C-a"))

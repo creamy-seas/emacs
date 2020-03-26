@@ -1,4 +1,4 @@
-#+TITLE: Languages config not large enough for separate org file
+#+TITLE: Languages config not large enough for a separate org file
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 

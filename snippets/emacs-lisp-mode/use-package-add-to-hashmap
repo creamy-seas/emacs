@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: use-package-add-to-hashmap
+# key: upa
+# --
+(use-package ${1:pakage-name}
+  :ensure t
+  :init (my/add-to-package-list '$1)$0)

@@ -3,9 +3,15 @@
 #+PROPERTY: header-args :tangle yes
 
 To ignore file chmod changes
-=git config core.fileMode false=
+#+BEGIN_SRC shell :tangle no
+  git config core.fileMode false
+ #+END_SRC
 
-* PACKAGE Magit
+* Dependencies
+#+BEGIN_SRC emacs-lisp
+  (my/add-dependency "git")
+ #+END_SRC
+* PACKAGE Magit =C-x g=
 #+BEGIN_SRC emacs-lisp
   (use-package magit
     :ensure t
@@ -13,7 +19,7 @@ To ignore file chmod changes
 
   (global-set-key (kbd "C-x g") (function magit))
  #+END_SRC
-* PACKAGE Git Gutter
+* PACKAGE Git Gutter    =M-g M-g=
 This allows to preview changes in files, see difference and restore hunks
 #+BEGIN_SRC emacs-lisp
   (use-package git-gutter

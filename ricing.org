@@ -2,12 +2,11 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-To get symbols run
-=(all-the-icons-insert)=
+To get a list of pretty symbols run =(all-the-icons-insert)=
 
 * Application window
 #+BEGIN_SRC emacs-lisp
-  (setq frame-title-format "nsdap")
+  (setq frame-title-format "🦅")
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
@@ -90,15 +89,15 @@ For some reason this is not the default way of killing buffers
   (global-set-key (kbd "s-.") 'my/unpop-to-mark-command)
  #+END_SRC
 * Buffer suggestion
-buffer suggestion is given as a list in the terminal command (after C-x b)
-*** enable ido mode
+Buffer suggestion is given as a list in the terminal command (after C-x b)
+** enable ido mode
  #+BEGIN_SRC emacs-lisp
    (setq ido-enable-flex-matching nil)
    (setq ido-create-new-bffer 'always)
    (setq ido-everywhere t)
    (ido-mode 1)
  #+END_SRC
-*** enable vertical mode for buffer suggestion
+** enable vertical mode for buffer suggestion
  #+BEGIN_SRC emacs-lisp
    (use-package ido-vertical-mode
      :ensure t
@@ -108,7 +107,7 @@ buffer suggestion is given as a list in the terminal command (after C-x b)
      (ido-vertical-mode 1))
 
  #+END_SRC
-*** remap "C-x C-b" buffer switching to ido-switch-buffer
+** remap "C-x C-b" buffer switching to ido-switch-buffer
  #+BEGIN_SRC emacs-lisp
    (global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
  #+END_SRC
@@ -126,19 +125,6 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
   (set-default 'cursor-type 'hollow)
   (set-cursor-color "#ffd700")
  #+END_SRC
--> ricing.org
-   post-load.org
-   adventure_brief.org|adv19_sinobestech
-   server.rs
-   resolver.rs
-   state_machine.rs
-   cerials.rs
-   *ag search text:api_endpoint dir:/Users/CCCP/Desktop/automation-vm-api/*
-   ping.rs
-   *ag search text:display dir:/Users/CCCP/Desktop/automation-vm-api/*
-   east-data-company.org
-   *Org Agenda*
-   ...
 * PACKAGE Dashboard
 #+BEGIN_SRC emacs-lisp
   (use-package dashboard
@@ -241,13 +227,17 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
 
   (define-key my/keymap (kbd "g") (function my/generate-template))
  #+END_SRC
-** DOWN latex
+* PACKAGE Golden Ratio
 #+BEGIN_SRC emacs-lisp
-  ;; (defun ilya-generate-texfile ()
-  ;;   "Generates a latex files, placing it in texfiles folder of the current project"
-  ;;   (interactive)
-  ;;   (setq temp-file-name-for-snippet (my/file-name-from-line "texfiles/" ".tex"))
-  ;;   (delete-region (line-beginning-position) (line-end-position)))
+  (use-package golden-ratio
+    :ensure t
+    :init (my/add-to-package-list 'golden-ratio)
+    (golden-ratio-mode 1))
+
+  (add-to-list 'golden-ratio-exclude-modes 'treemacs-mode)
+  (add-to-list 'golden-ratio-exclude-buffer-names "Treemacs")
+  (add-to-list 'golden-ratio-exclude-buffer-regexp "Treemacs")
+
  #+END_SRC
 * GPG prompt
 Make emacs prompt for password in the minibuffer
@@ -268,7 +258,7 @@ Make emacs prompt for password in the minibuffer
  #+END_SRC
 
 * PACKAGE iBuffer
-New buffer is opened in the window that the command was called from
+Buffer that groups other buffers
 ** Init
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-x b") 'ibuffer)
@@ -307,7 +297,7 @@ New buffer is opened in the window that the command was called from
                  (" eLisp" (name . "\\.el"))
                  (" Shell" (name . "\\.sh"))
                  (" PDF" (name . "\\.pdf"))
-                 ("卍 Config" (name . "^\\..*$"))
+                 ("⚙ Config" (name . "^\\..*$"))
                  (" Elfeed" (or
                               (name . "\\*elfeed.*\\*")
                               (name . "^ef.*$")))))))
@@ -450,7 +440,7 @@ New buffer is opened in the window that the command was called from
   (setq prettify-symbols-unprettify-at-point t)
 #+END_SRC
 * Menus, Popups
-** About Emacs
+** About Emacs  =C-h C-a=
 #+BEGIN_SRC emacs-lisp
   (defhydra hydra-about-emacs ()
     "
@@ -510,7 +500,6 @@ New buffer is opened in the window that the command was called from
   (global-set-key (kbd "C-h C-s") #'hydra-system-info/body)
  #+END_SRC
 * PACKAGE Modeline
-run (all-the-icons-install-fonts) to install the fonts for the modeline
 ** Doom modeline
 #+BEGIN_SRC emacs-lisp
   (use-package doom-modeline
@@ -778,7 +767,7 @@ Colourize codes such as #AF3313
 
 (define-key my/keymap (kbd "S") (function my/scratch))
  #+END_SRC
-** PACKAGE Save content
+** PACKAGE Save scratch when emacs closes
 #+BEGIN_SRC emacs-lisp
   (use-package persistent-scratch
     :ensure t
@@ -886,16 +875,6 @@ Colourize codes such as #AF3313
   (define-key my/keymap "t" #'hydra-toggle/body)
  #+END_SRC
 * PACKAGE Windows
-** PACKAGE Golden Ratio
-#+BEGIN_SRC emacs-lisp
-  (use-package golden-ratio
-    :ensure t
-    :init (my/add-to-package-list 'golden-ratio)
-    (golden-ratio-mode 1))
-
-  (add-to-list 'golden-ratio-exclude-modes 'treemacs-mode)
-  (add-to-list 'golden-ratio-exclude-buffer-names "Treemacs")
- #+END_SRC
 ** PACKAGE Switch Window
 When the there are more than two windows =C-x o= will give each window a letter that can be jumped to
 #+BEGIN_SRC emacs-lisp
@@ -950,11 +929,11 @@ When the there are more than two windows =C-x o= will give each window a letter 
   (global-set-key (kbd "C-M-p") #'scroll-other-window-down)
   (global-set-key (kbd "C-M-n") #'scroll-other-window)
  #+END_SRC
-* DOMINATED Wrapping lines
+* Wrapping lines
 #+BEGIN_SRC emacs-lisp
   (global-visual-line-mode t)
  #+END_SRC
-* DOMINATED Yes-No Alias
+* Yes-No Alias
 #+BEGIN_SRC emacs-lisp
   (defalias 'yes-or-no-p 'y-or-n-p)
  #+END_SRC

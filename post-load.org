@@ -3,6 +3,25 @@
 #+PROPERTY: header-args :tangle yes
 
 * Keeping system up to date
+** =my/package-upgrade=
+#+BEGIN_SRC emacs-lisp
+  (defun my/package-upgrade ()
+    "Refresh, upgrade and delete obsolete packages synchronously."
+    (interactive)
+    (save-window-excursion
+      (let (package-menu-async)
+        (package-list-packages)))
+    (with-current-buffer "*Packages*"
+      (package-menu-mark-upgrades)
+      (package-menu-mark-obsolete-for-deletion)
+      (condition-case err
+          (package-menu-execute t)
+        ;; Don't barf if there is nothing to do
+        (user-error (message "Nothing to do"))
+        ;; But allow other errors through
+        (error (signal (car err) (cdr err))))))
+ #+END_SRC
+** =my/stay-up-to-date=
 #+BEGIN_SRC emacs-lisp
   (defun my/stay-up-to-date ()
     "Ensure that OS and Emacs pacakges are up to date.

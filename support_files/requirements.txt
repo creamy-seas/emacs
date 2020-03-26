@@ -1,9 +1,14 @@
 ag
 biber
 cargo
+fswatch
+git
+inkscape
+ispell
 latexmk
 pdf2dsc
 rls
 rustc
 rustup
+vagrant
 zathura

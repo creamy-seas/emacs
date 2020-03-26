@@ -2,9 +2,11 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-[[https://stackoverflow.com/questions/134887/when-to-use-or-quote-in-lisp][A must read post about quoting]]
-='= are used to not evalute the symbols. whatever you typed in is what you will see
-=`= are use before a bracketed region () - anything escaped with a comma =,= will be evaluated.
+*[[https://stackoverflow.com/questions/134887/when-to-use-or-quote-in-lisp][A must read post about quoting]]*
+|-----+---------------------------------------------------------------------------------------------|
+| ='= | are used to not evalute the symbols (pass them as literals)                                 |
+| =`= | are use before a bracketed region () - anything escaped with a comma =,= will be evaluated. |
+|-----+---------------------------------------------------------------------------------------------|
 
 
 * 1 - Keyboard
@@ -12,11 +14,9 @@
 *** Unbind <C-i> from the TAB key
 #+BEGIN_SRC emacs-lisp
   (if (window-system)
-                                          ; IF we are not in a TTY, unbind C-i from TAB
-                                          ; Set if to the keymap
+                                          ; if we are not in a TTY, unbind C-i from TAB
       (progn
-        (define-key input-decode-map [?\C-i] [C-i])
-        (message "test"))
+        (define-key input-decode-map [?\C-i] [C-i]))
 
     ;; Since TAB and <C-i> cannot be differentiated in TTY emacs,
     ;; the workaround is to conditionally bind TAB to indent-region
@@ -38,7 +38,8 @@
  #+END_SRC
 ** Symbols mapping
 #+BEGIN_SRC emacs-lisp
-  (define-key key-translation-map (kbd "C-x 8 h") (kbd "卍"))
+  (define-key key-translation-map (kbd "C-x 8 h") (kbd "卍")) ; naughty
+  (define-key key-translation-map (kbd "C-x 8 C") (kbd "☭")) ; erm, kinda naughty
   (define-key key-translation-map (kbd "C-x 8 w") (kbd "🐳"))
   (define-key key-translation-map (kbd "C-x 8 W") (kbd "🐋"))
   (define-key key-translation-map (kbd "C-x 8 O") (kbd "Ω"))
@@ -66,107 +67,35 @@
   (global-set-key (kbd "C-в") (function sp-delete-char))
 
  #+END_SRC
-* 2 - Functions of top priority
-** =my/write-list-into-current-buffer=
-#+BEGIN_SRC emacs-lisp
-  (defun my/write-list-into-current-buffer (list-to-write)
-    "Inserts elements of a simple list 1-by-1 into the current file"
-    (while list-to-write
-      (insert (format "%s\n" (car list-to-write)))
-      (setq list-to-write (cdr list-to-write))))
- #+END_SRC
-** =my/drop-duplicates-in-list=
-#+BEGIN_SRC emacs-lisp
-  (defun my/drop-duplicates-in-list (list)
-    (let ((new-list nil))
-      (while list
-        (when (and (car list) (not (member (car list) new-list)))
-          (setq new-list (cons (car list) new-list)))
-        (setq list (cdr list)))
-      (nreverse new-list)))
- #+END_SRC
+* 2 - Minor Functions
 ** =my/add-dependency=
 #+BEGIN_SRC emacs-lisp
-  (defun my/add-dependency (new-dependency)
-    "Add the chosen package as a dependency. It will be checked by the makefile"
-    (interactive)
-    (let* ((requirement-file (concat my/config-folder-location "support_files/requirements.txt"))
-           (updated-depencies
-            (with-temp-buffer
-                                          ; 1 - add the new dependency to the buffer
-              (insert (concat new-dependency "\n"))
-                                          ; 2 - add the previous dependecies
-              (insert-file-contents requirement-file)
-              (sort
-               (split-string
-                                          ; 2 - select the whole buffer and read into list
-                (buffer-substring-no-properties
-                 (point-min)
-                 (point-max))
-                "\n" t)
-               'string<))))
-                                          ; 3 - drop dupliactes IMPORTANT
-      (setq updated-depencies (my/drop-duplicates-in-list updated-depencies))
-                                          ; 4 - open file and write the new list
-      (with-temp-file requirement-file
-        (my/write-list-into-current-buffer updated-depencies))
+    (defun my/add-dependency (new-dependency)
+      "Add the new-dependency to the requirements file.
+  It will be checked by the Makefile to ensure all is installed for this config to run smoothly"
+      (interactive)
+      (let* ((requirement-file (concat my/config-folder-location "support_files/requirements.txt"))
+             (updated-depencies
+              (with-temp-buffer
+                                            ; 1 - add the new dependency to the buffer
+                (insert (concat new-dependency "\n"))
+                                            ; 2 - add the previous dependecies
+                (insert-file-contents requirement-file)
+                (sort
+                 (split-string
+                                            ; 2 - select the whole buffer and read into list
+                  (buffer-substring-no-properties
+                   (point-min)
+                   (point-max))
+                  "\n" t)
+                 'string<))))
+                                            ; 3 - drop dupliactes IMPORTANT
+        (setq updated-depencies (my/drop-duplicates-in-list updated-depencies))
+                                            ; 4 - open file and write the new list
+        (with-temp-file requirement-file
+          (my/write-list-into-current-buffer updated-depencies))
 
-      (message (format " Dependecy list: %s" updated-depencies))))
- #+END_SRC
-** =my/fetch-config-files=
-#+BEGIN_SRC emacs-lisp
-  (defun my/fetch-config-files ()
-  (with-temp-buffer
-      (insert-file-contents (concat my/config-folder-location "support_files/my_org_files.txt"))
-      (sort
-       (split-string
-                                          ; select the whole buffer
-        (buffer-substring-no-properties
-         (point-min)
-         (point-max))
-        "\n" t)
-       'string<)))
- #+END_SRC
-* 3 - Lesser functions
-** =my/kill-buffer-process=
-#+BEGIN_SRC emacs-lisp
-  (defun my/kill-buffer-process (process-buffer-name)
-    "Kills the process running in the current 'buffer-name'"
-
-    ;; 1 - evaluate the process running in the buffer
-    (let* ((process (get-buffer-process process-buffer-name)))
-      ;; 2 - close buffer and ignore warnings
-      (ignore-errors (set-process-query-on-exit-flag process nil)
-                     (kill-buffer process-buffer-name))))
- #+END_SRC
-** =my/package-upgrade=
-#+BEGIN_SRC emacs-lisp
-  (defun my/package-upgrade ()
-    "Refresh, upgrade and delete obsolete packages synchronously."
-    (interactive)
-    (save-window-excursion
-      (let (package-menu-async)
-        (package-list-packages)))
-    (with-current-buffer "*Packages*"
-      (package-menu-mark-upgrades)
-      (package-menu-mark-obsolete-for-deletion)
-      (condition-case err
-          (package-menu-execute t)
-        ;; Don't barf if there is nothing to do
-        (user-error (message "Nothing to do"))
-        ;; But allow other errors through
-        (error (signal (car err) (cdr err))))))
- #+END_SRC
-** =my/config-file-open=
-#+BEGIN_SRC emacs-lisp
-  (defun my/config-file-open ()
-    "Prints out the config files and opens the selected one for editing"
-    (interactive)
-    (let ((chosen-file (ido-completing-read "Config file to open:"
-                                            (my/fetch-config-files))))
-      (find-file (my/config-file-path-evaluate chosen-file))))
-
-    (global-set-key (kbd "C-c e") (function my/config-file-open))
+        (message (format " Dependecy list: %s" updated-depencies))))
  #+END_SRC
 ** =my/config-file-path-evaluate=
 #+BEGIN_SRC emacs-lisp
@@ -193,7 +122,16 @@
         (point-at-eol)))))
   (global-set-key (kbd "C-c w l") (function my/copy-line-save-position))
 #+END_SRC
-
+** =my/drop-duplicates-in-list=
+#+BEGIN_SRC emacs-lisp
+  (defun my/drop-duplicates-in-list (list)
+    (let ((new-list nil))
+      (while list
+        (when (and (car list) (not (member (car list) new-list)))
+          (setq new-list (cons (car list) new-list)))
+        (setq list (cdr list)))
+      (nreverse new-list)))
+ #+END_SRC
 ** =my/extract-string=
 #+BEGIN_SRC emacs-lisp
   (defun my/extract-string (regexp index string)
@@ -205,6 +143,21 @@
     "
     (string-match regexp string)
     (match-string index string))
+ #+END_SRC
+** =my/fetch-config-files=
+#+BEGIN_SRC emacs-lisp
+  (defun my/fetch-config-files ()
+    "I store all of the .org files in my_org_files.txt. This method simply fetches them into a list"
+    (with-temp-buffer
+      (insert-file-contents (concat my/config-folder-location "support_files/my_org_files.txt"))
+      (sort
+       (split-string
+                                          ; select the whole buffer
+        (buffer-substring-no-properties
+         (point-min)
+         (point-max))
+        "\n" t)
+       'string<)))
  #+END_SRC
 ** =my/figlet=
 #+BEGIN_SRC emacs-lisp
@@ -234,15 +187,14 @@
            (file-name (concat prefix file-name suffix)))
       (message file-name)))
  #+END_SRC
-** =my/describe-packages=
+** =my/generate-filename-from-line=
 #+BEGIN_SRC emacs-lisp
-  (defun my/describe-packages ()
-    "Gets the info for an isntalled package"
-    (interactive)
-    (let ((chosen-package (ido-completing-read " Package to describe: " (sort
-                                                                          (hash-table-keys my/package-list)
-                                                                          'string<))))
-      (describe-package (gethash chosen-package my/package-list))))
+  (defun my/generate-filename-from-line ()
+    "Reads in the current line and generates a valid filename with an underscore"
+    (let* (;reads in current line
+           (file-name (my/copy-line)))
+      ;; Trim leading whitespaces -> downcase -> replace spaces with underscore
+      (replace-regexp-in-string " " "_" (downcase (replace-regexp-in-string "^\s*" "" file-name)))))
  #+END_SRC
 ** =my/rename-file-and-buffer=
 #+BEGIN_SRC emacs-lisp
@@ -259,33 +211,26 @@
             (rename-file filename new-name t)
             (set-visited-file-name new-name t t)))))))
  #+END_SRC
-** =my/tangle-init=
-If the current buffer is one of the config files, the code-blocks are tangled, and the tangled file is compiled.
+** =my/write-list-into-current-buffer=
 #+BEGIN_SRC emacs-lisp
-  (defun my/config-file-tangle ()
-    "Should be run after saving every file - check if the name is in the config files and
-      tangle if yes"
-    (let ((current-org-file (file-name-nondirectory (buffer-file-name))))
-      (when (member current-org-file (my/fetch-config-files))
-                                          ; Avoid running hooks when tangling.
-        (let ((prog-mode-hook nil)
-              (el-file (concat
-                        user-emacs-directory
-                        (replace-regexp-in-string "\.org" "\.el" current-org-file))))
-                                          ; Tangle the file -> get name of file -> rename
-          (rename-file
-           (car (org-babel-tangle-file current-org-file))
-           el-file t)
-                                          ; Bytecompile
-          (byte-compile-file el-file t)
-                                          ; Reload config
-          ;; (load-file (concat user-emacs-directory el-emacs-file "c"))
-          (message (concat " Compiled and loaded " el-file))))))
-
-  (add-hook 'after-save-hook 'my/config-file-tangle)
+  (defun my/write-list-into-current-buffer (list-to-write)
+    "Inserts elements of a simple list 1-by-1 into the current file"
+    (while list-to-write
+      (insert (format "%s\n" (car list-to-write)))
+      (setq list-to-write (cdr list-to-write))))
  #+END_SRC
-** =my/narrow-or-widen-dwim=
-Smarter widen and narrow
+
+* Major Function: Describe the installed packages
+#+BEGIN_SRC emacs-lisp
+  (defun my/describe-packages ()
+    "Gets the info for an isntalled package"
+    (interactive)
+    (let ((chosen-package (ido-completing-read " Package to describe: " (sort
+                                                                          (hash-table-keys my/package-hashmap)
+                                                                          'string<))))
+      (describe-package (gethash chosen-package my/package-hashmap))))
+ #+END_SRC
+* Major Function: Narrow and widen region smartly =C-x n=
 #+BEGIN_SRC emacs-lisp
   (defun my/narrow-or-widen-dwim (p)
     "If the buffer is narrowed, it widens. Otherwise, it narrows intelligently.
@@ -312,22 +257,54 @@ Smarter widen and narrow
 
   (global-set-key (kbd "C-x n") (function my/narrow-or-widen-dwim))
  #+END_SRC
-** =my/generate-filename-from-line=
+* Major Function: Open config file =C-c e=
 #+BEGIN_SRC emacs-lisp
-  (defun my/generate-filename-from-line ()
-    "Reads in the current line and generates a valid filename with an underscore"
-    (let* (;reads in current line
-           (file-name (my/copy-line)))
-      ;; Trim leading whitespaces -> downcase -> replace spaces with underscore
-      (replace-regexp-in-string " " "_" (downcase (replace-regexp-in-string "^\s*" "" file-name)))))
+  (defun my/config-file-open ()
+    "Prints out the config files and opens the selected one for editing"
+    (interactive)
+    (let ((chosen-file (ido-completing-read "Config file to open:"
+                                            (my/fetch-config-files))))
+      (find-file (my/config-file-path-evaluate chosen-file))))
+
+    (global-set-key (kbd "C-c e") (function my/config-file-open))
+ #+END_SRC
+* Major Function: Tangle config files automatically
+Whenever a config file is saved:
+- tangle it (extract out all of the emacs-lisp code blocks)
+- compile it (=.el= -> =.elc=)
+- load it up
+
+This way you can quickly edit the configuration (using [[*Open config file =C-c e=][Open config file]]), save it and immediately apply the changes
+#+BEGIN_SRC emacs-lisp
+  (defun my/config-file-tangle ()
+    "Should be run after saving every file - check if the name is in the config files and
+      tangle if yes"
+    (let ((current-org-file (file-name-nondirectory (buffer-file-name))))
+      (when (member current-org-file (my/fetch-config-files))
+                                          ; Avoid running hooks when tangling.
+        (let ((prog-mode-hook nil)
+              (el-file (concat
+                        user-emacs-directory
+                        (replace-regexp-in-string "\.org" "\.el" current-org-file))))
+                                          ; Tangle the file -> get name of file -> rename
+          (rename-file
+           (car (org-babel-tangle-file current-org-file))
+           el-file t)
+                                          ; Bytecompile
+          (byte-compile-file el-file t)
+                                          ; Reload config
+          ;; (load-file (concat user-emacs-directory el-emacs-file "c"))
+          (message (concat " Compiled and loaded " el-file))))))
+
+  (add-hook 'after-save-hook 'my/config-file-tangle)
  #+END_SRC
 * Bookmarks
 ** Config
 #+BEGIN_SRC emacs-lisp
-  ;; save bookmars to file
+                                          ; save bookmars to file
   (setq bookmark-save-flag t)
 
-  ;; load boomarks from "~/.emacs.d/bookmarks"
+                                          ; load boomarks from "~/.emacs.d/bookmarks"
   (when (file-exists-p (concat user-emacs-directory "bookmarks"))
     (bookmark-load bookmark-default-file t))
   (setq bookmark-default-file (concat user-emacs-directory "bookmarks"))
@@ -338,7 +315,7 @@ Smarter widen and narrow
   (global-set-key (kbd "<f7>") 'bookmark-jump)
   (global-set-key (kbd "<f8>") 'bookmark-bmenu-list)
  #+END_SRC
-* Comment line
+* Comment line  =C-c C-;=
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-c C-;") (function comment-line))
  #+END_SRC
@@ -369,7 +346,7 @@ To keep code aliged
     (aggressive-indent-global-mode 1)
     (my/add-to-package-list 'aggressive-indent))
  #+END_SRC
-*** Disable it in certain modes
+** Disable it in certain modes
 #+BEGIN_SRC emacs-lisp
   (dolist (mode '(cider-repl-mode
                   comint-mode
@@ -378,7 +355,7 @@ To keep code aliged
                   term-mode))
     (add-to-list 'aggressive-indent-excluded-modes mode))
  #+END_SRC
-* PACKAGE Avy
+* PACKAGE Avy   =M-s=
 The superior search method with highlighting of the leading characters
 #+BEGIN_SRC emacs-lisp
   (use-package avy
@@ -389,7 +366,7 @@ The superior search method with highlighting of the leading characters
     (my/add-to-package-list 'avy))
 #+END_SRC
 * PACKAGE Company
-Completion. With a dropdown box.
+Completion. With a dropdown box. Metal.
 ** Init
 #+BEGIN_SRC emacs-lisp
   (use-package company
@@ -444,19 +421,20 @@ Completion. With a dropdown box.
  #+END_SRC
 * MANUAL-PACKAGE Dired
 Beautiful file browsing. Dired+ is downloaded manually
-| a       | go to file or directory and close dired bufffer |
-| v       | preview                                         |
-| o       | open in new window                              |
-| m/u     | mark/unmark                                     |
-| +       | add directory                                   |
-| r       | rename                                          |
-| R       | move mass                                       |
-| *       | regexp                                          |
-| C-c C-q | rename then =C-c C-c=                           |
-
+| =a=       | go to file or directory and close dired bufffer |
+| =v=       | preview                                         |
+| =o=       | open in new window                              |
+| =m/u=     | mark/unmark                                     |
+| =+=       | add directory                                   |
+| =r=       | rename                                          |
+| =R=       | move mass                                       |
+| =*=       | regexp                                          |
+| =C-c C-q= | rename then =C-c C-c=                           |
+** Init
 #+BEGIN_SRC emacs-lisp
   (require 'dired+)
   (my/add-to-package-list 'diminish)
+  ; hook that does not show boring files
   ;; (add-hook 'dired-mode-hook (function dired-omit-mode))
  #+END_SRC
 
@@ -476,7 +454,7 @@ Set =:diminish t= when using use-package
     :init (my/add-to-package-list 'diminish))
  #+END_SRC
 
-* PACKAGE Expand region
+* PACKAGE Expand region         =C-q=
 Allos to expand to word, bracket, sentence, paragraph
 #+BEGIN_SRC emacs-lisp
   (use-package expand-region
@@ -485,7 +463,6 @@ Allos to expand to word, bracket, sentence, paragraph
     :bind ("C-q" . er/expand-region))
 #+END_SRC
 * PACKAGE Fic
-Due to errors with fic-mode, we need to do a preloading of the file
 Highlighting of TODOs
 #+BEGIN_SRC emacs-lisp
   (load-file (my/config-file-path-evaluate "manual_el/fic-mode.el"))
@@ -496,20 +473,21 @@ Highlighting of TODOs
     (add-hook 'prog-mode-hook 'turn-on-fic-mode))
  #+END_SRC
 * PACKAGE Flycheck
-Syntax checking
-- *Need to install aspell*
-- To get information on flycheck for the current mode run =flycheck-verify-setup=
+
 - Better than the default spellchecker called =flyspell=
+- To get information on flycheck for the current mode run =flycheck-verify-setup=
 - =M-$= to check word
 
-** Basic
+** Dependencies
+#+BEGIN_SRC emacs-lisp
+  (my/add-dependency "ispell")
+ #+END_SRC
+
+** Init
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
     :ensure t
     :diminish t
-    ;; :hook
-    ;; (prog-mode . flycheck-mode)
-    ;; (text-mode . flycheck-mode)
     :init (my/add-to-package-list 'flycheck)
     (global-flycheck-mode))
  #+END_SRC
@@ -521,16 +499,15 @@ Syntax checking
   (setq ispell-silently-savep t)
   (setq ispell-personal-dictionary (my/config-file-path-evaluate "dictionaries/aspell.en.pws"))
  #+END_SRC
-** Colouring of errors
+** DOWN Colouring of errors
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'flycheck-error nil
-                      ;; :family "Font Fira"
-                      :background "#bf0004"
-                      :foreground "gold2"
-                      :underline nil
-                      :box '(:color "gold2" :line-width 1))
-  (set-face-attribute 'flycheck-warning nil
-                      :underline "DarkOrange")
+  ;; (set-face-attribute 'flycheck-error nil
+  ;;                       :background "#bf0004"
+  ;;                       :foreground "gold2"
+  ;;                       :underline nil
+  ;;                       :box '(:color "gold2" :line-width 1))
+  ;;   (set-face-attribute 'flycheck-warning nil
+  ;;                       :underline "DarkOrange")
  #+END_SRC
 ** Turn off documentation warnings for emacs-lisp
 #+BEGIN_SRC emacs-lisp
@@ -558,7 +535,7 @@ Used for defining custom menus
     :ensure t
     :init (my/add-to-package-list 'hydra))
  #+END_SRC
-* PACKAGE iedit
+* PACKAGE iedit =C-:=
 Mark and edit all copies of the marked region simultaniously.
 #+BEGIN_SRC emacs-lisp
   (use-package iedit
@@ -616,6 +593,49 @@ Popup menu when pasting of the past history
     :bind ("M-y" . popup-kill-ring)
     :init (my/add-to-package-list 'popup-kill-ring))
 #+END_SRC
+* PACKAGE LSP
+Language server used in rust
+- https://github.com/emacs-lsp/lsp-mode
+- Turn on user interface (ui) and allow company autocomplete to access the ui
+
+** Init
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode
+    :ensure t
+    :init
+    (my/add-to-package-list 'lsp-mode)
+    (setq lsp-keymap-prefix "s-l")
+    :commands
+    (lsp lsp-deferred))
+#+END_SRC
+
+** UI
+Higher lever features such as flycheck
+https://github.com/emacs-lsp/lsp-ui
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-ui
+    :ensure t
+    :commands lsp-ui-mode)
+ #+END_SRC
+
+** Company Integration
+Put lsp into the backend of company
+#+BEGIN_SRC emacs-lisp
+  (use-package company-lsp
+    :ensure t
+    :config
+    (push '(company-lsp :with company-yasnippet)
+          company-backends)
+    :commands company-lsp)
+ #+END_SRC
+
+** Ivy Intergration
+To autocomplete in the search buffergpg
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-ivy
+    :ensure t
+    :init (my/add-to-package-list 'lsp-ivy))
+ #+END_SRC
 * PACKAGE Popwin
 *Help* *Completions* and other buffers are spawned as popups
 #+BEGIN_SRC emacs-lisp
@@ -624,14 +644,20 @@ Popup menu when pasting of the past history
     :init (my/add-to-package-list 'popwin)
     (popwin-mode t))
  #+END_SRC
-* PACKAGE Projectile
+* PACKAGE Projectile    =S-p=
 Navigation around a set of project files. There's tons of shortcuts to explore
 https://projectile.readthedocs.io/en/latest/projects/
 
 - Use [[counsel-projectile][Counsel-projectile]] =s-M-p= to explore functions
 - The ones that are useful should be added to the Hydra [[counsel-hydra][Hydra]]
+** Dependencies
+#+BEGIN_SRC emacs-lisp
+  (my/add-dependency "ag")
+ #+END_SRC
 
-** Base
+| =ag= aka =the_silver_searcher= | used by projectile to search cross project |
+
+** Init
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
     :ensure t
@@ -639,9 +665,7 @@ https://projectile.readthedocs.io/en/latest/projects/
     :config
     (projectile-mode))
 
-  (if (string-equal system-type "darwin")
-      (define-key projectile-mode-map (kbd "M-s-π") 'projectile-command-map)
-    (define-key projectile-mode-map (kbd "M-s-p") 'projectile-command-map))
+(define-key projectile-mode-map (kbd "M-s-p") 'projectile-command-map)
  #+END_SRC
 ** Counsel-projectile <<counsel-projectile>>
 For better autocompletion
@@ -714,7 +738,62 @@ For better autocompletion
     :ensure t
     :init (my/add-to-package-list 'restart-emacs))
  #+END_SRC
-* PACKAGE Undo Tree
+* PACKAGE Smartparens
+Smart way of moving around brackets. Still lreadning the bindings
+#+BEGIN_SRC emacs-lisp
+  (use-package smartparens
+    :ensure t
+    :init (my/add-to-package-list 'smartparens)
+    :config
+    (require 'smartparens-config)
+    (smartparens-global-mode)
+    (show-smartparens-global-mode))
+ #+END_SRC
+** Enforce strict mode in certain modes
+You may want to turn this off if it triggers your workflow
+#+BEGIN_SRC emacs-lisp
+  (mapc (lambda (hook)
+          (add-hook hook #'smartparens-strict-mode))
+        '(markdown-mode-hook
+          prog-mode-hook))
+ #+END_SRC
+** Keybindings
+#+BEGIN_SRC emacs-lisp
+  (define-key smartparens-mode-map (kbd "C-M-f") #'sp-forward-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-b") #'sp-backward-sexp)
+
+  ;; Up/down
+  (define-key smartparens-mode-map (kbd "C-M-d") #'sp-down-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-e") #'sp-up-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-a") #'sp-backward-down-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-q") #'sp-backward-up-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-`") #'beginning-of-defun)
+
+  ;; Transpose
+  (define-key smartparens-mode-map (kbd "C-M-t") 'sp-transpose-sexp)
+
+  ;; Mark/kill/copy
+  (global-set-key [remap mark-sexp] #'sp-mark-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-k") #'sp-kill-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-w") #'sp-copy-sexp)
+
+  ;; Unwrap
+  (define-key smartparens-mode-map (kbd "M-<delete>") #'sp-unwrap-sexp)
+  (define-key smartparens-mode-map (kbd "M-<backspace>") #'sp-backward-unwrap-sexp)
+
+  ;; Slurp/barf
+  (define-key smartparens-mode-map (kbd "C-<right>") #'sp-forward-slurp-sexp)
+  (define-key smartparens-mode-map (kbd "C-<left>") #'sp-forward-barf-sexp)
+  (define-key smartparens-mode-map (kbd "C-S-<left>") #'sp-backward-slurp-sexp)
+  (define-key smartparens-mode-map (kbd "C-S-<right>") #'sp-backward-barf-sexp)
+
+  (define-key smartparens-mode-map (kbd "C-M-<backspace>") #'sp-splice-sexp-killing-backward)
+  (define-key smartparens-mode-map (kbd "C-S-<backspace>") #'sp-splice-sexp-killing-around)
+
+  ;; Indent
+  (define-key smartparens-mode-map (kbd "C-M-<tab>") #'sp-indent-defun)
+ #+END_SRC
+* PACKAGE Undo Tree     =M-/=
 Spawns a tree of all the undos that you have ever made
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'load-path (concat my/config-folder-location "manual_el/undo-tree-0.6.5"))
