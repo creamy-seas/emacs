@@ -179,8 +179,8 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
 #+BEGIN_SRC emacs-lisp
   (custom-set-faces
    ;; '(default ((t (:family "JetBrains Mono" :height 170))))
-   ;; '(default ((t (:family "Fira Code" :height 170))))
-   '(default ((t (:family "Inconsolata" :height 177))))
+   '(default ((t (:family "Fira Code" :height 170))))
+   ;; '(default ((t (:family "Inconsolata" :height 177))))
    )
  #+END_SRC
 * Generating test projects

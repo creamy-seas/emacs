@@ -10,7 +10,7 @@
 
 
 * 1 - Keyboard
-** My keymap on =C-i=
+** My keymap on =C-i= and =C-z=
 *** Unbind <C-i> from the TAB key
 #+BEGIN_SRC emacs-lisp
   (if (window-system)
@@ -35,6 +35,7 @@
 #+BEGIN_SRC emacs-lisp
   (define-prefix-command 'my/keymap)
   (global-set-key (kbd "<C-i>") 'my/keymap)
+  (global-set-key (kbd "<C-z>") 'my/keymap)
  #+END_SRC
 ** Symbols mapping
 #+BEGIN_SRC emacs-lisp
