@@ -431,11 +431,10 @@ Beautiful file browsing. Dired+ is downloaded manually
 | =R=       | move mass                                       |
 | =*=       | regexp                                          |
 | =C-c C-q= | rename then =C-c C-c=                           |
-** Init
+** MANUAL-PACKAGE Init
 #+BEGIN_SRC emacs-lisp
   (require 'dired+)
-  (my/add-to-package-list 'diminish)
-  ; hook that does not show boring files
+                                          ; hook that does not show boring files
   ;; (add-hook 'dired-mode-hook (function dired-omit-mode))
  #+END_SRC
 
@@ -445,6 +444,15 @@ Beautiful file browsing. Dired+ is downloaded manually
 
   (define-key dired-mode-map (kbd "<right>") (function dired-find-file-other-window))
  #+END_SRC
+
+** PACKAGE Dired all-the-icons
+#+BEGIN_SRC emacs-lisp
+  (use-package all-the-icons-dired
+    :ensure t
+    :init (my/add-to-package-list 'all-the-icons-dired))
+ #+END_SRC
+
+ #+RESULTS:
 
 * PACKAGE Diminish
 Allows hiding of modes from the modeline
@@ -831,7 +839,7 @@ Autocompletion by typing in first part of word and tabbing to insert a template
     (yas-reload-all))
  #+END_SRC
 #+BEGIN_SRC emacs-lisp
-  (setq yas-snippet-dirs (list 'yasnippet-snippets-dir (my/config-file-path-evaluate "snippets")))
+  (setq yas-snippet-dirs (list 'yasnippet-snippets-dir (my/config-file-path-evaluate "my-snippets")))
   (yas-reload-all)
  #+END_SRC
 ** PACKAGE Auto yasnippets
