@@ -1,4 +1,4 @@
-#+TITLE: Ricing the is not required but is nice
+* TODO #+TITLE: Ricing the is not required but is nice
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
@@ -153,6 +153,7 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
     :init (my/add-to-package-list 'page-break-lines))
  #+END_SRC
 * PACKAGE Emojify
+People normally get (((triggered by it))) so it might be usefil to turn off the global hook
 #+BEGIN_SRC emacs-lisp
   (use-package emojify
     :ensure t
@@ -177,11 +178,11 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
 
 * Fonts
 #+BEGIN_SRC emacs-lisp
-  (custom-set-faces
-   ;; '(default ((t (:family "JetBrains Mono" :height 170))))
-   '(default ((t (:family "Fira Code" :height 170))))
-   ;; '(default ((t (:family "Inconsolata" :height 177))))
-   )
+  ;; (custom-set-faces
+  ;; '(default ((t (:family "JetBrains Mono" :height 170))))
+  ;; '(default ((t (:family "Fira Code" :height 170))))
+  ;; '(default ((t (:family "Inconsolata" :height 177))))
+  ;; )
  #+END_SRC
 * Generating test projects
 #+BEGIN_SRC emacs-lisp
@@ -775,7 +776,7 @@ Colourize codes such as #AF3313
     :config
     (persistent-scratch-setup-default))
  #+END_SRC
-* Theme
+* MANUAL-PACKAGE Theme
 ** =my/add-to-theme-hashmap=
 #+BEGIN_SRC emacs-lisp
   (defvar my/theme-hashmap (make-hash-table :test 'equal))
@@ -791,22 +792,48 @@ Colourize codes such as #AF3313
 ** Add the themes
    #+BEGIN_SRC emacs-lisp
      (my/add-to-theme-hashmap 'brutalist "my-themes/brutalist-theme-20181023.1222")
-     (my/add-to-theme-hashmap 'doom-vibrant "doom-themes-20200325.1249")
-     (my/add-to-theme-hashmap 'dracula "dracula-theme-1.7.0")
-     (my/add-to-theme-hashmap 'leuven "leuven-theme-20200122.1934")
+     (my/add-to-theme-hashmap 'doom-vibrant "my-themes/doom-themes-20200325.1249")
+     (my/add-to-theme-hashmap 'dracula "my-themes/dracula-theme-1.7.0")
+     (my/add-to-theme-hashmap 'leuven "my-themes/leuven-theme-20200122.1934")
+     (my/add-to-theme-hashmap 'leuven-dark)
      (my/add-to-theme-hashmap 'deeper-blue)
    #+END_SRC
+** =my/theme-disable-all=
+#+BEGIN_SRC emacs-lisp
+  (defun my/theme-disable-all ()
+    "Disabled all active themes"
+    (interactive)
+    (let ((iter-themes custom-enabled-themes))
+      (while iter-themes
+        (message (format "Disabling %s" (car iter-themes)))
+        (disable-theme (car iter-themes))
+        (setq iter-themes (cdr iter-themes)))))
+ #+END_SRC
 ** =my/theme-select=
 #+BEGIN_SRC emacs-lisp
   (defun my/theme-select ()
     "Quickly set a desired theme"
     (interactive)
+
+    ;; 1 - disable active theme to avoid clashes
+    (my/theme-disable-all)
+
+    ;; 2 - set chosen theme
     (let ((chosen-theme (ido-completing-read " Theme to set: " (hash-table-keys my/theme-hashmap))))
       (message (format " Setting '%s' theme" chosen-theme))
       (load-theme (gethash chosen-theme my/theme-hashmap) t)))
 
   (define-key my/keymap (kbd "T") (function my/theme-select))
 #+END_SRC
+** Hook to change the theme if in org mode
+#+BEGIN_SRC emacs-lisp
+  ;; (add-hook 'post-command-hook (lambda ()
+  ;;                                (if (eq major-mode 'org-mode)
+  ;;                                    (progn
+  ;;                                      (message " Changing to leuven")
+  ;;                                      (my/theme-disable-all)
+  ;;                                      (load-theme 'leuven t)))))
+ #+END_SRC
 ** Default theme
    #+BEGIN_SRC emacs-lisp
      (load-theme 'leuven t)

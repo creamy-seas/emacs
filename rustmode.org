@@ -58,6 +58,13 @@ You will need to =export PATH=~/.rustup/toolchains/stable-x86_64-apple-darwin/li
                                           ; indentation
   (add-hook 'rust-mode-hook
             (lambda () (setq indent-tabs-mode nil)))
+
+                                          ; do not compile documentation for external packages
+  ;; (setq cargo-process--command-doc-open "doc --no-deps --open")
+  ;; (setq cargo-process--command-doc "doc --no-deps")
+
+  (setq cargo-process--command-doc-open "doc --document-private-items --no-deps --open")
+  (setq cargo-process--command-doc "doc --document-private-items --no-deps ")
  #+END_SRC
 
 * PACKAGE Flycheck rust
@@ -94,10 +101,6 @@ You will need to =export PATH=~/.rustup/toolchains/stable-x86_64-apple-darwin/li
  #+END_SRC
 * PACKAGE Hydra
 #+BEGIN_SRC emacs-lisp
-                                          ; do not compile documentation for external packages
-  (setq cargo-process--command-doc-open "doc --no-deps --open")
-  (setq cargo-process--command-doc "doc --no-deps")
-
   (defhydra hydra-rust ()
     "
       Cargo                                                              [_q_] quit

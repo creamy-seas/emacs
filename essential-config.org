@@ -35,7 +35,7 @@
 #+BEGIN_SRC emacs-lisp
   (define-prefix-command 'my/keymap)
   (global-set-key (kbd "<C-i>") 'my/keymap)
-  (global-set-key (kbd "<C-z>") 'my/keymap)
+  (global-set-key (kbd "C-z") 'my/keymap)
  #+END_SRC
 ** Symbols mapping
 #+BEGIN_SRC emacs-lisp
@@ -71,32 +71,32 @@
 * 2 - Minor Functions
 ** =my/add-dependency=
 #+BEGIN_SRC emacs-lisp
-    (defun my/add-dependency (new-dependency)
-      "Add the new-dependency to the requirements file.
+  (defun my/add-dependency (new-dependency)
+    "Add the new-dependency to the requirements file.
   It will be checked by the Makefile to ensure all is installed for this config to run smoothly"
-      (interactive)
-      (let* ((requirement-file (concat my/config-folder-location "support_files/requirements.txt"))
-             (updated-depencies
-              (with-temp-buffer
-                                            ; 1 - add the new dependency to the buffer
-                (insert (concat new-dependency "\n"))
-                                            ; 2 - add the previous dependecies
-                (insert-file-contents requirement-file)
-                (sort
-                 (split-string
-                                            ; 2 - select the whole buffer and read into list
-                  (buffer-substring-no-properties
-                   (point-min)
-                   (point-max))
-                  "\n" t)
-                 'string<))))
-                                            ; 3 - drop dupliactes IMPORTANT
-        (setq updated-depencies (my/drop-duplicates-in-list updated-depencies))
-                                            ; 4 - open file and write the new list
-        (with-temp-file requirement-file
-          (my/write-list-into-current-buffer updated-depencies))
-
-        (message (format " Dependecy list: %s" updated-depencies))))
+    (interactive)
+    (let* ((requirement-file (concat my/config-folder-location "support_files/requirements.txt"))
+           (updated-depencies
+            (with-temp-buffer
+                                          ; 1 - add the new dependency to the buffer
+              (insert (concat new-dependency "\n"))
+                                          ; 2 - add the previous dependecies
+              (insert-file-contents requirement-file)
+              (sort
+               (split-string
+                                          ; 2 - select the whole buffer and read into list
+                (buffer-substring-no-properties
+                 (point-min)
+                 (point-max))
+                "\n" t)
+               'string<))))
+                                          ; 3 - drop dupliactes IMPORTANT
+      (setq updated-depencies (my/drop-duplicates-in-list updated-depencies))
+                                          ; 4 - open file and write the new list
+      (with-temp-file requirement-file
+        (my/write-list-into-current-buffer updated-depencies))
+      ;; (message (format " Dependecy list: %s" updated-depencies))
+      ))
  #+END_SRC
 ** =my/config-file-path-evaluate=
 #+BEGIN_SRC emacs-lisp
@@ -657,8 +657,14 @@ https://projectile.readthedocs.io/en/latest/projects/
  #+END_SRC
 
 | =ag= aka =the_silver_searcher= | used by projectile to search cross project |
+** PACKAGE Ag
+#+BEGIN_SRC emacs-lisp
+  (use-package ag
+    :ensure t
+    :init (my/add-to-package-list 'ag))
+ #+END_SRC
 
-** Init
+** PACKAGE Init
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
     :ensure t
@@ -668,7 +674,7 @@ https://projectile.readthedocs.io/en/latest/projects/
 
 (define-key projectile-mode-map (kbd "M-s-p") 'projectile-command-map)
  #+END_SRC
-** Counsel-projectile <<counsel-projectile>>
+** PACKAGE Counsel-projectile <<counsel-projectile>>
 For better autocompletion
 #+BEGIN_SRC emacs-lisp
   (use-package counsel-projectile
@@ -677,13 +683,7 @@ For better autocompletion
     :config
     (counsel-projectile-mode))
  #+END_SRC
-** Ag
-#+BEGIN_SRC emacs-lisp
-  (use-package ag
-    :ensure t
-    :init (my/add-to-package-list 'ag))
- #+END_SRC
-** Hydra <<counsel-hydra>>
+** PACKAGE Hydra <<counsel-hydra>>
 #+BEGIN_SRC emacs-lisp
   (defhydra hydra-projectile-other-window (:color teal)
     "projectile-other-window"
@@ -725,6 +725,7 @@ For better autocompletion
     ("p"   projectile-switch-project)
     ("s"   projectile-switch-project)
     ("r"   counsel-ag)
+    ("R"   counsel-ag)
     ("x"   projectile-remove-known-project)
     ("X"   projectile-cleanup-known-projects)
     ("z"   projectile-cache-current-file)

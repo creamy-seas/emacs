@@ -29,5 +29,12 @@ See the top sections of the following files to set personal customization
 
 Moreover, you can always go into the init.el file and comment out the modes you do not want to load
 
+# Entrypoint keybindings #
+| **Keybinding** | **Description**                                                         |
+|:---------------|:------------------------------------------------------------------------|
+| `C-c e`        | Edit a config file                                                      |
+| `C-i` or `C-z` | Quirky custom functions, ranging from working on venv to changing theme |
+
+
 # TODO
 - email mode
