@@ -4,6 +4,7 @@
 (load (concat user-emacs-directory "experimental-packages.el"))
 (load (concat user-emacs-directory "pythonmode.el"))
 (load (concat user-emacs-directory "orgmode.el"))
+(load (concat user-emacs-directory "org-config.el"))
 (load (concat user-emacs-directory "rustmode.el"))
 (load (concat user-emacs-directory "dockermode.el"))
 (if (string-equal system-type "darwin")
