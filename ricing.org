@@ -152,6 +152,10 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
     :ensure t
     :init (my/add-to-package-list 'page-break-lines))
  #+END_SRC
+* Emacs info
+#+BEGIN_SRC emacs-lisp
+  (define-key my/keymap (kbd "I") (function info-emacs-manual))
+ #+END_SRC
 * PACKAGE Emojify
 People normally get (((triggered by it))) so it might be usefil to turn off the global hook
 #+BEGIN_SRC emacs-lisp
