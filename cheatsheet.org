@@ -1,5 +1,31 @@
 #+TITLE: Common things that I forget
+#+STARTUP: showall
+#+PROPERTY: header-args :tangle no
 
+* Registers and bookmarks
+
+|---------------+----------------------------|
+| *Registers*   |                            |
+| =C-x r <SPC>= | Record position in buffer  |
+| =C-x r j=     | Jump to position in buffer |
+|---------------+----------------------------|
+| =C-x r s=     | Copy region                |
+| =C-x r +=     | Add to region              |
+|---------------+----------------------------|
+| =C-x r r=     | Copy rectangle             |
+|---------------+----------------------------|
+| =C-x r i=     | Insert                     |
+|---------------+----------------------------|
+| =C-x C-k x=   | Save macro in register     |
+
+|----------------------+-----------------------------|
+| *Bookmarks*          | /Persist betweeen sessions/ |
+|----------------------+-----------------------------|
+| =C-x r m=            | Set bookmarks               |
+| =C-x r b=            | Jump bookmarks              |
+| =C-x r l=            | List bookmarks              |
+| =M-x bookmark-write= | Save bookmarks to file      |
+|----------------------+-----------------------------|
 * External dependencies
 |-----------------------+-------------------------+---------------------------|
 | =aspell=              | for checking spelling   |                           |
@@ -7,8 +33,11 @@
 | =the_silver_searcher= | for searching code      |                           |
 | =figlet=              | for creating ascii text |                           |
 
-* ='=
-prevents evaluation of the block e.g. if you just want to set some variables without evaluating them
+* ='= and =`=
+|-----+---------------------------------------------------------------------------------------------|
+| ='= | are used to not evalute the symbols (pass them as literals)                                 |
+| =`= | are use before a bracketed region () - anything escaped with a comma =,= will be evaluated. |
+|-----+---------------------------------------------------------------------------------------------|
 * =#=
 tells compiler to bytecompile it
 * =C-c \= in latex

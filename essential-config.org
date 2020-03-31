@@ -2,13 +2,6 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-*[[https://stackoverflow.com/questions/134887/when-to-use-or-quote-in-lisp][A must read post about quoting]]*
-|-----+---------------------------------------------------------------------------------------------|
-| ='= | are used to not evalute the symbols (pass them as literals)                                 |
-| =`= | are use before a bracketed region () - anything escaped with a comma =,= will be evaluated. |
-|-----+---------------------------------------------------------------------------------------------|
-
-
 * 1 - Keyboard
 ** My keymap on =C-i= and =C-z=
 *** Unbind <C-i> from the TAB key
@@ -69,6 +62,14 @@
 
  #+END_SRC
 * 2 - Minor Functions
+** =my/read-string-from-file=
+#+BEGIN_SRC emacs-lisp
+  (defun my/read-string-from-file (filePath)
+    "Return filePath's file content."
+    (with-temp-buffer
+      (insert-file-contents filePath)
+      (buffer-string)))
+ #+END_SRC
 ** =my/add-dependency=
 #+BEGIN_SRC emacs-lisp
   (defun my/add-dependency (new-dependency)
@@ -332,8 +333,8 @@ Any changes of a file, will be automatically reloaded
  #+END_SRC
 * Saving hooks
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'before-save-hook #'whitespace-cleanup)
-  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+  ;; (add-hook 'before-save-hook #'whitespace-cleanup)
+  ;; (add-hook 'before-save-hook 'delete-trailing-whitespace)
                                           ; adding new line to end of file when saving
   (setq require-final-newline    t)
   (setq next-line-add-newlines nil)

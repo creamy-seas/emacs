@@ -182,11 +182,11 @@ People normally get (((triggered by it))) so it might be usefil to turn off the 
 
 * Fonts
 #+BEGIN_SRC emacs-lisp
-  ;; (custom-set-faces
-  ;; '(default ((t (:family "JetBrains Mono" :height 170))))
-  ;; '(default ((t (:family "Fira Code" :height 170))))
-  ;; '(default ((t (:family "Inconsolata" :height 177))))
-  ;; )
+  (custom-set-faces
+   ;; '(default ((t (:family "JetBrains Mono" :height 170))))
+   ;; '(default ((t (:family "Fira Code" :height 170))))
+   '(default ((t (:family "Inconsolata" :height 177))))
+   )
  #+END_SRC
 * Generating test projects
 #+BEGIN_SRC emacs-lisp
@@ -819,13 +819,18 @@ Colourize codes such as #AF3313
     "Quickly set a desired theme"
     (interactive)
 
-    ;; 1 - disable active theme to avoid clashes
-    (my/theme-disable-all)
-
-    ;; 2 - set chosen theme
     (let ((chosen-theme (ido-completing-read " Theme to set: " (hash-table-keys my/theme-hashmap))))
+
+      ;; 1 - disable active theme to avoid clashes
+      (my/theme-disable-all)
+
+      ;; 2 - set chosen theme
       (message (format " Setting '%s' theme" chosen-theme))
-      (load-theme (gethash chosen-theme my/theme-hashmap) t)))
+      (load-theme (gethash chosen-theme my/theme-hashmap) t)
+
+      ;; 3 - save in file
+      (with-temp-file (my/config-file-path-evaluate "support_files/persistent/theme.txt")
+        (insert chosen-theme))))
 
   (define-key my/keymap (kbd "T") (function my/theme-select))
 #+END_SRC
@@ -838,9 +843,16 @@ Colourize codes such as #AF3313
   ;;                                      (my/theme-disable-all)
   ;;                                      (load-theme 'leuven t)))))
  #+END_SRC
-** Default theme
+** =my/theme-load=
    #+BEGIN_SRC emacs-lisp
-     (load-theme 'leuven t)
+     (defun my/theme-load ()
+       "Load up the theme in the persistent theme file (saved session to session)"
+       (my/theme-disable-all)
+       (let ((chosen-theme (my/read-string-from-file (my/config-file-path-evaluate "support_files/persistent/theme.txt"))))
+         (message (format " Setting '%s' theme" chosen-theme))
+         (load-theme (gethash chosen-theme my/theme-hashmap) t)))
+
+     (my/theme-load)
    #+END_SRC
 * PACKAGE Treemacs
 #+BEGIN_SRC emacs-lisp

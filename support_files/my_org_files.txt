@@ -17,4 +17,4 @@ inkscapemode.org
 sshmode.org
 gitmode.org
 compact-languages.org
-my-manual.org
+cheatsheet.org

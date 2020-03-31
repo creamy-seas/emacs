@@ -2,6 +2,12 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
+For a nice pyplot experience, copy over the [[./my-files/python/my_pyplot.mplstyle]] file into your python folder and run
+#+BEGIN_SRC python :tangle no
+  from matplotlib import pyplot as plt
+  plt.style.use('./my_pyplot.mplstyle')
+ #+END_SRC
+
 * CONFIG General Parameters
 #+BEGIN_SRC emacs-lisp
   (defvar my/python/default-venv)

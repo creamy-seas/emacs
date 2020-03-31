@@ -18,38 +18,53 @@
 | =C-c C-z=   | interrupt kernel                  |
 |-------------+-----------------------------------|
 
-- *do not set* =(setq ein:use-smartrep t)= or it doesn't work
-- run command =jt= to set html variables*
-- run =jt notebook password= to set a password
+1. *do not set* =(setq ein:use-smartrep t)= or it doesn't work
+2. run =jt= to set html variables. [[https://github.com/dunovank/jupyter-themes][See this link for details]]
+   - =-t= select theme
+   - =-cellw= set cell width
+   - =lineh= set line height
+   - =-N= show the notebook name
+   - =-nf=, =-nfs= set markdown cell font
+   - =tf=, ==-tfs= set the code cell font
+   - =-cursc r=, =-cursw= set colour and witdth
+#+BEGIN_SRC shell :tangle no
+  jt -t chesterish -cellw 85% -lineh 170 -N -nf neutonserif -nfs 14 -tf firacode -tfs 13  -cursc r -cursw 5
+#+END_SRC
+
+
+3. [@3] run =jupyter notebook password= to set a password
 - =C-c C-h= for tooltip help
 
-* DOWN Init
+* PACKAGE Init
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package ein
-  ;;   :ensure t
-  ;;   :init
-  ;;   (setq ein:completion-backend 'ein:use-company-backend)
-  ;;   (custom-set-variables
-  ;;    '(ein:jupyter-default-notebook-directory
-  ;;      "~/mydrive")))
+  (use-package ein
+    :ensure t
+    :init (my/add-to-package-list 'ein)
+    (setq ein:completion-backend 'ein:use-company-backend)
+    (setq ein:notebooklist-login-timeout 10000)
+    (custom-set-variables
+     '(ein:jupyter-default-notebook-directory "~/mydrive")))
 
-  ;; (defun ilya-no-relative-numbering ()
-  ;;   "turn off relative numbering"
-  ;;   (linum-relative-global-mode -1))
+  ;; (add-hook 'ein:notebook-mode-hook (lambda ()
+  ;;                                     (linum-relative-global-mode -1)))
+ #+END_SRC
 
-  ;; (add-hook 'ein:notebook-mode-hook (function ilya-no-relative-numbering))
+* Comaptibility
+#+BEGIN_SRC emacs-lisp 
+  (add-hook 'ein-notebook-mode-hook (lambda () (hungry-delete-mode -1)))
+
  #+END_SRC
 * DOWN Coloring
 #+BEGIN_SRC emacs-lisp
-  ;; (custom-set-faces
-  ;;  '(ein:cell-output-area ((t (:foreground "cornsilk4" :background "#2d3743"))))
-  ;;  '(ein:cell-input-prompt ((t (:foreground "azure4" :background "#2d3743"))))
-  ;;  '(header-line ((t (:foreground "DeepPink1" :background "#2d3743"))))
-  ;;  '(ein:notification-tab-normal ((t (:inhert header-line))))
-  ;;   '(ein:notification-tab-selected ((t (:inhert header-line :weight bold :foreground "tan1"))))
-  ;;  '(ein:cell-heading-1 ((t (:inherit ein:cell-heading-3 :foreground "cornflower blue" :weight bold :height 1.2))))
-  ;;  '(ein:cell-heading-2 ((t (:inherit ein:cell-heading-3 :foreground "SteelBlue2" :weight bold :height 1.05))))
-  ;;  '(ein:cell-heading-6 ((t (:inherit variable-pitch :foreground "MediumPurple3" :weight bold)))))
+  (custom-set-faces
+   '(ein:cell-output-area ((t (:foreground "cornsilk4" :background "#2d3743"))))
+   '(ein:cell-input-prompt ((t (:foreground "azure4" :background "#2d3743"))))
+   '(header-line ((t (:foreground "DeepPink1" :background "#2d3743"))))
+   '(ein:notification-tab-normal ((t (:inhert header-line))))
+   '(ein:notification-tab-selected ((t (:inhert header-line :weight bold :foreground "tan1"))))
+   '(ein:cell-heading-1 ((t (:inherit ein:cell-heading-3 :foreground "cornflower blue" :weight bold :height 1.2))))
+   '(ein:cell-heading-2 ((t (:inherit ein:cell-heading-3 :foreground "SteelBlue2" :weight bold :height 1.05))))
+   '(ein:cell-heading-6 ((t (:inherit variable-pitch :foreground "MediumPurple3" :weight bold)))))
 
  #+END_SRC
 * DOWN =my/ein/header=
@@ -216,8 +231,6 @@
  #+END_SRC
 * DOWN =my/ein/start-jupyter-notebook=
 #+BEGIN_SRC emacs-lisp
-  ;; (setq ein:notebooklist-login-timeout 10000)
-
   ;; (defun my/ein/start-jupyter-notebook ()
   ;;   "Opens up either a local jupyter server or connects to east-india's one"
   ;;   (interactive)
@@ -226,26 +239,23 @@
   ;;     (if (string-equal temp-chosen-server "₿ east-india-server")
   ;;         (call-interactively (function ilya-login-east-india))
   ;;       (call-interactively (function ein:run)))))
-
   ;; (global-set-key (kbd "C-x C-j") (function my/ein/start-jupyter-notebook))
  #+END_SRC
-* DOWN =my/ein/save-exectute-and-goto-next=
+* Function
+** Saving and executing
 #+BEGIN_SRC emacs-lisp
-  ;; (defun my/ein/save-exectute-and-goto-next ()
-  ;;   "Saves the notebook → execute cell → go to next cell"
-  ;;   (interactive)
-  ;;   (call-interactively (function ein:notebook-save-notebook-command))
-  ;;   (call-interactively (function ein:worksheet-execute-cell-and-goto-next)))
+  (defun my/ein/save-exectute-and-goto-next ()
+    "Saves the notebook → execute cell → go to next cell"
+    (interactive)
+    (call-interactively (function ein:notebook-save-notebook-command))
+    (call-interactively (function ein:worksheet-execute-cell))
+    (call-interactively (function ein:worksheet-goto-next-input-km)))
 
-  ;; (defun ilya-save-exectute ()
-  ;;   "Saves the notebook → execute cell → go to next cell"
-  ;;   (interactive)
-  ;;   (call-interactively (function ein:notebook-save-notebook-command))
-  ;;   (call-interactively (function ein:worksheet-execute-cell)))
-
-  ;; (with-eval-after-load "ein-notebook"
-  ;;   (define-key ein:notebook-mode-map (kbd "<M-return>") (function my/ein/save-exectute-and-goto-next))
-  ;;   (define-key ein:notebook-mode-map (kbd "C-c C-c") (function ilya-save-exectute)))
+  (defun my/ein/save-execute ()
+    "Saves the notebook → execute cell"
+    (interactive)
+    (call-interactively (function ein:notebook-save-notebook-command))
+    (call-interactively (function ein:worksheet-execute-cell)))
 
  #+END_SRC
 * DOWN Debug
@@ -270,21 +280,26 @@
   ;;                              errback token iteration)
   ;;   ))
  #+END_SRC
-* DOWN Keybindings
+* Keybindings
 #+BEGIN_SRC emacs-lisp
-  ;; (with-eval-after-load "ein-notebook"
-  ;;   (hungry-delete-mode)			;turns off hungry delete
-  ;;   ;; (define-key ein:notebook-mode-map (kbd "DEL") (function backward-delete-char))
-  ;;   ;; (define-key ein:notebook-mode-map (kbd "DEL") (function python-indent-dedent-line-backspace))
-  ;;   ;; (define-key ein:notebook-mode-map (kbd "DEL") (function sp-backward-delete-char))
-  ;;   (define-key ein:notebook-mode-map (kbd "'") (function self-insert-command))
-  ;;   (define-key ein:notebook-mode-map (kbd "C-c C-d") (function ein:pytools-request-tooltip-or-help))
-  ;;   (define-key ein:notebook-mode-map (kbd "C-c C-j") (function ein:notebook-kernel-interrupt-command))
-  ;;   ;; (define-key ein:notebook-mode-map (kbd "C-c C-j") (function
-  ;;   ;;                                                    (prog
-  ;;   ;;                                                     (ein:notebook-kernel-interrupt-command)
-  ;;   ;;                                                     (ein:worksheet-clear-all-output))))
-  ;;   (define-key ein:notebook-mode-map (kbd "C-:") (function iedit-mode))
-  ;;   (define-key ein:notebook-mode-map (kbd "C-c C-;") (function comment-line))
-  ;;   (define-key ein:notebook-mode-map (kbd "C-c TAB") (function ein:completer-complete)))
+  (with-eval-after-load "ein-notebook"
+    ;; (hungry-delete-mode)			;turns off hungry delete
+    ;; (define-key ein:notebook-mode-map (kbd "DEL") (function backward-delete-char))
+    ;; (define-key ein:notebook-mode-map (kbd "DEL") (function python-indent-dedent-line-backspace))
+    ;; (define-key ein:notebook-mode-map (kbd "DEL") (function sp-backward-delete-char))
+    (define-key ein:notebook-mode-map (kbd "'") (function self-insert-command))
+    (define-key ein:notebook-mode-map (kbd "C-c C-d") (function ein:pytools-request-tooltip-or-help))
+    (define-key ein:notebook-mode-map (kbd "C-c C-j") (function ein:notebook-kernel-interrupt-command))
+    ;; (define-key ein:notebook-mode-map (kbd "C-c C-j") (function
+    ;;                                                    (prog
+    ;;                                                     (ein:notebook-kernel-interrupt-command)
+    ;;                                                     (ein:worksheet-clear-all-output))))
+    (define-key ein:notebook-mode-map (kbd "<M-return>") (function my/ein/save-exectute-and-goto-next))
+    (define-key ein:notebook-mode-map (kbd "C-c C-c") (function my/ein/save-execute))
+    (define-key ein:notebook-mode-map (kbd "C-:") (function iedit-mode))
+    (define-key ein:notebook-mode-map (kbd "C-c C-;") (function comment-line))
+    (define-key ein:notebook-mode-map (kbd "C-c TAB") (function ein:completer-complete)))
+
+  (define-key my/keymap (kbd "j") (function ein:run))
+  (define-key my/keymap (kbd "J") (function ein:stop))
  #+END_SRC
