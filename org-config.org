@@ -143,7 +143,7 @@ These todo blocks can be put in front of any org heading with =C-c C-t=
                                       "HORSE(h)"
                                       "SA36(3)"
                                       "WORKFORCE(w)"
-                                      "SCHOOLS(b)"
+                                      "SCHOOLS"
                                       "TUTORING(l)"
                                       "CURRENT(c)"
                                       "SKYPE(s)"
@@ -154,6 +154,7 @@ These todo blocks can be put in front of any org heading with =C-c C-t=
                                       "PACKAGE"
                                       "MANUAL-PACKAGE"
                                       "CONFIG"
+                                      "BUREUCRACY(b)"
                                       )))
 
   (setq org-todo-keyword-faces (quote (
@@ -175,8 +176,7 @@ These todo blocks can be put in front of any org heading with =C-c C-t=
                                        ("BRYAN" . (:foreground "#090C42" :background "#33ccff" :weight bold))
                                        ("PACKAGE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
                                        ("CONFIG" . (:background "#00AFF0" :foreground "#090C42" :weight bold))
+                                       ("BUREUCRACY" . (:background "#ab82ff" :foreground "#8b6969" :weight bold))
                                        )))
-
-
-  (setq org-agenda-span 10)
+  (setq org-agenda-span 15)
  #+END_SRC

@@ -11,13 +11,15 @@ For a nice pyplot experience, copy over the [[./my-files/python/my_pyplot.mplsty
 * CONFIG Personal Configuration
 #+BEGIN_SRC emacs-lisp
   (setq pyvenv-default-virtual-env-name "/Users/CCCP/.config/python_vi")
+  (defvar my/python/pylintrc "~/.pylintrc" "Location of the pyling configuration file")
  #+END_SRC
 * External setup
 
 |------------+-----------------------------------------------------------+---------------------|
 | =pylint=   | code checking and suggestion according to [[https://www.python.org/dev/peps/pep-0008/][PEP8]] guidelines |                     |
 | =jedi=     | documentation                                             |                     |
-| =flake8=   | code checking                                             | worse than =pylint= |
+| =flake8=   | code checking and formatting                              | worse than =pylint= |
+| =black=    | code formatting                                           |                     |
 |------------+-----------------------------------------------------------+---------------------|
 | =ipython3= | kernel                                                    | buggy               |
 | =yapf=     | code formatiing                                           | bloat               |
@@ -51,20 +53,21 @@ Then you can
 #+BEGIN_SRC emacs-lisp
   (setq python-indent-offset 4)
  #+END_SRC
-* PACKAGE Autopep8
-Automatically fix syntax errors upon saving. Uses =flake8=
+* Code formatting
+Activate one or the other. Never both.
+** DOWN Autopep8 (=flake8=)
 #+BEGIN_SRC emacs-lisp
-  (use-package py-autopep8
-    :ensure t
-    :hook (elpy-mode . py-autopep8-enable-on-save)
-    :init (my/add-to-package-list 'py-autopep8))
- #+END_SRC
-* DOWN Blacken
-Altenartive to autopep8
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package blacken
+  ;; (use-package py-autopep8
   ;;   :ensure t
-  ;;   :init (my/add-to-package-list 'blacken))
+  ;;   :hook (elpy-mode . py-autopep8-enable-on-save)
+  ;;   :init (my/add-to-package-list 'py-autopep8))
+ #+END_SRC
+** PACKAGE Black (=black=)
+#+BEGIN_SRC emacs-lisp
+  (use-package blacken
+    :ensure t
+    :init (my/add-to-package-list 'blacken)
+    (add-hook 'python-mode-hook (function blacken-mode)))
  #+END_SRC
 * PACKAGE Elpy
 #+BEGIN_SRC emacs-lisp
@@ -80,12 +83,15 @@ Altenartive to autopep8
                                           ; remove flymake checking -> flycheck is the new best friend
     (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)))
  #+END_SRC
-* DOWN Flycheck setup
+* PACKAGE Flycheck
 [[https://www.flycheck.org/en/latest/languages.html#python][Flycheck manual]] gives some details about python
 #+BEGIN_SRC emacs-lisp
-  ;; (require 'flycheck)
-  ;; (flycheck-add-next-checker 'python-flake8)
-
+  (require 'flycheck)
+  (add-hook 'python-mode-hook (lambda ()
+                                (flycheck-mode 1)
+                                (setq flycheck-checker 'python-pylint
+                                      flycheck-checker-error-threshold 900
+                                      flycheck-pylintrc my/python/pylintrc)))
  #+END_SRC
 * PACKAGE Hideshow-org  =C-c C-h=
 ** PACKAGE Init
