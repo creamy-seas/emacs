@@ -10,7 +10,7 @@ For a nice pyplot experience, copy over the [[./my-files/python/my_pyplot.mplsty
 
 * CONFIG Personal Configuration
 #+BEGIN_SRC emacs-lisp
-  (defvar my/python/venv-folder "~/.config/python_vi")
+  (defvar my/python/venv-folder "~/.config/python_vi" "Location of folder with the venv (I hope you have just one)")
   (setq pyvenv-default-virtual-env-name "/Users/CCCP/.config/python_vi")
   (defvar my/python/pylintrc "~/.pylintrc" "Location of the pyling configuration file")
  #+END_SRC
