@@ -801,6 +801,7 @@ Colourize codes such as #AF3313
      (my/add-to-theme-hashmap 'leuven "my-themes/leuven-theme-20200122.1934")
      (my/add-to-theme-hashmap 'leuven-dark)
      (my/add-to-theme-hashmap 'deeper-blue)
+     (my/add-to-theme-hashmap 'zenburn "my-themes/zenburn-theme-2.6")
    #+END_SRC
 ** =my/theme-disable-all=
 #+BEGIN_SRC emacs-lisp
