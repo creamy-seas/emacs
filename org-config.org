@@ -8,7 +8,7 @@ This is just an example config that works well for me. You will need to tune it 
 | [[*Todo lists =C-c C-t=][Todo lists]]          | =C-c C-t= | Add a todo to an org-heading                        |
 
 
-* Org files to monitor
+* CONFIG Org files to monitor
 #+BEGIN_SRC emacs-lisp
   (setq org-agenda-files (list "~/creamy_seas/antlers.org"
                                "~/mydrive/east-data-company.org"
@@ -18,7 +18,7 @@ This is just an example config that works well for me. You will need to tune it 
                                "~/mydrive/adv16_sa_onFire/adventure_brief.org"))
  #+END_SRC
 
-* Capturing templates   =C-c c=
+* CONFIG Capturing templates   =C-c c=
 Emacs/orgmode has an intense feature where you can quickly call upon templates to insert into your org files.
 
 *The structure of the template is the following*:
@@ -114,7 +114,7 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
           ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
           ;; ))
  #+END_SRC
-* Tables
+* CONFIG Tables
 ** =gradeBand=
 Evaluate of grade for Brilliant Club
 #+BEGIN_SRC emacs-lisp
@@ -131,7 +131,7 @@ Evaluate of grade for Brilliant Club
                 "2:1"
               "1st"))))))
  #+END_SRC
-* Todo lists    =C-c C-t=
+* CONFIG Todo lists    =C-c C-t=
 These todo blocks can be put in front of any org heading with =C-c C-t=
 - Must be capital letters
 #+BEGIN_SRC emacs-lisp
@@ -161,7 +161,6 @@ These todo blocks can be put in front of any org heading with =C-c C-t=
                                        ("CURRENT" . (:foreground "#ffff0a" :background "#754ec1" :weight bold))
                                        ("DREAMS-AI" . (:foreground "#68c3c1" :background "#fdc989" :weight bold))
                                        ("SA36" . (:background "#01168a" :foreground "#fdc989" :weight bold))
-                                       ("PACKAGE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
                                        ("MANUAL-PACKAGE" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
                                        ("SKYPE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
                                        ("SINO" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
@@ -174,8 +173,10 @@ These todo blocks can be put in front of any org heading with =C-c C-t=
                                        ("BLOAT" . (:foreground "#000001" :background "#ffffff"))
                                        ("TUTORING" . (:foreground "#090C42" :background "#FFD700": weight bold))
                                        ("BRYAN" . (:foreground "#090C42" :background "#33ccff" :weight bold))
-                                       ("CONFIG" . (:foreground "#090C42" :background "#33ccff" :weight bold))
+                                       ("PACKAGE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
+                                       ("CONFIG" . (:background "#00AFF0" :foreground "#090C42" :weight bold))
                                        )))
+
 
   (setq org-agenda-span 10)
  #+END_SRC

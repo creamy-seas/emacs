@@ -53,14 +53,6 @@ Some .el files are downloaded manually as support for them was stopped or there 
   (use-package exec-path-from-shell
     :ensure t
     :config (my/add-to-package-list 'exec-path-from-shell))
-
-  (if (string-equal system-type "darwin")
-      (progn
-                                          ; Specify what env variables to load into emacs for an os-x system
-        (exec-path-from-shell-copy-env "PYTHONPATH")
-        (exec-path-from-shell-copy-env "WORKON_HOME")
-        ))
-
   (exec-path-from-shell-initialize)
  #+END_SRC
 * 7 - Emacs server

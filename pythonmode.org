@@ -2,16 +2,15 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-For a nice pyplot experience, copy over the [[./my-files/python/my_pyplot.mplstyle]] file into your python folder and run
+For a nice pyplot experience, copy over the [[./my-files/python/my_pyplot.mplstyle]] file into your python folder and include
 #+BEGIN_SRC python :tangle no
   from matplotlib import pyplot as plt
   plt.style.use('./my_pyplot.mplstyle')
- #+END_SRC
+#+END_SRC
 
-* CONFIG General Parameters
+* CONFIG Personal Configuration
 #+BEGIN_SRC emacs-lisp
-  (defvar my/python/default-venv)
-  (setq my/python/default-venv "~/.config/python_vi/pro_vi")
+  (setq pyvenv-default-virtual-env-name "/Users/CCCP/.config/python_vi")
  #+END_SRC
 * External setup
 
@@ -48,7 +47,7 @@ Then you can
   source /usr/bin/virtualenvwrapper.sh
   python -m venv <VENV-NAME>
 #+END_SRC
-* Init
+* General Parameters
 #+BEGIN_SRC emacs-lisp
   (setq python-indent-offset 4)
  #+END_SRC
@@ -82,6 +81,7 @@ Altenartive to autopep8
     (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)))
  #+END_SRC
 * DOWN Flycheck setup
+[[https://www.flycheck.org/en/latest/languages.html#python][Flycheck manual]] gives some details about python
 #+BEGIN_SRC emacs-lisp
   ;; (require 'flycheck)
   ;; (flycheck-add-next-checker 'python-flake8)
@@ -211,8 +211,6 @@ Replaces letters in programming mode
 #+BEGIN_SRC emacs-lisp
   ;; (setq pyvenv-mode-line-indicator nil)
  #+END_SRC
-** Default venv
-(my/python/activate-venv my/python/default-venv)
 * Functions
 ** =my/python/interrupt=
 #+BEGIN_SRC emacs-lisp

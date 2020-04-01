@@ -2,6 +2,10 @@
 #+STARTUP: showall
 #+PROPERTY: header-args :tangle no
 
+
+| Flycheck   | =C-c != |
+| Projectile | =s-p=   |
+
 * Registers and bookmarks
 
 |---------------+----------------------------|
@@ -26,6 +30,7 @@
 | =C-x r l=            | List bookmarks              |
 | =M-x bookmark-write= | Save bookmarks to file      |
 |----------------------+-----------------------------|
+
 * External dependencies
 |-----------------------+-------------------------+---------------------------|
 | =aspell=              | for checking spelling   |                           |

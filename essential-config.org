@@ -482,7 +482,7 @@ Highlighting of TODOs
     :config
     (add-hook 'prog-mode-hook 'turn-on-fic-mode))
  #+END_SRC
-* PACKAGE Flycheck
+* PACKAGE Flycheck      =C-c !=
 
 - Better than the default spellchecker called =flyspell=
 - To get information on flycheck for the current mode run =flycheck-verify-setup=
