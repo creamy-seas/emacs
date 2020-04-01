@@ -262,13 +262,14 @@
 * Major Function: Open config file =C-c e=
 #+BEGIN_SRC emacs-lisp
   (defun my/config-file-open ()
-    "Prints out the config files and opens the selected one for editing"
+    "Prints out the config files and opens the selected one for editing. Cheatsheet is also added"
     (interactive)
     (let ((chosen-file (ido-completing-read "Config file to open:"
-                                            (my/fetch-config-files))))
+                                            (let ((config-file-list (my/fetch-config-files)))
+                                              (add-to-list 'config-file-list "cheatsheet.org")))))
       (find-file (my/config-file-path-evaluate chosen-file))))
 
-    (global-set-key (kbd "C-c e") (function my/config-file-open))
+  (global-set-key (kbd "C-c e") (function my/config-file-open))
  #+END_SRC
 * Major Function: Tangle config files automatically
 Whenever a config file is saved:

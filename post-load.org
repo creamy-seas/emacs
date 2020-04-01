@@ -57,7 +57,3 @@
 #+BEGIN_SRC emacs-lisp
   (exec-path-from-shell-initialize)
  #+END_SRC
-* Python venv
-#+BEGIN_SRC emacs-lisp
-  (call-interactively 'pyvenv-workon)
- #+END_SRC
