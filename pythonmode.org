@@ -10,6 +10,7 @@ For a nice pyplot experience, copy over the [[./my-files/python/my_pyplot.mplsty
 
 * CONFIG Personal Configuration
 #+BEGIN_SRC emacs-lisp
+  (defvar my/python/venv-folder "~/.config/python_vi")
   (setq pyvenv-default-virtual-env-name "/Users/CCCP/.config/python_vi")
   (defvar my/python/pylintrc "~/.pylintrc" "Location of the pyling configuration file")
  #+END_SRC
@@ -177,6 +178,10 @@ Replaces letters in programming mode
 
  #+END_SRC
 * Virtualenv
+** Set venv folder
+#+BEGIN_SRC emacs-lisp 
+  (setenv "WORKON_HOME" my/python/venv-folder)
+ #+END_SRC
 ** =my/python/activate-venv=
 #+BEGIN_SRC emacs-lisp
   (defun my/python/activate-venv (python-environment-path)
