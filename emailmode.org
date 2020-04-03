@@ -2,12 +2,12 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-* CONFIG General Parameters
+* CONFIG Personal Configuration
 #+BEGIN_SRC emacs-lisp
   (defvar my/mu4e-load-path "/usr/local/share/emacs/site-lisp/mu/mu4e" "location of the emacs mu4e package")
   (defvar mu4e-mu-binary "/usr/local/bin/mu" "The mu4e binary")
   (defvar my/mu4e-mail-dir "~/db_mail" "Location of where to read the mail from")
-  (defvar my/mu4e-save-dir "~/Dropbox/mail" "Location of where to save the mail")
+  (defvar my/mu4e-save-dir "~/Dropbox/mail" "Location of where to save the mail attachement")
   (defvar sendmail-program "/usr/local/bin/msmtp" "The SMTP binary")
  #+END_SRC
 
@@ -22,6 +22,11 @@ Delete all python3.7 email-related libraries:
 3. https://etienne.depar.is/emacs.d/mu4e.html
 4. http://kitchingroup.cheme.cmu.edu/blog/2016/10/29/Sending-html-emails-from-org-mode-with-org-mime/
 
+For [[*Sending mail][Sending mail]] you may need to get certificates and update them in =msmtprc=
+#+BEGIN_SRC shell :tangle no
+  msmtp --host=smtp.office365.com --port=587 --serverinfo --tls --tls-certcheck=off
+ #+END_SRC
+- Copy the SHA256 into tls_fingerprint
 * Theory
 ** To read
 - [[https://kkatsuyuki.github.io/notmuch-conf/][Arch Setup]]
@@ -91,7 +96,7 @@ Create a new label in Google Mail. Next time it will sync to computer
   (setq mu4e-update-interval 86000)
  #+END_SRC
 * Account setup
-** *ilya.antonov@dreams-ai.com*
+** =ilya.antonov@dreams-ai.com=
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'mu4e-user-mail-address-list "ilya.antonov@dreams-ai.com")
 
@@ -118,7 +123,7 @@ Create a new label in Google Mail. Next time it will sync to computer
                                             "☁ DREAMSAI"))
                  (mu4e-compose-format-flowed . t))))
  #+END_SRC
-** *ilya.antonov24@ntlworld*
+** =ilya.antonov24@ntlworld=
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'mu4e-user-mail-address-list "ilya.antonov24@ntlworld")
   (setq my/mu4e/context-ntlworld
@@ -142,7 +147,7 @@ Create a new label in Google Mail. Next time it will sync to computer
                                             "⦿ NTLWORLD\n"))
                  (mu4e-compose-format-flowed . nil))))
  #+END_SRC
-** *antonov.ilya225@gmail.com*
+** =antonov.ilya225@gmail.com=
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'mu4e-user-mail-address-list "antonov.ilya225@gmail.com")
 
@@ -167,7 +172,7 @@ Create a new label in Google Mail. Next time it will sync to computer
                                             "⦿ GMAIL\n"))
                  (mu4e-compose-format-flowed . nil))))
 #+END_SRC
-** *ilya.antonov.2013@live.rhul.ac.uk*
+** =ilya.antonov.2013@live.rhul.ac.uk=
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'mu4e-user-mail-address-list "ilya.antonov.2013@live.rhul.ac.uk")
   (setq my/mu4e/context-outlook
@@ -186,8 +191,8 @@ Create a new label in Google Mail. Next time it will sync to computer
                  (mu4e-trash-folder . "/ilya_OUTLOOK/Deleted Items")
                  (mu4e-refile-folder . "/ilya_OUTLOOK/Archive")
                  (mu4e-compose-signature . (concat
-                                            "Ilya Antonov,\n"
-                                            "⦿ From OUTLOOK\n"))
+                                            "\nPhD Student\n\n"
+                                            "*Royal Holloway University of London*"))
                  (mu4e-compose-format-flowed . nil))))
 #+END_SRC
 ** Loading in accounts
@@ -350,7 +355,9 @@ One of the following options can be chosen to preview html
   (run-with-timer 0 60 'my/mu4e-alert-mode-line)
  #+END_SRC
 * Sending mail
-=msmtp --host=smtp.office365.com --port=587 --serverinfo --tls --tls-certcheck=off=
+#+BEGIN_SRC emacs-lisp 
+  (my/add-dependency "gnupg")
+ #+END_SRC
 ** Base config
 #+BEGIN_SRC emacs-lisp
   (setq message-send-mail-function (function message-send-mail-with-sendmail))
@@ -458,7 +465,9 @@ I run a dummy command on a dummy file that prompts for the password
 #+BEGIN_SRC emacs-lisp
   (define-key my/keymap (kbd "m") (function mu4e))
   (define-key my/keymap (kbd "M") (function my/mu4e-in-new-frame))
+  (define-key my/keymap (kbd "C") (function my/mu4e-compose-org-mail))
   (define-key mu4e-main-mode-map (kbd "U") (function my/mu4e/update))
+  (define-key mu4e-main-mode-map (kbd "C") (function my/mu4e-compose-org-mail))
   (define-key my/keymap (kbd "u") (function my/mu4e/update))
  #+END_SRC
 * Testing

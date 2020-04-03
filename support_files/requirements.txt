@@ -3,10 +3,13 @@ biber
 cargo
 fswatch
 git
+gnupg
 inkscape
 ispell
 latexmk
+osql
 pdf2dsc
+psql
 rls
 rustc
 rustup
