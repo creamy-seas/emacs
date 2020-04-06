@@ -1,9 +1,17 @@
-* TODO #+TITLE: Ricing the is not required but is nice
+#+TITLE: Ricing the is not required but is nice
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
 To get a list of pretty symbols run =(all-the-icons-insert)=
 
+* All-the-icons
+#+BEGIN_SRC emacs-lisp 
+  ;; fix docker-compose.yml not being set
+  (add-to-list 'all-the-icons-icon-alist
+               '("^\\.?docker-compose.yml" all-the-icons-fileicon "dockerfile" :face all-the-icons-blue))
+  (add-to-list 'all-the-icons-icon-alist
+               '("^\\.?adventure.*" all-the-icons-faicon "tripadvisor" :face all-the-icons-silver))
+ #+END_SRC
 * Application window
 #+BEGIN_SRC emacs-lisp
   (setq frame-title-format "🦅")
@@ -140,8 +148,8 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
     (setq dashboard-center-content t)
     (setq dashboard-banner-logo-title "Привет от Леонта!"))
 
-  (setq dashboard-items '((agenda . 10)
-                          (recents  . 5)
+  (setq dashboard-items '((agenda . 5)
+                          (recents  . 10)
                           (projects . 5)
                           (registers . 5)
                           (bookmarks . 5)))

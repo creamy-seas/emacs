@@ -102,15 +102,17 @@ Although there is a package called =auctex= there is no =auctex.el= file.
  #+END_SRC
 ** Basic setup
 #+BEGIN_SRC emacs-lisp
-  (setq TeX-auto-save t)
+  (with-eval-after-load "tex"
+    (setq TeX-auto-save t)
                                           ; access imported packages
-  (setq TeX-parse-self t)
+    (setq TeX-parse-self t)
                                           ; don't prompt file save
-  (setq TeX-save-query nil)
+    (setq TeX-save-query nil)
                                           ; display compilation in a parrallel window
-  (setq-default TeX-show-compilation t)
+    (setq-default TeX-show-compilation t)
 
-  (setq TeX-interactive-mode t)
+    (setq TeX-interactive-mode t))
+
                                           ; spell checking
   (add-hook 'LaTeX-mode-hook 'flyspell-mode)
                                           ; folding
@@ -122,7 +124,7 @@ Although there is a package called =auctex= there is no =auctex.el= file.
                        (cons "$" "$"))))
                                           ; font highlighting
   (add-hook 'LaTeX-mode-hook 'font-lock-mode)
- #+END_SRC**
+ #+END_SRC
 * PACKAGE Cdlatex
 Autocompletion and environments
 #+BEGIN_SRC emacs-lisp
@@ -199,7 +201,7 @@ Referencing and bibliography
 | =TeX-expand-list-builtin= | pair list tying command with a % expression e.g. =%s= -> evalutes the master latex file |
 | =TeX-expand-list=         | this variables contains the above =TeX-expand-list-builtin                              |
 | =Tex-command-expand=      | =(Tex-command-expand "commandInStringForm" 'TeX-master-file TeX-expand-list)=           |
-** supporing functions
+** Supporing Functions
 #+BEGIN_SRC emacs-lisp
   (defvar my/latex/active-compilations 0 "Number of running latex compilation processes")
 
@@ -227,13 +229,9 @@ Referencing and bibliography
         (progn
           ;; (setq global-mode-string (concat "[" (number-to-string my/latex/active-compilations) "]"))
           (message (format " Still running %s compilations" my/latex/active-compilations)))
-      (progn
-        (setq global-mode-string "")
-        (message " No more running compilations"))))
+      (message " No more running compilations")))
  #+END_SRC
 ** =my/latex/compile=           =C-c C-c=
-
-
 #+BEGIN_SRC emacs-lisp
   (defun my/latex/compile ()
     "Generate pdf with latexmk
@@ -269,45 +267,44 @@ Referencing and bibliography
   4) close this buffer as well"
 
     (interactive)
-    (minibuffer-message (concat " Exterminating \"" (my/latex/get-master-file-name) "\""))
-
     (let* (
-                                          ; evaluate information for running compilation
+           ;; 1 - evaluate information for running compilation
            (compilation-info (my/latex/prepare-for-compilation "Compile-PDF"))
-                                          ; 1st arugment is unique process name
+                                          ; 1st argument is unique process name
            (compilation-process-id (car compilation-info))
            (cleanup-script
             (my/latex/evaluate-subsitutions (my/config-file-path-evaluate "my-scripts/latex/jew_engine.sh %s"))))
 
-      (ignore-errors
-        (let* ((process-to-kill (get-process compilation-process-id))
-               (process-buffer (process-buffer process-to-kill))
-               )
-          ;; 1 - delete compilation process
+      ;; 2 - locate if the process is running
+      (let ((process-to-kill (get-process compilation-process-id)))
+        (if process-to-kill
+            ;; 3 - get buffer the process is running in
+            (let ((process-buffer (process-buffer process-to-kill)))
+              (minibuffer-message (format " Exterminating \"%s\"" (my/latex/get-master-file-name)))
+              ;; 4 - delete compliation process
                                           ; no queries
-          (set-process-query-on-exit-flag process-to-kill nil)
+              (set-process-query-on-exit-flag process-to-kill nil)
                                           ; delete process
-          (delete-process process-to-kill)
+              (delete-process process-to-kill)
                                           ; delete buffer
-          (kill-buffer process-buffer))
+              (kill-buffer process-buffer)
 
-        ;; 2 - run cleanup script
-        (async-shell-command cleanup-script)
+              ;; 5 - run cleanup script
+              (shell-command cleanup-script)
 
-        ;; 3 - cleanup buffers
-        (kill-buffer "*TeX Help*"))
+              ;; 6 - cleanup buffers
+              ;; (other-window 1)
+              ;; (sleep-for 1)
+              ;; (kill-buffer-and-window)
 
-      ;; 4 - switch to the termination window
-      (other-window 1)
-      (sleep-for 1)
-      (kill-buffer-and-window)
+              ;; 6 - updated number of running processes
+              (setq my/latex/active-compilations (max (- my/latex/active-compilations 1) 0))
+              (my/latex/modeline-colour)
 
-      ;; 5 - change number of running processes and recolour bar if required
-      (setq my/latex/active-compilations (max (- my/latex/active-compilations 1) 0))
-      (my/latex/modeline-colour)
+              (minibuffer-message "卍 Extermination complete"))
+          (minibuffer-message (format " No latex compilation is running for \"%s.tex\"" (my/latex/get-master-file-name)))))))
 
-      ;; 6 - close this buffer window
-      (minibuffer-message "卍 Extermination complete")))
+
 #+END_SRC
 ** TODO error checking =C-c C-w=
 natively, auctex creates a list of errors once the compiling finishes.
