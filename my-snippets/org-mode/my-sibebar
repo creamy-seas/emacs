@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: my-sidebar
+# key: sidebar
+# --
+#+begin_sidebar
+${1:content that will be shown in sidebar}
+#+end_sidebar

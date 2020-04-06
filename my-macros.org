@@ -1,0 +1,4 @@
+#+BEGIN_SRC emacs-lisp 
+(fset 'my-trim-orgmode-formatting
+   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([4 5 backspace backspace 14 1] 0 "%d")) arg)))
+ #+END_SRC

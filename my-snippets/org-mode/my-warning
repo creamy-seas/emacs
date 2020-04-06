@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: my-warning
+# key: warn
+# --
+#+begin_warning
+${1:warning-content}
+#+end_warning

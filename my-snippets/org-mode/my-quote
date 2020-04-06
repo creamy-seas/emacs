@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: my-quote
+# key: quote
+# --
+#+begin_quote
+${1:quote-content}
+#+end_quote

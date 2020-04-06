@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: my-attention
+# key: attention
+# --
+#+begin_attention
+${1:attention content}
+#+end_attention

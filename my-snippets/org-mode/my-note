@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: my-note
+# key: note
+# --
+#
+#+begin_note
+${1:note-content}
+#+end_note

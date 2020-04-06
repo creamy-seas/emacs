@@ -1,4 +1,5 @@
 ag
+aspell
 biber
 cargo
 fswatch

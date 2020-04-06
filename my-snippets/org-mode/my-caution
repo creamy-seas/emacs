@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: my-caution
+# key: caution
+# --
+#+begin_caution
+${1:caution-content}
+#+end_caution

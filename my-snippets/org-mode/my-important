@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: my-important
+# key: important
+# --
+#+begin_important
+${1:important-content}
+#+end_important
