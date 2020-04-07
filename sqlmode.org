@@ -11,25 +11,18 @@
 | LSP Treemacs       | https://github.com/emacs-lsp/lsp-treemacs                                                                                      |
 |--------------------+--------------------------------------------------------------------------------------------------------------------------------|
 
-* PACKAGE LSP
+* DOWN LSP
 #+BEGIN_SRC emacs-lisp 
-  (use-package lsp-treemacs
-    :ensure t
-    :init (my/add-to-package-list 'lsp-treemacs))
-  (require 'lsp-mssql)
+  ;; (require 'lsp-mssql)
 
+  ;; (add-hook 'sql-mode-hook 'lsp)
 
-  (add-hook 'sql-mode-hook 'lsp)
-
-
-  (setq lsp-mssql-connections
-        [(:server "localhost"
-                  :database ""
-                  :user "sa"
-                  :password "Dreams2020")])
-
-
-
+  ;; (setq lsp-a
+  ;;       lsp-mssql-connections
+  ;;       [(:server "localhost"
+  ;; 		:database ""
+  ;; 		:user "sa"
+  ;; 		:password "Dreams2020")])
  #+END_SRC
 * Init
 #+BEGIN_SRC emacs-lisp 
@@ -51,7 +44,7 @@
   (my/add-dependency "psql")
 
   (add-to-list 'sql-connection-alist
-               '(pg-dreamsai 
+               '(pg-horserace
                  (sql-product 'postgres)
                  (sql-port 5433)
                  (sql-server "localhost")
@@ -59,24 +52,33 @@
                  (sql-password "dreamsai")
                  (sql-database "horse_racing")))
 
+  (add-to-list 'sql-connection-alist
+               '(pg-docker
+                 (sql-product 'postgres)
+                 (sql-port 5432)
+                 (sql-server "localhost")
+                 (sql-user "postgres")
+                 (sql-password "admin")
+                 (sql-database "postgres")))
+
   (defun my/sql/postgres-dreamsai ()
     (interactive)
-    (my/sql/connect "/ssh:ilya@dreams-ai.com" 'postgres 'pg-dreamsai))
+    (my/sql/connect "/ssh:ilya@dreams-ai.com" 'postgres 'pg-horserace))
  #+END_SRC
-* SQL Server (MSSQL)
+* DOWN SQL Server (MSSQL)
 #+BEGIN_SRC emacs-lisp 
-  (my/add-dependency "osql")
+  ;; (my/add-dependency "osql")
 
-  (add-to-list 'sql-connection-alist
-               '(ms-project021
-                 (sql-product 'ms)
-                 (sql-port 1433)
-                 (sql-server "localhost")
-                 (sql-user "sa")
-                 (sql-password "Dreams2020")
-                 (sql-database "NXE")))
+  ;; (add-to-list 'sql-connection-alist
+  ;;              '(ms-project021
+  ;;                (sql-product 'ms)
+  ;;                (sql-port 1433)
+  ;;                (sql-server "localhost")
+  ;;                (sql-user "sa")
+  ;;                (sql-password "Dreams2020")
+  ;;                (sql-database "NXE")))
 
-  (defun my/sql/ms-project02 ()
-    (interactive)
-    (my/sql/connect "/ssh:ilya@project021.sinobestech.com.hk" 'ms 'ms-project021))
+  ;; (defun my/sql/ms-project02 ()
+  ;;   (interactive)
+  ;;   (my/sql/connect "/ssh:ilya@project021.sinobestech.com.hk" 'ms 'ms-project021))
  #+END_SRC

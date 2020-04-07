@@ -21,4 +21,4 @@
 		       ("sqlAddColumn" "-- Add a new column '${1:NewColumnName}' to table '${2:TableName}' in schema '${3:SchemaName}'\nALTER TABLE $3.$2\n	ADD $1 /*new_column_name*/ int /*new_column_datatype*/ NULL /*new_column_nullability*/\nGO\n" "Add a new column to a Table" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/sql-mode/sqlAddColumn" nil nil)))
 
 
-;;; Do not edit! File generated at Sun Apr  5 14:00:01 2020
+;;; Do not edit! File generated at Tue Apr  7 16:32:49 2020

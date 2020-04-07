@@ -1,0 +1,28 @@
+# -*- mode: snippet -*-
+# name: docker-compose-template
+# --
+version: "3.7"
+services:
+  ${1:SERVICENAME}:
+    build:
+      context: ${2:folder-to-build-from}
+container_name: ${3:container-name}
+env_file:
+environment:
+networks:
+  - internal-network
+ports:
+  - "${4:0000}:${5:0000}"
+restart: always
+volumes:
+  - type: volume
+    source: ${6:docker-volume}
+    target: ${7:inside-docker}
+  
+networks:
+  internal-network:
+    # Bridge network to allow inter-communication between the dockers but no external facing connectios
+    driver: bridge
+    
+volumes:
+  $6:

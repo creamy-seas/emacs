@@ -6,4 +6,4 @@
 		       ("up" "(use-package ${1:package-name}\n:ensure t\n:init (my/add-to-package-list '$1)$0)" "use-package" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/emacs-lisp-mode/use-package" nil nil)))
 
 
-;;; Do not edit! File generated at Sun Apr  5 14:00:01 2020
+;;; Do not edit! File generated at Tue Apr  7 16:32:49 2020

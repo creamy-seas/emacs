@@ -358,6 +358,11 @@ To keep code aliged
                   term-mode))
     (add-to-list 'aggressive-indent-excluded-modes mode))
  #+END_SRC
+* Autoinsert
+Whenever opening new files attempt to insert a template
+#+BEGIN_SRC emacs-lisp 
+  (add-hook 'find-file-hook 'auto-insert)
+ #+END_SRC
 * PACKAGE Avy   =M-s=
 The superior search method with highlighting of the leading characters
 #+BEGIN_SRC emacs-lisp
@@ -641,7 +646,13 @@ Language server used in rust
     (lsp lsp-deferred))
 #+END_SRC
 
-** UI
+** PACKAGE Treemacs
+#+BEGIN_SRC emacs-lisp 
+  (use-package lsp-treemacs
+    :ensure t
+    :init (my/add-to-package-list 'lsp-treemacs))
+ #+END_SRC
+** PACKAGE UI
 Higher lever features such as flycheck
 https://github.com/emacs-lsp/lsp-ui
 #+BEGIN_SRC emacs-lisp
@@ -650,7 +661,7 @@ https://github.com/emacs-lsp/lsp-ui
     :commands lsp-ui-mode)
  #+END_SRC
 
-** Company Integration
+** PACKAGE Company Integration
 Put lsp into the backend of company
 #+BEGIN_SRC emacs-lisp
   (use-package company-lsp
@@ -661,7 +672,7 @@ Put lsp into the backend of company
     :commands company-lsp)
  #+END_SRC
 
-** Ivy Intergration
+** PACKAGE Ivy Intergration
 To autocomplete in the search buffergpg
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-ivy

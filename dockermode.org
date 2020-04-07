@@ -18,6 +18,60 @@
     :init (my/add-to-package-list 'docker-compose-mode))
  #+END_SRC
 
+* Autoinsert
+#+BEGIN_SRC emacs-lisp 
+  (define-skeleton my-skeleton/docker-compose
+    "Testing out a docker config. Fist prompt is nil or it asks for user input"
+    nil
+                                          ; initial top line
+    "version: \"3.7\"" \n
+    "services:"\n
+                                          ; repeat recursively until user inputs something empty at the first prompt
+    ("Service block name (enter to exit): "   
+     str ":" \n
+                                          ; default thing to slot in
+     "build: " (skeleton-read "Build directory: ") | "." \n
+
+                                          ; -9 deletes 11 characters if nothing is inserted
+     "container_name: " (skeleton-read "Container name: ") | -21 \n
+
+     "command: " (skeleton-read "Command to run: ") | -14 \n
+
+     "env_file: " (skeleton-read "environment-file: ") | -15 \n
+
+     "environment: " (skeleton-read "environment-parameter: ") | -18 \n
+
+     "networks:" \n
+     "- internal-network" \n -2
+                                          ; first check if ports need to be defined
+     ("Host machine port (enter to stop): "
+      "ports:" \n
+      "- \"" str ":" (skeleton-read "Docker port: ") | "0000" "\"" \n
+                                          ; as long as the first input was evaluated, repeat this
+      ("Host machine port: " "- \"" str ":" (skeleton-read "Docker port: ") | "0000" "\"" \n nil))
+   
+     -2 "restart: always" \n
+                                          ;
+     ("Host machine volume or docker volume (enter to stop): "
+      "volumes:" \n
+      "- type: volume" \n
+      "source: " str \n
+      "target: " (skeleton-read "Docker volume: ")
+      \n)
+                                          ; the final \n indicates what happens after each recursion. ? prevents alignment
+     ?\n "  ")
+    ?\n
+    ?\n					; remove all alignment
+    "networks:" \n
+    "internal-network:"\n
+    "driver: bridge" ?\n ?\n
+                                          ; check for the first volume
+    ("Docker volume name (enter to exit): "
+     "volumes:" \n str ":"
+     ?\n
+     ("Volume name: " "  " str ":" ?\n)))
+ #+END_SRC
+
 * Hydra
 #+BEGIN_SRC emacs-lisp
   (require 'docker-compose)
