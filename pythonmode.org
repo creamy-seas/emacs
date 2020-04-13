@@ -84,7 +84,7 @@ Activate one or the other. Never both.
                                           ; remove flymake checking -> flycheck is the new best friend
     (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)))
  #+END_SRC
-* PACKAGE Flycheck
+* PACKAGE Flycheck/Pylint
 [[https://www.flycheck.org/en/latest/languages.html#python][Flycheck manual]] gives some details about python
 #+BEGIN_SRC emacs-lisp
   (require 'flycheck)
@@ -92,7 +92,8 @@ Activate one or the other. Never both.
                                 (flycheck-mode 1)
                                 (setq flycheck-checker 'python-pylint
                                       flycheck-checker-error-threshold 900
-                                      flycheck-pylintrc my/python/pylintrc)))
+                                      flycheck-pylintrc my/python/pylintrc
+                                      flycheck-pylint-use-symbolic-id t)))
  #+END_SRC
 * PACKAGE Hideshow-org  =C-c C-h=
 ** PACKAGE Init

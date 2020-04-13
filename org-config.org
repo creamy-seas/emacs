@@ -47,17 +47,35 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
                                           ; this creates a subheirachy
           ("e"
            "East-India Data Company")
-
           ("e2"
            "2am goals"
            entry (id "bryan-plan")
            "** %^{TODO-STATE} %^{stuff-to-be-done}\nDEADLINE: %^T")
-
           ("et"
            "Time log"
            table-line (id "bryan-done")
            "| %^u | %^{Project}: %^{task-summary} | %^{hours-worked} hours | |"
            :table-line-pos "@<-1")
+
+          ("x"
+           "People")
+          ("xe"
+           "Ernest"
+           entry (id "ernest")
+           "** SKYPE Catchup Ernest\nDEADLINE: %^T")
+          ("xv"
+           "Vlad"
+           entry (id "vlad")
+           "** SKYPE Catchup Vlad\nDEADLINE: %^T")
+          ("xm"
+           "Milan"
+           entry (id "milan")
+           "** SKYPE Catchup Milan\nDEADLINE: %^T")
+          ("xi"
+           "vivian"
+           entry (id "vivian")
+           "** SKYPE Catchup Vivian\nDEADLINE: %^T")
+
 
           ("l" "Boomer Entry"
            item (
