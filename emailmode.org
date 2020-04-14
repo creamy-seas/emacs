@@ -117,7 +117,7 @@ Create a new label in Google Mail. Next time it will sync to computer
                  (mu4e-trash-folder . "/ilya_DREAMSAI/[Gmail].Bin")
                  (mu4e-refile-folder . "/ilya_DREAMSAI/[Gmail].Starred")
                  (mu4e-compose-signature . (concat
-                                            "Ilya Antonov\n\n"
+                                            "\n\n"
                                             "Physics Handyman\n\n"
                                             "+825 56856958\n\n"
                                             "☁ DREAMSAI"))
@@ -269,9 +269,9 @@ One of the following options can be chosen to preview html
 - html2markdown | grep -v '&nbsp_place_holder;' (Requires html2text pypi)
 - w3m -dump -cols 80 -T text/html *fastest from my experience*
 #+BEGIN_SRC emacs-lisp
-  ;;(setq mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout")
+  (setq mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout")
   ;; (setq mu4e-html2text-command "w3m -T text/html")
-  (setq mu4e-html2text-command "w3m -dump -T text/html -cols 72 -o display_link_number=true -o display_image=false -o ignore_null_img_alt=true")
+  ;; (setq mu4e-html2text-command "w3m -dump -T text/html -cols 72 -o display_link_number=true -o display_image=false -o ignore_null_img_alt=true")
  #+END_SRC
 ** Start in new frame (optional)
 #+BEGIN_SRC emacs-lisp

@@ -2,6 +2,13 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
+* CONFIG Personal Configuration
+#+BEGIN_SRC emacs-lisp 
+                                          ; spell checker program
+  (setq ispell-program-name "/usr/local/bin/aspell")
+                                          ; default dict to use
+  (setq ispell-dictionary "en_GB")
+ #+END_SRC
 * 1 - Keyboard
 ** My keymap on =C-i= and =C-z=
 *** Unbind <C-i> from the TAB key
@@ -47,19 +54,23 @@
  #+END_SRC
 ** Russian mappings
 #+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-ч C-ы") (function save-buffer))
-  (global-set-key (kbd "C-ч C-и") (function ido-switch-buffer))
-  (global-set-key (kbd "C-т") (function next-line))
-  (global-set-key (kbd "C-а") (function forward-char))
-  (global-set-key (kbd "C-и") (function backward-char))
-  (global-set-key (kbd "M-а") (function forward-word))
-  (global-set-key (kbd "M-и") (function backward-word))
-  (global-set-key (kbd "C-ф") (function beginning-of-visual-line))
-  (global-set-key (kbd "C-у") (function end-of-visual-line))
-  (global-set-key (kbd "C-з") (function previous-line))
-  (global-set-key (kbd "C-н") (function yank))
-  (global-set-key (kbd "C-в") (function sp-delete-char))
+  ;; (global-set-key (kbd "C-ч C-ы") (function save-buffer))
+  ;; (global-set-key (kbd "C-ч C-и") (function ido-switch-buffer))
+  ;; (global-set-key (kbd "C-т") (function next-line))
+  ;; (global-set-key (kbd "C-а") (function forward-char))
+  ;; (global-set-key (kbd "C-и") (function backward-char))
+  ;; (global-set-key (kbd "M-а") (function forward-word))
+  ;; (global-set-key (kbd "M-и") (function backward-word))
+  ;; (global-set-key (kbd "C-ф") (function beginning-of-visual-line))
+  ;; (global-set-key (kbd "C-у") (function end-of-visual-line))
+  ;; (global-set-key (kbd "C-з") (function previous-line))
+  ;; (global-set-key (kbd "C-н") (function yank))
+  ;; (global-set-key (kbd "C-в") (function sp-delete-char))
 
+  (use-package reverse-im
+    :init (my/add-to-package-list 'reverse-im)
+    :config
+    (reverse-im-activate "russian-computer"))
  #+END_SRC
 * 2 - Minor Functions
 ** =my/read-string-from-file=
@@ -488,7 +499,6 @@ Highlighting of TODOs
     (add-hook 'prog-mode-hook 'turn-on-fic-mode))
  #+END_SRC
 * PACKAGE Flycheck      =C-c !=
-
 - Better than the default spellchecker called =flyspell=
 - To get information on flycheck for the current mode run =flycheck-verify-setup=
 - =M-$= to check word
@@ -587,17 +597,34 @@ The superior search mode to the original
   (global-set-key (kbd "C-s") 'swiper)
 #+END_SRC
 * Ispell
+If you want to check specific buffer with different language, add
+#+begin_example
+-*- ispell-dictionary: "english" -*-
+#+end_example
 ** Dependencies
 #+BEGIN_SRC emacs-lisp
   (my/add-dependency "aspell")
  #+END_SRC
 ** Set dictionaries
 #+BEGIN_SRC emacs-lisp
-  (setq ispell-program-name "/usr/local/bin/aspell")
-  (setq ispell-dictionary "en_GB")
   ;; Save to user dictionary
   (setq ispell-silently-savep t)
   (setq ispell-personal-dictionary (my/config-file-path-evaluate "dictionaries/aspell.en.pws"))
+ #+END_SRC
+** =my/switch-dictionary=
+#+BEGIN_SRC emacs-lisp 
+  (defun my/switch-dictionary ()
+    "Switch dictionary"
+    (interactive)
+    (if (string-equal ispell-dictionary "en_GB")
+        (progn
+          (ispell-change-dictionary "ru")
+          (message "Changed to Russian "))
+      (progn
+        (ispell-change-dictionary "en_GB")
+        (message "Switched to English"))))
+
+  (define-key my/keymap (kbd "r") 'my/switch-dictionary)
  #+END_SRC
 ** PACKAGE Hydra
 #+BEGIN_SRC emacs-lisp 
@@ -612,15 +639,18 @@ The superior search mode to the original
     _c_: Correct word
     _t_: Toggle hilighting
     _b_: Check the current buffer
+    _d_: Select dictionary		_t_: Toggle dictionary
     "
     ("n" flyspell-goto-next-error)
     ("a" flyspell-auto-correct-word)
     ("c" ispell-word)
     ("t" flyspell-mode)
     ("b" ispell-buffer)
+    ("d" ispell-change-dictionary)
+    ("t" my/switch-dictionary)
     ("q"   nil "cancel" :color blue))
 
-  (define-key my/keymap (kbd "f") (function hydra-flyspell/body))
+  (define-key my/keymap (kbd "w") (function hydra-flyspell/body))
  #+END_SRC
 * PACKAGE Kill ring
 Popup menu when pasting of the past history

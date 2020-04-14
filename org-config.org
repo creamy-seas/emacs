@@ -62,19 +62,27 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
           ("xe"
            "Ernest"
            entry (id "ernest")
-           "** SKYPE Catchup Ernest\nDEADLINE: %^T")
+           "** SKYPE Ernest: Catchup\nDEADLINE: %^T")
+          ("xf"
+           "Fred"
+           entry (id "fred")
+           "** SKYPE Fred: Catchup\nDEADLINE: %^T")
           ("xv"
            "Vlad"
            entry (id "vlad")
-           "** SKYPE Catchup Vlad\nDEADLINE: %^T")
+           "** SKYPE Vlad: Catchup\nDEADLINE: %^T")
           ("xm"
            "Milan"
            entry (id "milan")
-           "** SKYPE Catchup Milan\nDEADLINE: %^T")
+           "** SKYPE Milan: Catchup\nDEADLINE: %^T")
+          ("xa"
+           "Alan"
+           entry (id "alan")
+           "** SKYPE Alan: Catchup\nDEADLINE: %^T")
           ("xi"
-           "vivian"
+           "Vivian"
            entry (id "vivian")
-           "** SKYPE Catchup Vivian\nDEADLINE: %^T")
+           "** SKYPE Vivian: Catchup\nDEADLINE: %^T")
 
 
           ("l" "Boomer Entry"

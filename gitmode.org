@@ -67,6 +67,12 @@ Allow quickly to browser through the file version. Launch with =M-x git-time-mac
   (use-package git-timemachine
     :ensure t)
  #+END_SRC
+* Forge
+#+BEGIN_SRC emacs-lisp 
+  (use-package forge
+    :ensure t
+    :init (my/add-to-package-list 'forge))
+ #+END_SRC
 * smerge
 Used to resolve git conflicts
 #+BEGIN_SRC emacs-lisp
