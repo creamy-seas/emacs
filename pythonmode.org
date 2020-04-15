@@ -63,12 +63,12 @@ Activate one or the other. Never both.
   ;;   :hook (elpy-mode . py-autopep8-enable-on-save)
   ;;   :init (my/add-to-package-list 'py-autopep8))
  #+END_SRC
-** PACKAGE Black (=black=)
+** DOWN Black (=black=)
 #+BEGIN_SRC emacs-lisp
-  (use-package blacken
-    :ensure t
-    :init (my/add-to-package-list 'blacken)
-    (add-hook 'python-mode-hook (function blacken-mode)))
+  ;; (use-package blacken
+  ;;   :ensure t
+  ;;   :init (my/add-to-package-list 'blacken)
+  ;;   (add-hook 'python-mode-hook (function blacken-mode)))
  #+END_SRC
 * PACKAGE Elpy
 #+BEGIN_SRC emacs-lisp
@@ -93,7 +93,7 @@ Activate one or the other. Never both.
                                 (setq flycheck-checker 'python-pylint
                                       flycheck-checker-error-threshold 900
                                       flycheck-pylintrc my/python/pylintrc
-                                      flycheck-pylint-use-symbolic-id t)))
+                                      flycheck-pylint-use-symbolic-id nil)))
  #+END_SRC
 * PACKAGE Hideshow-org  =C-c C-h=
 ** PACKAGE Init
