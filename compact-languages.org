@@ -2,6 +2,9 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
+| =C-i V= | track mardown file in browser |
+
+
 * PACKAGE CSV
 #+BEGIN_SRC emacs-lisp
   (use-package csv-mode

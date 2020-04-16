@@ -11,31 +11,32 @@
  #+END_SRC
 * 1 - Keyboard
 ** My keymap on =C-i= and =C-z=
-*** Unbind <C-i> from the TAB key
+*** DOWN Unbind <C-i> from the TAB key
 #+BEGIN_SRC emacs-lisp
-  (if (window-system)
-                                          ; if we are not in a TTY, unbind C-i from TAB
-      (progn
-        (define-key input-decode-map [?\C-i] [C-i]))
+  ;; (if (window-system)
+  ;;                                         ; if we are not in a TTY, unbind C-i from TAB
+  ;;     (progn
+  ;;       (define-key input-decode-map [?\C-i] [C-i]))
 
-    ;; Since TAB and <C-i> cannot be differentiated in TTY emacs,
-    ;; the workaround is to conditionally bind TAB to indent-region
-    ;; when there is an active region selected.
-    (defun my/tab-replacement (&optional START END)
-      (interactive "r")
-      (if (use-region-p)
-                                          ; IF active region, use indent-region
-          (indent-region START END)
-                                          ; ELSE IF no active region, use default tab command
-        (indent-for-tab-command)))
-                                          ; Bind our quick-and-dirty TAB replacement to the TAB key
-    (global-set-key (kbd "TAB") 'my/tab-replacement))
+  ;;   ;; Since TAB and <C-i> cannot be differentiated in TTY emacs,
+  ;;   ;; the workaround is to conditionally bind TAB to indent-region
+  ;;   ;; when there is an active region selected.
+  ;;   (defun my/tab-replacement (&optional START END)
+  ;;     (interactive "r")
+  ;;     (if (use-region-p)
+  ;;                                         ; IF active region, use indent-region
+  ;;         (indent-region START END)
+  ;;                                         ; ELSE IF no active region, use default tab command
+  ;;       (indent-for-tab-command)))
+  ;;                                         ; Bind our quick-and-dirty TAB replacement to the TAB key
+  ;;   (global-set-key (kbd "TAB") 'my/tab-replacement))
  #+END_SRC
 *** Bind my keymap
 #+BEGIN_SRC emacs-lisp
   (define-prefix-command 'my/keymap)
-  (global-set-key (kbd "<C-i>") 'my/keymap)
+  ;; (global-set-key (kbd "<C-i>") 'my/keymap)
   (global-set-key (kbd "C-z") 'my/keymap)
+  (global-set-key (kbd "C-\\") 'my/keymap)
  #+END_SRC
 ** Symbols mapping
 #+BEGIN_SRC emacs-lisp

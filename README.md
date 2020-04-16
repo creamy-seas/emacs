@@ -36,7 +36,7 @@ Configuration is defined in src-blocks of the [following org files](./support_fi
 | **Keybinding** | **Description**                                                         |
 |:---------------|:------------------------------------------------------------------------|
 | `C-c e`        | Edit a config file                                                      |
-| `C-i` or `C-z` | Quirky custom functions, ranging from working on venv to changing theme |
+| `C-\` or `C-z` | Quirky custom functions, ranging from working on venv to changing theme |
 
 
 # TODO

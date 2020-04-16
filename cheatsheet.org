@@ -32,11 +32,12 @@
 |----------------------+-----------------------------|
 
 * External dependencies
-|-----------------------+-------------------------+---------------------------|
-| =aspell=              | for checking spelling   |                           |
-| =language-tools=      | for syntax checking     | https://languagetool.org/ |
-| =the_silver_searcher= | for searching code      |                           |
-| =figlet=              | for creating ascii text |                           |
+|-----------------------+---------------------------+---------------------------|
+| =aspell=              | for checking spelling     |                           |
+| =language-tools=      | for syntax checking       | https://languagetool.org/ |
+| =the_silver_searcher= | for searching code        |                           |
+| =figlet=              | for creating ascii text   |                           |
+| =grip=                | to preview markdown files |                           |
 
 * ='= and =`=
 |-----+---------------------------------------------------------------------------------------------|

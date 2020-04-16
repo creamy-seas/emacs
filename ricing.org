@@ -152,10 +152,10 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
     (setq dashboard-center-content t)
     (setq dashboard-banner-logo-title "Привет от Леонта!"))
 
-  (setq dashboard-items '((agenda . 5)
-                          (recents  . 10)
+  (setq dashboard-items '((agenda . 8)
+                          (recents  . 8)
                           (projects . 5)
-                          (registers . 5)
+                          (registers . 2)
                           (bookmarks . 5)))
  #+END_SRC
 ** PACKAGE Page-Break-Lines (for dashboard)
@@ -294,7 +294,7 @@ Buffer that groups other buffers
                                (mode . "ein:notebooklist-mode")
                                (name . "\\*ein:.*")
                                ))
-                 ("ᛥ Dired" (mode . dired-mode))
+                 (" Dired" (mode . dired-mode))
                  (" Python" (or
                               (mode . python-mode)
                               (mode . inferior-python-mode)
