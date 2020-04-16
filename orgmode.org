@@ -98,10 +98,11 @@ You can type =<el= and the =TAB= to create the desired source block
   (add-to-list 'org-structure-template-alist
                '("sh" "#+BEGIN_SRC shell \n ? \n #+END_SRC"))
 #+END_SRC
-* PACKAGE Export
+* Export
 #+BEGIN_SRC emacs-lisp
   (setq org-export-with-toc nil)
   (setq org-confirm-babel-evaluate nil)
+  (setq org-export-backends '(html latex md groff))
  #+END_SRC
 ** Conflunence
 #+BEGIN_SRC emacs-lisp

@@ -5,6 +5,7 @@ cargo
 fswatch
 git
 gnupg
+grip
 inkscape
 ispell
 latexmk

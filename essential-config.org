@@ -452,6 +452,7 @@ Beautiful file browsing. Dired+ is downloaded manually
 ** MANUAL-PACKAGE Init
 #+BEGIN_SRC emacs-lisp
   (require 'dired+)
+  (setq dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$")
                                           ; hook that does not show boring files
   ;; (add-hook 'dired-mode-hook (function dired-omit-mode))
  #+END_SRC
@@ -754,6 +755,10 @@ For better autocompletion
     :init (my/add-to-package-list 'counsel-projectile)
     :config
     (counsel-projectile-mode))
+ #+END_SRC
+** Open magit by default when opening project
+#+BEGIN_SRC emacs-lisp 
+  (setq projectile-switch-project-action 'projectile-vc)
  #+END_SRC
 ** PACKAGE Hydra <<counsel-hydra>>
 #+BEGIN_SRC emacs-lisp
