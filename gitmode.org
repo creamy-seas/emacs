@@ -30,7 +30,7 @@ where =<GITLAB_USERNAME>= is your gitlab name and =<TOKEN>= is what was generate
 #+BEGIN_SRC emacs-lisp
   (my/add-dependency "git")
  #+END_SRC
-* PACKAGE Magit =C-x g=
+* PACKAGE Magit         =C-x g=
 #+BEGIN_SRC emacs-lisp
   (use-package magit
     :ensure t
@@ -99,35 +99,17 @@ Allow quickly to browser through the file version. Launch with =M-x git-time-mac
                          :hint nil			  
                          )
     "
-    🌎 Global
     ------------------------------------------------------------------------------------------
     _A_: Add repository (without fetching issues and pull requests)
     _D_: Delete repository
     _X_: Reset forge database (as forge is under development, this will be required occasionally)
     _L_: List all the repositories tracked by forge
-    _N_: List all notifications (only github )
-    _I_: List all issues
-    _P_: List all pull requests
     _T_: Remove a topic from local database
-  
-     For me
-    ------------------------------------------------------------------------------------------
-    _i_: Issues for me
-    _p_: Pull requests for me
-    _r_: List all things for review
-  
     "
     ("A" forge-add-repository)
     ("D" forge-remove-repository)
     ("X" forge-reset-database)
     ("L" forge-list-repositories)
-    ("N" forge-list-notifications)
-    ("P" forge-list-owned-pullreqs)
-    ("I" forge-list-owned-issues)
-
-    ("i" forge-list-assigned-issues)
-    ("p" forge-list-assigned-pullreqs)
-    ("r" forge-list-requested-reviews)  
     ("T" forge-remove-topic-locally)
 
     ("q"   nil "cancel" :color blue))

@@ -2,9 +2,11 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-|---------+-----------------------------------------------------+-------------------|
-| =C-c c= | Entering capture mode where templates are available | [[*Capture templates][Capture templates]] |
-| =C-c a= | View agendas                                        | [[*Agenda files][Agenda files]]      |
+|---------------+-----------------------------------------------------+-------------------|
+| =C-c c=       | Entering capture mode where templates are available | [[*Capture templates][Capture templates]] |
+| =C-c a=       | View agendas                                        | [[*Agenda files][Agenda files]]      |
+| =C-c C-x C-i= | Start clock                                         |                   |
+| =C-c C-x C-d= | Print report for current file                       |                   |
 
 
 
@@ -100,7 +102,7 @@ You can type =<el= and the =TAB= to create the desired source block
 #+END_SRC
 * Export
 #+BEGIN_SRC emacs-lisp
-  (setq org-export-with-toc nil)
+  (setq org-export-with-toc t)
   (setq org-confirm-babel-evaluate nil)
   (setq org-export-backends '(html latex md groff))
  #+END_SRC

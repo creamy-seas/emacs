@@ -241,5 +241,5 @@ Replaces letters in programming mode
   (define-key elpy-mode-map (kbd "C-c C-j") (function elpy-shell-kill-all))
   (define-key elpy-mode-map (kbd "C-c C-n") (function flycheck-next-error))
   (define-key elpy-mode-map (kbd "C-c C-p") (function flycheck-previous-error))
-  (define-key my/keymap (kbd "v") (function pyvenv-workon))
+  (define-key my/keymap (kbd "v") 'pyvenv-workon)
  #+END_SRC

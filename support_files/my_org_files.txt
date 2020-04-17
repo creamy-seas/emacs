@@ -13,6 +13,7 @@ elfeedmode.org
 cppmode.org
 latexmode.org
 jupytermode.org
+markdownmode.org
 inkscapemode.org
 sshmode.org
 gitmode.org

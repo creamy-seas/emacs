@@ -2,68 +2,9 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-| =C-i V= | track mardown file in browser |
-
-
 * PACKAGE CSV
 #+BEGIN_SRC emacs-lisp
   (use-package csv-mode
     :ensure t
     :init (my/add-to-package-list 'csv-mode))
- #+END_SRC
-* PACKAGE Markdown mode
-** PACKAGE Init
-#+BEGIN_SRC emacs-lisp
-  (use-package markdown-mode
-    :ensure t
-    :commands (markdown-mode gfm-mode)
-    :mode (("README\\.md\\'" . gfm-mode)
-           ("\\.md\\'" . markdown-mode)
-           ("\\.markdown\\'" . markdown-mode))
-    :init (my/add-to-package-list 'markdown-mode)
-    (setq markdown-command "multimarkdown")
-    :config
-    (define-key markdown-mode-map (kbd "C-c C-b") nil))
- #+END_SRC
-** Toggling toc when exporting markdown from [[file:orgmode.org::*Export][org mode]]
-#+BEGIN_SRC emacs-lisp 
-  (defvar my/org/last-toc-state t "Table-of-content state right before export. We need to turn it off for markdown")
-
-  (defun my/toggle-toc-before-markdown-export ()
-    "Toggle toc off before mardown export and save the state to set it after export"
-    (if org-export-with-toc
-        (progn
-          (message " Turning toc off for markdown")
-          (setq my/org/last-toc-state t)
-          (setq org-export-with-toc nil)
-          )
-      (progn
-        (setq my/org/last-toc-state nil)
-        (message " Toc already off"))))
-
-  (defadvice org-md-export-to-markdown
-      (before toggle-toc-before-to-markdown-export activate)
-    (my/toggle-toc-before-markdown-export))
-
-  (defadvice org-md-export-to-markdown
-      (after revert-toc-after-to-markdown-export activate)
-    (setq org-export-with-toc my/org/last-toc-state))
-
-  (defadvice org-md-export-as-markdown
-      (before toggle-toc-before-as-markdown-export activate)
-    (my/toggle-toc-before-markdown-export))
-
-  (defadvice org-md-export-as-markdown
-      (after revert-toc-after-as-markdown-export activate)
-    (setq org-export-with-toc my/org/last-toc-state))
- #+END_SRC
-* PACKAGE Grip mode
-For markdown rendering
-#+BEGIN_SRC emacs-lisp 
-  (my/add-dependency "grip")
-  (use-package grip-mode
-    :ensure t
-    :init (my/add-to-package-list 'grip-mode))
-
-  (define-key my/keymap (kbd "V") 'grip-mode)
  #+END_SRC
