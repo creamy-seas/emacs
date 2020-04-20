@@ -67,7 +67,7 @@
   ;; (global-set-key (kbd "C-з") (function previous-line))
   ;; (global-set-key (kbd "C-н") (function yank))
   ;; (global-set-key (kbd "C-в") (function sp-delete-char))
-
+  (add-to-list 'load-path (concat my/config-folder-location "manual_el/reverse-im-20200324.1113"))
   (use-package reverse-im
     :init (my/add-to-package-list 'reverse-im)
     :config
