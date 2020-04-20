@@ -7,4 +7,4 @@
 		       ("red" "<font color=red>$1</font>" "font-red" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/markdown-mode/font-red" nil nil)))
 
 
-;;; Do not edit! File generated at Tue Apr  7 16:32:49 2020
+;;; Do not edit! File generated at Sat Apr 18 10:16:37 2020

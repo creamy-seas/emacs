@@ -135,12 +135,12 @@ To export an inkscape image for latex interactively, open =.svg= file → save a
 * PACKAGE Hydra
 #+BEGIN_SRC emacs-lisp
   (defhydra hydra-inkscape (
-                            :pre (progn
-                                   (set-face-background 'hl-line "#5d478b")
-                                   (set-cursor-color "#8b5742"))
-                            :post (progn
-                                    (set-face-background 'hl-line "#3e4446")
-                                    (set-cursor-color "yellow"))
+                            ;; :pre (progn
+                            ;;        (set-face-background 'hl-line "#5d478b")
+                            ;;        (set-cursor-color "#8b5742"))
+                            ;; :post (progn
+                            ;;         (set-face-background 'hl-line "yellow")
+                            ;;         (set-cursor-color "yellow"))
                             :timeout 10
                             :hint nil)
     "

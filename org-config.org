@@ -29,102 +29,94 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
 
 #+BEGIN_SRC emacs-lisp
   (setq org-capture-templates
-        '(("b"
-           "Bloat"
-           entry (id "antlers-bloat")
+        '(("b" "Bloat"
+           entry
+           (id "antlers-bloat")
            "** BLOAT %^{stuff-to-be-done}\nSHEDULED: %^T")
 
-          ("c"
-           "Copy Pasta"
-           entry (id "copy-pasta")
+          ("c" "Copy Pasta"
+           entry
+           (id "copy-pasta")
            "** %^{Pasta Title} %t\n%?")
 
-          ("d"
-           "Draft"
-           plain (file "~/Desktop/.temp.org")
+          ("d" "Draft"
+           plain
+           (file "~/Desktop/.temp.org")
            "%?")
-
-                                          ; this creates a subheirachy
-          ("e"
-           "East-India Data Company")
-          ("e2"
-           "2am goals"
-           entry (id "bryan-plan")
+	
+          ("e" "East India Data Company Task"
+           entry
+           (file "~/mydrive/east-data-company.org")
            "** %^{TODO-STATE} %^{stuff-to-be-done}\nDEADLINE: %^T")
-          ("et"
-           "Time log"
-           table-line (id "bryan-done")
-           "| %^u | %^{Project}: %^{task-summary} | %^{hours-worked} hours | |"
-           :table-line-pos "@<-1")
+          ;; ("et" "Time log"
+          ;;  table-line (id "bryan-done")
+          ;;  "| %^u | %^{Project}: %^{task-summary} | %^{hours-worked} hours | |"
+          ;;  :table-line-pos "@<-1")
 
-          ("x"
-           "People")
-          ("xe"
-           "Ernest"
-           entry (id "ernest")
+          ("x" "People")
+          ("xe" "Ernest"
+           entry
+           (id "ernest")
            "** SKYPE Ernest: Catchup\nDEADLINE: %^T")
-          ("xf"
-           "Fred"
-           entry (id "fred")
+          ("xf" "Fred"
+           entry
+           (id "fred")
            "** SKYPE Fred: Catchup\nDEADLINE: %^T")
-          ("xv"
-           "Vlad"
-           entry (id "vlad")
+          ("xv" "Vlad"
+           entry
+           (id "vlad")
            "** SKYPE Vlad: Catchup\nDEADLINE: %^T")
-          ("xm"
-           "Milan"
-           entry (id "milan")
+          ("xm" "Milan"
+           entry
+           (id "milan")
            "** SKYPE Milan: Catchup\nDEADLINE: %^T")
-          ("xs"
-           "Sam"
-           entry (id "sam")
+          ("xs" "Sam"
+           entry
+           (id "sam")
            "** SKYPE Sam: Catchup\nDEADLINE: %^T")
-          ("xa"
-           "Alan"
-           entry (id "alan")
+          ("xa" "Alan"
+           entry
+           (id "alan")
            "** SKYPE Alan: Catchup\nDEADLINE: %^T")
-          ("xi"
-           "Vivian"
-           entry (id "vivian")
+          ("xi" "Vivian"
+           entry
+           (id "vivian")
            "** SKYPE Vivian: Catchup\nDEADLINE: %^T")
 
 
           ("l" "Boomer Entry"
-           item (
-                 file+headline "~/creamy_seas/1488.org.gpg" "Becoming a boomer"
-                 ) "%^{What did Luke say} %^G\n%?" (
-                 file "~/creamy_seas/1488.org.gpg")
+           item
+           (file+headline "~/creamy_seas/1488.org.gpg" "Becoming a boomer")
+           "%^{What did Luke say} %^G\n%?"
+           (file "~/creamy_seas/1488.org.gpg")
            "%?")
 
-          ("p"
-           "PhD Tasks")
-          ("pp"
-           "Photon Counting"
-           entry (id "phd-photon")
+          ("p" "PhD Tasks")
+          ("pp" "Photon Counting"
+           entry
+           (id "phd-photon")
            "*** PHD Photn Counting [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
           ("pt" "Twin Qubit"
            entry
            (id "phd-twin")
            "*** PHD Twin Qubit [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
-          ("px"
-           "xMon"
-           entry (id "phd-xmon")
+          ("px" "xMon"
+           entry
+           (id "phd-xmon")
            "*** PHD xMon [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
-          ("pg"
-           "General"
-           entry (id "phd-general")
+          ("pg" "General"
+           entry
+           (id "phd-general")
            "*** PHD General [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
 
-          ("u"
-           "Save URL"
+          ("u" "Save URL"
            entry
            (file+headline "~/creamy_seas/1488.org.gpg" "URL too good to throw away")
            "** %^L %? %^G"
            :kill-buffer t)
 
           ("s" "Stories"
-           entry
-           (id "stories")
+           entry (id "stories")
            "** %^{Title} %t\n%?")))
           ;; tutoring
           ;; ("t" "Tutoring lessons")

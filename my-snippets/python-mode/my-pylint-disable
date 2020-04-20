@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: pylint-disable
+# key: pd
+# --
+\# pylint: disable=$0

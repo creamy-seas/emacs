@@ -400,7 +400,7 @@ Completion. With a dropdown box. Metal.
                                           ;set time before company popup shows up
     (setq company-idle-delay 0.2)
                                           ;when autocompletion kicks in
-    (setq company-minimum-prefix-length 3))
+    (setq company-minimum-prefix-length 4))
 #+END_SRC
 ** Company colours
 #+BEGIN_SRC emacs-lisp
@@ -453,11 +453,14 @@ Beautiful file browsing. Dired+ is downloaded manually
 ** MANUAL-PACKAGE Init
 #+BEGIN_SRC emacs-lisp
   (require 'dired+)
-  (setq dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$")
                                           ; hook that does not show boring files
   ;; (add-hook 'dired-mode-hook (function dired-omit-mode))
  #+END_SRC
-
+** Crossout
+#+BEGIN_SRC emacs-lisp 
+(add-to-list 'dired-omit-extensions ".git/")
+(add-to-list 'dired-omit-extensions "__pycache__/")
+ #+END_SRC
 ** Keybindings
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-x C-d") (function dired))

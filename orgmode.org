@@ -8,6 +8,10 @@
 | =C-c C-x C-i= | Start clock                                         |                   |
 | =C-c C-x C-d= | Print report for current file                       |                   |
 
+Tip - if you do not want to have long file names displayed in the agenda buffer, create a =Category=
+#+begin_example
+#+CATEGORY: custom-name-for-agenda-file
+#+end_example
 
 
 * Agenda files
@@ -316,8 +320,7 @@ You can type =<el= and the =TAB= to create the desired source block
 ** =my/org/tob64-roided=: opens image and processes it into a base64 string
 #+BEGIN_SRC emacs-lisp
   (defun my/org/tob64-roided (filename caption width)
-    "Takes the filename and creates a temporary buffer with contents
-    Use it to export to base64"
+    "Takes the filename (pass it an image) and writes the content upon export to hmtl"
     (format "<figure><img src=\"data:image/png;base64,%s\" width=\"%s\" class='center' border='1'>'<figcaption class='center'>%s</figcaption></figure>"
             (base64-encode-string
              (with-temp-buffer
