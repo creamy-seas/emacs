@@ -6,7 +6,10 @@
 | =C-c c=       | Entering capture mode where templates are available | [[*Capture templates][Capture templates]] |
 | =C-c a=       | View agendas                                        | [[*Agenda files][Agenda files]]      |
 | =C-c C-x C-i= | Start clock                                         |                   |
-| =C-c C-x C-d= | Print report for current file                       |                   |
+| =C-c C-x C-d= | Show clocks                                         |                   |
+| =C-c C-x C-z= | Resolve clocks in buffer                            |                   |
+| =C-c C-y=     | Recompute time after updatingmanually               |                   |
+| =C-c C-x C-r= | Report for org file                                 |                   |
 
 Tip - if you do not want to have long file names displayed in the agenda buffer, create a =Category=
 #+begin_example

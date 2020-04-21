@@ -813,6 +813,7 @@ Colourize codes such as #AF3313
      (my/add-to-theme-hashmap 'doom-vibrant "my-themes/doom-themes-20200325.1249")
      (my/add-to-theme-hashmap 'dracula "my-themes/dracula-theme-1.7.0")
      (my/add-to-theme-hashmap 'leuven "my-themes/leuven-theme-20200122.1934")
+     (my/add-to-theme-hashmap 'clues "my-themes/clues-theme-1.0.1")
      (my/add-to-theme-hashmap 'leuven-dark)
      (my/add-to-theme-hashmap 'deeper-blue)
      (my/add-to-theme-hashmap 'zenburn "my-themes/zenburn-theme-2.6")

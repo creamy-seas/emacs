@@ -17,6 +17,7 @@
 (load (concat user-emacs-directory "inkscapemode.el"))
 (load (concat user-emacs-directory "sshmode.el"))
 (load (concat user-emacs-directory "gitmode.el"))
+(load (concat user-emacs-directory "markdownmode.el"))
 (load (concat user-emacs-directory "compact-languages.el"))
 (load (concat user-emacs-directory "latexmode.el"))
 (load (concat user-emacs-directory "post-load.el"))

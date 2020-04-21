@@ -1,7 +1,62 @@
-#+TITLE: Email configuration
+#+TITLE: Emailmode
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
+| C-c C-a  | Attach to an email                              |
+|----------+-------------------------------------------------|
+|          | *Navigation*                                    |
+| n,p      | view the next, previous message                 |
+| ],[      | move to the next, previous unread message       |
+| y        | select the message view (if it's visible)       |
+| RET      | open the message at point in the message view   |
+|          | *Searching*                                     |
+|----------+-------------------------------------------------|
+| s        | search                                          |
+| S        | edit last query                                 |
+| /        | narrow the search                               |
+| b        | search bookmark                                 |
+| B        | edit bookmark before search                     |
+| j        | jump to maildir                                 |
+| M-left,\ | previous query                                  |
+| M-right  | next query                                      |
+|          |                                                 |
+| O        | change sort order                               |
+| P        | toggle threading                                |
+| Q        | toggle full-search                              |
+| V        | toggle skip-duplicates                          |
+| W        | toggle include-related                          |
+|          | *Marking*                                       |
+|----------+-------------------------------------------------|
+| t        | read and trash                                  |
+| o        | dump into "orders" folder of gmail              |
+| d        | mark for moving to the trash folder             |
+| =        | mark for removing trash flag ('untrash')        |
+| D        | mark for complete deletion                      |
+| m        | mark for moving to another maildir folder       |
+| r        | mark for refiling                               |
+| +,-      | mark for flagging/unflagging                    |
+| ?,!      | mark message as unread, read                    |
+|          |                                                 |
+| u        | unmark message at point                         |
+| U        | unmark *all* messages                           |
+|          |                                                 |
+| %        | mark based on a regular expression              |
+|          |                                                 |
+| *        | mark for 'something' (decide later)             |
+| #        | resolve deferred 'something' marks              |
+|          |                                                 |
+| x        | execute actions for the marked messages         |
+|          | *Composition*                                   |
+|----------+-------------------------------------------------|
+| R,F,C    | reply/forward/compose                           |
+| E        | edit (only allowed for draft messages)          |
+|          | *Misc*                                          |
+|----------+-------------------------------------------------|
+| ;        | switch context                                  |
+| a        | execute some custom action on a header          |
+| C-+,C--  | increase / decrease the number of headers shown |
+| H        | get help                                        |
+| q        | leave the headers buffer                        |
 * CONFIG Personal Configuration
 #+BEGIN_SRC emacs-lisp
   (defvar my/mu4e-load-path "/usr/local/share/emacs/site-lisp/mu/mu4e" "location of the emacs mu4e package")
@@ -12,6 +67,10 @@
  #+END_SRC
 
 * External setup
+*Run this to use correct openssl*
+#+BEGIN_SRC shell :tangle no
+  brew switch openssl 1.0.2s
+ #+END_SRC
 If offlineimap is giving an error, it is probably picking up python3.7
 Delete all python3.7 email-related libraries:
 1. Find the site libraries
@@ -19,14 +78,16 @@ Delete all python3.7 email-related libraries:
   python3 -m site
  #+END_SRC
 2. [@2] Remove all =imap= packages
-3. https://etienne.depar.is/emacs.d/mu4e.html
-4. http://kitchingroup.cheme.cmu.edu/blog/2016/10/29/Sending-html-emails-from-org-mode-with-org-mime/
+3. Remeber to run the setup in [[https://www.djcbsoftware.nl/code/mu/mu4e/Getting-started.html#Getting-started][this tutorial]] for doing external setup
+4. https://etienne.depar.is/emacs.d/mu4e.html
+5. http://kitchingroup.cheme.cmu.edu/blog/2016/10/29/Sending-html-emails-from-org-mode-with-org-mime/
 
 For [[*Sending mail][Sending mail]] you may need to get certificates and update them in =msmtprc=
 #+BEGIN_SRC shell :tangle no
   msmtp --host=smtp.office365.com --port=587 --serverinfo --tls --tls-certcheck=off
  #+END_SRC
-- Copy the SHA256 into tls_fingerprint
+- Copy the SHA256 into tls_fingerprint of the =.offlineimaprc= file
+
 * Theory
 ** To read
 - [[https://kkatsuyuki.github.io/notmuch-conf/][Arch Setup]]
@@ -72,6 +133,7 @@ https://www.offlineimap.org/doc/FAQ.html#does-offlineimap-verify-ssl-certificate
 - go to =https://myaccount.google.com/lesssecureapps=
 - allow all applications
 - https://myaccount.google.com/u/4/security
+
 ** Google Mailboxes
 Create a new label in Google Mail. Next time it will sync to computer
 ** What to install
@@ -93,9 +155,9 @@ Create a new label in Google Mail. Next time it will sync to computer
                                           ; directory for saving attachments
   (setq mu4e-attachment-dir (expand-file-name my/mu4e-save-dir))
                                           ; email addresses of user
-  (setq mu4e-update-interval 86000)
+  (setq mu4e-update-interval 500)
  #+END_SRC
-* Account setup
+* CONFIG Account setup
 ** =ilya.antonov@dreams-ai.com=
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'mu4e-user-mail-address-list "ilya.antonov@dreams-ai.com")
@@ -208,21 +270,21 @@ Create a new label in Google Mail. Next time it will sync to computer
          my/mu4e/context-gmail
          my/mu4e/context-outlook))
  #+END_SRC
-* Navigation
+* CONFIG Main menu
 ** Main menu
 #+BEGIN_SRC emacs-lisp
   (setq mu4e-maildir-shortcuts
-        '(("/ilya_DREAMSAI/INBOX"     . ?d)
-          ("/ilya_GMAIL/INBOX"     . ?g)
-          ("/ilya_NTLWORLD/INBOX"     . ?n)
-          ("/ilya_OUTLOOK/INBOX"     . ?l)))
+        '(("/ilya_DREAMSAI/INBOX" . ?d)
+          ("/ilya_GMAIL/INBOX" . ?g)
+          ("/ilya_NTLWORLD/INBOX" . ?n)
+          ("/ilya_OUTLOOK/INBOX" . ?l)))
  #+END_SRC
-** Bookmarks
+** Bookmarks - common go to items
 #+BEGIN_SRC emacs-lisp
-  (setq mu4e-bookmarks '(("flag:unread" "Unread messages" ?u)
-                         ("date:today..now" "Today's messages" ?t)
-                         ("date:7d..now" "Last 7 days" ?w)
-                         ("mime:image/*" "Messages with images" ?p)))
+  ;; (setq mu4e-bookmarks '(("flag:unread" "Unread messages" ?u)
+  ;;                        ("date:today..now" "Today's messages" ?t)
+  ;;                        ("date:7d..now" "Last 7 days" ?w)
+  ;;                        ("mime:image/*" "Messages with images" ?p)))
                                           ; display all inbox emails
   (add-to-list 'mu4e-bookmarks
                (make-mu4e-bookmark
@@ -241,12 +303,12 @@ Create a new label in Google Mail. Next time it will sync to computer
 #+BEGIN_SRC emacs-lisp
   (setq mu4e-view-show-addresses t)
  #+END_SRC
-** Email list
+** Header view
 #+BEGIN_SRC emacs-lisp
   (setq mu4e-headers-fields
-        '( (:date          .  10)
+        '( (:human-date          .  10)
            (:flags         .   6)
-           (:from          .  30)
+           (:from-or-to          .  30)
            (:size		 .  8)
            (:subject       .  nil)))
 
@@ -262,16 +324,31 @@ Create a new label in Google Mail. Next time it will sync to computer
   (when (fboundp 'imagemagick-register-types)
     (imagemagick-register-types))
  #+END_SRC
-** HTML
+** HTML Rendering
 One of the following options can be chosen to preview html
 - html2text -utf8 -width 72
 - textutil -stdin -format html -convert txt -stdout
 - html2markdown | grep -v '&nbsp_place_holder;' (Requires html2text pypi)
 - w3m -dump -cols 80 -T text/html *fastest from my experience*
+- custom command that opens messages that are too big in a browser
 #+BEGIN_SRC emacs-lisp
-  (setq mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout")
+  (defun my-mu4e-html2text (msg)
+    "My html2text function; shows short message inline, show
+  long messages in some external browser (see `browse-url-generic-program')."
+    (let ((html (or (mu4e-message-field msg :body-html) "")))
+      (if (> (length html) 20000)
+          (progn
+            (mu4e-action-view-in-browser msg)
+            "[Viewing message in external browser]")
+        (mu4e-shr2text msg))))
+  ;; (setq mu4e-html2text-command 'my-mu4e-html2text)
+
+  ;; (setq mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout")
   ;; (setq mu4e-html2text-command "w3m -T text/html")
-  ;; (setq mu4e-html2text-command "w3m -dump -T text/html -cols 72 -o display_link_number=true -o display_image=false -o ignore_null_img_alt=true")
+  (setq mu4e-html2text-command "w3m -dump -T text/html -cols 72 -o display_link_number=true -o display_image=false -o ignore_null_img_alt=true")
+
+  ;; (my/add-dependency "html2text")
+  ;; (setq mu4e-html2text-command "html2text -utf8 -width 72")
  #+END_SRC
 ** Start in new frame (optional)
 #+BEGIN_SRC emacs-lisp
@@ -285,7 +362,7 @@ One of the following options can be chosen to preview html
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'mu4e-view-actions '("web-view" . mu4e-action-view-in-browser) t)
  #+END_SRC
-* Customized marking actions
+* CONFIG Customized marking actions
 ** Read and delete
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'mu4e-marks
@@ -298,13 +375,13 @@ One of the following options can be chosen to preview html
                                 (mu4e~proc-move docid nil "+S+T-u-N"))))
 
   (mu4e~headers-defun-mark-for read-and-trash)
-  (define-key mu4e-headers-mode-map (kbd "C-c C-t") 'mu4e-headers-mark-for-read-and-trash)
+  (define-key mu4e-headers-mode-map (kbd "t") 'mu4e-headers-mark-for-read-and-trash)
  #+END_SRC
 ** Dump order
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'mu4e-marks
                '(dump-order
-                 :char       ("O" . "🐋")
+                 :char       ("o" . "🐋")
                  :prompt     "wPlace into order?"
                  :show-target (lambda (target) "Order")
                  :action      (lambda (docid msg target)
@@ -312,13 +389,13 @@ One of the following options can be chosen to preview html
                                 (mu4e~proc-move docid "/ilya_GMAIL/Orders" "+S-u-N"))))
 
   (mu4e~headers-defun-mark-for dump-order)
-  (define-key mu4e-headers-mode-map (kbd "C-c C-o") 'mu4e-headers-mark-for-dump-order)
+  (define-key mu4e-headers-mode-map (kbd "o") 'mu4e-headers-mark-for-dump-order)
  #+END_SRC
 ** Expenses
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'mu4e-marks
                '(expenses-dreamsai
-                 :char       ("E" . "💰")
+                 :char       ("e" . "💰")
                  :prompt     "wMark as expense"
                  :show-target (lambda (target) "Expenses ☁")
                  :action      (lambda (docid msg target)
@@ -326,7 +403,7 @@ One of the following options can be chosen to preview html
                                 (mu4e~proc-move docid "/ilya_DREAMSAI/Expenses" "+S-u-N"))))
 
   (mu4e~headers-defun-mark-for expenses-dreamsai)
-  (define-key mu4e-headers-mode-map (kbd "C-c C-e") 'mu4e-headers-mark-for-expenses-dreamsai)
+  (define-key mu4e-headers-mode-map (kbd "e") 'mu4e-headers-mark-for-expenses-dreamsai)
  #+END_SRC
 
 * PACKAGE Alert
@@ -358,38 +435,21 @@ One of the following options can be chosen to preview html
 #+BEGIN_SRC emacs-lisp 
   (my/add-dependency "gnupg")
  #+END_SRC
-** Base config
-#+BEGIN_SRC emacs-lisp
-  (setq message-send-mail-function (function message-send-mail-with-sendmail))
-                                          ; Use the correct account context when sending mail based on the from header.
-  (setq message-sendmail-envelope-from 'header)
- #+END_SRC
-** Composing Mail
+** Citation when replying
 #+BEGIN_SRC emacs-lisp
   (setq message-citation-line-format "%N @ %Y-%m-%d %H:%M %Z:\n")
   (setq message-citation-line-function 'message-insert-formatted-citation-line)
-
-  (add-hook 'mu4e-compose-mode-hook
-            (defun my-do-compose-stuff ()
-              "⦿⦿ Those sweet custom settings"
-              (set-fill-column 72)
-              (flyspell-mode)))
  #+END_SRC
-** org-mu4e
+** MANUAL-PACKAGE Editing with org-mu4e
 #+BEGIN_SRC emacs-lisp
                                           ; installed with mu4e
   (require 'org-mu4e)
   (use-package org-mime
     :ensure t)
-
-
-  (defun my/mu4e-compose-org-mail ()
-    (interactive)
-    (mu4e-compose-new)
-    (org-mu4e-compose-org-mode))
+                                          ; add the hook
+  (add-hook 'mu4e-compose-mode-hook 'org-mu4e-compose-org-mode)
 
   (setq org-mu4e-link-query-in-headers-mode nil)
-
 
   (defun my/mu4e-htmlize-and-send ()
     "When in an org-mu4e-compose-org-mode message, htmlize and send it."
@@ -399,6 +459,19 @@ One of the following options can be chosen to preview html
       (message-send-and-exit)))
 
   (add-hook 'org-ctrl-c-ctrl-c-hook 'my/mu4e-htmlize-and-send t)
+ #+END_SRC
+** How to send mail
+#+BEGIN_SRC emacs-lisp
+  (setq message-send-mail-function (function message-send-mail-with-sendmail))
+                                          ; Use the correct account context when sending mail based on the from header.
+  (setq message-sendmail-envelope-from 'header)
+ #+END_SRC
+* =my/mu4e-compose-org-mail= (Composing from anywhere)
+#+BEGIN_SRC emacs-lisp 
+  (defun my/mu4e-compose-org-mail ()
+    (interactive)
+    (mu4e-compose-new)
+    (org-mu4e-compose-org-mode))
  #+END_SRC
 * Syncing mail
 ** =my/epa-decrypt-file=
@@ -466,9 +539,9 @@ I run a dummy command on a dummy file that prompts for the password
   (define-key my/keymap (kbd "m") (function mu4e))
   (define-key my/keymap (kbd "M") (function my/mu4e-in-new-frame))
   (define-key my/keymap (kbd "C") (function my/mu4e-compose-org-mail))
+  (define-key my/keymap (kbd "u") (function my/mu4e/update))
   (define-key mu4e-main-mode-map (kbd "U") (function my/mu4e/update))
   (define-key mu4e-main-mode-map (kbd "C") (function my/mu4e-compose-org-mail))
-  (define-key my/keymap (kbd "u") (function my/mu4e/update))
  #+END_SRC
 * Testing
 #+BEGIN_SRC emacs-lisp
