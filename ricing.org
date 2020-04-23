@@ -5,7 +5,7 @@
 To get a list of pretty symbols run =(all-the-icons-insert)=
 
 * All-the-icons
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
   ;; fix docker-compose.yml not being set
   (add-to-list 'all-the-icons-icon-alist
                '("^\\.?docker-compose.yml" all-the-icons-fileicon "dockerfile" :face all-the-icons-blue))
@@ -251,12 +251,12 @@ People normally get (((triggered by it))) so it might be usefil to turn off the 
   (use-package golden-ratio
     :ensure t
     :init (my/add-to-package-list 'golden-ratio)
-    (golden-ratio-mode 1))
+    ;; (golden-ratio-mode 1)
+    )
 
   (add-to-list 'golden-ratio-exclude-modes 'treemacs-mode)
   (add-to-list 'golden-ratio-exclude-buffer-names "Treemacs")
   (add-to-list 'golden-ratio-exclude-buffer-regexp "Treemacs")
-
  #+END_SRC
 * GPG prompt
 Make emacs prompt for password in the minibuffer
@@ -759,15 +759,22 @@ smart mode line allows infinite customization
 
   (define-key my/keymap (kbd "P") (function hydra-package/body))
  #+END_SRC
-* PACKAGE Rainbow mode
+* MANUAL-PACKAGE Rainbow mode
 Colourize codes such as #AF3313
+** Init
 #+BEGIN_SRC emacs-lisp
+  (my/add-to-package-list 'rainbow-mode)
   (add-to-list 'load-path (my/config-file-path-evaluate "manual_el/rainbow-mode-1.0.1"))
   (require 'rainbow-mode)
-  (my/add-to-package-list 'rainbow-mode)
   (rainbow-mode)
  #+END_SRC
+** Global Rainbow mode
+#+BEGIN_SRC emacs-lisp
+  ;; (define-globalized-minor-mode my-global-rainbow-mode rainbow-mode
+  ;;   (lambda () (rainbow-mode 1)))
 
+  ;; (my-global-rainbow-mode 1)
+ #+END_SRC
 * PACKAGE Scratch buffer
 ** Default load
 #+BEGIN_SRC emacs-lisp

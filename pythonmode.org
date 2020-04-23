@@ -12,7 +12,7 @@ For a nice pyplot experience, copy over the [[./my-files/python/my_pyplot.mplsty
 #+BEGIN_SRC emacs-lisp
   (defvar my/python/venv-folder "~/.config/python_vi" "Location of folder with the venv (I hope you have just one)")
   (setq pyvenv-default-virtual-env-name "/Users/CCCP/.config/python_vi")
-  (defvar my/python/pylintrc "~/.pylintrc" "Location of the pyling configuration file")
+  ;; (defvar my/python/pylintrc "~/.pylintrc" "Location of the pyling configuration file")
  #+END_SRC
 * External setup
 
@@ -26,7 +26,24 @@ For a nice pyplot experience, copy over the [[./my-files/python/my_pyplot.mplsty
 | =yapf=     | code formatiing                                           | bloat               |
 | =rope=     | refactoring library                                       | bloat               |
 |------------+-----------------------------------------------------------+---------------------|
+** Best way for venv
+#+BEGIN_SRC shell
+  pip install virtualenv
+ #+END_SRC
 
+Set these in =.profile= or =.zsh=
+#+BEGIN_SRC text
+  export WORKON_HOME=$HOME/.config/python_vi
+  export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3.7
+  export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
+  export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
+#+END_SRC
+where =WORKON_HOME= is the default location of venv
+
+Then create venv
+#+BEGIN_SRC shell
+ mkvirtualenv --python=python3.7 test
+ #+END_SRC
 
 ** Installing =virtualenvwrapper=
 *** os-x
@@ -63,7 +80,7 @@ Activate one or the other. Never both.
   ;;   :hook (elpy-mode . py-autopep8-enable-on-save)
   ;;   :init (my/add-to-package-list 'py-autopep8))
  #+END_SRC
-** Black (=black=)
+** PACKAGE Black (=black=)
 #+BEGIN_SRC emacs-lisp
   (use-package blacken
     :ensure t
@@ -92,7 +109,7 @@ Activate one or the other. Never both.
                                 (flycheck-mode 1)
                                 (setq flycheck-checker 'python-pylint
                                       flycheck-checker-error-threshold 900
-                                      flycheck-pylintrc my/python/pylintrc
+                                      ;; flycheck-pylintrc my/python/pylintrc
                                       flycheck-pylint-use-symbolic-id nil)))
  #+END_SRC
 * PACKAGE Hideshow-org  =C-c C-h=
@@ -180,7 +197,7 @@ Replaces letters in programming mode
  #+END_SRC
 * Virtualenv
 ** Set venv folder
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
   (setenv "WORKON_HOME" my/python/venv-folder)
  #+END_SRC
 ** =my/python/activate-venv=

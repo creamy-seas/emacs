@@ -3,7 +3,7 @@
 #+PROPERTY: header-args :tangle yes
 
 * CONFIG Personal Configuration
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
                                           ; spell checker program
   (setq ispell-program-name "/usr/local/bin/aspell")
                                           ; default dict to use
@@ -346,8 +346,8 @@ Any changes of a file, will be automatically reloaded
  #+END_SRC
 * Saving hooks
 #+BEGIN_SRC emacs-lisp
-  ;; (add-hook 'before-save-hook #'whitespace-cleanup)
-  ;; (add-hook 'before-save-hook 'delete-trailing-whitespace)
+  (add-hook 'before-save-hook #'whitespace-cleanup)
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
                                           ; adding new line to end of file when saving
   (setq require-final-newline    t)
   (setq next-line-add-newlines nil)
@@ -372,7 +372,7 @@ To keep code aliged
  #+END_SRC
 * Autoinsert
 Whenever opening new files attempt to insert a template
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
   (add-hook 'find-file-hook 'auto-insert)
  #+END_SRC
 * PACKAGE Avy   =M-s=
@@ -441,6 +441,7 @@ Completion. With a dropdown box. Metal.
  #+END_SRC
 * MANUAL-PACKAGE Dired+
 Beautiful file browsing. Dired+ is downloaded manually
+| =e=       | to preview file                                 |
 | =a=       | go to file or directory and close dired bufffer |
 | =v=       | preview                                         |
 | =o=       | open in new window                              |
@@ -450,20 +451,55 @@ Beautiful file browsing. Dired+ is downloaded manually
 | =R=       | move mass                                       |
 | =*=       | regexp                                          |
 | =C-c C-q= | rename then =C-c C-c=                           |
+
 ** MANUAL-PACKAGE Init
 #+BEGIN_SRC emacs-lisp
   (require 'dired+)
                                           ; hook that does not show boring files
   ;; (add-hook 'dired-mode-hook (function dired-omit-mode))
  #+END_SRC
-** Crossout
-#+BEGIN_SRC emacs-lisp 
-(add-to-list 'dired-omit-extensions ".git/")
-(add-to-list 'dired-omit-extensions "__pycache__/")
+** Sorting
+On =os-x= run =brew install coreutils= to get =gls=
+#+BEGIN_SRC emacs-lisp
+  ;; (my/add-dependency "gls")
+
+  ;; (if (string-equal system-type "darwin")
+  ;;     (progn
+  ;;       (setq insert-directory-program "gls" dired-use-ls-dired t)
+  ;;       (message "Loading from mac")))
+  ;; (setq dired-listing-switches "-aBhl --group-directories-first")
+  (setq dired-listing-switches "-aBhl")
+ #+END_SRC
+** Omissions and ignores (Can be hidden with =C-x M-o=)
+| Applied to              | Face                       |                                |
+|-------------------------+----------------------------+--------------------------------|
+| =dired-omit-extensions= | =diredp-ignored-file-name= | grey + red box                 |
+| =diredp-omit-files=     | =diredp-omit-file-name=    | red strikeout + grey + red box |
+*** =dired-omit-extensions=
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'dired-omit-extensions "git")
+  (add-to-list 'dired-omit-extensions "gitignore")
+  (add-to-list 'dired-omit-extensions "coverage")
+
+  (custom-set-faces
+   '(diredp-ignored-file-name ((t (:foreground "#b0bec5" :box (:line-width 2 :color "VioletRed3" :style pressed-button))))))
+ #+END_SRC
+*** =dired-omit-files=
+#+BEGIN_SRC emacs-lisp
+  (setq dired-omit-files "^\\.?#\\|^\\.$\\|__pycache__")
+
+  (custom-set-faces
+   '(diredp-omit-file-name ((t (
+                                :inherit diredp-ignore-file-name
+                                :foreground "#b0bec5" :strike-through "#C29D6F156F15")))))
+ #+END_SRC
+*** Activate globally
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'dired-mode-hook (lambda () (dired-omit-mode)))
  #+END_SRC
 ** Keybindings
 #+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-x C-d") (function dired))
+  (global-set-key (kbd "C-x C-d") (function diredp-dired-plus-help))
 
   (define-key dired-mode-map (kbd "<right>") (function dired-find-file-other-window))
  #+END_SRC
@@ -617,7 +653,7 @@ If you want to check specific buffer with different language, add
   (setq ispell-personal-dictionary (my/config-file-path-evaluate "dictionaries/aspell.en.pws"))
  #+END_SRC
 ** =my/switch-dictionary=
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
   (defun my/switch-dictionary ()
     "Switch dictionary"
     (interactive)
@@ -632,10 +668,10 @@ If you want to check specific buffer with different language, add
   (define-key my/keymap (kbd "r") 'my/switch-dictionary)
  #+END_SRC
 ** PACKAGE Hydra
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
   (defhydra hydra-flyspell (
                             :color red
-                            :hint nil			  
+                            :hint nil
                             )
     "
     ------------------------------------------------------------------------------------------
@@ -682,7 +718,7 @@ Language server used in rust
 #+END_SRC
 
 ** PACKAGE Treemacs
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
   (use-package lsp-treemacs
     :ensure t
     :init (my/add-to-package-list 'lsp-treemacs))
@@ -761,7 +797,7 @@ For better autocompletion
     (counsel-projectile-mode))
  #+END_SRC
 ** Open magit by default when opening project
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
   (setq projectile-switch-project-action 'projectile-vc)
  #+END_SRC
 ** PACKAGE Hydra <<counsel-hydra>>
