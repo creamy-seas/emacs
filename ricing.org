@@ -3,7 +3,9 @@
 #+PROPERTY: header-args :tangle yes
 
 To get a list of pretty symbols run =(all-the-icons-insert)=
-
+#+BEGIN_SRC emacs-lisp
+  (menu-bar-mode t)
+ #+END_SRC
 * All-the-icons
 #+BEGIN_SRC emacs-lisp
   ;; fix docker-compose.yml not being set
@@ -102,29 +104,6 @@ For some reason this is not the default way of killing buffers
   (global-set-key (kbd "s-,") 'my/pop-local-mark-ring)
   (global-set-key (kbd "s-.") 'my/unpop-to-mark-command)
  #+END_SRC
-* Buffer suggestion
-Buffer suggestion is given as a list in the terminal command (after C-x b)
-** enable ido mode
- #+BEGIN_SRC emacs-lisp
-   (setq ido-enable-flex-matching nil)
-   (setq ido-create-new-bffer 'always)
-   (setq ido-everywhere t)
-   (ido-mode 1)
- #+END_SRC
-** enable vertical mode for buffer suggestion
- #+BEGIN_SRC emacs-lisp
-   (use-package ido-vertical-mode
-     :ensure t
-     :init (my/add-to-package-list 'ido-vertical-mode)
-     :config
-     (setq ido-vertical-define-keys 'C-n-and-C-p-only)
-     (ido-vertical-mode 1))
-
- #+END_SRC
-** remap "C-x C-b" buffer switching to ido-switch-buffer
- #+BEGIN_SRC emacs-lisp
-   (global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
- #+END_SRC
 * Clock
 #+BEGIN_SRC emacs-lisp
   ;; (display-time-mode 1)
@@ -194,13 +173,38 @@ People normally get (((triggered by it))) so it might be usefil to turn off the 
   (global-set-key (kbd "s-g") (function eyebrowse-switch-to-window-config-5))
  #+END_SRC
 
-* Fonts
+* MANUAL-PACKAGE Fonts and ligatures
+Just read [[https://github.com/tonsky/FiraCode][this]] - one paragraph sums up:
+/Your eye spends a non-zero amount of energy to scan, parse and join multiple characters into a single logical one/
+** MANUAL-PACKAGE External setup
+1. Run the following script (or =make install_fira=)
+#+BEGIN_SRC text :tangle no
+  git clone https://github.com/johnw42/fira-code-emacs
+  cd fira-code-emacs
+  make
+  cp -f {fira-code-data.el,fira-code.el,ligature-font.el} ~/.emacs.d/manual_el/fira-code
+ #+END_SRC
+2. [@2] Then install the fonts from the =modified= directory to your system
+** Select font
 #+BEGIN_SRC emacs-lisp
   (custom-set-faces
    ;; '(default ((t (:family "JetBrains Mono" :height 170))))
    ;; '(default ((t (:family "Fira Code" :height 170))))
-   '(default ((t (:family "Inconsolata" :height 177))))
+   '(default ((t (:family "Fira Emacs" :height 170))))
+   ;; '(default ((t (:family "Inconsolata" :height 177))))
    )
+ #+END_SRC
+** Load ligatures
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path (concat my/config-folder-location "manual_el/fira-code"))
+  (condition-case nil
+      (progn
+        (require 'fira-code)
+        (add-hook 'python-mode-hook (function fira-code-mode))
+        (add-hook 'emacs-lisp-mode-hook (function fira-code-mode))
+        (add-hook 'org-mode-hook (function fira-code-mode)))
+    (error
+     (warn ">>>>>>>>>> Install fira-code manually -> see '~/.emacs.d/ricing.org' or run 'make install_fira' <<<<<<<<<<")))
  #+END_SRC
 * Generating test projects
 #+BEGIN_SRC emacs-lisp
@@ -378,6 +382,38 @@ Buffer that groups other buffers
       (goto-char 1)
       (search-forward "[ " (point-max) t)
     )
+ #+END_SRC
+* PACKAGE IDO mode (buffers)
+|---------------------+----------------------------------------|
+| [[*Buffer suggestion][*Buffer suggestion*]] |                                        |
+| =C-j=               | to just use whatever you have typed in |
+| =C-s/r=             | Put at start/end of list               |
+| =C-d=               | open directory in dired mode           |
+| =M-n/p=             | next/previous directory in history     |
+| =M-s=               | seach in directory history             |
+| =C-t=               | toggle regex                           |
+| =C-a=               | toggle ignore files                    |
+|---------------------+----------------------------------------|
+** enable ido mode
+ #+BEGIN_SRC emacs-lisp
+   (setq ido-enable-flex-matching nil)
+   (setq ido-create-new-bffer 'always)
+   (setq ido-everywhere t)
+   (ido-mode 1)
+ #+END_SRC
+** enable vertical mode for buffer suggestion
+ #+BEGIN_SRC emacs-lisp
+   (use-package ido-vertical-mode
+     :ensure t
+     :init (my/add-to-package-list 'ido-vertical-mode)
+     :config
+     (setq ido-vertical-define-keys 'C-n-and-C-p-only)
+     (ido-vertical-mode 1))
+
+ #+END_SRC
+** remap "C-x C-b" buffer switching to ido-switch-buffer
+ #+BEGIN_SRC emacs-lisp
+   (global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
  #+END_SRC
 
 * PACKAGE Key suggestion

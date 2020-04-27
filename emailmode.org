@@ -343,9 +343,9 @@ One of the following options can be chosen to preview html
         (mu4e-shr2text msg))))
   ;; (setq mu4e-html2text-command 'my-mu4e-html2text)
 
-  ;; (setq mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout")
+  (setq mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout")
   ;; (setq mu4e-html2text-command "w3m -T text/html")
-  (setq mu4e-html2text-command "w3m -dump -T text/html -cols 72 -o display_link_number=true -o display_image=false -o ignore_null_img_alt=true")
+  ;; (setq mu4e-html2text-command "w3m -dump -T text/html -cols 72 -o display_link_number=true -o display_image=false -o ignore_null_img_alt=true")
 
   ;; (my/add-dependency "html2text")
   ;; (setq mu4e-html2text-command "html2text -utf8 -width 72")
@@ -432,7 +432,7 @@ One of the following options can be chosen to preview html
   (run-with-timer 0 60 'my/mu4e-alert-mode-line)
  #+END_SRC
 * Sending mail
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
   (my/add-dependency "gnupg")
  #+END_SRC
 ** Citation when replying
@@ -467,7 +467,7 @@ One of the following options can be chosen to preview html
   (setq message-sendmail-envelope-from 'header)
  #+END_SRC
 * =my/mu4e-compose-org-mail= (Composing from anywhere)
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
   (defun my/mu4e-compose-org-mail ()
     (interactive)
     (mu4e-compose-new)

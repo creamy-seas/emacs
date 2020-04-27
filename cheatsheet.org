@@ -6,6 +6,29 @@
 | Flycheck   | =C-c != |
 | Projectile | =s-p=   |
 
+* IDO mode ([[file:ricing.org::*IDO%20mode%20(buffers)][click here]])
+|---------------------+----------------------------------------|
+| [[*Buffer suggestion][*Buffer suggestion*]] |                                        |
+| =C-x C-f=           | start searching for file               |
+| =C-j=               | to just use whatever you have typed in |
+| =C-s/r=             | Put at start/end of list               |
+| =C-d=               | open directory in dired mode           |
+| =M-n/p=             | next/previous directory in history     |
+| =M-s=               | seach in directory history             |
+| =M-m=               | prompt for directory to create it      |
+| =C-t=               | toggle regex                           |
+| =C-a=               | toggle ignore files                    |
+|---------------------+----------------------------------------|
+
+* Macros
+| =<f3>=             | Record a macro                                                        |
+| =<f4>=             | Finish recording macro                                                |
+| =C-u 1 <f3>=       | Record macro with set counter. =<f3>= to insert and increment counter |
+| =C-x C-k b=        | Bind to key                                                           |
+| =C-x C-k n=        | Name last macro                                                       |
+| =insert-kbd-macro= | Insert named macro                                                    |
+
+
 * Registers and bookmarks
 
 |---------------+----------------------------|

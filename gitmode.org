@@ -87,7 +87,7 @@ Allow quickly to browser through the file version. Launch with =M-x git-time-mac
     :ensure t)
  #+END_SRC
 * PACKAGE Forge
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
   (use-package forge
     :ensure t
     :init (my/add-to-package-list 'forge)
@@ -96,7 +96,7 @@ Allow quickly to browser through the file version. Launch with =M-x git-time-mac
 
   (defhydra hydra-forge (
                          :color teal
-                         :hint nil			  
+                         :hint nil
                          )
     "
     ------------------------------------------------------------------------------------------
@@ -105,12 +105,15 @@ Allow quickly to browser through the file version. Launch with =M-x git-time-mac
     _X_: Reset forge database (as forge is under development, this will be required occasionally)
     _L_: List all the repositories tracked by forge
     _T_: Remove a topic from local database
+
+    _i_: List issues for me
     "
     ("A" forge-add-repository)
     ("D" forge-remove-repository)
     ("X" forge-reset-database)
     ("L" forge-list-repositories)
     ("T" forge-remove-topic-locally)
+    ("i" forge-list-owned-issues)
 
     ("q"   nil "cancel" :color blue))
 

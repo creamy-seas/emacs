@@ -2,10 +2,11 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-|------------------------------------------------+-----------------|
-| =C-x C-f /-::/directiontofile=                 | connect simple  |
-| =C-x C-f /sudo:134.219.128.96:directiontofile= | connect as sudo |
-|------------------------------------------------+-----------------|
+|------------------------------------------------+----------------------------|
+| =C-x C-f /-::/directiontofile=                 | connect simple             |
+| =C-x C-f /sudo:134.219.128.96:directiontofile= | connect as sudo            |
+| =C-x s-f=                                      | directrly jump to ssh menu |
+|------------------------------------------------+----------------------------|
 
 To do multiple passthroughs use the | command
 
@@ -28,6 +29,16 @@ To do multiple passthroughs use the | command
                '("ssh" "dreams-ai\\.com" "ilya"))
 #+END_SRC
 
+* Bindings for tramp
+#+BEGIN_SRC emacs-lisp
+  (defun my/ssh-ido-find-file ()
+    "Find file in ido mode starting with ssh:"
+    (interactive)
+    (let ((default-directory "/ssh:"))
+      (ido-find-file)
+      ))
+  (global-set-key (kbd "C-x s-f") 'my/ssh-ido-find-file)
+ #+END_SRC
 * PACKAGE Vagrant
 Tramp looks for the env =vagrant global-status= in order to find vagrant-handled virtual machines
 If not showing up, go to that directory and do
