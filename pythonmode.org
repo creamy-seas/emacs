@@ -240,6 +240,42 @@ Replaces letters in programming mode
 #+BEGIN_SRC emacs-lisp
   ;; (setq pyvenv-mode-line-indicator nil)
  #+END_SRC
+* Autoinsert
+#+BEGIN_SRC emacs-lisp
+  (define-skeleton my-skeleton/python/unittest
+    "Testing out a docker config. Fist prompt is nil or it asks for user input"
+    nil
+                                          ; initial top line
+    "import unittest" \n
+    "from unittest.mock import Mock" \n
+    "from unittest.mock import patch" \n
+    \n
+    \n
+
+    "class Test" (skeleton-read "Input the test class name:") "(unittest.TestCase):"\n
+    \n
+
+    >"def setUp(self):"\n
+    >"pass" - \n
+    \n
+
+    >"def tearDown(self):"\n
+    >"pass"\n
+    \n
+
+    >"def test(self):"\n
+    >"pass"\n
+    \n
+    \n
+
+    -4 "if __name__ == \"__main__\":"\n
+    "unittest.main()"
+    )
+ #+END_SRC
+** Bind to buffer names
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'auto-insert-alist '(("test_.*\\.py" . my-skeleton/python/unittest)))
+ #+END_SRC
 * Functions
 ** =my/python/interrupt=
 #+BEGIN_SRC emacs-lisp

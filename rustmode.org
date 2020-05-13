@@ -161,6 +161,10 @@ You will need to =export PATH=~/.rustup/toolchains/stable-x86_64-apple-darwin/li
  #+END_SRC
 * Keybindings
 #+BEGIN_SRC emacs-lisp
+  (define-key rust-mode-map (kbd "C-c C-n") (function flycheck-next-error))
+  (define-key rust-mode-map (kbd "C-c C-p") (function flycheck-previous-error))
+  ;; (define-key rustic-mode-map (kbd "C-c C-n") (function flycheck-next-error))
+  ;; (define-key rustic-mode-map (kbd "C-c C-p") (function flycheck-previous-error))
   ;; (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
   ;; (define-key rust-mode-map (kbd "C-c C-d") (function racer-describe-tooltip))
   ;; (define-key rust-mode-map (kbd "C-c d") (function racer-describe))

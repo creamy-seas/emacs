@@ -6,6 +6,26 @@
 | Flycheck   | =C-c != |
 | Projectile | =s-p=   |
 
+* Smartparens ([[file:essential-config.org::*Smartparens][click here]])
+|            |                                                   |
+| =C-M-a=    | Jump to the end of the previous bracket in scope  |
+| =C-M-d=    | Jump to the start of the next bracket in scope    |
+| =C-M-f=    | Jump to matching closing bracket                  |
+| =C-M-b=    | Jump to matching opening bracket                  |
+| =C-M-k=    | Kill in bracket region (when cursor over bracket) |
+| =C-M-w=    | Copy in bracket region (when cursor over bracket) |
+| =M-delete= | Delete previous brackets                          |
+
+* Org mode
+To read
+- https://orgmode.org/manual/Export-Settings.html
+
+| C-c ~ | Change table type |
+
+** Add propetires
+|             | org-insert-drawer |
+| =C-c C-x p= | Set property      |
+
 * IDO mode ([[file:ricing.org::*IDO%20mode%20(buffers)][click here]])
 |---------------------+----------------------------------------|
 | [[*Buffer suggestion][*Buffer suggestion*]] |                                        |

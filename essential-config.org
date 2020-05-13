@@ -373,6 +373,8 @@ To keep code aliged
 * Autoinsert
 Whenever opening new files attempt to insert a template
 #+BEGIN_SRC emacs-lisp
+  (require 'autoinsert)
+  (auto-insert-mode 1)
   (add-hook 'find-file-hook 'auto-insert)
  #+END_SRC
 * PACKAGE Avy   =M-s=

@@ -149,14 +149,14 @@ Set it to 78, so that on an 80-character interface there are 2 whitespaces
 #+BEGIN_SRC emacs-lisp
   (define-key my/keymap (kbd "I") (function info-emacs-manual))
  #+END_SRC
-* PACKAGE Emojify
+* DOWN Emojify
 People normally get (((triggered by it))) so it might be usefil to turn off the global hook
 #+BEGIN_SRC emacs-lisp
-  (use-package emojify
-    :ensure t
-    :init (my/add-to-package-list 'emojify))
+  ;; (use-package emojify
+  ;;   :ensure t
+  ;;   :init (my/add-to-package-list 'emojify))
 
-  (add-hook 'after-init-hook #'global-emojify-mode)
+  ;; (add-hook 'after-init-hook #'global-emojify-mode)
  #+END_SRC
 * PACKAGE Eyebrowse
 #+BEGIN_SRC emacs-lisp
@@ -202,6 +202,7 @@ Just read [[https://github.com/tonsky/FiraCode][this]] - one paragraph sums up:
         (require 'fira-code)
         (add-hook 'python-mode-hook (function fira-code-mode))
         (add-hook 'emacs-lisp-mode-hook (function fira-code-mode))
+        (add-hook 'text-mode-hook (function fira-code-mode))
         (add-hook 'org-mode-hook (function fira-code-mode)))
     (error
      (warn ">>>>>>>>>> Install fira-code manually -> see '~/.emacs.d/ricing.org' or run 'make install_fira' <<<<<<<<<<")))
@@ -979,6 +980,13 @@ Colourize codes such as #AF3313
     ("y" yas-global-mode nil))
 
   (define-key my/keymap "t" #'hydra-toggle/body)
+ #+END_SRC
+* MANUAL-PACKAGE Unicode
+#+BEGIN_SRC emacs-lisp
+  (my/add-dependency "Symbola")
+  (when (member "Symbola" (font-family-list))
+    (set-fontset-font t 'unicode "Symbola" nil 'prepend)
+    (message "Using Symbola!"))
  #+END_SRC
 * PACKAGE Windows
 ** PACKAGE Switch Window

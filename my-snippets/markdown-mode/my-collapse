@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: collapse
+# key: co
+# --
+<details>
+<summary>Click this to collapse/fold.</summary>
+
+${1: text-here}
+
+</details>

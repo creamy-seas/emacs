@@ -1,3 +1,4 @@
+Symbola
 ag
 aspell
 biber
@@ -9,6 +10,7 @@ grip
 inkscape
 ispell
 latexmk
+mmdc
 osql
 pdf2dsc
 psql

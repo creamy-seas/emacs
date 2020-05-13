@@ -132,10 +132,33 @@ Highlight matching text
   ;;   :bind ("C-c q" . mark-next-like-this)
   ;;   :init (my/add-to-package-list 'mark-multiple))
 #+END_SRC
-* DOWN Multiple Cursors
+* PACKAGE Mermaid
+Install =mmdc= with
+#+BEGIN_SRC shell :tangle no
+  npm install mermaid.cli
+#+END_SRC
+
+** CONFIG External setup
 #+BEGIN_SRC emacs-lisp
-  ;; (global-set-key (kbd "C-(") 'mc/mark-next-lines)
-  ;; (global-set-key (kbd "C-)") 'mc/mark-previous-lines)
+  (my/add-dependency "mmdc")
+  (setq mermaid-mmdc-location "~/node_modules/.bin/mmdc")
+ #+END_SRC
+** Base install
+#+BEGIN_SRC emacs-lisp
+(use-package mermaid-mode
+  :ensure t
+  :init (my/add-to-package-list 'mermaid-mode))
+ #+END_SRC
+* PACKAGE Multiple Cursors
+#+BEGIN_SRC emacs-lisp
+  (use-package multiple-cursors
+    :ensure t
+    :init (my/add-to-package-list 'multiple-cursors))
+
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-)") 'mc/mark-next-lines)
+  (global-set-key (kbd "C-(") 'mc/mark-previous-lines)
 #+END_SRC
 * DOWN Smex
 Command line autocompletion
