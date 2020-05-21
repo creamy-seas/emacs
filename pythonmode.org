@@ -274,7 +274,9 @@ Replaces letters in programming mode
  #+END_SRC
 ** Bind to buffer names
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'auto-insert-alist '(("test_.*\\.py" . my-skeleton/python/unittest)))
+  (add-to-list 'auto-insert-alist '(
+                                    ("test_.*\\.py\\'" . "[🐍 Unittest template]")
+                                    . my-skeleton/python/unittest))
  #+END_SRC
 * Functions
 ** =my/python/interrupt=
