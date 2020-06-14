@@ -42,6 +42,9 @@
 #+BEGIN_SRC emacs-lisp
   (define-key key-translation-map (kbd "C-x 8 h") (kbd "卍")) ; naughty
   (define-key key-translation-map (kbd "C-x 8 C") (kbd "☭")) ; erm, kinda naughty
+  (define-key key-translation-map (kbd "C-x 8 e") (kbd "🐘"))
+  (define-key key-translation-map (kbd "C-x 8 s") (kbd "🦑"))
+  (define-key key-translation-map (kbd "C-x 8 o") (kbd "🐙"))
   (define-key key-translation-map (kbd "C-x 8 w") (kbd "🐳"))
   (define-key key-translation-map (kbd "C-x 8 W") (kbd "🐋"))
   (define-key key-translation-map (kbd "C-x 8 O") (kbd "Ω"))
@@ -73,7 +76,12 @@
     :config
     (reverse-im-activate "russian-computer"))
  #+END_SRC
-* 2 - Minor Functions
+* 2 - Disable (((MOUSE)))
+#+BEGIN_SRC emacs-lisp
+  (require 'disable-mouse)
+  (global-disable-mouse-mode)
+ #+END_SRC
+* 3 - Minor Functions
 ** =my/read-string-from-file=
 #+BEGIN_SRC emacs-lisp
   (defun my/read-string-from-file (filePath)
@@ -861,6 +869,7 @@ For better autocompletion
  #+END_SRC
 * PACKAGE Smartparens
 Smart way of moving around brackets. Still lreadning the bindings
+
 #+BEGIN_SRC emacs-lisp
   (use-package smartparens
     :ensure t
@@ -880,15 +889,16 @@ You may want to turn this off if it triggers your workflow
  #+END_SRC
 ** Keybindings
 #+BEGIN_SRC emacs-lisp
+  ;; Navigation
   (define-key smartparens-mode-map (kbd "C-M-f") #'sp-forward-sexp)
   (define-key smartparens-mode-map (kbd "C-M-b") #'sp-backward-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-c") #'sp-down-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-d") #'sp-backward-down-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-a") #'sp-beginning-of-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-e") #'sp-end-of-sexp)
 
-  ;; Up/down
-  (define-key smartparens-mode-map (kbd "C-M-d") #'sp-down-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-e") #'sp-up-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-a") #'sp-backward-down-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-q") #'sp-backward-up-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-`") #'beginning-of-defun)
+  ;; (define-key smartparens-mode-map (kbd "C-M-q") #'sp-backward-up-sexp)
+  ;; (define-key smartparens-mode-map (kbd "C-M-`") #'beginning-of-defun)
 
   ;; Transpose
   (define-key smartparens-mode-map (kbd "C-M-t") 'sp-transpose-sexp)
@@ -898,21 +908,34 @@ You may want to turn this off if it triggers your workflow
   (define-key smartparens-mode-map (kbd "C-M-k") #'sp-kill-sexp)
   (define-key smartparens-mode-map (kbd "C-M-w") #'sp-copy-sexp)
 
-  ;; Unwrap
+  ;; Unwrap and rewrap
+  (define-key smartparens-mode-map (kbd "C-M-u") #'sp-splice-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-r") #'sp-rewrap-sexp)
+
   (define-key smartparens-mode-map (kbd "M-<delete>") #'sp-unwrap-sexp)
   (define-key smartparens-mode-map (kbd "M-<backspace>") #'sp-backward-unwrap-sexp)
 
   ;; Slurp/barf
-  (define-key smartparens-mode-map (kbd "C-<right>") #'sp-forward-slurp-sexp)
-  (define-key smartparens-mode-map (kbd "C-<left>") #'sp-forward-barf-sexp)
-  (define-key smartparens-mode-map (kbd "C-S-<left>") #'sp-backward-slurp-sexp)
-  (define-key smartparens-mode-map (kbd "C-S-<right>") #'sp-backward-barf-sexp)
+  ;; (define-key smartparens-mode-map (kbd "C-<right>") #'sp-forward-slurp-sexp)
+  ;; (define-key smartparens-mode-map (kbd "C-<left>") #'sp-forward-barf-sexp)
+  ;; (define-key smartparens-mode-map (kbd "C-S-<left>") #'sp-backward-slurp-sexp)
+  ;; (define-key smartparens-mode-map (kbd "C-S-<right>") #'sp-backward-barf-sexp)
 
-  (define-key smartparens-mode-map (kbd "C-M-<backspace>") #'sp-splice-sexp-killing-backward)
-  (define-key smartparens-mode-map (kbd "C-S-<backspace>") #'sp-splice-sexp-killing-around)
+  ;; (define-key smartparens-mode-map (kbd "C-M-<backspace>") #'sp-splice-sexp-killing-backward)
+  ;; (define-key smartparens-mode-map (kbd "C-S-<backspace>") #'sp-splice-sexp-killing-around)
 
   ;; Indent
-  (define-key smartparens-mode-map (kbd "C-M-<tab>") #'sp-indent-defun)
+  ;; (define-key smartparens-mode-map (kbd "C-M-<tab>") #'sp-indent-defun)
+ #+END_SRC
+* Tabs
+Tabs are bloat. Read about them [[http://www.xemacs.org/Links/tutorials_1.html][here]]
+** Change display of tabs
+#+BEGIN_SRC emacs-lisp
+  (setq-default tab-width 2)
+ #+END_SRC
+** Prevent using tabs for indent
+#+BEGIN_SRC emacs-lisp
+  (setq-default indent-tabs-mode nil)
  #+END_SRC
 * PACKAGE Undo Tree     =M-/=
 Spawns a tree of all the undos that you have ever made

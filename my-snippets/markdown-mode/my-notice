@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: my-notice
+# key: no
+# --
+<aside class="notice">
+$0
+</aside>

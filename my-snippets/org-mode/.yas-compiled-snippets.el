@@ -35,4 +35,4 @@
 		       ("pfile" ":PROPERTIES:\n:EXPORT_TITLE: ${1:Title of export}\n:EXPORT_FILE_NAME: ${2:Name of export}\n:END:" "file-property" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/org-mode/file-property" nil nil)))
 
 
-;;; Do not edit! File generated at Sat Apr 18 10:16:37 2020
+;;; Do not edit! File generated at Mon Jun  8 14:20:50 2020

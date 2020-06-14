@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: my-warning
+# key: warn
+# --
+<aside class="warning">
+$0
+</aside>

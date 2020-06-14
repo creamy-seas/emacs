@@ -22,7 +22,7 @@ To get a list of pretty symbols run =(all-the-icons-insert)=
  #+END_SRC
 * Application window
 #+BEGIN_SRC emacs-lisp
-  (setq frame-title-format "🦅")
+  (setq frame-title-format "🦑")
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)

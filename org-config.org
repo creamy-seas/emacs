@@ -130,24 +130,25 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
 
           ("s" "Stories"
            entry (id "stories")
-           "** %^{Title} %t\n%?")))
-          ;; tutoring
-          ;; ("t" "Tutoring lessons")
-          ;; ("tw" "Nikhil Lesson (Winchester)" table-line (id "tutoring-nikhil-invoice")
-          ;;  "| # | %^u | %^{lesson summary} | 120%? | |"
-          ;;  :table-line-pos "III-1")
-          ;; ("tn" "Nathan Lesson" table-line (id "tutoring-nathan-invoice")
-          ;;  "| # | %^u | %^{lesson summary} | 45%? | |"
-          ;;  :table-line-pos "III-1")
-          ;; ("td" "Darrens Programming" table-line (id "tutoring-darren-invoice")
-          ;;  "| # | %^u | %^{lesson summary} | 50%? | |"
-          ;;  :table-line-pos "III-1")
-          ;; ("f" "Future Lesson")
-          ;; ("fw" "Nikhil Lesson (Winchester)" entry (id "tutoring-nikhil-lesson")
-          ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
-          ;; ("fn" "Nathan Lesson" entry (id "tutoring-nathan-lesson")
-          ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
-          ;; ))
+           "** %^{Title} %t\n%?"
+           :empty-lines-after 1)))
+  ;; tutoring
+  ;; ("t" "Tutoring lessons")
+  ;; ("tw" "Nikhil Lesson (Winchester)" table-line (id "tutoring-nikhil-invoice")
+  ;;  "| # | %^u | %^{lesson summary} | 120%? | |"
+  ;;  :table-line-pos "III-1")
+  ;; ("tn" "Nathan Lesson" table-line (id "tutoring-nathan-invoice")
+  ;;  "| # | %^u | %^{lesson summary} | 45%? | |"
+  ;;  :table-line-pos "III-1")
+  ;; ("td" "Darrens Programming" table-line (id "tutoring-darren-invoice")
+  ;;  "| # | %^u | %^{lesson summary} | 50%? | |"
+  ;;  :table-line-pos "III-1")
+  ;; ("f" "Future Lesson")
+  ;; ("fw" "Nikhil Lesson (Winchester)" entry (id "tutoring-nikhil-lesson")
+  ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
+  ;; ("fn" "Nathan Lesson" entry (id "tutoring-nathan-lesson")
+  ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
+  ;; ))
  #+END_SRC
 * CONFIG Tables
 ** =gradeBand=

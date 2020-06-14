@@ -2,9 +2,12 @@
 ;;; Snippet definitions:
 ;;;
 (yas-define-snippets 'markdown-mode
-		     '(("pic" "<img src=\"${1:images_inkscape/${2:image_to_embed}}\" style=\"width: ${3:1000}px;\">" "pic" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/markdown-mode/pic" nil nil)
+		     '(("warn" "<aside class=\"warning\">\n$0\n</aside>\n" "my-warning" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/markdown-mode/my-warning" nil nil)
+		       ("su" "<aside class=\"success\">\n$0\n</aside>\n" "my-success" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/markdown-mode/my-sucess" nil nil)
+		       ("no" "<aside class=\"notice\">\n$0\n</aside>\n" "my-notice" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/markdown-mode/my-notice" nil nil)
+		       ("co" "<details>\n<summary>Click this to collapse/fold.</summary>\n\n${1: text-here}\n\n</details>\n" "collapse" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/markdown-mode/my-collapse" nil nil)
 		       ("href" "<a href=\"${1:link}\">${2:content}$0</a>" "ilya-href" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/markdown-mode/ilya-href" nil nil)
 		       ("red" "<font color=red>$1</font>" "font-red" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/markdown-mode/font-red" nil nil)))
 
 
-;;; Do not edit! File generated at Sat Apr 18 10:16:37 2020
+;;; Do not edit! File generated at Mon Jun  8 14:20:50 2020

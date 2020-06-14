@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: my-success
+# key: success
+# --
+<aside class="success">
+$0
+</aside>

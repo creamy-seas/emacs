@@ -96,4 +96,4 @@
 		       ("Ra" "\\iRa" "RightArrow" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/ilya-Rightarrow-large" nil nil)))
 
 
-;;; Do not edit! File generated at Sat Apr 18 10:16:37 2020
+;;; Do not edit! File generated at Mon Jun  8 14:20:50 2020
