@@ -60,6 +60,12 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
            "** SKYPE Ernest: Catchup\nDEADLINE: %^T"
            :empty-lines-after 1)
 
+          ("xb" "Benjamin"
+           entry
+           (id "benjamin")
+           "** SKYPE Benjamin: Catchup\nDEADLINE: %^T"
+           :empty-lines-after 1)
+
           ("xf" "Fred"
            entry
            (id "fred")
@@ -94,6 +100,12 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
            entry
            (id "vivian")
            "** SKYPE Vivian: Catchup\nDEADLINE: %^T"
+           :empty-lines-after 1)
+
+          ("xh" "Heili"
+           entry
+           (id "heili")
+           "** SKYPE Heili: Catchup\nDEADLINE: %^T"
            :empty-lines-after 1)
 
 

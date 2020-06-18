@@ -6,6 +6,14 @@
 | Flycheck   | =C-c != |
 | Projectile | =s-p=   |
 
+* Smerge ([[| =C-c C-n= | next                  |][click here]])
+| =C-c C-n= | next                  |
+| =C-c c-p= | previous              |
+| =c=       | keep one under cursor |
+| =u=       | keep upper            |
+| =l=       | keep lower            |
+| =a=       | keep all              |
+
 * Smartparens ([[file:essential-config.org::*Smartparens][click here]])
 Run =sp-cheat-sheet=
 |                 |                                                   |                           |

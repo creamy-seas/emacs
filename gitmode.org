@@ -121,11 +121,19 @@ Allow quickly to browser through the file version. Launch with =M-x git-time-mac
  #+END_SRC
 * smerge
 Used to resolve git conflicts
+| =C-c C-n= | next                  |
+| =C-c c-p= | previous              |
+| =c=       | keep one under cursor |
+| =u=       | keep upper            |
+| =l=       | keep lower            |
+| =a=       | keep all              |
 #+BEGIN_SRC emacs-lisp
   (require 'magit)
   (define-key smerge-mode-map (kbd "C-c C-n") (function smerge-next))
   (define-key smerge-mode-map (kbd "C-c C-p") (function smerge-prev))
   (define-key smerge-mode-map (kbd "C-c C-c") (function smerge-keep-current))
   (define-key smerge-mode-map (kbd "u") (function smerge-keep-upper))
+  (define-key smerge-mode-map (kbd "a") (function smerge-keep-all))
+  (define-key smerge-mode-map (kbd "c") (function smerge-keep-current))
   (define-key smerge-mode-map (kbd "l") (function smerge-keep-lower))
  #+END_SRC
