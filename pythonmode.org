@@ -27,12 +27,12 @@ For a nice pyplot experience, copy over the [[./my-files/python/my_pyplot.mplsty
 | =rope=     | refactoring library                                       | bloat               |
 |------------+-----------------------------------------------------------+---------------------|
 ** Best way for venv
-#+BEGIN_SRC shell
+#+BEGIN_SRC shell :tangle no
   pip install virtualenv
  #+END_SRC
 
 Set these in =.profile= or =.zsh=
-#+BEGIN_SRC text
+#+BEGIN_SRC text :tangle no
   export WORKON_HOME=$HOME/.config/python_vi
   export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3.7
   export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
@@ -41,7 +41,7 @@ Set these in =.profile= or =.zsh=
 where =WORKON_HOME= is the default location of venv
 
 Then create venv
-#+BEGIN_SRC shell
+#+BEGIN_SRC shell :tangle no
  mkvirtualenv --python=python3.7 test
  #+END_SRC
 
