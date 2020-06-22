@@ -76,10 +76,10 @@
     :config
     (reverse-im-activate "russian-computer"))
  #+END_SRC
-* 2 - Disable (((MOUSE)))
+* DOWN 2 - Disable (((MOUSE)))
 #+BEGIN_SRC emacs-lisp
   (require 'disable-mouse)
-  (global-disable-mouse-mode)
+  ;; (global-disable-mouse-mode)
  #+END_SRC
 * 3 - Minor Functions
 ** =my/read-string-from-file=

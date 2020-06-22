@@ -96,17 +96,46 @@ Grammar and style checker.
   ;;             (langtool-check-done)))
   ;; (global-set-key "\M-^" 'langtool-check)
  #+END_SRC
-* DOWN Ox-reveal
+* PACKAGE Ox-reveal
 Presentations can be hosted from github - look at video no 50
+** Setup
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package ox-reveal
-  ;;   :ensure t
-  ;;   :init (my/add-to-package-list 'ox-reveal)
-  ;;   :config
-  ;;   (require 'ox-reveal)
-  ;;   (setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
-  ;;   (setq org-reveal-mathjax t))
+  (require 'ox-reveal)
+  (my/add-to-package-list 'ox-reveal)
+  (setq org-reveal-mathjax t)
  #+END_SRC
+** CONFIG Online
+You can always add to the top of the org file to use online version
+#+BEGIN_SRC text :tangle no
+  #+REVEAL_ROOT: https://cdn.jsdelivr.net/npm/reveal.js
+#+END_SRC
+** CONFIG Offline
+- Clone =https://github.com/hakimel/reveal.js/= or copy from support-files
+- Ensure that org-reveal-root is set to =./reveal.js=
+- *Remove* any
+#+BEGIN_SRC text :tangle no
+  #+REVEAL_ROOT: file:///Users/antonov/....../reveal.js
+#+END_SRC
+on top of the file
+** Theme
+Include the following
+#+BEGIN_SRC text :tangle no
+#+REVEAL_THEME: night
+#+END_SRC
+
+Best themes
+| *Good* | *Bad*  | *SoSo* |
+| blood  | league | night  |
+| serif  |        | sky    |
+| black  | moon   | beige  |
+|        | simple |        |
+** Other options
+#+BEGIN_SRC text :tangle no
+#+REVEAL_INIT_OPTIONS: width:1000, height:600, margin: 0.3, minScale:0.2, maxScale:2.5, transition:'cube', transitionSpeed:0.2
+#+END_SRC
+*** Transitions
+default|cube|page|concave|zoom|linear|fade|none
+
 * DOWN Pretty-mode
 #+BEGIN_SRC emacs-lisp
   ;; (use-package pretty-mode

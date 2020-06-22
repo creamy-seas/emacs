@@ -6,6 +6,21 @@
 | Flycheck   | =C-c != |
 | Projectile | =s-p=   |
 
+* Artist mode
+| C-c C-a M-w | Copy rectangle (enter to start and end selection)        |
+| C-c C-a C-y | Paste (enter to paste)                                   |
+| C-c C-a T   | Text mode (enter to use figlet to insert formatted text) |
+| C-c C-a C-k | Cut                                                      |
+|-------------+----------------------------------------------------------|
+| C-c C-a E   | Erase                                                    |
+| C-c C-a e   | Select erase character                                   |
+|-------------+----------------------------------------------------------|
+| C-c C-a f   | Flood fill (enter to fill)                               |
+| C-c C-a C-f | Select fill character                                    |
+|-------------+----------------------------------------------------------|
+| C-c C-a L   | Line                                                     |
+| C-c C-a l   | Line character                                           |
+
 * Smerge ([[| =C-c C-n= | next                  |][click here]])
 | =C-c C-n= | next                  |
 | =C-c c-p= | previous              |
@@ -38,7 +53,8 @@ Run =sp-cheat-sheet=
 To read
 - https://orgmode.org/manual/Export-Settings.html
 
-| C-c ~ | Change table type |
+| C-c C-r | Embed/preview images |
+| C-c ~   | Change table type    |
 
 ** Add propetires
 | =C-c C-x d= | org-insert-drawer |
