@@ -6,6 +6,66 @@
 | Flycheck   | =C-c != |
 | Projectile | =s-p=   |
 
+* Babel
+
+| =:results=      |                                                                                        |
+|-----------------+----------------------------------------------------------------------------------------|
+| value           | functional mode, where we take the output of the previous result (python needs return) |
+| output          | whatever was printed to stdout                                                         |
+|-----------------+----------------------------------------------------------------------------------------|
+| table, vector   | result is a table                                                                      |
+| list            | result is a list                                                                       |
+| scalar verbatim | just raw output                                                                        |
+| file            | take it as a link to a file                                                            |
+| :=:file-desc=   | to name the file                                                                       |
+| =:output-dir=   | where to store file                                                              |
+|-----------------+----------------------------------------------------------------------------------------|
+| raw             | insert directly into buffer                                                            |
+| org             | put into an org block                                                                  |
+| html            | put into html block                                                                    |
+| latex           | put into latex block                                                                   |
+| drawer          | put into new drawer                                                                    |
+| pp              | pretty print                                                                           |
+|-----------------+----------------------------------------------------------------------------------------|
+| silent          | do not showall                                                                         |
+| replace         |                                                                                        |
+| append          |                                                                                        |
+
+| :var     | *allows using variables defined with #+NAME* |
+|----------+----------------------------------------------|
+| a=b      | direct assingment                            |
+| a=b()    | call a named codeblock                       |
+| a=b(a=1) | call a named codeblock with it's parameters  |
+|          |                                              |
+
+| *Tables*    |                               |
+| =:hlines=   | export lines or not in tables |
+| =:colnames= |                               |
+| =:rownames= |                               |
+
+| =:dir= | working directory - can be tramp |
+
+| =:exports= | *what to export to html or latex* |
+|------------+-----------------------------------|
+| code       |                                   |
+| results    |                                   |
+| both       |                                   |
+
+| =:tangle= | *whether to export the code block*  |
+|-----------+-------------------------------------|
+| yes       |                                     |
+| no        |                                     |
+| full path |                                     |
+| =:mkdirp= | make directory if it does not exist |
+
+| =:eval= | whether to run this code block |
+|---------+--------------------------------|
+| no      |                                |
+| query   |                                |
+
+| :=session= | *create/use a named session*          |
+| =:cache=   | yes or no - *do not use with session* |
+
 * Artist mode
 | C-c C-a M-w | Copy rectangle (enter to start and end selection)        |
 | C-c C-a C-y | Paste (enter to paste)                                   |
@@ -56,6 +116,15 @@ To read
 | C-c C-r | Embed/preview images |
 | C-c ~   | Change table type    |
 
+|---------------+-----------------------------------------------------+-------------------|
+| =C-c c=       | Entering capture mode where templates are available | [[*Capture templates][Capture templates]] |
+| =C-c a=       | View agendas                                        | [[*Agenda files][Agenda files]]      |
+| =C-c C-x C-i= | Start clock                                         |                   |
+| =C-c C-x C-d= | Show clocks                                         |                   |
+| =C-c C-x C-z= | Resolve clocks in buffer                            |                   |
+| =C-c C-y=     | Recompute time after updatingmanually               |                   |
+| =C-c C-x C-r= | Report for org file                                 |                   |
+
 ** Add propetires
 | =C-c C-x d= | org-insert-drawer |
 | =C-c C-x p= | Set property      |
@@ -81,8 +150,6 @@ To read
 | =C-x C-k b=        | Bind to key                                                           |
 | =C-x C-k n=        | Name last macro                                                       |
 | =insert-kbd-macro= | Insert named macro                                                    |
-
-
 * Registers and bookmarks
 
 |---------------+----------------------------|

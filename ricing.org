@@ -188,9 +188,9 @@ Just read [[https://github.com/tonsky/FiraCode][this]] - one paragraph sums up:
 ** Select font
 #+BEGIN_SRC emacs-lisp
   (custom-set-faces
-   ;; '(default ((t (:family "JetBrains Mono" :height 170))))
+   '(default ((t (:family "JetBrains Mono" :height 170))))
    ;; '(default ((t (:family "Fira Code" :height 170))))
-   '(default ((t (:family "Fira Emacs" :height 170))))
+   ;; '(default ((t (:family "Fira Emacs" :height 170))))
    ;; '(default ((t (:family "Inconsolata" :height 177))))
    )
  #+END_SRC
@@ -768,10 +768,10 @@ smart mode line allows infinite customization
  #+END_SRC
 ** Colour
 #+BEGIN_SRC emacs-lisp
-  (custom-set-faces
-   '(mode-line ((t
-                 (:background "selectedControlColor"
-                  :foreground "DeepSkyBlue1")))))
+  ;; (custom-set-faces
+  ;;  '(mode-line ((t
+  ;;                (:background "selectedControlColor"
+  ;;                 :foreground "DeepSkyBlue1")))))
  #+END_SRC
 * Packages Menu
 [[file:essential-config.org::*=my/package-upgrade=][Depends on the function =my/package-upgrade=]]
@@ -853,6 +853,15 @@ Colourize codes such as #AF3313
  #+END_SRC
 ** Add the themes
    #+BEGIN_SRC emacs-lisp
+     (my/add-to-theme-hashmap 'rippedcasts "my-themes/rippedcasts")
+     (my/add-to-theme-hashmap 'alect-light "my-themes/alect-themes")
+     (my/add-to-theme-hashmap 'alect-light-alt)
+     (my/add-to-theme-hashmap 'alect-dark-alt)
+     (my/add-to-theme-hashmap 'alect-black-alt)
+     (my/add-to-theme-hashmap 'sanityinc-tomorrow-blue "my-themes/color-theme-sanityinc-tomorrow")
+     (my/add-to-theme-hashmap 'sanityinc-tomorrow-night)
+     (my/add-to-theme-hashmap 'sanityinc-tomorrow-day)
+     (my/add-to-theme-hashmap 'sanityinc-tomorrow-bright)
      (my/add-to-theme-hashmap 'brutalist "my-themes/brutalist-theme-20181023.1222")
      (my/add-to-theme-hashmap 'doom-vibrant "my-themes/doom-themes-20200325.1249")
      (my/add-to-theme-hashmap 'dracula "my-themes/dracula-theme-1.7.0")
@@ -938,7 +947,7 @@ Colourize codes such as #AF3313
   ^^---------------------------------------------------------------------------
   [_r_] rainbow-mode:               %s(if (boundp 'rainbow-mode) rainbow-mode 'nil)
   [_w_] whitespace-mode:            %s(if (boundp 'whitespace-mode) whitespace-mode 'nil)
-  [_g_] golden-ratio-mode		  %s(if (boundp 'golden-ratio-mode) golden-ratio-mode 'nil)
+  [_g_] golden-ratio-mode     %s(if (boundp 'golden-ratio-mode) golden-ratio-mode 'nil)
 
   Debug
   ^^---------------------------------------------------------------------------

@@ -2,15 +2,6 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-|---------------+-----------------------------------------------------+-------------------|
-| =C-c c=       | Entering capture mode where templates are available | [[*Capture templates][Capture templates]] |
-| =C-c a=       | View agendas                                        | [[*Agenda files][Agenda files]]      |
-| =C-c C-x C-i= | Start clock                                         |                   |
-| =C-c C-x C-d= | Show clocks                                         |                   |
-| =C-c C-x C-z= | Resolve clocks in buffer                            |                   |
-| =C-c C-y=     | Recompute time after updatingmanually               |                   |
-| =C-c C-x C-r= | Report for org file                                 |                   |
-
 Tip - if you do not want to have long file names displayed in the agenda buffer, create a =Category=
 #+begin_example
 #+CATEGORY: custom-name-for-agenda-file
@@ -29,7 +20,31 @@ Org searches through the files you set in [[*General Parameters][General Paramet
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-c a") (function org-agenda))
  #+END_SRC
+* Autoinsert
+#+BEGIN_SRC emacs-lisp
+  (define-skeleton my-skeleton/org/standard-file
+    "Skeleton for a brand new org file"
+    nil
+                                          ; initial top line
+    "#+AUTHOR: Ilya Antonov" \n
+    "#+TITLE: " (skeleton-read "Title name: ") | "🐳 - Missing Title" \n
+    "#+EMAIL: ilya.antonov@dreams-ai.com" \n
+    "#+EXPORT_FILE_NAME:"  (skeleton-read "Export name: ") | "index.html" \n
+    "#+OPTIONS: p:t" \n
+    "#+OPTIONS: date:t" \n
+    "#+OPTIONS: email:t" \n
+    "#+OPTIONS: author:t" \n
+    "#+OPTIONS: num:nil" \n
+    "#+OPTIONS: title:t" \n
+    "#+OPTIONS: toc:t" \n
+    "#+OPTIONS: \\n:t" \n
+    "#+HTML_MATHJAX: align: center indent: 20em tagside: right font: Inconsolata"
+    )
 
+  (add-to-list 'auto-insert-alist '(
+                                    (".*\\.org\\'" . "[ org template]")
+                                    . my-skeleton/org/standard-file))
+ #+END_SRC
 * Capture templates     =C-c c=
 Go and edit [[file:orgmode-config.org::*Capturing%20templates%20=C-c%20c=][Capturing templates]] to use this roided feature
 ** Keybinding

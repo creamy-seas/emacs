@@ -29,6 +29,7 @@ For a nice pyplot experience, copy over the [[./my-files/python/my_pyplot.mplsty
 ** Best way for venv
 #+BEGIN_SRC shell :tangle no
   pip install virtualenv
+  pip install virtualenvwrapper
  #+END_SRC
 
 Set these in =.profile= or =.zsh=
@@ -37,6 +38,7 @@ Set these in =.profile= or =.zsh=
   export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3.7
   export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
   export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
+  source /usr/local/bin/virtualenvwrapper.sh
 #+END_SRC
 where =WORKON_HOME= is the default location of venv
 
@@ -44,29 +46,6 @@ Then create venv
 #+BEGIN_SRC shell :tangle no
  mkvirtualenv --python=python3.7 test
  #+END_SRC
-
-** Installing =virtualenvwrapper=
-*** os-x
-#+BEGIN_SRC shell :tangle no
-  pip3 install virtualenv
-  pip3 install virtualenvwrapper
-  pip3 install virtualfish
- #+END_SRC
-*** arch
-#+BEGIN_SRC shell :tangle no
-  sudo pacman -S python-virtualenvwrapper
- #+END_SRC
-** Loading =virtualenvwrapper= in shell
-*** Fish (=config.sh=)
-=eval (python3 -m virtualfish)=
-
-Then you can
-=vf new <VENV-NAME>=
-*** Bash
-#+BEGIN_SRC sh :tangle no
-  source /usr/bin/virtualenvwrapper.sh
-  python -m venv <VENV-NAME>
-#+END_SRC
 * General Parameters
 #+BEGIN_SRC emacs-lisp
   (setq python-indent-offset 4)
