@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: my-org-height
+# key: oh
+# --
+
+#+ATTR_ORG: :width ${1:200px}

@@ -896,6 +896,10 @@ You may want to turn this off if it triggers your workflow
   (define-key smartparens-mode-map (kbd "C-M-d") #'sp-backward-down-sexp)
   (define-key smartparens-mode-map (kbd "C-M-a") #'sp-beginning-of-sexp)
   (define-key smartparens-mode-map (kbd "C-M-e") #'sp-end-of-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-f") #'sp-backward-up-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-v") #'sp-up-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-n") #'sp-next-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-p") #'sp-previous-sexp)
 
   ;; (define-key smartparens-mode-map (kbd "C-M-q") #'sp-backward-up-sexp)
   ;; (define-key smartparens-mode-map (kbd "C-M-`") #'beginning-of-defun)
@@ -916,10 +920,10 @@ You may want to turn this off if it triggers your workflow
   (define-key smartparens-mode-map (kbd "M-<backspace>") #'sp-backward-unwrap-sexp)
 
   ;; Slurp/barf
-  ;; (define-key smartparens-mode-map (kbd "C-<right>") #'sp-forward-slurp-sexp)
-  ;; (define-key smartparens-mode-map (kbd "C-<left>") #'sp-forward-barf-sexp)
-  ;; (define-key smartparens-mode-map (kbd "C-S-<left>") #'sp-backward-slurp-sexp)
-  ;; (define-key smartparens-mode-map (kbd "C-S-<right>") #'sp-backward-barf-sexp)
+  (define-key smartparens-mode-map (kbd "<C-right>") #'sp-forward-slurp-sexp)
+  (define-key smartparens-mode-map (kbd "<M-right>") #'sp-forward-barf-sexp)
+  (define-key smartparens-mode-map (kbd "<C-left>") #'sp-backward-slurp-sexp)
+  (define-key smartparens-mode-map (kbd "<C-left>") #'sp-backward-barf-sexp)
 
   ;; (define-key smartparens-mode-map (kbd "C-M-<backspace>") #'sp-splice-sexp-killing-backward)
   ;; (define-key smartparens-mode-map (kbd "C-S-<backspace>") #'sp-splice-sexp-killing-around)

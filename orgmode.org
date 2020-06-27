@@ -330,6 +330,12 @@ You can type =<el= and the =TAB= to create the desired source block
   ;;     ;; Redisplay so as the new link has proper invisible characters.
   ;;     (sit-for 0)))
  #+END_SRC
+* Image preview
+In order to get a preview, add =#+ATTR_ORG: :width 100=
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-image-actual-width nil)
+ #+END_SRC
 * Indentation
 #+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook 'org-indent-mode)
@@ -367,13 +373,12 @@ You can type =<el= and the =TAB= to create the desired source block
            (relative-file-name (replace-regexp-in-string default-directory "" raw-file-name)))
       (concat "./" relative-file-name)))
  #+END_SRC
-* Org Tables
-** Latex export options
+* Latex preview =C-c C-x C-l=
 #+BEGIN_SRC emacs-lisp
   (setq org-format-latex-options (plist-put org-format-latex-options
                                             :scale 1.7))
-  (setq org-format-latex-options (plist-put org-format-latex-options
-                                            :foreground "#fdab10"))
+  ;; (setq org-format-latex-options (plist-put org-format-latex-options
+  ;;                                           :foreground "#fdab10"))
  #+END_SRC
 * DOWN Org-ac (when typing #+)
 #+BEGIN_SRC emacs-lisp

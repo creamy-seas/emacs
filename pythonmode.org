@@ -8,6 +8,13 @@ For a nice pyplot experience, copy over the [[./my-files/python/my_pyplot.mplsty
   plt.style.use('./my_pyplot.mplstyle')
 #+END_SRC
 
+Or, use one of the system styles
+#+BEGIN_SRC python :tangle no
+  from matplotlib import pyplot as plt
+  print(plt.style.available)
+  plt.style.use('chosen-style-as-string')
+ #+END_SRC
+
 * CONFIG Personal Configuration
 #+BEGIN_SRC emacs-lisp
   (defvar my/python/venv-folder "~/.config/python_vi" "Location of folder with the venv (I hope you have just one)")

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: my-html-height
+# key: hh
+# --
+#+ATTR_HTML: :height ${1:200px}

@@ -6,30 +6,35 @@
 | Flycheck   | =C-c != |
 | Projectile | =s-p=   |
 
+* Org mode
+| C-c C-x C-l | View latex in buffer - must be in math quotes $$ |
 * Babel
+| =C-c C-v=   | all the functions |
+| =C-c C-v j= | Add a header      |
 
-| =:results=      |                                                                                        |
-|-----------------+----------------------------------------------------------------------------------------|
-| value           | functional mode, where we take the output of the previous result (python needs return) |
-| output          | whatever was printed to stdout                                                         |
-|-----------------+----------------------------------------------------------------------------------------|
-| table, vector   | result is a table                                                                      |
-| list            | result is a list                                                                       |
-| scalar verbatim | just raw output                                                                        |
-| file            | take it as a link to a file                                                            |
-| :=:file-desc=   | to name the file                                                                       |
-| =:output-dir=   | where to store file                                                              |
-|-----------------+----------------------------------------------------------------------------------------|
-| raw             | insert directly into buffer                                                            |
-| org             | put into an org block                                                                  |
-| html            | put into html block                                                                    |
-| latex           | put into latex block                                                                   |
-| drawer          | put into new drawer                                                                    |
-| pp              | pretty print                                                                           |
-|-----------------+----------------------------------------------------------------------------------------|
-| silent          | do not showall                                                                         |
-| replace         |                                                                                        |
-| append          |                                                                                        |
+| =:results=      |                                                     |
+|-----------------+-----------------------------------------------------|
+| value           | functional mode,                                    |
+|                 | output of the previous result (python needs return) |
+| output          | whatever was printed to stdout                      |
+|-----------------+-----------------------------------------------------|
+| table, vector   | result is a table                                   |
+| list            | result is a list                                    |
+| scalar verbatim | just raw output                                     |
+| file            | take it as a link to a file                         |
+| :=:file-desc=   | to name the file                                    |
+| =:output-dir=   | where to store file                                 |
+|-----------------+-----------------------------------------------------|
+| raw             | insert directly into buffer                         |
+| org             | put into an org block                               |
+| html            | put into html block                                 |
+| latex           | put into latex block                                |
+| drawer          | put into new drawer                                 |
+| pp              | pretty print                                        |
+|-----------------+-----------------------------------------------------|
+| silent          | do not showall                                      |
+| replace         |                                                     |
+| append          |                                                     |
 
 | :var     | *allows using variables defined with #+NAME* |
 |----------+----------------------------------------------|
@@ -63,8 +68,8 @@
 | no      |                                |
 | query   |                                |
 
-| :=session= | *create/use a named session*          |
-| =:cache=   | yes or no - *do not use with session* |
+| :=session= | *create/use a named session*. If nothing supplied, use default one |
+| =:cache=   | yes or no - *do not use with session*                              |
 
 * Artist mode
 | C-c C-a M-w | Copy rectangle (enter to start and end selection)        |
@@ -91,23 +96,31 @@
 
 * Smartparens ([[file:essential-config.org::*Smartparens][click here]])
 Run =sp-cheat-sheet=
-|                 |                                                   |                           |
-| =C-M=u=         | Unwrap current bracketed region                   | =sp-splice-sexp=          |
-| =C-M-r=         | Rewrap current pairs                              | =sp-rewrap-sexp=          |
-|-----------------+---------------------------------------------------+---------------------------|
-| =C-M-f=         | Jump to matching closing bracket                  | =sp-forward-sexp=         |
-| =C-M-b=         | Jump to matching opening bracket                  | =sp-backward-sexp=        |
-| =C-M-c=         | Jump INSIDE the next bracket in scope             | =sp-down-sexp=            |
-| =C-M-d=         | Jump INSIDE the previous bracket in scope         | =sp-backward-down-sexp=   |
-| =C-M-a=         | Jump to start of wrapper                          | =sp-begginig-of-sexp=     |
-| =C-M-e=         | Jump to end of wrapper                            | =sp-end-of-sexp=          |
-|-----------------+---------------------------------------------------+---------------------------|
-| =C-M-t=         | Transpose pair                                    | =sp-transpose-sexp=       |
-| =C-M-k=         | Kill in bracket region (when cursor over bracket) |                           |
-| =C-M-w=         | Copy in bracket region (when cursor over bracket) |                           |
-|-----------------+---------------------------------------------------+---------------------------|
-| =M-<delete>=    | Delete next sexp                                  | =sp-unwrap-sexp=          |
-| =M-<backspare>= | Delete previous sexp                              | =sp-backward-unwrap-sexp= |
+|                 |                                                    |                           |
+| =C-M=u=         | Unwrap current bracketed region                    | =sp-splice-sexp=          |
+| =C-M-r=         | Rewrap current pairs                               | =sp-rewrap-sexp=          |
+|-----------------+----------------------------------------------------+---------------------------|
+| =C-M-f=         | Jump to matching closing bracket                   | =sp-forward-sexp=         |
+| =C-M-b=         | Jump to matching opening bracket                   | =sp-backward-sexp=        |
+| =C-M-n=         | Jump to start of NEXT bracket - no scope           | =sp-next-sexp=            |
+| =C-M-c=         | Jump INSIDE the NEXT bracket (in scope) to START   | =sp-down-sexp=            |
+| =C-M-d=         | Jump INSIDE the PREVIOUS bracket (in scope) to END | =sp-backward-down-sexp=   |
+| =C-M-v=         | Jump OUTSIDE the NEXT bracket (in scope)           | =sp-up-sexp=              |
+| =C-M-f=         | Jump OUTSIDE the PREVIOUS bracket (in scope)       | =sp-up-sexp=              |
+| =C-M-a=         | Jump to start of wrapper                           | =sp-begginig-of-sexp=     |
+| =C-M-e=         | Jump to end of wrapper                             | =sp-end-of-sexp=          |
+|-----------------+----------------------------------------------------+---------------------------|
+| =<C-right>=     | PULL in the next word INTO bracket                 | =sp-forward-slurp-sexp=   |
+| =<M-right>=     | BARF the last word OUT of bracket                  | =sp-forward-barf-sexp=    |
+| =<C-left>=      | PULL in the previous word INTO bracket             | =sp-backward-slurp-sexp=  |
+| =<M-left>=      | BARF the first word out of bracket                 | =sp-backward-barf-sexp=   |
+|-----------------+----------------------------------------------------+---------------------------|
+| =C-M-t=         | Transpose pair                                     | =sp-transpose-sexp=       |
+| =C-M-k=         | Kill in bracket region (when cursor over bracket)  |                           |
+| =C-M-w=         | Copy in bracket region (when cursor over bracket)  |                           |
+|-----------------+----------------------------------------------------+---------------------------|
+| =M-<delete>=    | Delete next sexp                                   | =sp-unwrap-sexp=          |
+| =M-<backspare>= | Delete previous sexp                               | =sp-backward-unwrap-sexp= |
 
 * Org mode
 To read
