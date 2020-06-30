@@ -104,6 +104,14 @@ For some reason this is not the default way of killing buffers
   (global-set-key (kbd "s-,") 'my/pop-local-mark-ring)
   (global-set-key (kbd "s-.") 'my/unpop-to-mark-command)
  #+END_SRC
+** Close window - reopen windows with =C-x 1=
+#+BEGIN_SRC emacs-lisp
+  (use-package zygospore
+    :ensure t
+    :init (my/add-to-package-list 'zygospore))
+
+  (global-set-key (kbd "C-x 1") 'zygospore-toggle-delete-other-windows)
+ #+END_SRC
 * Clock
 #+BEGIN_SRC emacs-lisp
   ;; (display-time-mode 1)
@@ -280,7 +288,12 @@ Make emacs prompt for password in the minibuffer
     (add-hook 'org-mode-hook #'rainbow-delimiters-mode)
     (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
  #+END_SRC
-
+* Highlight undos
+#+BEGIN_SRC emacs-lisp
+  (use-package volatile-highlights
+    :ensure t
+    :init (my/add-to-package-list "volatile-highlights"))
+ #+END_SRC
 * PACKAGE iBuffer
 Buffer that groups other buffers
 ** Init

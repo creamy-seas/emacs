@@ -3,10 +3,12 @@ ag
 aspell
 biber
 cargo
+clang
 fswatch
 git
 gnupg
 grip
+gtags
 inkscape
 ispell
 latexmk

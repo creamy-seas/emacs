@@ -1,5 +1,7 @@
 (load (concat user-emacs-directory "baseplatform.el"))
 (load (concat user-emacs-directory "essential-config.el"))
+(load (concat user-emacs-directory "autocomplete-ivy.el"))
+;; (load (concat user-emacs-directory "autocomplete-helm.el"))
 (load (concat user-emacs-directory "ricing.el"))
 (load (concat user-emacs-directory "experimental-packages.el"))
 (load (concat user-emacs-directory "pythonmode.el"))

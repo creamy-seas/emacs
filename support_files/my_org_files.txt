@@ -1,3 +1,5 @@
+autocomplete-helm.org
+autocomplete-ivy.org
 baseplatform.org
 orgmode.org
 org-config.org

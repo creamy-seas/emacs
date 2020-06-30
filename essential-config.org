@@ -55,6 +55,7 @@
   (define-key key-translation-map (kbd "C-x 8 b") (kbd "⦿"))
   (define-key key-translation-map (kbd "C-x 8 _") (kbd "̲"))
   (define-key key-translation-map (kbd "C-x 8 q") (kbd "\""))
+  (global-set-key (kbd "C-c i") (function info-other-window))
  #+END_SRC
 ** Russian mappings
 #+BEGIN_SRC emacs-lisp
@@ -396,7 +397,11 @@ The superior search method with highlighting of the leading characters
     (my/add-to-package-list 'avy))
 #+END_SRC
 * PACKAGE Company
-Completion. With a dropdown box. Metal.
+| =C-w=              | On a list of suggestions to see the source code |
+| =company-backends= | Lists backends that are used to return candidates |
+- Completion. With a dropdown box. Metal.
+- Name stands for compLETEanything
+- It comes with several back-ends such as Elisp, Clang, Semantic, Eclim, Ropemacs, Ispell, CMake, BBDB, Yasnippet, dabbrev, etags, gtags, files, keywords and a few others.
 ** Init
 #+BEGIN_SRC emacs-lisp
   (use-package company
@@ -606,47 +611,6 @@ Mark and edit all copies of the marked region simultaniously.
     :init (my/add-to-package-list 'iedit))
  #+END_SRC
 
-* PACKAGE Ivy
-A generic autocompletion framework
-| Ivy     | Generic completion                      |
-| Counsel | Ivy-enhanced versions of emacs commands |
-| Swiper  | Alternative search                     |
-
-https://sam217pa.github.io/2016/09/11/nuclear-power-editing-via-ivy-and-ag/
-
-** PACKAGE Ivy
-*** Init
-#+BEGIN_SRC emacs-lisp
-  (use-package ivy
-    :ensure t
-    :init (my/add-to-package-list 'ivy)
-    (ivy-mode)
-    :config
-    (setq ivy-use-virtual-buffers t
-          enable-recursive-minibuffers t
-                                          ;change how ivy displays autocompletion
-          ivy-count-format "%d/%d "))
- #+END_SRC
-
-*** Keybindings
-#+BEGIN_SRC emacs-lisp
-  (define-key my/keymap (kbd "s") (function ivy-resume))
- #+END_SRC
-** PACKAGE Counsel
-Rebind emacs commands to use ivy https://github.com/abo-abo/swiper#counsel
-#+BEGIN_SRC emacs-lisp
-  (use-package counsel
-    :ensure t
-    :init (my/add-to-package-list 'counsel)
-    :config
-    (counsel-mode))
- #+END_SRC
-** PACKAGE Swiper
-The superior search mode to the original
-#+BEGIN_SRC emacs-lisp
-  (require 'swiper)
-  (global-set-key (kbd "C-s") 'swiper)
-#+END_SRC
 * Ispell
 If you want to check specific buffer with different language, add
 #+begin_example
@@ -892,12 +856,12 @@ You may want to turn this off if it triggers your workflow
   ;; Navigation
   (define-key smartparens-mode-map (kbd "C-M-f") #'sp-forward-sexp)
   (define-key smartparens-mode-map (kbd "C-M-b") #'sp-backward-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-v") #'sp-backward-up-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-g") #'sp-up-sexp)
   (define-key smartparens-mode-map (kbd "C-M-c") #'sp-down-sexp)
   (define-key smartparens-mode-map (kbd "C-M-d") #'sp-backward-down-sexp)
   (define-key smartparens-mode-map (kbd "C-M-a") #'sp-beginning-of-sexp)
   (define-key smartparens-mode-map (kbd "C-M-e") #'sp-end-of-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-f") #'sp-backward-up-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-v") #'sp-up-sexp)
   (define-key smartparens-mode-map (kbd "C-M-n") #'sp-next-sexp)
   (define-key smartparens-mode-map (kbd "C-M-p") #'sp-previous-sexp)
 
@@ -911,6 +875,7 @@ You may want to turn this off if it triggers your workflow
   (global-set-key [remap mark-sexp] #'sp-mark-sexp)
   (define-key smartparens-mode-map (kbd "C-M-k") #'sp-kill-sexp)
   (define-key smartparens-mode-map (kbd "C-M-w") #'sp-copy-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-2") #'sp-mark-sexp)
 
   ;; Unwrap and rewrap
   (define-key smartparens-mode-map (kbd "C-M-u") #'sp-splice-sexp)
@@ -923,13 +888,27 @@ You may want to turn this off if it triggers your workflow
   (define-key smartparens-mode-map (kbd "<C-right>") #'sp-forward-slurp-sexp)
   (define-key smartparens-mode-map (kbd "<M-right>") #'sp-forward-barf-sexp)
   (define-key smartparens-mode-map (kbd "<C-left>") #'sp-backward-slurp-sexp)
-  (define-key smartparens-mode-map (kbd "<C-left>") #'sp-backward-barf-sexp)
+  (define-key smartparens-mode-map (kbd "<M-left>") #'sp-backward-barf-sexp)
 
   ;; (define-key smartparens-mode-map (kbd "C-M-<backspace>") #'sp-splice-sexp-killing-backward)
   ;; (define-key smartparens-mode-map (kbd "C-S-<backspace>") #'sp-splice-sexp-killing-around)
 
   ;; Indent
   ;; (define-key smartparens-mode-map (kbd "C-M-<tab>") #'sp-indent-defun)
+ #+END_SRC
+** Other navigation
+#+BEGIN_SRC emacs-lisp
+  (define-key smartparens-mode-map (kbd "C-M-z") 'beginning-of-defun)
+  (define-key smartparens-mode-map (kbd "C-M-x") 'end-of-defun)
+  (define-key smartparens-mode-map (kbd "C-M-SPC") 'mark-defun)
+ #+END_SRC
+* PACKAGE Sr-Speedbar
+#+BEGIN_SRC emacs-lisp
+  (use-package sr-speedbar
+    :ensure t
+    :init (my/add-to-package-list 'sr-speedbar))
+
+  (define-key my/keymap (kbd "b") 'sr-speedbar-toggle)
  #+END_SRC
 * Tabs
 Tabs are bloat. Read about them [[http://www.xemacs.org/Links/tutorials_1.html][here]]

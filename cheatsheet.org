@@ -96,31 +96,35 @@
 
 * Smartparens ([[file:essential-config.org::*Smartparens][click here]])
 Run =sp-cheat-sheet=
-|                 |                                                    |                           |
-| =C-M=u=         | Unwrap current bracketed region                    | =sp-splice-sexp=          |
-| =C-M-r=         | Rewrap current pairs                               | =sp-rewrap-sexp=          |
-|-----------------+----------------------------------------------------+---------------------------|
-| =C-M-f=         | Jump to matching closing bracket                   | =sp-forward-sexp=         |
-| =C-M-b=         | Jump to matching opening bracket                   | =sp-backward-sexp=        |
-| =C-M-n=         | Jump to start of NEXT bracket - no scope           | =sp-next-sexp=            |
-| =C-M-c=         | Jump INSIDE the NEXT bracket (in scope) to START   | =sp-down-sexp=            |
-| =C-M-d=         | Jump INSIDE the PREVIOUS bracket (in scope) to END | =sp-backward-down-sexp=   |
-| =C-M-v=         | Jump OUTSIDE the NEXT bracket (in scope)           | =sp-up-sexp=              |
-| =C-M-f=         | Jump OUTSIDE the PREVIOUS bracket (in scope)       | =sp-up-sexp=              |
-| =C-M-a=         | Jump to start of wrapper                           | =sp-begginig-of-sexp=     |
-| =C-M-e=         | Jump to end of wrapper                             | =sp-end-of-sexp=          |
-|-----------------+----------------------------------------------------+---------------------------|
-| =<C-right>=     | PULL in the next word INTO bracket                 | =sp-forward-slurp-sexp=   |
-| =<M-right>=     | BARF the last word OUT of bracket                  | =sp-forward-barf-sexp=    |
-| =<C-left>=      | PULL in the previous word INTO bracket             | =sp-backward-slurp-sexp=  |
-| =<M-left>=      | BARF the first word out of bracket                 | =sp-backward-barf-sexp=   |
-|-----------------+----------------------------------------------------+---------------------------|
-| =C-M-t=         | Transpose pair                                     | =sp-transpose-sexp=       |
-| =C-M-k=         | Kill in bracket region (when cursor over bracket)  |                           |
-| =C-M-w=         | Copy in bracket region (when cursor over bracket)  |                           |
-|-----------------+----------------------------------------------------+---------------------------|
-| =M-<delete>=    | Delete next sexp                                   | =sp-unwrap-sexp=          |
-| =M-<backspare>= | Delete previous sexp                               | =sp-backward-unwrap-sexp= |
+|                 |                                                     |                           |
+| =C-M=u=         | Unwrap current bracketed region                     | =sp-splice-sexp=          |
+| =C-M-r=         | Rewrap current pairs                                | =sp-rewrap-sexp=          |
+|-----------------+-----------------------------------------------------+---------------------------|
+| =C-M-f=         | Jump to matching closing bracket                    | =sp-forward-sexp=         |
+| =C-M-b=         | Jump to matching opening bracket                    | =sp-backward-sexp=        |
+| =C-M-g=         | Jump OUTSIDE matching closing bracket (in scope)    | =sp-up-sexp=              |
+| =C-M-v=         | Jump OUTSIDE matching opening bracket (in scope)    | =sp-backward-up-sexp=     |
+| =C-M-n=         | Jump to start of NEXT bracket - no scope            | =sp-next-sexp=            |
+| =C-M-c=         | Jump INSIDE the NEXT bracket (in scope) to START    | =sp-down-sexp=            |
+| =C-M-d=         | Jump INSIDE the PREVIOUS bracket (in scope) to END  | =sp-backward-down-sexp=   |
+| =C-M-a=         | Jump to start of wrapper                            | =sp-begginig-of-sexp=     |
+| =C-M-e=         | Jump to end of wrapper                              | =sp-end-of-sexp=          |
+|-----------------+-----------------------------------------------------+---------------------------|
+| =C-M-z=         | Move to START of function                           | =beginning-of-defun=      |
+| =C-M-x=         | Move to END of function                             | =end-of-defun=            |
+|-----------------+-----------------------------------------------------+---------------------------|
+| =<C-right>=     | PULL in the next word INTO bracket                  | =sp-forward-slurp-sexp=   |
+| =<M-right>=     | BARF the last word OUT of bracket                   | =sp-forward-barf-sexp=    |
+| =<C-left>=      | PULL in the previous word INTO bracket              | =sp-backward-slurp-sexp=  |
+| =<M-left>=      | BARF the first word out of bracket                  | =sp-backward-barf-sexp=   |
+|-----------------+-----------------------------------------------------+---------------------------|
+| =C-M-t=         | Transpose pair                                      | =sp-transpose-sexp=       |
+| =C-M-k=         | Kill in bracket region (when cursor over bracket)   |                           |
+| =C-M-w=         | Copy in bracket region (when cursor over bracket)   |                           |
+| =C-M-2=         | Mark the next expression (see - it is just above w) | =sp-mark-sexp=            |
+|-----------------+-----------------------------------------------------+---------------------------|
+| =M-<delete>=    | Delete next sexp                                    | =sp-unwrap-sexp=          |
+| =M-<backspare>= | Delete previous sexp                                | =sp-backward-unwrap-sexp= |
 
 * Org mode
 To read

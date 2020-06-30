@@ -95,7 +95,11 @@ To export an inkscape image for latex interactively, open =.svg= file → save a
   (defun my/inkscape/latex/load ()
     "Prompts user to select an .svg file from the 'images_inkscape' directory and opens it"
     (interactive)
-    (let* ((svg-file-list (directory-files "images_inkscape" nil ".*\.svg"))
+    (let* ((svg-file-list (directory-files
+                           (concat
+                            (expand-file-name (TeX-master-directory))
+                            "images_inkscape")
+                           nil ".*\.svg"))
            (svg-selected (ido-completing-read "🦑 Inkscape file to open: " svg-file-list))
            (base-filename (replace-regexp-in-string "\.svg" "" svg-selected)))
       (my/inkscape/latex/generate base-filename)))
@@ -148,7 +152,7 @@ To export an inkscape image for latex interactively, open =.svg= file → save a
       ^^---------------------------------------------------------------------------
       [_g_] Generate image (uses the current line to generate filename)
       [_l_] Load image
-      [_k_] Kill single inkscape process		    [_K_] Kill ALL inkscape processes
+      [_k_] Kill single inkscape process        [_K_] Kill ALL inkscape processes
 
       ^^---------------------------------------------------------------------------
       "
