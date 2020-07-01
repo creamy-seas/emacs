@@ -292,7 +292,11 @@ Make emacs prompt for password in the minibuffer
 #+BEGIN_SRC emacs-lisp
   (use-package volatile-highlights
     :ensure t
-    :init (my/add-to-package-list "volatile-highlights"))
+    :init (my/add-to-package-list "volatile-highlights")
+    (volatile-highlights-mode t))
+
+  (vhl/define-extension 'undo-tree 'undo-tree-yank 'undo-tree-move)
+  (vhl/install-extension 'undo-tree)
  #+END_SRC
 * PACKAGE iBuffer
 Buffer that groups other buffers

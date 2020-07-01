@@ -17,8 +17,8 @@
 | =C-c C-w/y= | copy/yank cell                    |
 | =C-c C-z=   | interrupt kernel                  |
 |-------------+-----------------------------------|
-
-1. *do not set* =(setq ein:use-smartrep t)= or it doesn't work
+* External setup
+1. *Do not set* =(setq ein:use-smartrep t)= or it doesn't work
 2. run =jt= to set html variables. [[https://github.com/dunovank/jupyter-themes][See this link for details]]
    - =-t= select theme
    - =-cellw= set cell width
@@ -43,29 +43,28 @@
     (setq ein:completion-backend 'ein:use-company-backend)
     (setq ein:notebooklist-login-timeout 10000)
     (custom-set-variables
-     '(ein:jupyter-default-notebook-directory "~/mydrive")))
+     '(ein:jupyter-default-notebook-directory "~/")
+     '(ein:output-area-inlined-images t)))
 
   ;; (add-hook 'ein:notebook-mode-hook (lambda ()
   ;;                                     (linum-relative-global-mode -1)))
  #+END_SRC
 
 * Comaptibility
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
   (add-hook 'ein-notebook-mode-hook (lambda () (hungry-delete-mode -1)))
-
  #+END_SRC
 * DOWN Coloring
 #+BEGIN_SRC emacs-lisp
-  (custom-set-faces
-   '(ein:cell-output-area ((t (:foreground "cornsilk4" :background "#2d3743"))))
-   '(ein:cell-input-prompt ((t (:foreground "azure4" :background "#2d3743"))))
-   '(header-line ((t (:foreground "DeepPink1" :background "#2d3743"))))
-   '(ein:notification-tab-normal ((t (:inhert header-line))))
-   '(ein:notification-tab-selected ((t (:inhert header-line :weight bold :foreground "tan1"))))
-   '(ein:cell-heading-1 ((t (:inherit ein:cell-heading-3 :foreground "cornflower blue" :weight bold :height 1.2))))
-   '(ein:cell-heading-2 ((t (:inherit ein:cell-heading-3 :foreground "SteelBlue2" :weight bold :height 1.05))))
-   '(ein:cell-heading-6 ((t (:inherit variable-pitch :foreground "MediumPurple3" :weight bold)))))
-
+  ;; (custom-set-faces
+  ;;  '(ein:cell-output-area ((t (:foreground "cornsilk4" :background "#2d3743"))))
+  ;;  '(ein:cell-input-prompt ((t (:foreground "azure4" :background "#2d3743"))))
+  ;;  '(header-line ((t (:foreground "DeepPink1" :background "#2d3743"))))
+  ;;  '(ein:notification-tab-normal ((t (:inhert header-line))))
+  ;;  '(ein:notification-tab-selected ((t (:inhert header-line :weight bold :foreground "tan1"))))
+  ;;  '(ein:cell-heading-1 ((t (:inherit ein:cell-heading-3 :foreground "cornflower blue" :weight bold :height 1.2))))
+  ;;  '(ein:cell-heading-2 ((t (:inherit ein:cell-heading-3 :foreground "SteelBlue2" :weight bold :height 1.05))))
+  ;;  '(ein:cell-heading-6 ((t (:inherit variable-pitch :foreground "MediumPurple3" :weight bold)))))
  #+END_SRC
 * DOWN =my/ein/header=
 #+BEGIN_SRC emacs-lisp
@@ -256,7 +255,6 @@
     (interactive)
     (call-interactively (function ein:notebook-save-notebook-command))
     (call-interactively (function ein:worksheet-execute-cell)))
-
  #+END_SRC
 * DOWN Debug
 #+BEGIN_SRC emacs-lisp
@@ -283,17 +281,16 @@
 * Keybindings
 #+BEGIN_SRC emacs-lisp
   (with-eval-after-load "ein-notebook"
-    ;; (hungry-delete-mode)			;turns off hungry delete
-    ;; (define-key ein:notebook-mode-map (kbd "DEL") (function backward-delete-char))
+    (define-key ein:notebook-mode-map (kbd "DEL") (function delete-backward-char))
     ;; (define-key ein:notebook-mode-map (kbd "DEL") (function python-indent-dedent-line-backspace))
     ;; (define-key ein:notebook-mode-map (kbd "DEL") (function sp-backward-delete-char))
-    (define-key ein:notebook-mode-map (kbd "'") (function self-insert-command))
-    (define-key ein:notebook-mode-map (kbd "C-c C-d") (function ein:pytools-request-tooltip-or-help))
-    (define-key ein:notebook-mode-map (kbd "C-c C-j") (function ein:notebook-kernel-interrupt-command))
     ;; (define-key ein:notebook-mode-map (kbd "C-c C-j") (function
     ;;                                                    (prog
     ;;                                                     (ein:notebook-kernel-interrupt-command)
     ;;                                                     (ein:worksheet-clear-all-output))))
+    (define-key ein:notebook-mode-map (kbd "'") (function self-insert-command))
+    (define-key ein:notebook-mode-map (kbd "C-c C-d") (function ein:pytools-request-tooltip-or-help))
+    (define-key ein:notebook-mode-map (kbd "C-c C-j") (function ein:notebook-kernel-interrupt-command))
     (define-key ein:notebook-mode-map (kbd "<M-return>") (function my/ein/save-exectute-and-goto-next))
     (define-key ein:notebook-mode-map (kbd "C-c C-c") (function my/ein/save-execute))
     (define-key ein:notebook-mode-map (kbd "C-:") (function iedit-mode))

@@ -454,6 +454,29 @@ The superior search method with highlighting of the leading characters
     (define-key company-active-map (kbd "C-n") #'company-select-next)
     (define-key company-active-map (kbd "C-p") #'company-select-previous))
  #+END_SRC
+* Comment Dwim =M-;=
+Mash it to get 3 comment versions
+#+BEGIN_SRC emacs-lisp
+  (use-package comment-dwim-2
+    :bind (("M-;" . comment-dwim-2)))
+ #+END_SRC
+* Diff mode
+Show whitespace in diff mode
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'diff-mode-hook (lambda ()
+                              (setq-local whitespace-style
+                                          '(face
+                                            tabs
+                                            tab-mark
+                                            spaces
+                                            space-mark
+                                            trailing
+                                            indentation::space
+                                            indentation::tab
+                                            newline
+                                            newline-mark))
+                              (whitespace-mode 1)))
+ #+END_SRC
 * MANUAL-PACKAGE Dired+
 Beautiful file browsing. Dired+ is downloaded manually
 | =e=       | to preview file                                 |
