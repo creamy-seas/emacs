@@ -3,8 +3,9 @@
 #+PROPERTY: header-args :tangle no
 
 
-| Flycheck   | =C-c != |
-| Projectile | =s-p=   |
+| Flycheck             | =C-c != |          |
+| Projectile           | =s-p=   |          |
+| Zap (delete) to char | =M-z=   | Inactive |
 
 * Org mode
 | C-c C-x C-l | View latex in buffer - must be in math quotes $$ |

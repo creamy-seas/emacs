@@ -2,8 +2,9 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-|   | Type angle bracket <TAB in order to complete a header |
-|   |                                                       |
+| Type angle bracket <TAB in order to complete a header |
+| Run =ggtags-create-tags= from emacs                   |
+| Run =gtags= from shell in the root directoru     |
 * CONFIG Personal Configuration
 #+BEGIN_SRC emacs-lisp
   (defvar my/c-header-file-location "/usr/local/include/c++/9.3.0")
@@ -94,47 +95,15 @@ within predefined search paths.  company-c-headers can search "system" and
   ;; “user”: When you want to define your own style
   (setq c-default-style "linux")
  #+END_SRC
+* Function args
+#+BEGIN_SRC emacs-lisp
+  (use-package function-args
+    :ensure t
+    :init (my/add-to-package-list 'function-args))
+ #+END_SRC
 * Folding source code
 #+BEGIN_SRC emacs-lisp
   (add-hook 'c-mode-common-hook 'hs-minor-mode)
- #+END_SRC
-* PACKAGE ggtags
-- In every project, run =gtags= from the command line in the root directory or
-- Run =ggtags-create-tags= in the root directory
-** External setup
-1) Install ctags backend https://github.com/universal-ctags/homebrew-universal-ctags
-2) Download
-#+BEGIN_SRC sh :tangle no
-wget https://www.gnu.org/software/global/download.html
- #+END_SRC
-3) [@3] Install
-#+BEGIN_SRC shell :tangle no
-  ./configure --with-universal-ctags=/usr/local/bin/ctags
-  make & make install
- #+END_SRC
-** Init
-#+BEGIN_SRC emacs-lisp
-  (use-package ggtags
-    :ensure t
-    :init (my/add-to-package-list 'ggtags)
-    (my/add-dependency "gtags")
-    )
-
-
-  (add-hook 'c-mode-common-hook (lambda ()
-                                  (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'asm-mode)
-                                    (ggtags-mode 1))))
- #+END_SRC
-** Keybindings
-#+BEGIN_SRC emacs-lisp
-  (define-key ggtags-mode-map (kbd "C-c g s") 'ggtags-find-other-symbol)
-  (define-key ggtags-mode-map (kbd "C-c g h") 'ggtags-view-tag-history)
-  (define-key ggtags-mode-map (kbd "C-c g r") 'ggtags-find-reference)
-  (define-key ggtags-mode-map (kbd "C-c g f") 'ggtags-find-file)
-  (define-key ggtags-mode-map (kbd "C-c g c") 'ggtags-create-tags)
-  (define-key ggtags-mode-map (kbd "C-c g u") 'ggtags-update-tags)
-
-  (define-key ggtags-mode-map (kbd "M-,") 'pop-tag-mark)
  #+END_SRC
 * Semantics
 #+BEGIN_SRC emacs-lisp

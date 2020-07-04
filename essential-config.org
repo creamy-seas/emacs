@@ -134,16 +134,16 @@
     (interactive)
     (buffer-substring (line-beginning-position) (line-end-position)))
  #+END_SRC
-** =my/copy-line-save-position=
+** DOWN =my/copy-line-save-position=
 #+BEGIN_SRC emacs-lisp
-  (defun my/copy-line-save-position ()
-    (interactive)
-    (save-excursion ;;save the cursor position
-      (kill-new            ;;kill the following
-       (buffer-substring ;;from begginin of line to end of line
-        (point-at-bol)
-        (point-at-eol)))))
-  (global-set-key (kbd "C-c w l") (function my/copy-line-save-position))
+  ;; (defun my/copy-line-save-position ()
+  ;;   (interactive)
+  ;;   (save-excursion ;;save the cursor position
+  ;;     (kill-new            ;;kill the following
+  ;;      (buffer-substring ;;from begginin of line to end of line
+  ;;       (point-at-bol)
+  ;;       (point-at-eol)))))
+  ;; (global-set-key (kbd "C-c w l") (function my/copy-line-save-position))
 #+END_SRC
 ** =my/drop-duplicates-in-list=
 #+BEGIN_SRC emacs-lisp
@@ -454,12 +454,6 @@ The superior search method with highlighting of the leading characters
     (define-key company-active-map (kbd "C-n") #'company-select-next)
     (define-key company-active-map (kbd "C-p") #'company-select-previous))
  #+END_SRC
-* Comment Dwim =M-;=
-Mash it to get 3 comment versions
-#+BEGIN_SRC emacs-lisp
-  (use-package comment-dwim-2
-    :bind (("M-;" . comment-dwim-2)))
- #+END_SRC
 * Diff mode
 Show whitespace in diff mode
 #+BEGIN_SRC emacs-lisp
@@ -755,99 +749,6 @@ To autocomplete in the search buffergpg
     :init (my/add-to-package-list 'popwin)
     (popwin-mode t))
  #+END_SRC
-* PACKAGE Projectile    =S-p=
-Navigation around a set of project files. There's tons of shortcuts to explore
-https://projectile.readthedocs.io/en/latest/projects/
-
-- Use [[counsel-projectile][Counsel-projectile]] =s-M-p= to explore functions
-- The ones that are useful should be added to the Hydra [[counsel-hydra][Hydra]]
-** Dependencies
-#+BEGIN_SRC emacs-lisp
-  (my/add-dependency "ag")
- #+END_SRC
-
-| =ag= aka =the_silver_searcher= | used by projectile to search cross project |
-** PACKAGE Ag
-#+BEGIN_SRC emacs-lisp
-  (use-package ag
-    :ensure t
-    :init (my/add-to-package-list 'ag))
- #+END_SRC
-
-** PACKAGE Init
-#+BEGIN_SRC emacs-lisp
-  (use-package projectile
-    :ensure t
-    :init (my/add-to-package-list 'projectile)
-    :config
-    (projectile-mode))
-
-(define-key projectile-mode-map (kbd "M-s-p") 'projectile-command-map)
- #+END_SRC
-** PACKAGE Counsel-projectile <<counsel-projectile>>
-For better autocompletion
-#+BEGIN_SRC emacs-lisp
-  (use-package counsel-projectile
-    :ensure t
-    :init (my/add-to-package-list 'counsel-projectile)
-    :config
-    (counsel-projectile-mode))
- #+END_SRC
-** Open magit by default when opening project
-#+BEGIN_SRC emacs-lisp
-  (setq projectile-switch-project-action 'projectile-vc)
- #+END_SRC
-** PACKAGE Hydra <<counsel-hydra>>
-#+BEGIN_SRC emacs-lisp
-  (defhydra hydra-projectile-other-window (:color teal)
-    "projectile-other-window"
-    ("f"  projectile-find-file-other-window        "file")
-    ("g"  projectile-find-file-dwim-other-window   "file dwim")
-    ("d"  projectile-find-dir-other-window         "dir")
-    ("b"  projectile-switch-to-buffer-other-window "buffer")
-    ("q"  nil                                      "cancel" :color blue))
-
-  (defhydra hydra-projectile (:color teal
-                                     :hint nil)
-    "
-         PROJECTILE: %(projectile-project-root)
-
-         Find File            Search/Tags          Buffers                Cache
-    ------------------------------------------------------------------------------------------
-    _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache clear
-     _ff_: file dwim       _b_: switch to buffer  _x_: remove known project
-     _fd_: file curr dir   _o_: multi-occur     _C-k_: Kill all buffers  _X_: cleanup non-existing
-                         _r_: replace regexp                         ^^^^_z_: cache current
-      _d_: dir
-      _R_: run
-
-    "
-    ("R"	 projectile-run-project)
-    ("a"   projectile-ag)
-    ("b"   projectile-switch-to-buffer)
-    ("c"   projectile-invalidate-cache)
-    ("d"   projectile-find-dir)
-    ("s-f" projectile-find-file)
-    ("ff"  projectile-find-file-dwim)
-    ("fd"  projectile-find-file-in-directory)
-    ("i"   projectile-ibuffer)
-    ("K"   projectile-kill-buffers)
-    ("C-k" projectile-kill-buffers)
-    ("m"   projectile-multi-occur)
-    ("o"   projectile-multi-occur)
-    ("s-p" projectile-switch-project "switch project")
-    ("p"   projectile-switch-project)
-    ("s"   projectile-switch-project)
-    ("r"   counsel-ag)
-    ("R"   counsel-ag)
-    ("x"   projectile-remove-known-project)
-    ("X"   projectile-cleanup-known-projects)
-    ("z"   projectile-cache-current-file)
-    ("`"   hydra-projectile-other-window/body "other window")
-    ("q"   nil "cancel" :color blue))
-
-  (global-set-key (kbd "s-p") (function hydra-projectile/body))
- #+END_SRC
 * PACKAGE Restart
 #+BEGIN_SRC emacs-lisp
   (use-package restart-emacs
@@ -955,6 +856,18 @@ Spawns a tree of all the undos that you have ever made
 
   (global-set-key (kbd "M-/") 'undo-tree-visualize)
 #+END_SRC
+* Utf-8
+#+BEGIN_SRC emacs-lisp
+  (set-language-environment 'utf-8)
+  (setq locale-coding-system 'utf-8)
+
+  ;; set the default encoding system
+  (prefer-coding-system 'utf-8)
+  (setq default-file-name-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+ #+END_SRC
 * PACKAGE Yasnippet
 Autocompletion by typing in first part of word and tabbing to insert a template
 - yasnippet is the framework
