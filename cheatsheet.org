@@ -2,6 +2,8 @@
 #+STARTUP: showall
 #+PROPERTY: header-args :tangle no
 
+| =M-?= | Find refferences |
+|       |                  |
 
 | Flycheck             | =C-c != |          |
 | Projectile           | =s-p=   |          |

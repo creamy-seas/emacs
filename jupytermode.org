@@ -28,7 +28,9 @@
    - =tf=, ==-tfs= set the code cell font
    - =-cursc r=, =-cursw= set colour and witdth
 #+BEGIN_SRC shell :tangle no
-  jt -t chesterish -cellw 85% -lineh 170 -N -nf neutonserif -nfs 14 -tf firacode -tfs 13  -cursc r -cursw 5
+  jt -t chesterish -cellw 85% -lineh 170 -N -nf neutonserif -nfs 14 -tf firacode -tfs 13 -altm -cursc r -cursw 5  --nbname -T
+
+  jt -t onedork -cellw 88% -fs 95 -altm -tfs 11 -nfs 115  -cursc r -cursw 5 --nbname -T
 #+END_SRC
 
 

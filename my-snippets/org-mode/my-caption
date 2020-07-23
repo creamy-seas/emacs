@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: my-caption
+# key: cap
+# --
+#+CAPTION: ${1:🐳-enter-caption-here-🐳}

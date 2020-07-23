@@ -90,13 +90,13 @@ Activate one or the other. Never both.
 * PACKAGE Flycheck/Pylint
 [[https://www.flycheck.org/en/latest/languages.html#python][Flycheck manual]] gives some details about python
 #+BEGIN_SRC emacs-lisp
-  (require 'flycheck)
-  (add-hook 'python-mode-hook (lambda ()
-                                (flycheck-mode 1)
-                                (setq flycheck-checker 'python-pylint
-                                      flycheck-checker-error-threshold 900
-                                      ;; flycheck-pylintrc my/python/pylintrc
-                                      flycheck-pylint-use-symbolic-id nil)))
+  ;; (require 'flycheck)
+  ;; (add-hook 'python-mode-hook (lambda ()
+  ;;                               (flycheck-mode 1)
+  ;;                               (setq flycheck-checker 'python-pylint
+  ;;                                     flycheck-checker-error-threshold 900
+  ;;                                     ;; flycheck-pylintrc my/python/pylintrc
+  ;;                                     flycheck-pylint-use-symbolic-id nil)))
  #+END_SRC
 * PACKAGE Hideshow-org  =C-c C-h=
 ** PACKAGE Init

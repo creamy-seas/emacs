@@ -2,4 +2,4 @@
 # name: pylint-disable
 # key: pd
 # --
-\# pylint: disable=$0
+# pylint: disable=$0

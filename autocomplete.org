@@ -4,24 +4,24 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-| *Helm Options* |                                     |   |
-| =C-t=          | Switch to vertical/horizontal       |   |
-| =C-Space=      | to mark a selection                 |   |
-| =M-a=          | to mark everything                  |   |
-| =C-c C-i=      | to insert                           |   |
-| =C-s=          | To launch =helm-moccur=             |   |
-|                | Can regex search                    |   |
-|                | =*major-mode1,*major-mode-2=        |   |
-|                | =!/excludeparam=                    |   |
-|                | =@search-for-regexp=                |   |
-| =C-j=          | Narrow to candidates/preview buffer |   |
-| =C-l=          | Return to all candidates            |   |
-| =C-l, C-r=     | Move in and out of directiries      |   |
-| =C-c C-o=      | Open file in anothe frame         |   |
+| *Helm Options* | Available once helm session is launched |
+| =C-t=          | Switch to vertical/horizontal           |
+| =C-Space=      | to mark a selection                     |
+| =M-a=          | to mark everything                      |
+| =C-c C-i=      | to insert                               |
+| =C-s=          | To launch =helm-moccur=                 |
+|                | Can regex search                        |
+|                | =*major-mode1,*major-mode-2=            |
+|                | =!/excludeparam=                        |
+|                | =@search-for-regexp=                    |
+| =C-j=          | Narrow to candidates/preview buffer     |
+| =C-l=          | Return to all candidates                |
+| =C-l, C-r=     | Move in and out of directiries          |
+| =C-c C-o=      | Open file in anothe frame               |
+| =C-z=          | Available actions                       |
 
 | *Global Rebinds* |                                                  |                          |
 | =M-z=            | Execute using helm (just like =M-x=)             |                          |
-| =C-z=            | Available actions                                |                          |
 | =C-x C-b=        | List buffers and recent filers                   | =helm-mini=              |
 |------------------+--------------------------------------------------+--------------------------|
 | *Files*          |                                                  |                          |
@@ -226,7 +226,7 @@ Look at [[https://tuhdo.github.io/helm-intro.html][this tutorial]]
 
    ;; helm-find-files-sort-directories t
 
-   ;; ido-use-virtual-buffers t
+   ido-use-virtual-buffers t
 
    helm-M-x-fuzzy-match t
 
@@ -245,11 +245,12 @@ Look at [[https://tuhdo.github.io/helm-intro.html][this tutorial]]
   (setq helm-semantic-fuzzy-match t
         helm-imenu-fuzzy-match    t)
  #+END_SRC
-** Max heights
+** Dimenstions
 If you don't want the Helm window to be resized, you can set helm-autoresize-max-height equal to helm-autoresize-min-height.
 #+BEGIN_SRC emacs-lisp
   (setq helm-autoresize-max-height 40)
   (setq helm-autoresize-min-height 10)
+  (setq helm-buffer-max-length 60)
  #+END_SRC
 ** Inteference with golden ratio
 #+BEGIN_SRC emacs-lisp
@@ -326,6 +327,15 @@ If you don't want the Helm window to be resized, you can set helm-autoresize-max
   (define-key 'help-command (kbd "C-f") 'helm-apropos)
   (define-key 'help-command (kbd "r") 'helm-info-emacs)
   (define-key 'help-command (kbd "C-l") 'helm-locate-library)
+ #+END_SRC
+* PACKAGE Helm-ag
+#+BEGIN_SRC emacs-lisp
+  (custom-set-variables
+   '(helm-follow-mode-persistent t))
+
+  (use-package helm-ag
+    :ensure t
+    :init (my/add-to-package-list 'helm-ag))
  #+END_SRC
 * PACKAGE Helm swoop
 Allows to select a word, and run through all the matches
@@ -516,8 +526,6 @@ https://projectile.readthedocs.io/en/latest/projects/
     :init (my/add-to-package-list 'projectile)
     :config
     (projectile-mode))
-
-(define-key projectile-mode-map (kbd "M-s-p") 'projectile-command-map)
  #+END_SRC
 ** PACKAGE Counsel-projectile <<counsel-projectile>>
 For better autocompletion
@@ -528,11 +536,12 @@ For better autocompletion
     :config
     (counsel-projectile-mode))
  #+END_SRC
-** DOWN Open magit by default when opening project
+** Open magit by default when opening project
 #+BEGIN_SRC emacs-lisp
-  ;;(setq projectile-switch-project-action 'projectile-vc)
+ (setq projectile-switch-project-action 'projectile-vc)
  #+END_SRC
-** PACKAGE Hydra <<counsel-hydra>>
+** Hydra <<counsel-hydra>>
+Redundant
 #+BEGIN_SRC emacs-lisp
   (defhydra hydra-projectile-other-window (:color teal)
     "projectile-other-window"
@@ -602,15 +611,9 @@ Keep reading here: https://tuhdo.github.io/helm-projectile.html
                                           ; fast, but does not work on windows
     (setq projectile-indexing-method 'alien))
  #+END_SRC
-** Default switching of projects
+** DOWN Default switching of projects
 #+BEGIN_SRC emacs-lisp
-  (setq projectile-switch-project-action 'helm-projectile)
- #+END_SRC
-** PACKAGE Helm-ag
-#+BEGIN_SRC emacs-lisp
-  (use-package helm-ag
-    :ensure t
-    :init (my/add-to-package-list 'helm-ag))
+  ;; (setq projectile-switch-project-action 'helm-projectile)
  #+END_SRC
 ** Hydra
 #+BEGIN_SRC emacs-lisp
@@ -621,10 +624,10 @@ Keep reading here: https://tuhdo.github.io/helm-projectile.html
 
          Find File               Projects               Search/Tags               Cache
     ------------------------------------------------------------------------------------------
-    _h_:   all              _p_: switch-project   _a_: ag                 _z_:  cache-file
+    _h_:   all              _p_: switch-project     _a_: ag                 _z_:  cache-file
     _f_:   find-file        _R_:   run project      _g_: grep               _c_:  cache-clear
     _F_:   find-file-all    _C-k_: killl-buffers    _c_: ack
-    _g_:   find-file-dwim   _x_:   remove project
+    _D_:   find-file-dwim   _x_:   remove project
     _d_:   find-dir         _X_:   cleanup non-existing
     _e_:   recentf
     _o_:   find-other-file
@@ -635,7 +638,7 @@ Keep reading here: https://tuhdo.github.io/helm-projectile.html
     ("p" helm-projectile-switch-project)
     ("f" helm-projectile-find-file)
     ("F" helm-projectile-find-file-in-known-projects)
-    ("g" helm-projectile-find-file-dwim)
+    ("D" helm-projectile-find-file-dwim)
     ("d" helm-projectile-find-dir)
     ("e" helm-projectile-recentf)
     ("o" helm-projectile-find-other-file)

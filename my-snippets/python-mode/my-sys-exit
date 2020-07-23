@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: my-sys-exit
+# key: se
+# --
+import sys
+sys.exit("${1:🐙}")

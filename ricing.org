@@ -735,6 +735,13 @@ Colourize codes such as #AF3313
 ** Add the themes
    #+BEGIN_SRC emacs-lisp
      (my/add-to-theme-hashmap 'rippedcasts "my-themes/rippedcasts")
+     (my/add-to-theme-hashmap 'gruvbox-dark-hard "my-themes/gruvbox-theme-20200622.58")
+     (my/add-to-theme-hashmap 'gruvbox-dark-medium)
+     (my/add-to-theme-hashmap 'gruvbox-dark-soft)
+     (my/add-to-theme-hashmap 'gruvbox-light-hard)
+     (my/add-to-theme-hashmap 'gruvbox-light-medium)
+     (my/add-to-theme-hashmap 'gruvbox-light-soft)
+     (my/add-to-theme-hashmap 'gruvbox)
      (my/add-to-theme-hashmap 'alect-light "my-themes/alect-themes")
      (my/add-to-theme-hashmap 'alect-light-alt)
      (my/add-to-theme-hashmap 'alect-dark-alt)
