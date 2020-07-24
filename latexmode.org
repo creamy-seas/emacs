@@ -196,15 +196,14 @@ Referencing and bibliography
   ;;  '(font-latex-math-face ((t (:foreground "#99c616"))))
   ;;  '(font-latex-sedate-face ((t (:foreground "burlywood")))))
  #+END_SRC
-* Function Compilation
+* Compilation Functions
 *Some important AucTex commands and variables*
 | =TeX-expand-list-builtin= | pair list tying command with a % expression e.g. =%s= -> evalutes the master latex file |
 | =TeX-expand-list=         | this variables contains the above =TeX-expand-list-builtin                              |
 | =Tex-command-expand=      | =(Tex-command-expand "commandInStringForm" 'TeX-master-file TeX-expand-list)=           |
+
 ** Supporing Functions
 #+BEGIN_SRC emacs-lisp
-  (defvar my/latex/active-compilations 0 "Number of running latex compilation processes")
-
   (defun my/latex/evaluate-subsitutions (command-script)
     "Subsititutes the %s variables in accordance with project's master file"
     (interactive)
@@ -224,12 +223,14 @@ Referencing and bibliography
     (TeX-command-expand "%s" 'TeX-master-file TeX-expand-list))
 
   (defun my/latex/modeline-colour ()
-    "Reads the env variale my/latex/active-compilations and colours the modeline according to how many compilations are running"
-    (if (> my/latex/active-compilations 0)
-        (progn
-          ;; (setq global-mode-string (concat "[" (number-to-string my/latex/active-compilations) "]"))
-          (message (format " Still running %s compilations" my/latex/active-compilations)))
-      (message " No more running compilations")))
+    "Reads the number of active compilations and colours the modeline according to how many compilations are running"
+    (let ((number-of-running-compilations
+           (my/strings/recursive-count "Compile-PDF" (format "%s" (process-list)) 0)))
+      (if (> number-of-running-compilations 0)
+          (if (eq number-of-running-compilations 1)
+              (message (format " Currently running %s compilation" number-of-running-compilations))
+            (message (format " Currently running %s compilations" number-of-running-compilations)))
+        (message " No running compilations"))))
  #+END_SRC
 ** =my/latex/compile=           =C-c C-c=
 #+BEGIN_SRC emacs-lisp
@@ -250,9 +251,7 @@ Referencing and bibliography
 
       (ignore-errors
         ;; 1 - run compilation script
-        (TeX-run-TeX compilation-process-id compilation-script (TeX-master-file))
-        ;; 2 - increment number of running compilations
-        (setq my/latex/active-compilations (+ my/latex/active-compilations 1)))
+        (TeX-run-TeX compilation-process-id compilation-script (TeX-master-file)))
 
       ;; 3 - update modeline
       (my/latex/modeline-colour)))
@@ -296,9 +295,6 @@ Referencing and bibliography
               ;; (other-window 1)
               ;; (sleep-for 1)
               ;; (kill-buffer-and-window)
-
-              ;; 6 - updated number of running processes
-              (setq my/latex/active-compilations (max (- my/latex/active-compilations 1) 0))
               (my/latex/modeline-colour)
 
               (minibuffer-message "卍 Extermination complete"))

@@ -155,6 +155,14 @@
         (setq list (cdr list)))
       (nreverse new-list)))
  #+END_SRC
+** =my/strings/recursive-count=                                      :regex:
+#+BEGIN_SRC emacs-lisp
+  (defun my/strings/recursive-count (regex string start)
+    "Count up total number of matches of regex in a string, beggining from 'start' offset"
+    (if (string-match regex string start)
+        (+ 1 (my/strings/recursive-count regex string (match-end 0)))
+      0))
+ #+END_SRC
 ** =my/extract-string=
 #+BEGIN_SRC emacs-lisp
   (defun my/extract-string (regexp index string)
