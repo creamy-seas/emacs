@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: my-bra
+# key: bra
+# --
+\left\langle ${1:bra}\right|$0

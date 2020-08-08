@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: my-ket
+# key: ket
+# --
+\left|${1:value}\right\rangle

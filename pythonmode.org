@@ -44,7 +44,7 @@ Set these in =.profile= or =.zsh=
   export WORKON_HOME=$HOME/.config/python_vi
   export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3.7
   export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
-  export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
+  # export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
   source /usr/local/bin/virtualenvwrapper.sh
 #+END_SRC
 where =WORKON_HOME= is the default location of venv
