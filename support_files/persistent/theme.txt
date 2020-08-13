@@ -1,1 +1,1 @@
-gruvbox-light-soft
+leuven

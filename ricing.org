@@ -720,6 +720,12 @@ Colourize codes such as #AF3313
     (persistent-scratch-setup-default))
  #+END_SRC
 * MANUAL-PACKAGE Theme
+** PACKAGE Authemer
+#+BEGIN_SRC emacs-lisp
+  (use-package autothemer
+    :ensure t
+    :init (my/add-to-package-list 'autothemer))
+ #+END_SRC
 ** =my/add-to-theme-hashmap=
 #+BEGIN_SRC emacs-lisp
   (defvar my/theme-hashmap (make-hash-table :test 'equal))

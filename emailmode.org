@@ -324,6 +324,28 @@ Create a new label in Google Mail. Next time it will sync to computer
  #+END_SRC
 * CONFIG Account setup
 Remember to run [[*Initial setup][Initial setup]]
+** =ilya.antonov.2013@live.rhul.ac.uk=
+#+BEGIN_SRC emacs-lisp
+  (setq my/mu4e/context-outlook
+        (make-mu4e-context
+         :name "outlook"
+         :enter-func (lambda () (mu4e-message "Entering OUTLOOK"))
+         :leave-func (lambda () (mu4e-message "Leaving OUTLOOK"))
+         :match-func (lambda (msg)
+                       (when msg
+                         (mu4e-message-contact-field-matches
+                          msg '(list :from :to :cc :bcc) "ilya.antonov.2013@live.rhul.ac.uk")))
+         :vars '((user-mail-address . "ilya.antonov.2013@live.rhul.ac.uk")
+                 (user-full-name . "Ilya Antonov (OUTLOOK)")
+                 (mu4e-sent-folder . "/ilya_OUTLOOK/Sent Items")
+                 (mu4e-drafts-folder . "/ilya_OUTLOOK/Drafts")
+                 (mu4e-trash-folder . "/ilya_OUTLOOK/Deleted Items")
+                 (mu4e-refile-folder . "/ilya_OUTLOOK/Archive")
+                 (mu4e-compose-signature . (concat
+                                            "\nPhD Student\n\n"
+                                            "*Royal Holloway University of London*"))
+                 (mu4e-compose-format-flowed . nil))))
+#+END_SRC
 ** =ilya.antonov@dreams-ai.com=
 #+BEGIN_SRC emacs-lisp
   (setq my/mu4e/context-dreamsai
@@ -342,6 +364,7 @@ Remember to run [[*Initial setup][Initial setup]]
                  (mu4e-drafts-folder . "/ilya_DREAMSAI/[Gmail].Drafts")
                  (mu4e-trash-folder . "/ilya_DREAMSAI/[Gmail].Bin")
                  (mu4e-refile-folder . "/ilya_DREAMSAI/[Gmail].Starred")
+                 (mu4e-sent-messages-behavior delete) ; Gmail takes care of this
                  (mu4e-compose-signature . (concat
                                             "\n\n"
                                             "Physics Handyman\n\n"
@@ -390,46 +413,25 @@ Remember to run [[*Initial setup][Initial setup]]
                  (mu4e-drafts-folder . "/ilya_GMAIL/[Gmail].Drafts")
                  (mu4e-trash-folder . "/ilya_GMAIL/[Gmail].Bin")
                  (mu4e-refile-folder . "/ilya_GMAIL/[Gmail].Starred")
-                 (mu4e-sent-messages-behavior 'delete)
+                 (mu4e-sent-messages-behavior delete)
                  (mu4e-compose-signature . (concat
                                             "Ilya Antonov,\n"
                                             "⦿ GMAIL\n"))
                  (mu4e-compose-format-flowed . nil))))
 #+END_SRC
-** =ilya.antonov.2013@live.rhul.ac.uk=
-#+BEGIN_SRC emacs-lisp
-  (setq my/mu4e/context-outlook
-        (make-mu4e-context
-         :name "outlook"
-         :enter-func (lambda () (mu4e-message "Entering OUTLOOK"))
-         :leave-func (lambda () (mu4e-message "Leaving OUTLOOK"))
-         :match-func (lambda (msg)
-                       (when msg
-                         (mu4e-message-contact-field-matches
-                          msg '(list :from :to :cc :bcc) "ilya.antonov.2013@live.rhul.ac.uk")))
-         :vars '((user-mail-address . "ilya.antonov.2013@live.rhul.ac.uk")
-                 (user-full-name . "Ilya Antonov (OUTLOOK)")
-                 (mu4e-sent-folder . "/ilya_OUTLOOK/Sent Items")
-                 (mu4e-drafts-folder . "/ilya_OUTLOOK/Drafts")
-                 (mu4e-trash-folder . "/ilya_OUTLOOK/Deleted Items")
-                 (mu4e-refile-folder . "/ilya_OUTLOOK/Archive")
-                 (mu4e-compose-signature . (concat
-                                            "\nPhD Student\n\n"
-                                            "*Royal Holloway University of London*"))
-                 (mu4e-compose-format-flowed . nil))))
-#+END_SRC
 ** Load the accounts
 #+BEGIN_SRC emacs-lisp
                                           ; always ask for context when sending mail
-  (setq mu4e-context-policy 'pick-first)
+  (setq mu4e-context-policy 'always-ask)
   (setq mu4e-compose-context-policy 'always-ask)
 
   (setq mu4e-contexts
         (list
+         my/mu4e/context-outlook
          my/mu4e/context-dreamsai
          my/mu4e/context-ntlworld
          my/mu4e/context-gmail
-         my/mu4e/context-outlook))
+         ))
  #+END_SRC
 * CONFIG Main menu
 ** CONFIG Jump to inboxes
@@ -540,7 +542,7 @@ Header view is the one that displays all the emails
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'mu4e-view-actions '("web-view" . mu4e-action-view-in-browser) t)
  #+END_SRC
-* Compose
+* Compose (send)
 ** MANUAL-PACKAGE Editing with org-mu4e
 It is installed with mu4e
 #+BEGIN_SRC emacs-lisp
@@ -568,7 +570,7 @@ It is installed with mu4e
  #+END_SRC
 ** Sending mail using send-mail binary
 Alternative is to use a server =(setq message-send-mail-function 'smtpmail-send-it)=
-=
+
 #+BEGIN_SRC emacs-lisp
   (setq message-send-mail-function (function message-send-mail-with-sendmail))
                                           ; Use the correct account context when sending mail based on the from header.

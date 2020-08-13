@@ -337,6 +337,13 @@ If you don't want the Helm window to be resized, you can set helm-autoresize-max
     :ensure t
     :init (my/add-to-package-list 'helm-ag))
  #+END_SRC
+* PACKAGE Helm-rg
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-rg
+    :ensure t
+    :init (my/add-to-package-list 'helm-rg))
+ #+END_SRC
+
 * PACKAGE Helm swoop
 Allows to select a word, and run through all the matches
 #+BEGIN_SRC emacs-lisp
@@ -627,7 +634,7 @@ Keep reading here: https://tuhdo.github.io/helm-projectile.html
     _h_:   all              _p_: switch-project     _a_: ag                 _z_:  cache-file
     _f_:   find-file        _R_:   run project      _g_: grep               _c_:  cache-clear
     _F_:   find-file-all    _C-k_: killl-buffers    _c_: ack
-    _D_:   find-file-dwim   _x_:   remove project
+    _D_:   find-file-dwim   _x_:   remove project   _r_: rgrep
     _d_:   find-dir         _X_:   cleanup non-existing
     _e_:   recentf
     _o_:   find-other-file
@@ -645,6 +652,7 @@ Keep reading here: https://tuhdo.github.io/helm-projectile.html
     ("b" helm-projectile-switch-to-buffer)
     ("z" projectile-cache-current-file)
     ("c" projectile-invalidate-cache)
+    ("r" helm-projectile-rg)
     ("g" helm-projectile-grep)
     ("a" helm-projectile-ag)
     ("c" helm-projectile-ack)

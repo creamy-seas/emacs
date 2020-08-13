@@ -11,11 +11,10 @@ This is just an example config that works well for me. You will need to tune it 
 * CONFIG Org files to monitor
 #+BEGIN_SRC emacs-lisp
   (setq org-agenda-files (list "~/creamy_seas/antlers.org"
-                               "~/mydrive/east-data-company.org"
-                               "~/mydrive/people.org"
-                               "~/mydrive/adv18_sa36_automation/adventure_brief.org"
-                               "~/mydrive/adv17_ext_horseBetting/adventure_brief.org"
-                               "~/mydrive/adv16_sa_onFire/adventure_brief.org"))
+                               "~/creamy_seas/monday_starts_on_saturday/adventure_brief.org"
+                               "~/east-india/east-data-company.org"
+                               "~/east-india/people.org"
+                               ))
  #+END_SRC
 
 * CONFIG Capturing templates   =C-c c=
@@ -46,7 +45,7 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
 
           ("e" "East India Data Company Task"
            entry
-           (file "~/mydrive/east-data-company.org")
+           (file "~/east-india/east-data-company.org")
            "** %^{TODO-STATE} %^{stuff-to-be-done}\nDEADLINE: %^T")
           ;; ("et" "Time log"
           ;;  table-line (id "bryan-done")
@@ -117,18 +116,31 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
            "%?")
 
           ("p" "PhD Tasks")
-          ("pp" "Photon Counting"
+          ("ps" "Photon Counting Simulation"
            entry
-           (id "phd-photon")
-           "*** PHD Photn Counting [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
-          ("pt" "Twin Qubit"
-           entry
-           (id "phd-twin")
-           "*** PHD Twin Qubit [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+           (id "phd-photon-simulation")
+           "*** PHD Photon Counting Simulation [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
           ("px" "xMon"
            entry
            (id "phd-xmon")
            "*** PHD xMon [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("pb" "Photon Counting Beam Splitter"
+           entry
+           (id "phd-photon-beams-splitter")
+           "*** PHD Beam Splitter [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("pc" "Photon Counting CUDA"
+           entry
+           (id "phd-photon-cuda")
+           "*** PHD Photon Counting CUDA [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("pq" "CQPS"
+           entry
+           (id "phd-cqps")
+           "*** PHD CQPS [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+          ("pa" "APL Letter"
+           entry
+           (id "phd-apl")
+           "*** PHD APL [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+
           ("pg" "General"
            entry
            (id "phd-general")
@@ -227,4 +239,8 @@ These todo blocks can be put in front of any org heading with =C-c C-t=
                                        ("BUREUCRACY" . (:background "#ab82ff" :foreground "#8b6969" :weight bold))
                                        )))
   (setq org-agenda-span 15)
+ #+END_SRC
+* Timestamp
+#+BEGIN_SRC emacs-lisp
+  (setq org-time-stamp-custom-formats '("<%d %b %Y>" . "<%d %b %Y %a %H:%M>"))
  #+END_SRC

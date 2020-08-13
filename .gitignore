@@ -1,3 +1,4 @@
+.yas-compiled-snippets.el
 /*
 !Makefile
 !.gitignore
@@ -12,3 +13,4 @@
 !/my-files/
 !/my-scripts/
 !/support_files/
+/my-scripts/email/__pycache__/
