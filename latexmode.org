@@ -636,6 +636,7 @@ It would be a mumble jumble like with a lot of escapes
     (define-key LaTeX-mode-map (kbd "C-x C-s") (function my/latex/save-buffer))
     (define-key LaTeX-mode-map (kbd "C-c C-j") (function my/latex/exterminate))
     (define-key LaTeX-mode-map (kbd "C-c C-c") (function  my/latex/compile))
+    (define-key LaTeX-mode-map (kbd "C-}") (function reftex-hyperref-autoref))
     (define-key LaTeX-mode-map (kbd "C-c C-u") (function my/latex/insert-underscore)))
   ;; ;; (add-hook 'LaTeX-mode-hook (lambda ()
   ;; ;;

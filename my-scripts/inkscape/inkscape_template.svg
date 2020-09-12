@@ -26,14 +26,14 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.6"
-     inkscape:cx="86.666663"
+     inkscape:cx="493.33333"
      inkscape:cy="600"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1680"
      inkscape:window-height="1005"
-     inkscape:window-x="0"
+     inkscape:window-x="1280"
      inkscape:window-y="1"
      inkscape:window-maximized="1" />
   <metadata
@@ -51,7 +51,8 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     sodipodi:insensitive="true">
     <rect
        style="opacity:1;vector-effect:none;fill:none;fill-opacity:1;stroke:#140707;stroke-width:1.32291663;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
        id="rect819"
@@ -60,4 +61,8 @@
        x="0.44096884"
        y="46.086807" />
   </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Layer 2" />
 </svg>

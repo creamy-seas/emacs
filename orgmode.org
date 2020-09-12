@@ -421,4 +421,6 @@ In order to get a preview, add =#+ATTR_ORG: :width 100=
   (define-key org-mode-map (kbd "C-c l") 'org-store-link)
   (define-key org-mode-map (kbd "C-c C-l") 'org-insert-link)
   (define-key org-mode-map (kbd "C-c #") (function org-time-stamp-inactive))
+  (define-key org-mode-map (kbd "<C-down>") (function org-priority-down))
+  (define-key org-mode-map (kbd "<C-up>") (function org-priority-up))
  #+END_SRC

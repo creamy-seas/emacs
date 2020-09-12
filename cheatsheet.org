@@ -116,10 +116,10 @@ Run =sp-cheat-sheet=
 | =C-M-z=         | Move to START of function                           | =beginning-of-defun=      |
 | =C-M-x=         | Move to END of function                             | =end-of-defun=            |
 |-----------------+-----------------------------------------------------+---------------------------|
-| =<C-right>=     | PULL in the next word INTO bracket                  | =sp-forward-slurp-sexp=   |
-| =<M-right>=     | BARF the last word OUT of bracket                   | =sp-forward-barf-sexp=    |
-| =<C-left>=      | PULL in the previous word INTO bracket              | =sp-backward-slurp-sexp=  |
-| =<M-left>=      | BARF the first word out of bracket                  | =sp-backward-barf-sexp=   |
+| =<s-right>=     | PULL in the next word INTO bracket                  | =sp-forward-slurp-sexp=   |
+| =<C-s-right>=   | BARF the last word OUT of bracket                   | =sp-forward-barf-sexp=    |
+| =<s-left>=      | PULL in the previous word INTO bracket              | =sp-backward-slurp-sexp=  |
+| =<C-s-left>=    | BARF the first word out of bracket                  | =sp-backward-barf-sexp=   |
 |-----------------+-----------------------------------------------------+---------------------------|
 | =C-M-t=         | Transpose pair                                      | =sp-transpose-sexp=       |
 | =C-M-k=         | Kill in bracket region (when cursor over bracket)   |                           |
@@ -133,8 +133,9 @@ Run =sp-cheat-sheet=
 To read
 - https://orgmode.org/manual/Export-Settings.html
 
-| C-c C-r | Embed/preview images |
-| C-c ~   | Change table type    |
+| <C-down/up> | Lower/Higher priority |
+| C-c C-r     | Embed/preview images  |
+| C-c ~       | Change table type     |
 
 |---------------+-----------------------------------------------------+-------------------|
 | =C-c c=       | Entering capture mode where templates are available | [[*Capture templates][Capture templates]] |

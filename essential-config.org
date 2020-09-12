@@ -817,10 +817,11 @@ You may want to turn this off if it triggers your workflow
   (define-key smartparens-mode-map (kbd "M-<backspace>") #'sp-backward-unwrap-sexp)
 
   ;; Slurp/barf
-  (define-key smartparens-mode-map (kbd "<C-right>") #'sp-forward-slurp-sexp)
-  (define-key smartparens-mode-map (kbd "<M-right>") #'sp-forward-barf-sexp)
-  (define-key smartparens-mode-map (kbd "<C-left>") #'sp-backward-slurp-sexp)
-  (define-key smartparens-mode-map (kbd "<M-left>") #'sp-backward-barf-sexp)
+  (define-key smartparens-mode-map (kbd "<s-right>") #'sp-forward-slurp-sexp)
+  (define-key smartparens-mode-map (kbd "<C-s-right>") #'sp-forward-barf-sexp)
+  (define-key smartparens-mode-map (kbd "<s-left>") #'sp-backward-slurp-sexp)
+  (define-key smartparens-mode-map (kbd "<C-s-left>") #'sp-backward-barf-sexp)
+  ;; Reintroduce for org-mode
 
   ;; (define-key smartparens-mode-map (kbd "C-M-<backspace>") #'sp-splice-sexp-killing-backward)
   ;; (define-key smartparens-mode-map (kbd "C-S-<backspace>") #'sp-splice-sexp-killing-around)

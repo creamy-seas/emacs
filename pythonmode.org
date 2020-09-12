@@ -284,3 +284,80 @@ Replaces letters in programming mode
   (define-key elpy-mode-map (kbd "C-c C-p") (function flycheck-previous-error))
   (define-key my/keymap (kbd "v") 'pyvenv-workon)
  #+END_SRC
+* Pinject functions
+** Snake-case
+#+BEGIN_SRC emacs-lisp
+  (defun my/python/pinject-copy-as-snake-case (beg end)
+    "Copies the current selection and turns it into snake-case
+    e.g. InquiryExtractor -> inquiry_extractor"
+                                          ; beg = mark, point = end,
+    (interactive (list (mark) (point)))
+
+    (kill-new (my/string/convert-to-snake-case (buffer-substring beg end)))
+
+    ;; This use of called-interactively-p is correct because the code it
+    ;; controls just gives the user visual feedback.
+    (if (called-interactively-p 'interactive)
+        (indicate-copied-region))
+    (setq deactivate-mark t))
+
+  (defun my/string/convert-to-snake-case (source-string)
+    "CamelCase -> camel_case"
+
+    (let ((case-fold-search nil) ; do not ignore string case
+          (target-string nil))
+      ;; 1. Perform search
+      (while (string-match "\\([A-Z][a-z0-9]*\\)" source-string)
+        ;; 2. Extract string, lowercase it and append to list
+        (let ((converted-section (downcase (match-string 1 source-string))))
+          (if target-string
+              (setq target-string (concat
+                                   target-string
+                                   "_"
+                                   converted-section
+                                   ))
+            (setq target-string converted-section)))
+        ;; 3. Cut the processed string
+        (setq source-string (substring source-string (match-end 1))))
+      target-string))
+ #+END_SRC
+** CamelCase
+#+BEGIN_SRC emacs-lisp
+  (defun my/python/pinject-copy-as-camel-case (beg end)
+    "Copies the current selection and turns it into snake-case
+    e.g. inquiry_extractor -> InquiryExtractor"
+                                          ; beg = mark, point = end,
+    (interactive (list (mark) (point)))
+
+    (kill-new (my/string/convert-to-camel-case (buffer-substring beg end)))
+
+    ;; This use of called-interactively-p is correct because the code it
+    ;; controls just gives the user visual feedback.
+    (if (called-interactively-p 'interactive)
+        (indicate-copied-region))
+    (setq deactivate-mark t))
+
+  (defun my/string/convert-to-camel-case (source-string)
+    "source_string -> SourceString"
+
+    (let ((case-fold-search nil) ; do not ignore string case
+          (target-string nil))
+      ;; 1. Perform search
+      (while (string-match "\\([A-Za-z][A-Za-z0-9]+\\)" source-string)
+        ;; 2. Extract string, uppercase first
+        (let ((converted-section (capitalize (format "%s" (match-string 1 source-string)))))
+          (if target-string
+              (setq target-string (concat
+                                   target-string
+                                   converted-section
+                                   ))
+            (setq target-string converted-section)))
+        ;; 3. Cut the processed string
+        (setq source-string (substring source-string (match-end 1))))
+      target-string))
+ #+END_SRC
+** Bindings
+#+BEGIN_SRC emacs-lisp
+  (define-key elpy-mode-map (kbd "C-x c") #'my/python/pinject-copy-as-camel-case)
+  (define-key elpy-mode-map (kbd "C-x s") #'my/python/pinject-copy-as-snake-case)
+ #+END_SRC

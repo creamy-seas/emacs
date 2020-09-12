@@ -12,8 +12,8 @@ This is just an example config that works well for me. You will need to tune it 
 #+BEGIN_SRC emacs-lisp
   (setq org-agenda-files (list "~/creamy_seas/antlers.org"
                                "~/creamy_seas/monday_starts_on_saturday/adventure_brief.org"
-                               "~/east-india/east-data-company.org"
-                               "~/east-india/people.org"
+                               "~/mydrive/people.org"
+                               "~/mydrive/east-data-company.org"
                                ))
  #+END_SRC
 
@@ -45,8 +45,8 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
 
           ("e" "East India Data Company Task"
            entry
-           (file "~/east-india/east-data-company.org")
-           "** %^{TODO-STATE} %^{stuff-to-be-done}\nDEADLINE: %^T")
+           (file "~/mydrive/east-data-company.org")
+           "** %^{TODO-STATE} %^{stuff-to-be-done}:\nDEADLINE: %^T")
           ;; ("et" "Time log"
           ;;  table-line (id "bryan-done")
           ;;  "| %^u | %^{Project}: %^{task-summary} | %^{hours-worked} hours | |"
@@ -56,55 +56,55 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
           ("xe" "Ernest"
            entry
            (id "ernest")
-           "** SKYPE Ernest: Catchup\nDEADLINE: %^T"
+           "** SKYPE Ernest: Catchup:\nDEADLINE: %^T"
            :empty-lines-after 1)
 
           ("xb" "Benjamin"
            entry
            (id "benjamin")
-           "** SKYPE Benjamin: Catchup\nDEADLINE: %^T"
+           "** SKYPE Benjamin: Catchup:\nDEADLINE: %^T"
            :empty-lines-after 1)
 
           ("xf" "Fred"
            entry
            (id "fred")
-           "** SKYPE Fred: Catchup\nDEADLINE: %^T"
+           "** SKYPE Fred: Catchup:\nDEADLINE: %^T"
            :empty-lines-after 1)
 
           ("xv" "Vlad"
            entry
            (id "vlad")
-           "** SKYPE Vlad: Catchup\nDEADLINE: %^T"
+           "** SKYPE Vlad: Catchup:\nDEADLINE: %^T"
            :empty-lines-after 1)
 
           ("xm" "Milan"
            entry
            (id "milan")
-           "** SKYPE Milan: Catchup\nDEADLINE: %^T"
+           "** SKYPE Milan: Catchup:\nDEADLINE: %^T"
            :empty-lines-after 1)
 
           ("xs" "Sam"
            entry
            (id "sam")
-           "** SKYPE Sam: Catchup\nDEADLINE: %^T"
+           "** SKYPE Sam: Catchup:\nDEADLINE: %^T"
            :empty-lines-after 1)
 
           ("xa" "Alan"
            entry
            (id "alan")
-           "** SKYPE Alan: Catchup\nDEADLINE: %^T"
+           "** SKYPE Alan: Catchup:\nDEADLINE: %^T"
            :empty-lines-after 1)
 
           ("xi" "Vivian"
            entry
            (id "vivian")
-           "** SKYPE Vivian: Catchup\nDEADLINE: %^T"
+           "** SKYPE Vivian: Catchup:\nDEADLINE: %^T"
            :empty-lines-after 1)
 
           ("xh" "Heili"
            entry
            (id "heili")
-           "** SKYPE Heili: Catchup\nDEADLINE: %^T"
+           "** SKYPE Heili: Catchup:\nDEADLINE: %^T"
            :empty-lines-after 1)
 
 
@@ -116,35 +116,41 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
            "%?")
 
           ("p" "PhD Tasks")
+
           ("ps" "Photon Counting Simulation"
            entry
            (id "phd-photon-simulation")
-           "*** PHD Photon Counting Simulation [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+           "*** PHD %^{stuff-to-be-done} [/] :PHOTONSIMULATION:\nDEADLINE: %^T\n- [ ] %?")
+
           ("px" "xMon"
            entry
            (id "phd-xmon")
-           "*** PHD xMon [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+           "*** PHD %^{stuff-to-be-done} [/] :XMON:\nDEADLINE: %^T\n- [ ] %?")
+
           ("pb" "Photon Counting Beam Splitter"
            entry
            (id "phd-photon-beams-splitter")
-           "*** PHD Beam Splitter [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+           "*** PHD %^{stuff-to-be-done} [/] :PHOTONBEAMSPLITTER:\nDEADLINE: %^T\n- [ ] %?")
+
           ("pc" "Photon Counting CUDA"
            entry
            (id "phd-photon-cuda")
-           "*** PHD Photon Counting CUDA [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+           "*** PHD %^{stuff-to-be-done} [/] :PHOTONPROGRAMMING:\nDEADLINE: %^T\n- [ ] %?")
+
           ("pq" "CQPS"
            entry
            (id "phd-cqps")
-           "*** PHD CQPS [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+           "*** PHD %^{stuff-to-be-done} [/] :CQPS:\nDEADLINE: %^T\n- [ ] %?")
+
           ("pa" "APL Letter"
            entry
            (id "phd-apl")
-           "*** PHD APL [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+           "*** PHD %^{stuff-to-be-done} [/] :APL:\nDEADLINE: %^T\n- [ ] %?")
 
           ("pg" "General"
            entry
            (id "phd-general")
-           "*** PHD General [/]: %^{stuff-to-be-done}\nDEADLINE: %^T\n- [ ] %?")
+           "*** PHD %^{stuff-to-be-done} [/] :GENERAL:\nDEADLINE: %^T\n- [ ] %?")
 
           ("u" "Save URL"
            entry
@@ -208,6 +214,7 @@ These todo blocks can be put in front of any org heading with =C-c C-t=
                                       "CURRENT(c)"
                                       "SKYPE(s)"
                                       "SINO"
+                                      "REACH"
                                       "DOWN"
                                       "|"
                                       "DOMINATED(d)"
@@ -226,6 +233,7 @@ These todo blocks can be put in front of any org heading with =C-c C-t=
                                        ("SKYPE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
                                        ("SINO" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
                                        ("HORSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
+                                       ("REACH" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
                                        ("WORKFORCE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
                                        ("PHD" . (:foreground "yellow" :background "#FF3333"))
                                        ("DONE" . (:foreground "yellow" :background "#FF3333"))

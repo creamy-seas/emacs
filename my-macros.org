@@ -1,4 +1,28 @@
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
 (fset 'my-trim-orgmode-formatting
    (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([4 5 backspace backspace 14 1] 0 "%d")) arg)))
+ #+END_SRC
+* Latex
+#+BEGIN_SRC emacs-lisp
+  (fset 'ipic-conversion
+        (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([19 105 112 105 99 123 5 backspace return 1 134217731 67108896 134217733 24 114 115 97 134217735 134217731 67108896 134217733 24 114 115 98 1 67108896 5 backspace 112 105 99 tab 24 114 105 97 134217735 134217731 67108896 134217733 backspace 24 114 105 98 14 1 67108896 5 backspace backspace] 0 "%d")) arg)))
+  (put 'ipic-conversion 'kmacro t)
+
+  (fset 'iframe-conversion
+        (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([19 105 102 114 97 109 101 return 1 134217731 67108896 2 134217734 2 23 1 67108896 5 backspace 105 102 114 tab 25] 0 "%d")) arg)))
+  (put 'iframe-conversion'kmacro t)
+
+  (fset 'ialigned-conversion
+        (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([19 105 97 108 105 103 110 101 100 return 134217731 67108896 134217733 23 6 67108896 134217826 2 backspace 92 98 101 105 backspace 103 105 110 123 97 108 105 103 110 101 100 5 return 25 67108911 16 5 25 return 92 101 110 100 123 97 108 105 103 110 101 100 14 backspace] 0 "%d")) arg)))
+
+  (fset 'difffrac-conversion
+        (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([19 100 105 102 102 102 114 97 99 return 2 2 2 2 backspace backspace backspace backspace 134217731 100 134217735 134217731 100] 0 "%d")) arg)))
+
+
+
+  (fset 'ipicCaption-conversion
+        (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([19 105 112 105 99 67 97 112 116 105 111 110 return 134217731 67108896 134217733 24 114 115 97 134217735 134217731 67108896 134217733 24 114 115 98 134217735 134217731 67108896 134217733 24 114 115 99 5 67108896 16 1 backspace 102 105 backspace backspace 112 105 99 tab 24 114 105 97 134217735 134217731 67108896 134217733 backspace 24 114 105 98 134217735 134217735 134217731 134217830 6 67108896 134217733 backspace 24 114 105 99] 0 "%d")) arg)))
+
+  (fset 'ifigure-conversion
+        (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([19 105 102 105 103 117 114 101 return backspace backspace backspace backspace backspace backspace 110 99 108 117 100 101 103 114 97 112 104 105 99 115 6 67108896 134217733 23 backspace 91 104 101 105 103 104 116 61 25] 0 "%d")) arg)))
  #+END_SRC

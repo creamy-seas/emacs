@@ -303,7 +303,7 @@ Create a new label in Google Mail. Next time it will sync to computer
 * CONFIG Personal Configuration
 #+BEGIN_SRC emacs-lisp
   (defvar my/mu4e-load-path "/usr/local/share/emacs/site-lisp/mu4e" "location of the emacs mu4e package")
-  (defvar my/mu4e-save-dir "~/Dropbox/mail" "Location of where to save the mail attachement")
+  (defvar my/mu4e-save-dir "~/Downloads/mail" "Location of where to save the mail attachement")
   ;; (defvar sendmail-program "/usr/local/bin/msmtp" "The SMTP binary")
  #+END_SRC
 * MANUAL-PACKAGE Init
@@ -312,6 +312,7 @@ Create a new label in Google Mail. Next time it will sync to computer
   (add-to-list 'load-path
                (expand-file-name my/mu4e-load-path))
   (require 'mu4e)
+  (require 'smtpmail)
   (my/add-to-package-list 'mu4e)
 
 
@@ -341,6 +342,7 @@ Remember to run [[*Initial setup][Initial setup]]
                  (mu4e-drafts-folder . "/ilya_OUTLOOK/Drafts")
                  (mu4e-trash-folder . "/ilya_OUTLOOK/Deleted Items")
                  (mu4e-refile-folder . "/ilya_OUTLOOK/Archive")
+                 (mu4e-sent-messages-behavior . sent)
                  (mu4e-compose-signature . (concat
                                             "\nPhD Student\n\n"
                                             "*Royal Holloway University of London*"))
@@ -359,12 +361,11 @@ Remember to run [[*Initial setup][Initial setup]]
                           msg (list :to :from :cc) "ilya.antonov@dreams-ai.com")))
          :vars '((user-mail-address . "ilya.antonov@dreams-ai.com")
                  (user-full-name . "Ilya Antonov (Dreams-AI)")
-                 ;; (mu4e-sent-messages-behavior 'delete)
                  (mu4e-sent-folder . "/ilya_DREAMSAI/[Gmail].Sent Mail")
                  (mu4e-drafts-folder . "/ilya_DREAMSAI/[Gmail].Drafts")
                  (mu4e-trash-folder . "/ilya_DREAMSAI/[Gmail].Bin")
                  (mu4e-refile-folder . "/ilya_DREAMSAI/[Gmail].Starred")
-                 (mu4e-sent-messages-behavior delete) ; Gmail takes care of this
+                 (mu4e-sent-messages-behavior . delete) ; Gmail takes care of this
                  (mu4e-compose-signature . (concat
                                             "\n\n"
                                             "Physics Handyman\n\n"
@@ -385,7 +386,7 @@ Remember to run [[*Initial setup][Initial setup]]
                           msg (list :to :from :cc) "ilya.antonov24@ntlworld.com")))
          :vars '((user-mail-address . "ilya.antonov24@ntlworld.com")
                  (user-full-name . "Ilya Antonov (NTLWORLD)")
-                 ;; (mu4e-sent-messages-behavior 'delete)
+                 ;;(mu4e-sent-messages-behavior 'delete)
                  (mu4e-sent-folder . "/ilya_NTLWORLD/Sent")
                  (mu4e-drafts-folder . "/ilya_NTLWORLD/Drafts")
                  (mu4e-trash-folder . "/ilya_NTLWORLD/Trash")
@@ -413,7 +414,7 @@ Remember to run [[*Initial setup][Initial setup]]
                  (mu4e-drafts-folder . "/ilya_GMAIL/[Gmail].Drafts")
                  (mu4e-trash-folder . "/ilya_GMAIL/[Gmail].Bin")
                  (mu4e-refile-folder . "/ilya_GMAIL/[Gmail].Starred")
-                 (mu4e-sent-messages-behavior delete)
+                 (mu4e-sent-messages-behavior . delete)
                  (mu4e-compose-signature . (concat
                                             "Ilya Antonov,\n"
                                             "⦿ GMAIL\n"))
@@ -422,16 +423,16 @@ Remember to run [[*Initial setup][Initial setup]]
 ** Load the accounts
 #+BEGIN_SRC emacs-lisp
                                           ; always ask for context when sending mail
-  (setq mu4e-context-policy 'always-ask)
+
+  (setq mu4e-context-policy ''always-ask)
   (setq mu4e-compose-context-policy 'always-ask)
 
-  (setq mu4e-contexts
-        (list
-         my/mu4e/context-outlook
-         my/mu4e/context-dreamsai
-         my/mu4e/context-ntlworld
-         my/mu4e/context-gmail
-         ))
+   (setq mu4e-contexts
+         (list
+          my/mu4e/context-outlook
+          my/mu4e/context-dreamsai
+          my/mu4e/context-ntlworld
+          my/mu4e/context-gmail))
  #+END_SRC
 * CONFIG Main menu
 ** CONFIG Jump to inboxes
