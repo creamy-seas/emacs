@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: my-inkscape-org-insert
+# --
+#+ATTR_HTML: :height ${1:200}px
+[[file:images_inkscape/`my/inkscape/org/file-name`.png]]
+$0

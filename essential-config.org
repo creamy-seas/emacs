@@ -490,7 +490,9 @@ Beautiful file browsing. Dired+ is downloaded manually
 | =r=       | rename                                          |
 | =R=       | move mass                                       |
 | =*=       | regexp                                          |
-| =C-c C-q= | rename then =C-c C-c=                           |
+| =C-x C-q= | rename then =C-c C-c=                           |
+| =M=       | change mode                                     |
+| =c=       | compress                                        |
 
 ** MANUAL-PACKAGE Init
 #+BEGIN_SRC emacs-lisp

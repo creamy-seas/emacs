@@ -660,9 +660,9 @@ Alternative is to use a server =(setq message-send-mail-function 'smtpmail-send-
        (exec-path-from-shell-initialize)
 
        ;; (message ">>>> decrypting dummy file")
-       (epa-decrypt-file
-        (my/config-file-path-evaluate
-         "my-files/gpg/load_password_dummy_file.gpg") "/dev/null")
+       ;; (epa-decrypt-file
+       ;;  (my/config-file-path-evaluate
+       ;;   "my-files/gpg/load_password_dummy_file.gpg") "/dev/null")
 
        ;; (message ">>>> updating")
        (mu4e-update-mail-and-index t)

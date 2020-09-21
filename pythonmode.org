@@ -358,6 +358,6 @@ Replaces letters in programming mode
  #+END_SRC
 ** Bindings
 #+BEGIN_SRC emacs-lisp
-  (define-key elpy-mode-map (kbd "C-x c") #'my/python/pinject-copy-as-camel-case)
-  (define-key elpy-mode-map (kbd "C-x s") #'my/python/pinject-copy-as-snake-case)
+  (define-key elpy-mode-map (kbd "C-x w c") #'my/python/pinject-copy-as-camel-case)
+  (define-key elpy-mode-map (kbd "C-x w s") #'my/python/pinject-copy-as-snake-case)
  #+END_SRC
