@@ -1,9 +1,9 @@
 # -*- mode: snippet -*-
 # name: ilya-equation
-# key: eq
+# key: ieq
 # --
-\begin{equation}${1:\label{eq:${2:label}}}
+\begin{equation}${1:\label\{eq:${2:label}\}}
  ${3:equation-content}$0
 \end{equation}
 
-\noindent 
+\noindent
