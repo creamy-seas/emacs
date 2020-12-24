@@ -43,6 +43,7 @@
   (define-key key-translation-map (kbd "C-x 8 h") (kbd "卍")) ; naughty
   (define-key key-translation-map (kbd "C-x 8 C") (kbd "☭")) ; erm, kinda naughty
   (define-key key-translation-map (kbd "C-x 8 e") (kbd "🐘"))
+  (define-key key-translation-map (kbd "C-x 8 p") (kbd "π"))
   (define-key key-translation-map (kbd "C-x 8 s") (kbd "🦑"))
   (define-key key-translation-map (kbd "C-x 8 o") (kbd "🐙"))
   (define-key key-translation-map (kbd "C-x 8 w") (kbd "🐳"))
@@ -55,6 +56,7 @@
   (define-key key-translation-map (kbd "C-x 8 b") (kbd "⦿"))
   (define-key key-translation-map (kbd "C-x 8 _") (kbd "̲"))
   (define-key key-translation-map (kbd "C-x 8 q") (kbd "\""))
+  (define-key key-translation-map (kbd "C-x 8 2") (kbd "²"))
   (global-set-key (kbd "C-c i") (function info-other-window))
  #+END_SRC
 ** Russian mappings
@@ -849,7 +851,7 @@ You may want to turn this off if it triggers your workflow
 Tabs are bloat. Read about them [[http://www.xemacs.org/Links/tutorials_1.html][here]]
 ** Change display of tabs
 #+BEGIN_SRC emacs-lisp
-  (setq-default tab-width 2)
+  (setq-default tab-width 8)
  #+END_SRC
 ** Prevent using tabs for indent
 #+BEGIN_SRC emacs-lisp

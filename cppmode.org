@@ -5,9 +5,106 @@
 | Type angle bracket <TAB in order to complete a header |
 | Run =ggtags-create-tags= from emacs                   |
 | Run =gtags= from shell in the root directoru     |
+
+| C-M-h       | highlight all    |
+| C-M-a/e/f/b | Navigation       |
+| C-j         | Search for a TAG |
+| M-./,       | Go to definition |
+|             |                  |
+
+* ggtags
+- In every project, run =gtags= from the command line in the root directory or run =ggtags-create-tags= in the root directory
+
+| =C-c g XXX= | For expansion       |
+| =C-c M-XXX= |                     |
+|-------------+---------------------|
+| GTAGS       | definition database |
+| GRTAGS      | reference database  |
+| GPATH       | path name database  |
+
+** External setup
+Install ctags backend https://github.com/universal-ctags/homebrew-universal-ctags or https://centos.pkgs.org/7/epel-x86_64/global-6.5.6-4.el7.x86_64.rpm.html
+2) Download
+#+BEGIN_SRC sh :tangle no
+wget https://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/g/global-6.5.6-4.el7.x86_64.rpm or https://www.gnu.org/software/global/download.html
+ #+END_SRC
+3) [@3] Install
+#+BEGIN_SRC shell :tangle no
+  ./configure --with-universal-ctags=/usr/local/bin/ctags
+  make & make install
+
+  or
+
+  sudo rpm -Uvh global-6.5.6-4.el7.x86_64.rpm
+  yum install global-ctags.x86_64
+ #+END_SRC
+** PACKAGE Normal ggtags
+*** Init
+#+BEGIN_SRC emacs-lisp
+  (use-package ggtags
+    :ensure t
+    :init
+    (my/add-to-package-list 'ggtags)
+    (my/add-dependency "gtags"))
+
+  (add-hook 'c-mode-common-hook (lambda ()
+                                  (when (derived-mode-p 'c-mode 'c++-mode)
+                                    (ggtags-mode 1))))
+ #+END_SRC
+*** Keybindings
+#+BEGIN_SRC emacs-lisp
+  (dolist (map (list ggtags-mode-map dired-mode-map))
+    ;; (define-key map (kbd "C-c g s") 'ggtags-find-other-symbol)
+    ;; (define-key map (kbd "C-c g h") 'ggtags-view-tag-history)
+    (define-key map (kbd "C-c g r") 'ggtags-find-reference)
+    ;; (define-key map (kbd "C-c g f") 'ggtags-find-file)
+    (define-key map (kbd "C-c g c") 'ggtags-create-tags)
+    ;; (define-key map (kbd "C-c g u") 'ggtags-update-tags)
+    ;; (define-key map (kbd "C-c g a") 'helm-gtags-tags-in-this-function)
+    ;; (define-key map (kbd "M-.") 'ggtags-find-tag-dwim)
+    ;; (define-key map (kbd "M-,") 'pop-tag-mark)
+    ;; (define-key map (kbd "C-c <") 'ggtags-prev-mark)
+    ;; (define-key map (kbd "C-c >") 'ggtags-next-mark)
+    )
+ #+END_SRC
+** PACKAGE Helm-ggtags =C-c g=
+Use helm-etags when looking through tags
+*** Init
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-gtags
+    :ensure t
+    :init (my/add-to-package-list 'helm-gtags))
+
+  (add-hook 'dired-mode-hook 'helm-gtags-mode)
+  (add-hook 'eshell-mode-hook 'helm-gtags-mode)
+  (add-hook 'c-mode-hook 'helm-gtags-mode)
+  (add-hook 'c++-mode-hook 'helm-gtags-mode)
+  (add-hook 'asm-mode-hook 'helm-gtags-mode)
+ #+END_SRC
+*** Config
+#+BEGIN_SRC emacs-lisp
+  (setq
+   helm-gtags-ignore-case t
+   helm-gtags-auto-update t
+   helm-gtags-use-input-at-cursor t
+   helm-gtags-pulse-at-cursor t
+   helm-gtags-prefix-key "\C-cg"
+   helm-gtags-suggested-key-mapping t)
+ #+END_SRC
+*** Keybinding
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load 'helm-gtags
+    (define-key helm-gtags-mode-map (kbd "C-c g a") 'helm-gtags-tags-in-this-function)
+    (define-key helm-gtags-mode-map (kbd "C-c g h") 'helm-gtags-show-stack)
+    (define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
+    (define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-dwim)
+    (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)
+    (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
+    (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history))
+ #+END_SRC
 * CONFIG Personal Configuration
 #+BEGIN_SRC emacs-lisp
-  (defvar my/c-header-file-location "/usr/local/include/c++/9.3.0")
+  (defvar my/c-header-file-location (list "/usr/local/include/c++/9.3.0" "/usr/include/c++/4.8.5/"))
  #+END_SRC
 
 * Preliminary instructions
@@ -68,7 +165,8 @@ within predefined search paths.  company-c-headers can search "system" and
     :init (my/add-to-package-list 'company-c-headers)
     (add-to-list 'company-backends 'company-c-headers))
 
-  (add-to-list 'company-c-headers-path-system my/c-header-file-location)
+  (setq company-c-headers-path-system(
+                                      append company-c-headers-path-system my/c-header-file-location))
  #+END_SRC
 * Company backend
 - Add the clang backend to company (actually =company-clang= is used by default)

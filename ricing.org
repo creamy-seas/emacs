@@ -197,9 +197,9 @@ Just read [[https://github.com/tonsky/FiraCode][this]] - one paragraph sums up:
 #+BEGIN_SRC emacs-lisp
   (custom-set-faces
    '(default ((t (:family "JetBrains Mono" :height 170))))
-   ;; '(default ((t (:family "Fira Code" :height 170))))
-   ;; '(default ((t (:family "Fira Emacs" :height 170))))
-   ;; '(default ((t (:family "Inconsolata" :height 177))))
+   ;;  ;; '(default ((t (:family "Fira Code" :height 170))))
+   ;;  ;; '(default ((t (:family "Fira Emacs" :height 170))))
+   ;;  ;; '(default ((t (:family "Inconsolata" :height 177))))
    )
  #+END_SRC
 ** Load ligatures
@@ -742,6 +742,8 @@ Colourize codes such as #AF3313
    #+BEGIN_SRC emacs-lisp
      (my/add-to-theme-hashmap 'rippedcasts "my-themes/rippedcasts")
      (my/add-to-theme-hashmap 'gruvbox-dark-hard "my-themes/gruvbox-theme-20200622.58")
+     (my/add-to-theme-hashmap 'autumn-light "my-themes/autumn-light-theme-20150515.1447")
+     (my/add-to-theme-hashmap 'spacemacs-light "my-themes/spacemacs-theme-20200825.1818")
      (my/add-to-theme-hashmap 'gruvbox-dark-medium)
      (my/add-to-theme-hashmap 'gruvbox-dark-soft)
      (my/add-to-theme-hashmap 'gruvbox-light-hard)

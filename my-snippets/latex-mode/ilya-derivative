@@ -2,4 +2,4 @@
 # name: ilya-derivative
 # key: drv
 # --
-\iderivative{${1:numerator}}{${2:denominator}}$0
+\frac{d${1:numerator}}{d${2:denominator}}$0

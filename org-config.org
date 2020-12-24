@@ -8,10 +8,43 @@ This is just an example config that works well for me. You will need to tune it 
 | [[*Todo lists =C-c C-t=][Todo lists]]          | =C-c C-t= | Add a todo to an org-heading                        |
 
 
+* Agenda views
+#+BEGIN_SRC emacs-lisp
+  (custom-set-variables
+   '(org-agenda-custom-commands
+     (quote
+      (("c" "Simple agenda view"
+        ((agenda "" nil))
+        nil)
+       ("i" "卍 My summary 卍"
+        ((todo "PHD"
+               ((org-agenda-sorting-strategy
+                 (quote
+                  (deadline-up)))
+                (org-agenda-span
+                 (quote fortnight))
+                (org-agenda-overriding-header "Quantum Physics!")))
+         (todo "BLOAT"
+               ((org-agenda-span
+                 (quote day))
+                (org-agenda-overriding-header "Stuff at home")))
+         (todo "HOUSE"
+               ((org-agenda-span
+                 (quote fortnight))
+                (org-agenda-overriding-header "Renovation")))
+         (todo "SINO|REACH"
+               ((org-agenda-overriding-header "Dreams-AI")
+                (org-agenda-span
+                 (quote fortnight)))))
+        nil nil))))
+   '(org-log-reschedule (quote note)))
+ #+END_SRC
 * CONFIG Org files to monitor
 #+BEGIN_SRC emacs-lisp
   (setq org-agenda-files (list "~/creamy_seas/antlers.org"
                                "~/creamy_seas/monday_starts_on_saturday/adventure_brief.org"
+                               "~/creamy_seas/monday_starts_on_saturday/lab-results/log_file.org"
+                               "~/Google Drive/renovation/plan-file.org"
                                "~/mydrive/people.org"
                                "~/mydrive/east-data-company.org"
                                ))
@@ -127,6 +160,11 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
            (id "phd-xmon")
            "*** PHD %^{stuff-to-be-done} [/] :XMON:\nDEADLINE: %^T\n- [ ] %?")
 
+          ("pl" "Laboratory"
+           entry
+           (file "~/creamy_seas/monday_starts_on_saturday/lab-results/log_file.org")
+           "*** PHD %^{stuff-to-be-done} [/] :MEASUREMENT:\nDEADLINE: %^T\n- [ ] %?")
+
           ("pb" "Photon Counting Beam Splitter"
            entry
            (id "phd-photon-beams-splitter")
@@ -203,19 +241,18 @@ These todo blocks can be put in front of any org heading with =C-c C-t=
 #+BEGIN_SRC emacs-lisp
   (setq org-todo-keywords '((sequence "TODO(t)"
                                       "BLOAT(B)"
-                                      "BRYAN(z)"
+                                      ;; "BRYAN(z)"
                                       "PHD(p)"
                                       "DREAMS-AI(a)"
-                                      "HORSE(h)"
-                                      "SA36(3)"
-                                      "WORKFORCE(w)"
-                                      "SCHOOLS"
-                                      "TUTORING(l)"
-                                      "CURRENT(c)"
-                                      "SKYPE(s)"
+                                      ;; "HORSE(h)"
+                                      ;; "SA36(3)"
+                                      "HOUSE(h)"
+                                      ;; "SCHOOLS"
+                                      ;; "TUTORING(l)"
+                                      ;; "CURRENT(c)"
+                                      ;; "SKYPE(s)"
                                       "SINO"
-                                      "REACH"
-                                      "DOWN"
+                                      ;; "REACH"
                                       "|"
                                       "DOMINATED(d)"
                                       "PACKAGE"
@@ -228,20 +265,20 @@ These todo blocks can be put in front of any org heading with =C-c C-t=
                                        ("STARTED" . "yellow")
                                        ("CURRENT" . (:foreground "#ffff0a" :background "#754ec1" :weight bold))
                                        ("DREAMS-AI" . (:foreground "#68c3c1" :background "#fdc989" :weight bold))
-                                       ("SA36" . (:background "#01168a" :foreground "#fdc989" :weight bold))
+                                       ;; ("SA36" . (:background "#01168a" :foreground "#fdc989" :weight bold))
                                        ("MANUAL-PACKAGE" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
-                                       ("SKYPE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
+                                       ;; ("SKYPE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
                                        ("SINO" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
-                                       ("HORSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
-                                       ("REACH" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
-                                       ("WORKFORCE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
+                                       ;; ("HORSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
+                                       ;; ("REACH" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
+                                       ("HOUSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
                                        ("PHD" . (:foreground "yellow" :background "#FF3333"))
                                        ("DONE" . (:foreground "yellow" :background "#FF3333"))
-                                       ("SCHOOLS" . (:foreground "#090C42" :background "#9DFE9D"))
+                                       ;; ("SCHOOLS" . (:foreground "#090C42" :background "#9DFE9D"))
                                        ("Dominated" . (:foreground "#9DFE9D" :weight bold))
                                        ("BLOAT" . (:foreground "#000001" :background "#ffffff"))
-                                       ("TUTORING" . (:foreground "#090C42" :background "#FFD700": weight bold))
-                                       ("BRYAN" . (:foreground "#090C42" :background "#33ccff" :weight bold))
+                                       ;; ("TUTORING" . (:foreground "#090C42" :background "#FFD700": weight bold))
+                                       ;; ("BRYAN" . (:foreground "#090C42" :background "#33ccff" :weight bold))
                                        ("PACKAGE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
                                        ("CONFIG" . (:background "#00AFF0" :foreground "#090C42" :weight bold))
                                        ("BUREUCRACY" . (:background "#ab82ff" :foreground "#8b6969" :weight bold))

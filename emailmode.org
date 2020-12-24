@@ -53,7 +53,7 @@
 |           | *Actions*                                       |
 | =R,F,C=   | reply/forward/compose                           |
 | =E=       | edit (only allowed for draft messages)          |
-| =c-a=     | Capture message - can attach it in reply        |
+| =C-c c= | Capture message - can attach it in reply        |
 |-----------+-------------------------------------------------|
 |           | *Message View*                                  |
 | =C-+,C--= | increase / decrease the number of headers shown |

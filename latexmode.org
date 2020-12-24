@@ -2,6 +2,7 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
+=C-c \=
 |-----------------+------------------------------------------+----------------------------------|
 | =C-c C-p <kbd>= | Preview directly in the latex buffer     |                                  |
 | TABBING         | -----------------                        | ------------------               |

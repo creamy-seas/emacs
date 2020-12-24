@@ -8,3 +8,12 @@
     :ensure t
     :init (my/add-to-package-list 'csv-mode))
  #+END_SRC
+
+* PACKAGE Vue
+#+BEGIN_SRC emacs-lisp
+ (add-hook 'html-mode-hook
+          (lambda()
+          (setq-default tab-width 4)
+          (setq sgml-basic-offset 4)
+          (setq indent-tabs-mode t)))
+ #+END_SRC

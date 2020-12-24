@@ -13,3 +13,4 @@
 !/my-scripts/
 !/support_files/
 /my-scripts/email/__pycache__/
+*/.yas-compiled-snippets.el
