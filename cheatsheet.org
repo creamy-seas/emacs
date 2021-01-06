@@ -10,7 +10,12 @@
 | Zap (delete) to char | =M-z=   | Inactive |
 
 * Org mode
-| C-c C-x C-l | View latex in buffer - must be in math quotes $$ |
+| C-c C-x C-l              | View latex in buffer - must be in math quotes $$ |
+| C-c C-x ;                | Start countdown                                  |
+| C-c C-x 0                | Start timer                                      |
+| C-c C-x . or =C-c C-x -= | Insert timestamp                                 |
+| C-c C-x ,                | Pause/Resume                                     |
+| C-c C-x _                | Stop                                             |
 * Babel
 | =C-c C-v=   | all the functions |
 | =C-c C-v j= | Add a header      |

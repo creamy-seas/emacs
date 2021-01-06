@@ -480,7 +480,7 @@ Redundant
   (defhydra hydra-projectile (:color teal
                                      :hint nil)
     "
-         PROJECTILE: %(projectile-project-root)
+         DEFAULT PROJECTILE: %(projectile-project-root)
 
          Find File            Search/Tags          Buffers                Cache
     ------------------------------------------------------------------------------------------
@@ -546,7 +546,7 @@ Keep reading here: https://tuhdo.github.io/helm-projectile.html
   (defhydra hydra-helm-projectile (:color teal
                                           :hint nil)
     "
-         PROJECTILE: %(projectile-project-root)
+         HELM PROJECTILE: %(projectile-project-root)
 
          Find File               Projects               Search/Tags               Cache
     ------------------------------------------------------------------------------------------

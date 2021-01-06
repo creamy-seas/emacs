@@ -146,6 +146,45 @@ Check that clang is on computer =clang --version=
   ;; (with-eval-after-load 'company
   ;;   (add-hook 'c++-mode-hook 'company-mode))
  #+END_SRC
+* Autoinsert
+#+BEGIN_SRC emacs-lisp
+  (define-skeleton my-skeleton/c/unittest
+    "Unitest with CppUnit"
+    nil
+                                          ; initial top line
+    "#include <cppunit/extensions/HelperMacros.h>"\n
+    "#include <cppunit/Exception.h>"\n
+    \n
+
+    "class " (setq test-class-name (skeleton-read "Class Name: ")) "Test : public CppUnit::TestFixture {"\n
+    \n
+
+    > "// Macro for generating suite"\n
+    > "CPPUNIT_TEST_SUITE( " test-class-name " );"\n
+    \n
+    > "// Population with tests"\n
+    > "// CPPUNIT_TEST_EXCEPTION( 🐙, CppUnit::Exception );"\n
+    > "CPPUNIT_TEST( " _ " );" \n
+    \n
+
+    > "CPPUNIT_TEST_SUITE_END();"\n
+    -8 "private:"\n
+    \n
+    -8 "public:"\n
+    > "void setUp(){"\n
+    > "}"\n
+    > "void tearDown(){"\n
+    > "}"\n
+    > "};"\n
+    > "CPPUNIT_TEST_SUITE_REGISTRATION( " test-class-name " );"
+    )
+ #+END_SRC
+** Bind to buffer names
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'auto-insert-alist '(
+                                    (".*Test\\.cpp\\'" . "[Unittest template]")
+                                    . my-skeleton/c/unittest))
+ #+END_SRC
 * System
 #+BEGIN_SRC emacs-lisp
   (use-package cc-mode
