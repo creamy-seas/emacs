@@ -5,7 +5,7 @@ import argparse
 import re
 
 # PATH_OF_PASSWORD_FILE = "~/db_mail/.pswd_mail.gpg"
-PATH_OF_PASSWORD_FILE = os.path.expanduser("~/db_mail/.pswd_mail")
+PATH_OF_PASSWORD_FILE = os.path.expanduser("~/db_mail/.pswd_mail.gpg")
 
 
 def get_password_emacs(user):
@@ -18,8 +18,8 @@ def get_password_emacs(user):
     os.system("killall pinentry 2> /dev/null")
 
     # 3 - get password ########################################################
-    # authinfo = os.popen("gpg -q --no-tty -d " + PATH_OF_PASSWORD_FILE).read()
-    authinfo = open(PATH_OF_PASSWORD_FILE, "r").read()
+    authinfo = os.popen("gpg -q --no-tty -d " + PATH_OF_PASSWORD_FILE).read()
+    # authinfo = open(PATH_OF_PASSWORD_FILE, "r").read()
 
     # 4 - return ##############################################################
     return p.search(authinfo).group(1)

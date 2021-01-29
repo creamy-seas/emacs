@@ -7,7 +7,6 @@ Tip - if you do not want to have long file names displayed in the agenda buffer,
 #+CATEGORY: custom-name-for-agenda-file
 #+end_example
 
-
 * Agenda files
 Org searches through the files you set in [[*General Parameters][General Parameters]] and extracts out all deadlines. This allows a nice preview of them
 ** Agenda layout prompt

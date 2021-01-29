@@ -82,8 +82,11 @@
 - [[https://www.djcbsoftware.nl/code/mu/cheatsheet.html][mu cheatsheet]]
 * CONFIG External setup
 | SMTP | sends messages to server               |
+|------+----------------------------------------|
 | POP  | Downloads from server and deletes them |
-| IMAP | Syncs with server                     |
+| IMAP | Syncs with server                      |
+|      |                                        |
+|      |                                        |
 
 ** Setup
 1. Remeber to run the setup in [[https://www.djcbsoftware.nl/code/mu/mu4e/Getting-started.html#Getting-started][this tutorial]] for doing external setup
@@ -97,20 +100,30 @@
  mu init --maildir="~/db_mail" --my-address="ilya.antonov@dreams-ai.com" --my-address="ilya.antonov24@ntlworld" --my-address="antonov.ilya225@gmail.com" --my-address="ilya.antonov.2013@live.rhul.ac.uk"
  #+END_SRC
 
+- Then index the messages with:
+#+BEGIN_SRC shell :tangle no
+ mu index
+ #+END_SRC
+
 You can then run
 #+BEGIN_SRC shell :tangle no
  mu info
  #+END_SRC
 
 to get information on the install
+** Password file
+Make password file and put it into the email folder ="~/db_mail/.pswd_mail.gpg"=
+#+BEGIN_SRC text :tangle no
+EMAIL password PASSWORD
+#+END_SRC
+** What to install
+| =mu=          | indexer and searcher              |
+| =offlineimap= | for the emailserver               |
+| =w3m=         | text based webrowser to show html |
+| =openssl=     | Encryption and certificates       |
+| =msmtp=       |                                   |
 
-** Correct openssl
-
-#+BEGIN_SRC shell :tangle no
-  brew switch openssl 1.0.2s
- #+END_SRC
-
-** Offlineimap
+** Offlineimap (fetching mail)
 *** Install offlineimap
 #+BEGIN_SRC emacs-lisp
   (my/add-dependency "offlineimap")
@@ -257,27 +270,142 @@ If offlineimap is giving an error, it is probably picking up python3.7. Delete a
  #+END_SRC
 
 2. [@2] Remove all =imap= packages
-** Certificates
-For [[*Sending mail][Sending mail]] you may need to get certificates and update them in =msmtprc=
-#+BEGIN_SRC shell :tangle no
-  msmtp --host=smtp.office365.com --port=587 --serverinfo --tls --tls-certcheck=off
- #+END_SRC
-- Copy the SHA256 into tls_fingerprint of the =.offlineimaprc= file
-** SSL certificate
-This ensures that the connection is secure. This fingerprint is required for ntlworld
+*** Certificates for IMAP server (fetching)
+There is a cerficata to verify connection to an IMAP server (to make sure you are syncing and giving away details to correct server):
 [[https://www.offlineimap.org/doc/FAQ.html#how-do-i-generate-an-sslcacertfile-file]]
 https://www.offlineimap.org/doc/FAQ.html#does-offlineimap-verify-ssl-certificates
 
-- first part gets the certificate
-- second part gets information from certificate - the fingerprint
+You can either:
 
-#+BEGIN_SRC sh :tangle no
-  SSL_CERT_DIR="" openssl s_client -connect imap.SERVERTHATYOUCHOOSE.com:993 < /dev/null 2>/dev/null | openssl x509 -fingerprint -noout -text -in /dev/stdin
+**** Generate =sslcacertfile= (required for GMail)
+#+BEGIN_SRC :tangle no
+openssl s_client -CApath /etc/ssl/certs -connect outlook.office365.com:imaps -showcerts | perl -ne 'print if /BEGIN/../END/'
 #+END_SRC
-** What to install
-| =offlineimap= | for the emailserver               |
-| =w3m=         | text based webrowser to show html |
-| =mu=          | indexer and searcher              |
+
+- Copy it over the the chosen =sslcacertfile= which is set in =.offlineimaprc=
+- Verify with
+#+BEGIN_SRC sh :tangle no
+  SSL_CERT_DIR="" openssl s_client -connect imap.SERVERTHATYOUCHOOSE.com:993 < /dev/null 2>/dev/null
+#+END_SRC
+
+**** Generate a constant =cert_fingerprint= (required for example for ntlworld)
+#+BEGIN_SRC :tangle no
+SSL_CERT_DIR="" openssl s_client -connect imap.SERVERTHATYOUCHOOSE.com:993 < /dev/null 2>/dev/null | openssl x509 -fingerprint -noout -text -in /dev/stdin
+#+END_SRC
+- Copy over the =SHA1 Fingerprint= to =cert_fingerprint= in =.offlineimaprc=
+
+** Sending mail =mstmp=
+Configuration file something like:
+#+BEGIN_SRC text
+  defaults
+  logfile ~/.msmtp.log
+  protocol smtp
+
+  #  ___   _   _  _____  _      ___    ___   _  __
+  # / _ \ | | | ||_   _|| |    / _ \  / _ \ | |/ /
+  #| | | || | | |  | |  | |   | | | || | | || ' /
+  #| |_| || |_| |  | |  | |___| |_| || |_| || . \
+  # \___/  \___/   |_|  |_____|\___/  \___/ |_|\_\
+  #
+
+  account ilya_OUTLOOK
+  host smtp.office365.com
+  port 587
+
+  from zyva263@live.rhul.ac.uk
+  user zyva263@live.rhul.ac.uk
+  passwordeval python3 ~/.emacs.d/my-scripts/email/read_password.py -u zyva263@live.rhul.ac.uk
+
+  auth on
+  tls on
+  tls_starttls on
+  tls_fingerprint 46:A3:2E:AF:1F:3F:1E:85:8C:74:67:72:BA:70:B1:72:5E:C4:84:8C:B3:57:92:0A:A7:3E:DF:92:A5:6A:75:4F
+
+  #  ____  __  __     _     ___  _
+  # / ___||  \/  |   / \   |_ _|| |
+  #| |  _ | |\/| |  / _ \   | | | |
+  #| |_| || |  | | / ___ \  | | | |___
+  # \____||_|  |_|/_/   \_\|___||_____|
+  #
+
+  account ilya_GMAIL
+  host smtp.gmail.com
+  port 587
+
+  from antonov.ilya225@gmail.com
+  user antonov.ilya225@gmail.com
+  passwordeval python3 ~/.emacs.d/my-scripts/email/read_password.py -u antonov.ilya225@gmail.com
+
+  auth on
+  tls on
+  tls_starttls on
+  tls_trust_file /usr/local/etc/openssl@1.1/cert.pem
+
+  # ____   ____   _____     _     __  __  ____            _     ___
+  #|  _ \ |  _ \ | ____|   / \   |  \/  |/ ___|          / \   |_ _|
+  #| | | || |_) ||  _|    / _ \  | |\/| |\___ \  _____  / _ \   | |
+  #| |_| ||  _ < | |___  / ___ \ | |  | | ___) ||_____|/ ___ \  | |
+  #|____/ |_| \_\|_____|/_/   \_\|_|  |_||____/       /_/   \_\|___|
+  #
+  #
+
+  account ilya_DREAMSAI
+  host smtp.gmail.com
+  port 587
+
+  from ilya.antonov@dreams-ai.com
+  user ilya.antonov@dreams-ai.com
+  passwordeval python3 ~/.emacs.d/my-scripts/email/read_password.py -u ilya.antonov@dreams-ai.com
+
+  auth on
+  tls on
+  tls_starttls on
+  tls_trust_file /usr/local/etc/openssl@1.1/cert.pem
+
+  # _   _  _____  _  __        __ ___   ____   _      ____
+  #| \ | ||_   _|| | \ \      / // _ \ |  _ \ | |    |  _ \
+  #|  \| |  | |  | |  \ \ /\ / /| | | || |_) || |    | | | |
+  #| |\  |  | |  | |___\ V  V / | |_| ||  _ < | |___ | |_| |
+  #|_| \_|  |_|  |_____|\_/\_/   \___/ |_| \_\|_____||____/
+  #
+
+  account ilya_NTLWORLD
+  host smtp.ntlworld.com
+  port 465
+
+  from ilya.antonov24@ntlworld.com
+  user ilya.antonov24@ntlworld.com
+  passwordeval "python3 ~/.emacs.d/my-scripts/email/read_password.py -u ilya.antonov24@ntlworld.com"
+
+
+  auth plain
+  tls on
+  tls_starttls off
+  tls_fingerprint B8:7A:44:C5:DB:B6:61:07:92:44:2A:9C:AE:92:6A:71:7D:E1:66:42:63:93:23:A1:8A:D0:9F:2E:37:B5:FD:E4
+
+  account default: ilya_OUTLOOK
+#+END_SRC
+
+** Certificates for SMTP server (Sending)
+For [[*Sending mail][Sending mail]] you may need to get certificates and update them in =.msmtprc=
+
+You can either:
+
+*** Set =tls_trust_file= as before for =sslcacertfile=
+- Copy it over the the chosen =tls_trust_file= which is set in =.mstprc=
+
+*** Generate constant fingerprint
+#+BEGIN_SRC shell :tangle no
+  msmtp --port=587 --serverinfo --tls --tls-certcheck=off --host=smtp.office365.com
+ #+END_SRC
+or
+
+#+BEGIN_SRC shell :tangle no
+  msmtp --port=587 --serverinfo --tls --tls-certcheck=off -a ACCOUNT_NAME_FROM_MSTPRC
+ #+END_SRC
+
+- Copy the SHA256 into tls_fingerprint of the =.msmtprc= file
+
 ** Google authentication
 - With google, you need to allow unknow applications to have access to the account
 - go to =https://myaccount.google.com/lesssecureapps=
@@ -304,7 +432,7 @@ Create a new label in Google Mail. Next time it will sync to computer
 #+BEGIN_SRC emacs-lisp
   (defvar my/mu4e-load-path "/usr/local/share/emacs/site-lisp/mu4e" "location of the emacs mu4e package")
   (defvar my/mu4e-save-dir "~/Downloads/mail" "Location of where to save the mail attachement")
-  ;; (defvar sendmail-program "/usr/local/bin/msmtp" "The SMTP binary")
+  (defvar my/mu4e-sendmail-program "/usr/local/bin/msmtp" "The SMTP binary")
  #+END_SRC
 * MANUAL-PACKAGE Init
 #+BEGIN_SRC emacs-lisp
@@ -325,6 +453,29 @@ Create a new label in Google Mail. Next time it will sync to computer
  #+END_SRC
 * CONFIG Account setup
 Remember to run [[*Initial setup][Initial setup]]
+** =ilya.antonov24@ntlworld=
+#+BEGIN_SRC emacs-lisp
+  (setq my/mu4e/context-ntlworld
+        (make-mu4e-context
+         :name "ntlworld"
+         :enter-func (lambda () (mu4e-message "Entering NTLWORLD"))
+         :leave-func (lambda () (mu4e-message "Leaving NTLWORLD"))
+         :match-func (lambda (msg)
+                       (when msg
+                         (mu4e-message-contact-field-matches
+                          msg (list :to :from :cc) "ilya.antonov24@ntlworld.com")))
+         :vars '((user-mail-address . "ilya.antonov24@ntlworld.com")
+                 (user-full-name . "Ilya Antonov (NTLWORLD)")
+                 (mu4e-sent-messages-behavior . sent)
+                 (mu4e-sent-folder . "/ilya_NTLWORLD/Sent")
+                 (mu4e-drafts-folder . "/ilya_NTLWORLD/Drafts")
+                 (mu4e-trash-folder . "/ilya_NTLWORLD/Trash")
+                 (mu4e-refile-folder . "/ilya_NTLWORLD/Archive")
+                 (mu4e-compose-signature . (concat
+                                            "Ilya Antonov,\n"
+                                            "⦿ NTLWORLD\n"))
+                 (mu4e-compose-format-flowed . nil))))
+ #+END_SRC
 ** =ilya.antonov.2013@live.rhul.ac.uk=
 #+BEGIN_SRC emacs-lisp
   (setq my/mu4e/context-outlook
@@ -373,29 +524,6 @@ Remember to run [[*Initial setup][Initial setup]]
                                             "☁ DREAMSAI"))
                  (mu4e-compose-format-flowed . t))))
  #+END_SRC
-** =ilya.antonov24@ntlworld=
-#+BEGIN_SRC emacs-lisp
-  (setq my/mu4e/context-ntlworld
-        (make-mu4e-context
-         :name "ntlworld"
-         :enter-func (lambda () (mu4e-message "Entering NTLWORLD"))
-         :leave-func (lambda () (mu4e-message "Leaving NTLWORLD"))
-         :match-func (lambda (msg)
-                       (when msg
-                         (mu4e-message-contact-field-matches
-                          msg (list :to :from :cc) "ilya.antonov24@ntlworld.com")))
-         :vars '((user-mail-address . "ilya.antonov24@ntlworld.com")
-                 (user-full-name . "Ilya Antonov (NTLWORLD)")
-                 ;;(mu4e-sent-messages-behavior 'delete)
-                 (mu4e-sent-folder . "/ilya_NTLWORLD/Sent")
-                 (mu4e-drafts-folder . "/ilya_NTLWORLD/Drafts")
-                 (mu4e-trash-folder . "/ilya_NTLWORLD/Trash")
-                 (mu4e-refile-folder . "/ilya_NTLWORLD/Archive")
-                 (mu4e-compose-signature . (concat
-                                            "Ilya Antonov,\n"
-                                            "⦿ NTLWORLD\n"))
-                 (mu4e-compose-format-flowed . nil))))
- #+END_SRC
 ** =antonov.ilya225@gmail.com=
 #+BEGIN_SRC emacs-lisp
   (setq my/mu4e/context-gmail
@@ -414,7 +542,7 @@ Remember to run [[*Initial setup][Initial setup]]
                  (mu4e-drafts-folder . "/ilya_GMAIL/[Gmail].Drafts")
                  (mu4e-trash-folder . "/ilya_GMAIL/[Gmail].Bin")
                  (mu4e-refile-folder . "/ilya_GMAIL/[Gmail].Starred")
-                 (mu4e-sent-messages-behavior . delete)
+                 (mu4e-sent-messages-behavior . trash)
                  (mu4e-compose-signature . (concat
                                             "Ilya Antonov,\n"
                                             "⦿ GMAIL\n"))
@@ -564,6 +692,7 @@ It is installed with mu4e
     "When in an org-mu4e-compose-org-mode message, htmlize and send it."
     (interactive)
     (when (member 'org~mu4e-mime-switch-headers-or-body post-command-hook)
+      (minibuffer-message "🐙 HTML and send!")
       (org-mime-htmlize)
       (message-send-and-exit)))
 
@@ -573,9 +702,14 @@ It is installed with mu4e
 Alternative is to use a server =(setq message-send-mail-function 'smtpmail-send-it)=
 
 #+BEGIN_SRC emacs-lisp
-  (setq message-send-mail-function (function message-send-mail-with-sendmail))
+  (setq
+   sendmail-program "/usr/local/bin/msmtp"
+   message-send-mail-function (function smtpmail-send-it)
+   message-sendmail-f-is-evil t
                                           ; Use the correct account context when sending mail based on the from header.
-  (setq message-sendmail-envelope-from 'header)
+   ;; message-sendmail-envelope-from 'header
+   message-sendmail-extra-arguments '("--read-envelope-from")
+   message-send-mail-function (function message-send-mail-with-sendmail))
  #+END_SRC
 
 * PACKAGE Alert

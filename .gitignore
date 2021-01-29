@@ -8,9 +8,9 @@
 !/manual_el/
 !/my-themes/
 !/my-snippets/
+my-snippets/*/*yas-compiled-snippets.el
 !/my-scripts/
 !/my-files/
 !/my-scripts/
 !/support_files/
 /my-scripts/email/__pycache__/
-*/.yas-compiled-snippets.el
