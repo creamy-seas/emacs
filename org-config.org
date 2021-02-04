@@ -248,6 +248,7 @@ These todo blocks can be put in front of any org heading with =C-c C-t=
                                       ;; "SA36(3)"
                                       "HOUSE(h)"
                                       ;; "SCHOOLS"
+                                      "DOWN(D)"
                                       ;; "TUTORING(l)"
                                       ;; "CURRENT(c)"
                                       ;; "SKYPE(s)"
@@ -273,6 +274,7 @@ These todo blocks can be put in front of any org heading with =C-c C-t=
                                        ;; ("REACH" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
                                        ("HOUSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
                                        ("PHD" . (:foreground "yellow" :background "#FF3333"))
+                                       ("DOWN" . (:foreground "yellow" :background "#FF3333"))
                                        ("DONE" . (:foreground "yellow" :background "#FF3333"))
                                        ;; ("SCHOOLS" . (:foreground "#090C42" :background "#9DFE9D"))
                                        ("Dominated" . (:foreground "#9DFE9D" :weight bold))

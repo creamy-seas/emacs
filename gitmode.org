@@ -91,7 +91,7 @@ Allow quickly to browser through the file version. Launch with =M-x git-time-mac
   (use-package forge
     :ensure t
     :init (my/add-to-package-list 'forge)
-    ;; :after magit
+    :after magit
     )
 
   (defhydra hydra-forge (

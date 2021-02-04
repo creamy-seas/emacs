@@ -101,6 +101,8 @@ Nice bullets instead of multiplication symbols
     :ensure t
     :init (my/add-to-package-list 'org-bullets)
     :hook (org-mode . org-bullets-mode))
+
+  '(org-bullets-bullet-list (quote ("◉" "○" "✸" "✿" "✚" "❀")))
 #+END_SRC
 * Change the ellipsis to ↴
 #+BEGIN_SRC emacs-lisp
