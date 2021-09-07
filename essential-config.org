@@ -377,7 +377,7 @@ To keep code aliged
   (use-package aggressive-indent
     :ensure t
     :init
-    (aggressive-indent-global-mode 1)
+    (aggressive-indent-global-mode nil)
     (my/add-to-package-list 'aggressive-indent))
  #+END_SRC
 ** Disable it in certain modes
@@ -905,7 +905,9 @@ Autocompletion by typing in first part of word and tabbing to insert a template
     (yas-reload-all))
  #+END_SRC
 #+BEGIN_SRC emacs-lisp
-  (setq yas-snippet-dirs (list 'yasnippet-snippets-dir (my/config-file-path-evaluate "my-snippets")))
+  (setq yas-snippet-dirs (list
+                          (my/config-file-path-evaluate "my-snippets")
+                          'yasnippet-snippets-dir))
   (yas-reload-all)
  #+END_SRC
 ** PACKAGE Auto yasnippets

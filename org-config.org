@@ -7,6 +7,12 @@ This is just an example config that works well for me. You will need to tune it 
 | [[*Capturing templates =C-c c=][Capturing templates]] | =C-c c=   | Entering capture mode where templates are available |
 | [[*Todo lists =C-c C-t=][Todo lists]]          | =C-c C-t= | Add a todo to an org-heading                        |
 
+Little function to help with formulas
+#+BEGIN_SRC emacs-lisp
+ (defun my-to-string (arg)
+  (replace-regexp-in-string "\\`[ \t\n]*" "" (replace-regexp-in-string "[ \t\n]*\\'" "" arg))
+    )
+ #+END_SRC
 
 * Agenda views
 #+BEGIN_SRC emacs-lisp
@@ -32,7 +38,7 @@ This is just an example config that works well for me. You will need to tune it 
                ((org-agenda-span
                  (quote fortnight))
                 (org-agenda-overriding-header "Renovation")))
-         (todo "SINO|REACH"
+         (todo "SINO|REACH|DREAMS-AI"
                ((org-agenda-overriding-header "Dreams-AI")
                 (org-agenda-span
                  (quote fortnight)))))
@@ -43,11 +49,13 @@ This is just an example config that works well for me. You will need to tune it 
 #+BEGIN_SRC emacs-lisp
   (setq org-agenda-files (list "~/creamy_seas/antlers.org"
                                "~/creamy_seas/monday_starts_on_saturday/adventure_brief.org"
+                               "~/creamy_seas/monday_starts_on_saturday/cqps/cqps_notes.org"
+                               "~/creamy_seas/monday_starts_on_saturday/photon/photon_counting_notes.org"
                                "~/creamy_seas/monday_starts_on_saturday/lab-results/log_file.org"
                                "~/Google Drive/renovation/plan-file.org"
-                               "~/mydrive/people.org"
+                               ;; "~/mydrive/people.org"
                                "~/mydrive/east-data-company.org"
-                               ))
+                               "~/mydrive/adv21_reachingway/adventure_brief.org"))
  #+END_SRC
 
 * CONFIG Capturing templates   =C-c c=
@@ -150,40 +158,20 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
 
           ("p" "PhD Tasks")
 
-          ("ps" "Photon Counting Simulation"
+          ("pp" "Photon"
            entry
-           (id "phd-photon-simulation")
-           "*** PHD %^{stuff-to-be-done} [/] :PHOTONSIMULATION:\nDEADLINE: %^T\n- [ ] %?")
-
-          ("px" "xMon"
-           entry
-           (id "phd-xmon")
-           "*** PHD %^{stuff-to-be-done} [/] :XMON:\nDEADLINE: %^T\n- [ ] %?")
+           (id "phd-photon")
+           "*** PHD %^{stuff-to-be-done} [/] :PHOTON:\nDEADLINE: %^T\n- [ ] %?")
 
           ("pl" "Laboratory"
            entry
            (file "~/creamy_seas/monday_starts_on_saturday/lab-results/log_file.org")
            "*** PHD %^{stuff-to-be-done} [/] :MEASUREMENT:\nDEADLINE: %^T\n- [ ] %?")
 
-          ("pb" "Photon Counting Beam Splitter"
-           entry
-           (id "phd-photon-beams-splitter")
-           "*** PHD %^{stuff-to-be-done} [/] :PHOTONBEAMSPLITTER:\nDEADLINE: %^T\n- [ ] %?")
-
-          ("pc" "Photon Counting CUDA"
-           entry
-           (id "phd-photon-cuda")
-           "*** PHD %^{stuff-to-be-done} [/] :PHOTONPROGRAMMING:\nDEADLINE: %^T\n- [ ] %?")
-
           ("pq" "CQPS"
            entry
            (id "phd-cqps")
            "*** PHD %^{stuff-to-be-done} [/] :CQPS:\nDEADLINE: %^T\n- [ ] %?")
-
-          ("pa" "APL Letter"
-           entry
-           (id "phd-apl")
-           "*** PHD %^{stuff-to-be-done} [/] :APL:\nDEADLINE: %^T\n- [ ] %?")
 
           ("pg" "General"
            entry
@@ -253,7 +241,7 @@ These todo blocks can be put in front of any org heading with =C-c C-t=
                                       ;; "CURRENT(c)"
                                       ;; "SKYPE(s)"
                                       "SINO"
-                                      ;; "REACH"
+                                      "REACH"
                                       "|"
                                       "DOMINATED(d)"
                                       "PACKAGE"
@@ -271,7 +259,7 @@ These todo blocks can be put in front of any org heading with =C-c C-t=
                                        ;; ("SKYPE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
                                        ("SINO" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
                                        ;; ("HORSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
-                                       ;; ("REACH" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
+                                       ("REACH" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
                                        ("HOUSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
                                        ("PHD" . (:foreground "yellow" :background "#FF3333"))
                                        ("DOWN" . (:foreground "yellow" :background "#FF3333"))

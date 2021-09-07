@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: my-source-block-name
+# key: sbn
+# --
+#+NAME: ${1:name-here!}

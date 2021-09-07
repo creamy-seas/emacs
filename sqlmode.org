@@ -12,7 +12,7 @@
 |--------------------+--------------------------------------------------------------------------------------------------------------------------------|
 
 * DOWN LSP
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
   ;; (require 'lsp-mssql)
 
   ;; (add-hook 'sql-mode-hook 'lsp)
@@ -20,19 +20,19 @@
   ;; (setq lsp-a
   ;;       lsp-mssql-connections
   ;;       [(:server "localhost"
-  ;; 		:database ""
-  ;; 		:user "sa"
-  ;; 		:password "Dreams2020")])
+  ;;            :database ""
+  ;;            :user "sa"
+  ;;            :password "Dreams2020")])
  #+END_SRC
 * Init
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
   (require 'sql)
   (add-hook 'sql-interactive-mode-hook
             (lambda ()
               (toggle-truncate-lines t)))
  #+END_SRC
 * =my/sql/connect=
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
   (defun my/sql/connect (ssh-connection-directory sql-product sql-connection-name)
     "Connect to the chosen database using the ssh string to login to server first"
     (let ((default-directory ssh-connection-directory))
@@ -40,7 +40,7 @@
       (sql-connect sql-connection-name)))
  #+END_SRC
 * Postgres
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
   (my/add-dependency "psql")
 
   (add-to-list 'sql-connection-alist
@@ -53,20 +53,20 @@
                  (sql-database "horse_racing")))
 
   (add-to-list 'sql-connection-alist
-               '(pg-docker
+               '(pg-betting-platform
                  (sql-product 'postgres)
                  (sql-port 5432)
                  (sql-server "localhost")
                  (sql-user "postgres")
                  (sql-password "admin")
-                 (sql-database "postgres")))
+                 (sql-database "sa_bettingplatform")))
 
   (defun my/sql/postgres-dreamsai ()
     (interactive)
     (my/sql/connect "/ssh:ilya@dreams-ai.com" 'postgres 'pg-horserace))
  #+END_SRC
 * DOWN SQL Server (MSSQL)
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
   ;; (my/add-dependency "osql")
 
   ;; (add-to-list 'sql-connection-alist

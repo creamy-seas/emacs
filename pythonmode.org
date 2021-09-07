@@ -87,7 +87,7 @@ Activate one or the other. Never both.
                                           ; remove flymake checking -> flycheck is the new best friend
     (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)))
  #+END_SRC
-* PACKAGE Flycheck/Pylint
+* PACKAGE Flycheckb/Pylint
 [[https://www.flycheck.org/en/latest/languages.html#python][Flycheck manual]] gives some details about python
 #+BEGIN_SRC emacs-lisp
   ;; (require 'flycheck)

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: my-latex-bra
+# key: br
+# --
+\left\langle$0\right|

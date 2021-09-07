@@ -166,17 +166,17 @@ Autocompletion and environments
           ("cases" "Insert case environment"   "" cdlatex-environment ("cases") t t)
           ("thr" "Insert theorem env" "" cdlatex-environment ("theorem") t nil)))
  #+END_SRC
-* PACKAGE Fill-column-indicator
+* DOWN Fill-column-indicator
 This is to show what the current fill column is
 #+BEGIN_SRC emacs-lisp
-  (use-package fill-column-indicator
-    :ensure t
-    :config
-    (add-hook 'LaTeX-mode-hook 'fci-mode)
-                                          ; colour for the fill colum
-    (setq fci-rule-color "#248")
-                                          ; width of the indicator
-    (setq fci-rule-width 1))
+  ;; (use-package fill-column-indicator
+  ;;   :ensure t
+  ;;   :config
+  ;;   (add-hook 'LaTeX-mode-hook 'fci-mode)
+  ;;                                         ; colour for the fill colum
+  ;;   (setq fci-rule-color "#248")
+  ;;                                         ; width of the indicator
+  ;;   (setq fci-rule-width 1))
  #+END_SRC
 
 * PACKAGE Reftex

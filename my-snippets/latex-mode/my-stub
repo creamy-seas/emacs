@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: my-stub
+# key: st
+# --
+\stub{${1:title}}{${2:completion-date}}{%
+  ${3:content}}%

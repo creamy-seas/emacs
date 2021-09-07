@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: my-source-block-noweb
+# key: sbw
+# --
+#+HEADER: :noweb ${1:yes}

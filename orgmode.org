@@ -119,7 +119,11 @@ You can type =<el= and the =TAB= to create the desired source block
   (add-to-list 'org-structure-template-alist
                '("el" "#+BEGIN_SRC emacs-lisp \n ? \n #+END_SRC"))
   (add-to-list 'org-structure-template-alist
-               '("py" "#+BEGIN_SRC python \n ? \n #+END_SRC"))
+               '("py" "#+BEGIN_SRC python \n \n \n #+END_SRC"))
+  (add-to-list 'org-structure-template-alist
+               '("pyn" "#+NAME: ? \n #+BEGIN_SRC python \n \n \n #+END_SRC"))
+  (add-to-list 'org-structure-template-alist
+               '("pyi" "src_python[:session ?]{}"))
   (add-to-list 'org-structure-template-alist
                '("sh" "#+BEGIN_SRC shell \n ? \n #+END_SRC"))
 #+END_SRC

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: my-source-block-var
+# key: sbv
+# --
+#+HEADER: :var ${1:var}=${2:default}

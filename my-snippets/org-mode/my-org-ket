@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: my-org-ket
+# key: ket
+# --
+\left|$0\right\rangle

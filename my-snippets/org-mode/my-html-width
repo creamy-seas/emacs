@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: my-html-width
+# key: hw
+# --
+#+ATTR_HTML: :width ${1:200px}
