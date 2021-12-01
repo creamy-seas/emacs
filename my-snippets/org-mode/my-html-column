@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: my-html-column
+# key: hco
+# --
+#+REVEAL_HTML: <div class="column" style="float:left; width: 50%">
+${1:col-1}
+#+REVEAL_HTML: </div>
+
+#+REVEAL_HTML: <div class="column" style="float:right; width: 50%">
+${1:col-2}
+#+REVEAL_HTML: </div>

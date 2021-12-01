@@ -1,88 +1,386 @@
-#+TITLE: Essential config for functions and packages that should be set by default
+#+TITLE: First file to load
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-* CONFIG Personal Configuration
-#+BEGIN_SRC emacs-lisp
-                                          ; spell checker program
-  (setq ispell-program-name "/usr/local/bin/aspell")
-                                          ; default dict to use
-  (setq ispell-dictionary "en_GB")
- #+END_SRC
-* 1 - Keyboard
-** My keymap on =C-i= and =C-z=
-*** DOWN Unbind <C-i> from the TAB key
-#+BEGIN_SRC emacs-lisp
-  ;; (if (window-system)
-  ;;                                         ; if we are not in a TTY, unbind C-i from TAB
-  ;;     (progn
-  ;;       (define-key input-decode-map [?\C-i] [C-i]))
+* IDO mode
+#+begin_src emacs-lisp
+(ido-vertical-mode 1)
+(setq ido-vertical-define-keys 'C-n-and-C-p-only)
+#+end_src
 
-  ;;   ;; Since TAB and <C-i> cannot be differentiated in TTY emacs,
-  ;;   ;; the workaround is to conditionally bind TAB to indent-region
-  ;;   ;; when there is an active region selected.
-  ;;   (defun my/tab-replacement (&optional START END)
-  ;;     (interactive "r")
-  ;;     (if (use-region-p)
-  ;;                                         ; IF active region, use indent-region
-  ;;         (indent-region START END)
-  ;;                                         ; ELSE IF no active region, use default tab command
-  ;;       (indent-for-tab-command)))
-  ;;                                         ; Bind our quick-and-dirty TAB replacement to the TAB key
-  ;;   (global-set-key (kbd "TAB") 'my/tab-replacement))
+* Mac keymap
+Mapping of mac right keyboard to meta
+
+#+BEGIN_SRC emacs-lisp
+(setq ns-right-option-modifier 'meta
+      mac-right-option-modifier 'meta)
+#+END_SRC
+
+* Kill current buffer
+Always kill the current buffer - for some reason it is not the default
+
+#+BEGIN_SRC emacs-lisp
+(defun my/kill-curr-buffer ()
+  (interactive)
+  (kill-buffer (current-buffer)))
+(global-set-key (kbd "C-x k") 'my/kill-curr-buffer)
+#+END_SRC
+
+* Line numbers
+#+BEGIN_SRC emacs-lisp
+;; This determines the style of line numbers in effect. If set to `nil', line
+;; numbers are disabled. For relative line numbers, set this to `relative'.
+(setq display-line-numbers-type t)
+(setq display-line-numbers-type nil)
+#+END_SRC
+
+* Identification
+- GPG configuration and email
+#+BEGIN_SRC emacs-lisp
+(setq user-full-name "Ilya Antonov")
+(setq user-mail-address "ilya.antonov24@ntlworld.com")
  #+END_SRC
-*** Bind my keymap
+
+* Compiling of literate configuration
+Whenever an org file specifying configuration is saved
+1. Tangle it (extract out all of the Emacs-lisp code blocks)
+2. Compile it (=.el= -> =.elc=)
+3. Reload doom
+
+#+BEGIN_SRC emacs-lisp
+(defun my/config-file-tangle ()
+  "Should be run after saving every file - check if it is a config file in the doom directory and tangle if yes"
+  (if (and
+       (equal (file-name-extension (buffer-file-name)) "org")
+       (not (equal (file-name-base (buffer-file-name)) "cheatsheet"))
+       (equal (file-name-directory (buffer-file-name)) (expand-file-name doom-private-dir)))
+        ;; Tangle the file and bytecompile it
+      (let ((el-file-name (replace-regexp-in-string "\\.org" ".el" buffer-file-name)))
+          (org-babel-tangle-file buffer-file-name el-file-name "emacs-lisp")
+          (byte-compile-file el-file-name t)
+          ;;(doom/reload)
+          (message (concat " Compiled and loaded " el-file-name)))))
+(add-hook 'after-save-hook 'my/config-file-tangle)
+ #+END_SRC
+* My keymap
+
 #+BEGIN_SRC emacs-lisp
   (define-prefix-command 'my/keymap)
-  ;; (global-set-key (kbd "<C-i>") 'my/keymap)
   (global-set-key (kbd "C-z") 'my/keymap)
   (global-set-key (kbd "C-\\") 'my/keymap)
  #+END_SRC
-** Symbols mapping
+
+* Saving hooks
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'before-save-hook #'whitespace-cleanup)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(setq require-final-newline    t)
+(setq next-line-add-newlines nil)
+ #+END_SRC
+
+* Overwrite selected text when typing
+#+BEGIN_SRC emacs-lisp
+(delete-selection-mode t)
+ #+END_SRC
+
+* PACKAGE Hungry delete
+Hungry delete deletes all white space between cursor and the next character
+#+BEGIN_SRC emacs-lisp
+  (use-package! hungry-delete
+    :config
+    (global-hungry-delete-mode))
+#+END_SRC
+
+* PACKAGE Searching with Swiper =C-s=
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-s") (function counsel-grep-or-swiper))
+(setq counsel-grep-base-command
+      "rg -i -M 120 --no-heading --line-number --color never %s %s")
+
+(setq counsel-grep-use-swiper-p
+      ;; When this functions returns non-nil, call 'swiper', else 'counsel-grep-base-command'
+      (lambda ()
+        (or
+         ;; If buffer is small enough
+         (<= (buffer-size) (/ counsel-grep-swiper-limit (if (eq major-mode 'org-mode) 4 1)))
+         (string-match "\\.gpg$" (file-name-nondirectory (buffer-file-name))))))
+
+
+
+
+#+END_SRC
+
+* Browsing configuration files =C-c f i=
+
+#+begin_src emacs-lisp
+(defun my/config-file-open ()
+  "Browser config files in `doom-private-dir'."
+  (interactive)
+  (let ((file-list
+         ;; Remove files that are not org files and not one of the default doom files
+         (cl-remove-if-not
+          (lambda (x)
+            (or (equal "org" (file-name-extension x))
+                (string-match "^\\(config\\|custom\\|packages\\|init\\).el$" x)))
+          (directory-files doom-private-dir))))
+    (find-file (concat doom-private-dir (ido-completing-read "Config file: " file-list)))))
+
+(global-set-key (kbd "C-c f i") (function my/config-file-open))
+#+end_src
+
+* Yasnippet
+Autocompletion by typing in first part of word and tabbing to insert a template
+- yasnippet is the framework
+- yasnippet-snippets is the official collection of snippets
+
+#+BEGIN_SRC emacs-lisp
+(use-package! yasnippet-snippets
+  :config
+  (setq yas-snippet-dirs (list
+                          (concat doom-private-dir "my-snippets")
+                          'yasnippet-snippets-dir))
+  (yas-reload-all))
+(yas-global-mode)
+ #+END_SRC
+
+* Auto yasnippets
+
+Quickly create disposable yasnippets with =~=
+#+BEGIN_SRC emacs-lisp
+  (use-package! auto-yasnippet
+    :config
+    (define-key my/keymap (kbd "s") (function aya-create))
+    (define-key my/keymap (kbd "y") (function aya-expand)))
+ #+END_SRC
+
+* Spellchecking
+
+If you want to check specific buffer with different language, add the following to top of buffer
+#+begin_example
+-*- ispell-dictionary: "english" -*-
+#+end_example
+
+#+BEGIN_SRC emacs-lisp
+(setq ispell-personal-dictionary "/Users/CCCP/.aspell.en.pws")
+;;(global-set-key (kbd "C-x C-b") (function ispell-buffer))
+;;(global-set-key (kbd "C-x C-B") (function ispell-word))
+ #+END_SRC
+
+** External setup
+#+BEGIN_SRC emacs-lisp
+  (setq ispell-program-name "/usr/local/bin/aspell")
+  (setq ispell-dictionary "en_GB")
+ #+END_SRC
+
+** Region skips
+#+BEGIN_SRC emacs-lisp
+(setq ispell-tex-skip-alists
+      (list
+       (append
+        (car ispell-tex-skip-alists)
+        '(("\\\\eqref"   ispell-tex-arg-end 1)
+          ("\\\\label"   ispell-tex-arg-end 1)
+          ("\\\\inkfig"   ispell-tex-arg-end 2)
+          ("\\\\gls"   ispell-tex-arg-end 1)
+          ("\\\\glspl"   ispell-tex-arg-end 1)
+          ("\\\\begin{tabular}"   ispell-tex-arg-end 1) ;; skip column specification
+          ("[^\\]\\$" . "[^\\]\\$")
+          ))
+       (cadr ispell-tex-skip-alists)))
+(add-to-list 'ispell-skip-region-alist '("\\\\begin{equation}". "\\\\end{equation}"))
+ #+END_SRC
+
+** DOWN Hydra
+#+BEGIN_SRC emacs-lisp
+  ;; (defun my/switch-dictionary ()
+  ;;   "Switch dictionary"
+  ;;   (interactive)
+  ;;   (if (string-equal ispell-dictionary "en_GB")
+  ;;       (progn
+  ;;         (ispell-change-dictionary "ru")
+  ;;         (message "Changed to Russian "))
+  ;;     (progn
+  ;;       (ispell-change-dictionary "en_GB")
+  ;;       (message "Switched to English"))))
+  ;; (define-key my/keymap (kbd "r") 'my/switch-dictionary)
+
+  ;; (defhydra hydra-flyspell (
+  ;;                           :color red
+  ;;                           :hint nil
+  ;;                           )
+  ;;   "
+  ;;   ------------------------------------------------------------------------------------------
+  ;;   _n_: Go to next error
+  ;;   _a_: Autocorrect
+  ;;   _c_: Correct word
+  ;;   _t_: Flyspell mode
+  ;;   _b_: Check the current buffer
+  ;;   "
+  ;;   ("n" flyspell-goto-next-error)
+  ;;   ("a" flyspell-auto-correct-word)
+  ;;   ("t" flyspell-mode)
+  ;;   ("c" ispell-word)
+  ;;   ("b" ispell-buffer)
+  ;;   ;;("d" ispell-change-dictionary)
+  ;;   ;;("t" my/switch-dictionary)
+  ;;   ("q"   nil "cancel" :color blue))
+
+  ;; (define-key my/keymap (kbd "w") (function hydra-flyspell/body))
+  ;; (define-key my/keymap (kbd "B") (function ispell-buffer))
+ #+END_SRC
+** DOWN Set dictionaries
+#+BEGIN_SRC emacs-lisp
+  ;; Save to user dictionary
+  ;;(setq ispell-silently-savep t)
+  ;; (setq ispell-personal-dictionary "/Users/CCCP/.aspell.en.prepl"
+  ;; (my/config-file-path-evaluate "dictionaries/aspell.en.pws")
+  ;; )
+ #+END_SRC
+* Company
+- Completion. With a dropdown box. Metal.
+- Name stands for compLETEanything
+
+| =company-backends= | Lists backends that are used to return candidates |
+
+#+BEGIN_SRC emacs-lisp
+(after! company
+  (setq company-tooltip-align-annotations t)
+                                        ;set time before company popup shows up
+  (setq company-idle-delay 0.2)
+                                        ;;when autocompletion kicks in
+  (setq company-minimum-prefix-length 4))
+ #+END_SRC
+
+* Undo Tree     =M-/=
+Spawns a tree of all the undos that you have ever made
+#+BEGIN_SRC emacs-lisp
+(use-package! undo-tree
+  :config
+  (global-undo-tree-mode)
+  (setq undo-tree-visualizer-timestamps t)
+  (setq undo-tree-visualizer-diff t)
+  (global-set-key (kbd "M-/") 'undo-tree-visualize)
+  )
+#+END_SRC
+
+* Tabs
+Tabs are bloat. Read about them [[http://www.xemacs.org/Links/tutorials_1.html][here]]
+** Change display of tabs
+#+BEGIN_SRC emacs-lisp
+  (setq-default tab-width 4)
+ #+END_SRC
+** Prevent using tabs for indent
+#+BEGIN_SRC emacs-lisp
+  (setq-default indent-tabs-mode nil)
+ #+END_SRC
+* iedit =C-:=
+Mark and edit all copies of the marked region simultaneously.
+#+BEGIN_SRC emacs-lisp
+(use-package! iedit
+  :bind ("C-:" . iedit-mode))
+ #+END_SRC
+* Automatic file reload
+Any changes of a file, will be automatically reloaded
+#+BEGIN_SRC emacs-lisp
+(global-auto-revert-mode 1)
+(setq load-prefer-newer t)
+ #+END_SRC
+* Russian keymap
+#+BEGIN_SRC emacs-lisp
+  (use-package! reverse-im
+    :config
+    (reverse-im-activate "russian-computer"))
+ #+END_SRC
+* Symbols mapping
 #+BEGIN_SRC emacs-lisp
   (define-key key-translation-map (kbd "C-x 8 h") (kbd "卍")) ; naughty
   (define-key key-translation-map (kbd "C-x 8 C") (kbd "☭")) ; erm, kinda naughty
   (define-key key-translation-map (kbd "C-x 8 e") (kbd "🐘"))
+  (define-key key-translation-map (kbd "C-x 8 p") (kbd "π"))
   (define-key key-translation-map (kbd "C-x 8 s") (kbd "🦑"))
   (define-key key-translation-map (kbd "C-x 8 o") (kbd "🐙"))
   (define-key key-translation-map (kbd "C-x 8 w") (kbd "🐳"))
   (define-key key-translation-map (kbd "C-x 8 W") (kbd "🐋"))
   (define-key key-translation-map (kbd "C-x 8 O") (kbd "Ω"))
   (define-key key-translation-map (kbd "C-x 8 #") (kbd "£"))
-  (define-key key-translation-map (kbd "C-x 8 -") (kbd "→"))
   (define-key key-translation-map (kbd "C-x 8 t") (kbd "✔"))
   (define-key key-translation-map (kbd "C-x 8 c") (kbd "✘"))
   (define-key key-translation-map (kbd "C-x 8 b") (kbd "⦿"))
-  (define-key key-translation-map (kbd "C-x 8 _") (kbd "̲"))
-  (define-key key-translation-map (kbd "C-x 8 q") (kbd "\""))
+  (define-key key-translation-map (kbd "C-x 8 2") (kbd "²"))
   (global-set-key (kbd "C-c i") (function info-other-window))
  #+END_SRC
-** Russian mappings
+
+* Smartparens
 #+BEGIN_SRC emacs-lisp
-  ;; (global-set-key (kbd "C-ч C-ы") (function save-buffer))
-  ;; (global-set-key (kbd "C-ч C-и") (function ido-switch-buffer))
-  ;; (global-set-key (kbd "C-т") (function next-line))
-  ;; (global-set-key (kbd "C-а") (function forward-char))
-  ;; (global-set-key (kbd "C-и") (function backward-char))
-  ;; (global-set-key (kbd "M-а") (function forward-word))
-  ;; (global-set-key (kbd "M-и") (function backward-word))
-  ;; (global-set-key (kbd "C-ф") (function beginning-of-visual-line))
-  ;; (global-set-key (kbd "C-у") (function end-of-visual-line))
-  ;; (global-set-key (kbd "C-з") (function previous-line))
-  ;; (global-set-key (kbd "C-н") (function yank))
-  ;; (global-set-key (kbd "C-в") (function sp-delete-char))
-  (add-to-list 'load-path (concat my/config-folder-location "manual_el/reverse-im-20200324.1113"))
-  (use-package reverse-im
-    :init (my/add-to-package-list 'reverse-im)
-    :config
-    (reverse-im-activate "russian-computer"))
+(after! smartparens
+  (show-smartparens-global-mode)
+
+    ;; Navigation
+  (define-key smartparens-mode-map (kbd "C-M-f") #'sp-forward-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-b") #'sp-backward-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-v") #'sp-backward-up-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-g") #'sp-up-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-c") #'sp-down-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-d") #'sp-backward-down-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-a") #'sp-beginning-of-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-e") #'sp-end-of-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-n") #'sp-next-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-p") #'sp-previous-sexp)
+
+  ;; (define-key smartparens-mode-map (kbd "C-M-q") #'sp-backward-up-sexp)
+  ;; (define-key smartparens-mode-map (kbd "C-M-`") #'beginning-of-defun)
+
+  ;; Transpose
+  (define-key smartparens-mode-map (kbd "C-M-t") 'sp-transpose-sexp)
+
+  ;; Mark/kill/copy
+  (global-set-key [remap mark-sexp] #'sp-mark-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-k") #'sp-kill-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-w") #'sp-copy-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-2") #'sp-mark-sexp)
+
+  ;; Unwrap and rewrap
+  (define-key smartparens-mode-map (kbd "C-M-u") #'sp-splice-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-r") #'sp-rewrap-sexp)
+
+  (define-key smartparens-mode-map (kbd "M-<delete>") #'sp-unwrap-sexp)
+  (define-key smartparens-mode-map (kbd "M-<backspace>") #'sp-backward-unwrap-sexp)
+
+  ;; Slurp/barf
+  (define-key smartparens-mode-map (kbd "<s-right>") #'sp-forward-slurp-sexp)
+  (define-key smartparens-mode-map (kbd "<C-s-right>") #'sp-forward-barf-sexp)
+  (define-key smartparens-mode-map (kbd "<s-left>") #'sp-backward-slurp-sexp)
+  (define-key smartparens-mode-map (kbd "<C-s-left>") #'sp-backward-barf-sexp)
+
+  ;; Selecting functions
+  (define-key smartparens-mode-map (kbd "C-M-z") 'beginning-of-defun)
+  (define-key smartparens-mode-map (kbd "C-M-x") 'end-of-defun)
+  (define-key smartparens-mode-map (kbd "C-M-SPC") 'mark-defun)
+
+  ;; Reintroduce for org-mode
+  ;; (define-key smartparens-mode-map (kbd "C-M-<backspace>") #'sp-splice-sexp-killing-backward)
+  ;; (define-key smartparens-mode-map (kbd "C-S-<backspace>") #'sp-splice-sexp-killing-around)
+  ;; Indent
+  ;; (define-key smartparens-mode-map (kbd "C-M-<tab>") #'sp-indent-defun)
+  )
  #+END_SRC
-* DOWN 2 - Disable (((MOUSE)))
+* Open magit by default when opening project
 #+BEGIN_SRC emacs-lisp
-  (require 'disable-mouse)
-  ;; (global-disable-mouse-mode)
+ (setq projectile-switch-project-action 'projectile-vc)
  #+END_SRC
-* 3 - Minor Functions
+* Multiple cursors
+
+#+begin_src emacs-lisp
+(use-package! multiple-cursors
+  :bind
+  ("C->" . mc/mark-next-like-this)
+  ("C-<" . mc/mark-previous-like-this)
+  ("C-)" . mc/mark-next-lines)
+  ("C-(" . mc/mark-previous-lines))
+#+end_src
+* Minor Functions
 ** =my/read-string-from-file=
 #+BEGIN_SRC emacs-lisp
   (defun my/read-string-from-file (filePath)
@@ -90,41 +388,6 @@
     (with-temp-buffer
       (insert-file-contents filePath)
       (buffer-string)))
- #+END_SRC
-** =my/add-dependency=
-#+BEGIN_SRC emacs-lisp
-  (defun my/add-dependency (new-dependency)
-    "Add the new-dependency to the requirements file.
-  It will be checked by the Makefile to ensure all is installed for this config to run smoothly"
-    (interactive)
-    (let* ((requirement-file (concat my/config-folder-location "support_files/requirements.txt"))
-           (updated-depencies
-            (with-temp-buffer
-                                          ; 1 - add the new dependency to the buffer
-              (insert (concat new-dependency "\n"))
-                                          ; 2 - add the previous dependecies
-              (insert-file-contents requirement-file)
-              (sort
-               (split-string
-                                          ; 2 - select the whole buffer and read into list
-                (buffer-substring-no-properties
-                 (point-min)
-                 (point-max))
-                "\n" t)
-               'string<))))
-                                          ; 3 - drop dupliactes IMPORTANT
-      (setq updated-depencies (my/drop-duplicates-in-list updated-depencies))
-                                          ; 4 - open file and write the new list
-      (with-temp-file requirement-file
-        (my/write-list-into-current-buffer updated-depencies))
-      ;; (message (format " Dependecy list: %s" updated-depencies))
-      ))
- #+END_SRC
-** =my/config-file-path-evaluate=
-#+BEGIN_SRC emacs-lisp
-  (defun my/config-file-path-evaluate (path-from-config-folder)
-    "Expanding the path for a file in the emacs config folder"
-    (concat my/config-folder-location path-from-config-folder))
  #+END_SRC
 ** =my/copy-line=
 #+BEGIN_SRC emacs-lisp
@@ -174,21 +437,6 @@
     "
     (string-match regexp string)
     (match-string index string))
- #+END_SRC
-** =my/fetch-config-files=
-#+BEGIN_SRC emacs-lisp
-  (defun my/fetch-config-files ()
-    "I store all of the .org files in my_org_files.txt. This method simply fetches them into a list"
-    (with-temp-buffer
-      (insert-file-contents (concat my/config-folder-location "support_files/my_org_files.txt"))
-      (sort
-       (split-string
-                                          ; select the whole buffer
-        (buffer-substring-no-properties
-         (point-min)
-         (point-max))
-        "\n" t)
-       'string<)))
  #+END_SRC
 ** =my/figlet=
 #+BEGIN_SRC emacs-lisp
@@ -249,670 +497,4 @@
     (while list-to-write
       (insert (format "%s\n" (car list-to-write)))
       (setq list-to-write (cdr list-to-write))))
- #+END_SRC
-
-* Major Function: Describe the installed packages
-#+BEGIN_SRC emacs-lisp
-  (defun my/describe-packages ()
-    "Gets the info for an isntalled package"
-    (interactive)
-    (let ((chosen-package (ido-completing-read " Package to describe: " (sort
-                                                                          (hash-table-keys my/package-hashmap)
-                                                                          'string<))))
-      (describe-package (gethash chosen-package my/package-hashmap))))
- #+END_SRC
-* Major Function: Narrow and widen region smartly =C-x n=
-#+BEGIN_SRC emacs-lisp
-  (defun my/narrow-or-widen-dwim (p)
-    "If the buffer is narrowed, it widens. Otherwise, it narrows intelligently.
-  Intelligently means: region, org-src-block, org-subtree, or defun,
-  whichever applies first.
-  Narrowing to org-src-block actually calls `org-edit-src-code'.
-
-  With prefix P, don't widen, just narrow even if buffer is already
-  narrowed."
-    (interactive "P")
-    (declare (interactive-only))
-    (cond ((and (buffer-narrowed-p) (not p)) (widen))
-          ((region-active-p)
-           (narrow-to-region (region-beginning) (region-end)))
-          ((derived-mode-p 'org-mode)
-           ;; `org-edit-src-code' is not a real narrowing command.
-           ;; Remove this first conditional if you don't want it.
-           (cond ((ignore-errors (org-edit-src-code))
-                  (delete-other-windows))
-                 ((org-at-block-p)
-                  (org-narrow-to-block))
-                 (t (org-narrow-to-subtree))))
-          (t (narrow-to-defun))))
-
-  (global-set-key (kbd "C-x n") (function my/narrow-or-widen-dwim))
- #+END_SRC
-* Major Function: Open config file =C-c e=
-#+BEGIN_SRC emacs-lisp
-  (defun my/config-file-open ()
-    "Prints out the config files and opens the selected one for editing. Cheatsheet is also added"
-    (interactive)
-    (let ((chosen-file (ido-completing-read "Config file to open:"
-                                            (let ((config-file-list (my/fetch-config-files)))
-                                              (add-to-list 'config-file-list "cheatsheet.org")))))
-      (find-file (my/config-file-path-evaluate chosen-file))))
-
-  (global-set-key (kbd "C-c e") (function my/config-file-open))
- #+END_SRC
-* Major Function: Tangle config files automatically
-Whenever a config file is saved:
-- tangle it (extract out all of the emacs-lisp code blocks)
-- compile it (=.el= -> =.elc=)
-- load it up
-
-This way you can quickly edit the configuration (using [[*Open config file =C-c e=][Open config file]]), save it and immediately apply the changes
-#+BEGIN_SRC emacs-lisp
-  (defun my/config-file-tangle ()
-    "Should be run after saving every file - check if the name is in the config files and
-      tangle if yes"
-    (let ((current-org-file (file-name-nondirectory (buffer-file-name))))
-      (when (member current-org-file (my/fetch-config-files))
-                                          ; Avoid running hooks when tangling.
-        (let ((prog-mode-hook nil)
-              (el-file (concat
-                        user-emacs-directory
-                        (replace-regexp-in-string "\.org" "\.el" current-org-file))))
-                                          ; Tangle the file -> get name of file -> rename
-          (rename-file
-           (car (org-babel-tangle-file current-org-file))
-           el-file t)
-                                          ; Bytecompile
-          (byte-compile-file el-file t)
-                                          ; Reload config
-          ;; (load-file (concat user-emacs-directory el-emacs-file "c"))
-          (message (concat " Compiled and loaded " el-file))))))
-
-  (add-hook 'after-save-hook 'my/config-file-tangle)
- #+END_SRC
-* Bookmarks
-** Config
-#+BEGIN_SRC emacs-lisp
-                                          ; save bookmars to file
-  (setq bookmark-save-flag t)
-
-                                          ; load boomarks from "~/.emacs.d/bookmarks"
-  (when (file-exists-p (concat user-emacs-directory "bookmarks"))
-    (bookmark-load bookmark-default-file t))
-  (setq bookmark-default-file (concat user-emacs-directory "bookmarks"))
- #+END_SRC
-** Keybindigs
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "<f6>") 'bookmark-set)
-  (global-set-key (kbd "<f7>") 'bookmark-jump)
-  (global-set-key (kbd "<f8>") 'bookmark-bmenu-list)
- #+END_SRC
-* Comment line  =C-c C-;=
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-c C-;") (function comment-line))
- #+END_SRC
-* Overwrite selected text when typing
-#+BEGIN_SRC emacs-lisp
-  (delete-selection-mode t)
- #+END_SRC
-* Reload on the go
-Any changes of a file, will be automatically reloaded
-#+BEGIN_SRC emacs-lisp
-  (global-auto-revert-mode 1)
-  (setq load-prefer-newer t)
- #+END_SRC
-* Saving hooks
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'before-save-hook #'whitespace-cleanup)
-  (add-hook 'before-save-hook 'delete-trailing-whitespace)
-                                          ; adding new line to end of file when saving
-  (setq require-final-newline    t)
-  (setq next-line-add-newlines nil)
- #+END_SRC
-* PACKAGE Agressive indenting
-To keep code aliged
-#+BEGIN_SRC emacs-lisp
-  (use-package aggressive-indent
-    :ensure t
-    :init
-    (aggressive-indent-global-mode 1)
-    (my/add-to-package-list 'aggressive-indent))
- #+END_SRC
-** Disable it in certain modes
-#+BEGIN_SRC emacs-lisp
-  (dolist (mode '(cider-repl-mode
-                  comint-mode
-                  eshell-mode
-                  slime-repl-mode
-                  term-mode))
-    (add-to-list 'aggressive-indent-excluded-modes mode))
- #+END_SRC
-* Autoinsert
-Whenever opening new files attempt to insert a template
-#+BEGIN_SRC emacs-lisp
-  (require 'autoinsert)
-  (auto-insert-mode 1)
-  (add-hook 'find-file-hook 'auto-insert)
- #+END_SRC
-* PACKAGE Avy   =M-s=
-The superior search method with highlighting of the leading characters
-#+BEGIN_SRC emacs-lisp
-  (use-package avy
-    :ensure t
-    :init
-    (global-set-key (kbd "M-s") 'avy-goto-word-or-subword-1)
-    (setq avy-background t)
-    (my/add-to-package-list 'avy))
-#+END_SRC
-* PACKAGE Company
-| =C-w=              | On a list of suggestions to see the source code |
-| =company-backends= | Lists backends that are used to return candidates |
-- Completion. With a dropdown box. Metal.
-- Name stands for compLETEanything
-- It comes with several back-ends such as Elisp, Clang, Semantic, Eclim, Ropemacs, Ispell, CMake, BBDB, Yasnippet, dabbrev, etags, gtags, files, keywords and a few others.
-** Init
-#+BEGIN_SRC emacs-lisp
-  (use-package company
-    :ensure t
-    :init
-    (add-hook 'after-init-hook 'global-company-mode)
-    (my/add-to-package-list 'company)
-    :config
-    (setq company-tooltip-align-annotations t)
-    (setq company-show-numbers t)
-                                          ;set time before company popup shows up
-    (setq company-idle-delay 0.2)
-                                          ;when autocompletion kicks in
-    (setq company-minimum-prefix-length 4))
-#+END_SRC
-** Company colours
-#+BEGIN_SRC emacs-lisp
-  ;; (custom-set-faces
-  ;;  ;; annotation (i.e. function or method)
-  ;;  `(company-tooltip-annotation ((t (:foreground "#CFD0E3"))))
-  ;;  `(company-tooltip-annotation-selection ((t (:foreground "#334676"))))
-  ;;  ;; scrollbar showing position in list
-  ;;  `(company-scrollbar-bg ((t (:background "#189a1e1224a2"))))
-  ;;  `(company-scrollbar-fg ((t (:background "#41bf505b61e3"))))
-  ;;  ;; text being expanded
-  ;;  `(company-tooltip-common ((t (:foreground "#33ccff"))))
-  ;;  `(company-tooltip-common-selection ((t (:foreground "#3a3a6e" :weight bold))))
-  ;;  ;; autocompletion selection
-  ;;  `(company-tooltip-selection ((t (:background "orange2" :foreground "#090C42" :weight bold))))
-  ;;  ;; change background of the box
-  ;;  `(company-tooltip ((t (:inherit default :background "#41bf505b61e3")))))
- #+END_SRC
-** Company popup help
-#+BEGIN_SRC emacs-lisp
-  (use-package company-quickhelp
-    :ensure t
-    :init
-    (company-quickhelp-mode)
-    (my/add-to-package-list 'company-quickhelp))
-
-  ;; do not show popups automatically
-  (customize-set-variable 'company-quickhelp-delay nil)
- #+END_SRC
-** Keybinding
-#+BEGIN_SRC emacs-lisp
-  (with-eval-after-load 'company
-    (define-key company-active-map (kbd "M-n") nil)
-    (define-key company-active-map (kbd "M-p") nil)
-    (define-key company-active-map (kbd "C-j") #'company-quickhelp-manual-begin)
-    (define-key company-active-map (kbd "C-n") #'company-select-next)
-    (define-key company-active-map (kbd "C-p") #'company-select-previous))
- #+END_SRC
-* Diff mode
-Show whitespace in diff mode
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'diff-mode-hook (lambda ()
-                              (setq-local whitespace-style
-                                          '(face
-                                            tabs
-                                            tab-mark
-                                            spaces
-                                            space-mark
-                                            trailing
-                                            indentation::space
-                                            indentation::tab
-                                            newline
-                                            newline-mark))
-                              (whitespace-mode 1)))
- #+END_SRC
-* MANUAL-PACKAGE Dired+
-Beautiful file browsing. Dired+ is downloaded manually
-| =e=       | to preview file                                 |
-| =a=       | go to file or directory and close dired bufffer |
-| =v=       | preview                                         |
-| =o=       | open in new window                              |
-| =m/u=     | mark/unmark                                     |
-| =+=       | add directory                                   |
-| =r=       | rename                                          |
-| =R=       | move mass                                       |
-| =*=       | regexp                                          |
-| =C-x C-q= | rename then =C-c C-c=                           |
-| =M=       | change mode                                     |
-| =c=       | compress                                        |
-
-** MANUAL-PACKAGE Init
-#+BEGIN_SRC emacs-lisp
-  (require 'dired+)
-                                          ; hook that does not show boring files
-  ;; (add-hook 'dired-mode-hook (function dired-omit-mode))
- #+END_SRC
-** Sorting
-On =os-x= run =brew install coreutils= to get =gls=
-#+BEGIN_SRC emacs-lisp
-  ;; (my/add-dependency "gls")
-
-  ;; (if (string-equal system-type "darwin")
-  ;;     (progn
-  ;;       (setq insert-directory-program "gls" dired-use-ls-dired t)
-  ;;       (message "Loading from mac")))
-  ;; (setq dired-listing-switches "-aBhl --group-directories-first")
-  (setq dired-listing-switches "-aBhl")
- #+END_SRC
-** Omissions and ignores (Can be hidden with =C-x M-o=)
-| Applied to              | Face                       |                                |
-|-------------------------+----------------------------+--------------------------------|
-| =dired-omit-extensions= | =diredp-ignored-file-name= | grey + red box                 |
-| =diredp-omit-files=     | =diredp-omit-file-name=    | red strikeout + grey + red box |
-*** =dired-omit-extensions=
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'dired-omit-extensions "git")
-  (add-to-list 'dired-omit-extensions "gitignore")
-  (add-to-list 'dired-omit-extensions "coverage")
-
-  (custom-set-faces
-   '(diredp-ignored-file-name ((t (:foreground "#b0bec5" :box (:line-width 2 :color "VioletRed3" :style pressed-button))))))
- #+END_SRC
-*** =dired-omit-files=
-#+BEGIN_SRC emacs-lisp
-  (setq dired-omit-files "^\\.?#\\|^\\.$\\|__pycache__")
-
-  (custom-set-faces
-   '(diredp-omit-file-name ((t (
-                                :inherit diredp-ignore-file-name
-                                :foreground "#b0bec5" :strike-through "#C29D6F156F15")))))
- #+END_SRC
-*** Activate globally
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'dired-mode-hook (lambda () (dired-omit-mode)))
- #+END_SRC
-** Keybindings
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-x C-d") (function diredp-dired-plus-help))
-
-  (define-key dired-mode-map (kbd "<right>") (function dired-find-file-other-window))
- #+END_SRC
-
-** PACKAGE Dired all-the-icons
-#+BEGIN_SRC emacs-lisp
-  (use-package all-the-icons-dired
-    :ensure t
-    :init (my/add-to-package-list 'all-the-icons-dired)
-    :config (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
- #+END_SRC
-
-* PACKAGE Diminish
-Allows hiding of modes from the modeline
-Set =:diminish t= when using use-package
-#+BEGIN_SRC emacs-lisp
-  (use-package diminish
-    :ensure t
-    :init (my/add-to-package-list 'diminish))
- #+END_SRC
-
-* PACKAGE Expand region         =C-q=
-Allos to expand to word, bracket, sentence, paragraph
-#+BEGIN_SRC emacs-lisp
-  (use-package expand-region
-    :ensure t
-    :init (my/add-to-package-list 'expand-region)
-    :bind ("C-q" . er/expand-region))
-#+END_SRC
-* PACKAGE Fic
-Highlighting of TODOs
-#+BEGIN_SRC emacs-lisp
-  (load-file (my/config-file-path-evaluate "manual_el/fic-mode.el"))
-  (use-package fic-mode
-    :ensure t
-    :init  (my/add-to-package-list 'fic-mode)
-    :config
-    (add-hook 'prog-mode-hook 'turn-on-fic-mode))
- #+END_SRC
-* PACKAGE Flycheck      =C-c !=
-- Better than the default spellchecker called =flyspell=
-- To get information on flycheck for the current mode run =flycheck-verify-setup=
-- =M-$= to check word
-** Init
-#+BEGIN_SRC emacs-lisp
-  (use-package flycheck
-    :ensure t
-    :diminish t
-    :init (my/add-to-package-list 'flycheck)
-    (global-flycheck-mode))
- #+END_SRC
-** DOWN Colouring of errors
-#+BEGIN_SRC emacs-lisp
-  ;; (set-face-attribute 'flycheck-error nil
-  ;;                       :background "#bf0004"
-  ;;                       :foreground "gold2"
-  ;;                       :underline nil
-  ;;                       :box '(:color "gold2" :line-width 1))
-  ;;   (set-face-attribute 'flycheck-warning nil
-  ;;                       :underline "DarkOrange")
- #+END_SRC
-** Turn off documentation warnings for emacs-lisp
-#+BEGIN_SRC emacs-lisp
-  (with-eval-after-load 'flycheck
-    (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
- #+END_SRC
-** Keybindings
-#+BEGIN_SRC emacs-lisp
-  (define-key my/keymap (kbd "n") (function flycheck-next-error))
-  (define-key my/keymap (kbd "p") (function flycheck-previous-error))
-  (define-key my/keymap (kbd "L") (function flycheck-list-errors))
- #+END_SRC
-* PACKAGE Hungry delete
-Hungry delete deletes all white space between cursor and the next character
-#+BEGIN_SRC emacs-lisp
-  (use-package hungry-delete
-    :ensure t
-    :init (my/add-to-package-list 'hungry-delete)
-    :config (global-hungry-delete-mode))
-#+END_SRC
-* PACKAGE Hydra
-Used for defining custom menus
-#+BEGIN_SRC emacs-lisp
-  (use-package hydra
-    :ensure t
-    :init (my/add-to-package-list 'hydra))
- #+END_SRC
-* PACKAGE iedit =C-:=
-Mark and edit all copies of the marked region simultaniously.
-#+BEGIN_SRC emacs-lisp
-  (use-package iedit
-    :ensure t
-    :bind ("C-:" . iedit-mode)
-    :init (my/add-to-package-list 'iedit))
- #+END_SRC
-
-* Ispell
-If you want to check specific buffer with different language, add
-#+begin_example
--*- ispell-dictionary: "english" -*-
-#+end_example
-** Dependencies
-#+BEGIN_SRC emacs-lisp
-  (my/add-dependency "aspell")
- #+END_SRC
-** Set dictionaries
-#+BEGIN_SRC emacs-lisp
-  ;; Save to user dictionary
-  (setq ispell-silently-savep t)
-  (setq ispell-personal-dictionary (my/config-file-path-evaluate "dictionaries/aspell.en.pws"))
- #+END_SRC
-** =my/switch-dictionary=
-#+BEGIN_SRC emacs-lisp
-  (defun my/switch-dictionary ()
-    "Switch dictionary"
-    (interactive)
-    (if (string-equal ispell-dictionary "en_GB")
-        (progn
-          (ispell-change-dictionary "ru")
-          (message "Changed to Russian "))
-      (progn
-        (ispell-change-dictionary "en_GB")
-        (message "Switched to English"))))
-
-  (define-key my/keymap (kbd "r") 'my/switch-dictionary)
- #+END_SRC
-** PACKAGE Hydra
-#+BEGIN_SRC emacs-lisp
-  (defhydra hydra-flyspell (
-                            :color red
-                            :hint nil
-                            )
-    "
-    ------------------------------------------------------------------------------------------
-    _n_: Go to next error
-    _a_: Autocorrect
-    _c_: Correct word
-    _t_: Toggle hilighting
-    _b_: Check the current buffer
-    _d_: Select dictionary		_t_: Toggle dictionary
-    "
-    ("n" flyspell-goto-next-error)
-    ("a" flyspell-auto-correct-word)
-    ("c" ispell-word)
-    ("t" flyspell-mode)
-    ("b" ispell-buffer)
-    ("d" ispell-change-dictionary)
-    ("t" my/switch-dictionary)
-    ("q"   nil "cancel" :color blue))
-
-  (define-key my/keymap (kbd "w") (function hydra-flyspell/body))
- #+END_SRC
-* PACKAGE Kill ring
-Popup menu when pasting of the past history
-#+BEGIN_SRC emacs-lisp
-  (use-package popup-kill-ring
-    :ensure t
-    :bind ("M-y" . popup-kill-ring)
-    :init (my/add-to-package-list 'popup-kill-ring))
-#+END_SRC
-* PACKAGE LSP
-Language server used in rust
-- https://github.com/emacs-lsp/lsp-mode
-- Turn on user interface (ui) and allow company autocomplete to access the ui
-
-** Init
-#+BEGIN_SRC emacs-lisp
-  (use-package lsp-mode
-    :ensure t
-    :init
-    (my/add-to-package-list 'lsp-mode)
-    (setq lsp-keymap-prefix "s-l")
-    :commands
-    (lsp lsp-deferred))
-#+END_SRC
-
-** PACKAGE Treemacs
-#+BEGIN_SRC emacs-lisp
-  (use-package lsp-treemacs
-    :ensure t
-    :init (my/add-to-package-list 'lsp-treemacs))
- #+END_SRC
-** PACKAGE UI
-Higher lever features such as flycheck
-https://github.com/emacs-lsp/lsp-ui
-#+BEGIN_SRC emacs-lisp
-  (use-package lsp-ui
-    :ensure t
-    :commands lsp-ui-mode)
- #+END_SRC
-
-** PACKAGE Company Integration
-Put lsp into the backend of company
-#+BEGIN_SRC emacs-lisp
-  (use-package company-lsp
-    :ensure t
-    :config
-    (push '(company-lsp :with company-yasnippet)
-          company-backends)
-    :commands company-lsp)
- #+END_SRC
-
-** PACKAGE Ivy Intergration
-To autocomplete in the search buffergpg
-#+BEGIN_SRC emacs-lisp
-  (use-package lsp-ivy
-    :ensure t
-    :init (my/add-to-package-list 'lsp-ivy))
- #+END_SRC
-* PACKAGE Popwin
-*Help* *Completions* and other buffers are spawned as popups
-#+BEGIN_SRC emacs-lisp
-  (use-package popwin
-    :ensure t
-    :init (my/add-to-package-list 'popwin)
-    (popwin-mode t))
- #+END_SRC
-* PACKAGE Restart
-#+BEGIN_SRC emacs-lisp
-  (use-package restart-emacs
-    :ensure t
-    :init (my/add-to-package-list 'restart-emacs))
- #+END_SRC
-* PACKAGE Smartparens
-Smart way of moving around brackets. Still lreadning the bindings
-
-#+BEGIN_SRC emacs-lisp
-  (use-package smartparens
-    :ensure t
-    :init (my/add-to-package-list 'smartparens)
-    :config
-    (require 'smartparens-config)
-    (smartparens-global-mode)
-    (show-smartparens-global-mode))
- #+END_SRC
-** Enforce strict mode in certain modes
-You may want to turn this off if it triggers your workflow
-#+BEGIN_SRC emacs-lisp
-  (mapc (lambda (hook)
-          (add-hook hook #'smartparens-strict-mode))
-        '(markdown-mode-hook
-          prog-mode-hook))
- #+END_SRC
-** Keybindings
-#+BEGIN_SRC emacs-lisp
-  ;; Navigation
-  (define-key smartparens-mode-map (kbd "C-M-f") #'sp-forward-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-b") #'sp-backward-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-v") #'sp-backward-up-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-g") #'sp-up-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-c") #'sp-down-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-d") #'sp-backward-down-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-a") #'sp-beginning-of-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-e") #'sp-end-of-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-n") #'sp-next-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-p") #'sp-previous-sexp)
-
-  ;; (define-key smartparens-mode-map (kbd "C-M-q") #'sp-backward-up-sexp)
-  ;; (define-key smartparens-mode-map (kbd "C-M-`") #'beginning-of-defun)
-
-  ;; Transpose
-  (define-key smartparens-mode-map (kbd "C-M-t") 'sp-transpose-sexp)
-
-  ;; Mark/kill/copy
-  (global-set-key [remap mark-sexp] #'sp-mark-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-k") #'sp-kill-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-w") #'sp-copy-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-2") #'sp-mark-sexp)
-
-  ;; Unwrap and rewrap
-  (define-key smartparens-mode-map (kbd "C-M-u") #'sp-splice-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-r") #'sp-rewrap-sexp)
-
-  (define-key smartparens-mode-map (kbd "M-<delete>") #'sp-unwrap-sexp)
-  (define-key smartparens-mode-map (kbd "M-<backspace>") #'sp-backward-unwrap-sexp)
-
-  ;; Slurp/barf
-  (define-key smartparens-mode-map (kbd "<s-right>") #'sp-forward-slurp-sexp)
-  (define-key smartparens-mode-map (kbd "<C-s-right>") #'sp-forward-barf-sexp)
-  (define-key smartparens-mode-map (kbd "<s-left>") #'sp-backward-slurp-sexp)
-  (define-key smartparens-mode-map (kbd "<C-s-left>") #'sp-backward-barf-sexp)
-  ;; Reintroduce for org-mode
-
-  ;; (define-key smartparens-mode-map (kbd "C-M-<backspace>") #'sp-splice-sexp-killing-backward)
-  ;; (define-key smartparens-mode-map (kbd "C-S-<backspace>") #'sp-splice-sexp-killing-around)
-
-  ;; Indent
-  ;; (define-key smartparens-mode-map (kbd "C-M-<tab>") #'sp-indent-defun)
- #+END_SRC
-** Other navigation
-#+BEGIN_SRC emacs-lisp
-  (define-key smartparens-mode-map (kbd "C-M-z") 'beginning-of-defun)
-  (define-key smartparens-mode-map (kbd "C-M-x") 'end-of-defun)
-  (define-key smartparens-mode-map (kbd "C-M-SPC") 'mark-defun)
- #+END_SRC
-* PACKAGE Sr-Speedbar
-#+BEGIN_SRC emacs-lisp
-  (use-package sr-speedbar
-    :ensure t
-    :init (my/add-to-package-list 'sr-speedbar))
-
-  (define-key my/keymap (kbd "b") 'sr-speedbar-toggle)
- #+END_SRC
-* Tabs
-Tabs are bloat. Read about them [[http://www.xemacs.org/Links/tutorials_1.html][here]]
-** Change display of tabs
-#+BEGIN_SRC emacs-lisp
-  (setq-default tab-width 2)
- #+END_SRC
-** Prevent using tabs for indent
-#+BEGIN_SRC emacs-lisp
-  (setq-default indent-tabs-mode nil)
- #+END_SRC
-* PACKAGE Undo Tree     =M-/=
-Spawns a tree of all the undos that you have ever made
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'load-path (concat my/config-folder-location "manual_el/undo-tree-0.6.5"))
-  (require 'undo-tree)
-  (my/add-to-package-list 'undo-tree)
-  (global-undo-tree-mode)
-  (setq undo-tree-visualizer-timestamps t)
-  (setq undo-tree-visualizer-diff t)
-
-  (global-set-key (kbd "M-/") 'undo-tree-visualize)
-#+END_SRC
-* Utf-8
-#+BEGIN_SRC emacs-lisp
-  (set-language-environment 'utf-8)
-  (setq locale-coding-system 'utf-8)
-
-  ;; set the default encoding system
-  (prefer-coding-system 'utf-8)
-  (setq default-file-name-coding-system 'utf-8)
-  (set-default-coding-systems 'utf-8)
-  (set-terminal-coding-system 'utf-8)
-  (set-keyboard-coding-system 'utf-8)
- #+END_SRC
-* PACKAGE Yasnippet
-Autocompletion by typing in first part of word and tabbing to insert a template
-- yasnippet is the framework
-- yasnippet-snippets is the official collection of snippets
-** Init
-#+BEGIN_SRC emacs-lisp
-  (use-package yasnippet
-    :ensure t
-    :init (my/add-to-package-list 'yasnippet)
-    :config
-    (yas-global-mode)
-                                          ; do not user yasnippet in terminal mode
-    (add-hook 'term-mode-hook (lambda ()
-                                (yas-minor-mode -1))))
- #+END_SRC
-** PACKAGE Default snippets
-#+BEGIN_SRC emacs-lisp
-  (use-package yasnippet-snippets
-    :ensure t
-    :init (my/add-to-package-list 'yasnippet-snippets)
-    :config
-    (yas-reload-all))
- #+END_SRC
-#+BEGIN_SRC emacs-lisp
-  (setq yas-snippet-dirs (list 'yasnippet-snippets-dir (my/config-file-path-evaluate "my-snippets")))
-  (yas-reload-all)
- #+END_SRC
-** PACKAGE Auto yasnippets
-Quickly create disposable yasnippets with =~=
-#+BEGIN_SRC emacs-lisp
-  (use-package auto-yasnippet
-    :ensure t
-    :init (my/add-to-package-list 'auto-yasnippet)
-    :config
-    (define-key my/keymap (kbd "s") (function aya-create))
-    (define-key my/keymap (kbd "y") (function aya-expand)))
  #+END_SRC

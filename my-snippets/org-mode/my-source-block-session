@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: my-source-block-session
+# key: sbs
+# --
+#+HEADER: :session ${1:session-name!}

@@ -1,7 +1,5 @@
 # -*- mode: snippet -*-
-# name: colour-html-colour
+# name: my-html-colour
 # key: col
 # --
-@@html:<font color = "${1:red}">@@
-${2:text}$0
-@@html:</font>@
+@@html:<font color = "${1:red}">@@${2:text}$0@@html:</font>@@

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: my-table-name
+# key: tn
+# --
+#+TBLNAME: ${1:table-name}

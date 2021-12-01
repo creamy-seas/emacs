@@ -1,23 +1,38 @@
 #+TITLE: Personal config of orgmode
-#+STARTUP: overview
-#+PROPERTY: header-args :tangle yes
-
-This is just an example config that works well for me. You will need to tune it for yourself to really get the most out of orgmode
-
-| [[*Capturing templates =C-c c=][Capturing templates]] | =C-c c=   | Entering capture mode where templates are available |
-| [[*Todo lists =C-c C-t=][Todo lists]]          | =C-c C-t= | Add a todo to an org-heading                        |
 
 
-* CONFIG Org files to monitor
+* Agenda view
 #+BEGIN_SRC emacs-lisp
-  (setq org-agenda-files (list "~/creamy_seas/antlers.org"
-                               "~/creamy_seas/monday_starts_on_saturday/adventure_brief.org"
-                               "~/mydrive/people.org"
-                               "~/mydrive/east-data-company.org"
-                               ))
- #+END_SRC
+(setq org-agenda-custom-commands '(("c" "Simple agenda view" ((agenda "" nil)) nil)
+                                   ("i" "卍 My summary 卍" ((todo "PHD" ((org-agenda-sorting-strategy '(deadline-up)) (org-agenda-span 'fortnight) (org-agenda-overriding-header "Quantum Physics!")))
+                                                            (todo "BLOAT" ((org-agenda-span 'day) (org-agenda-overriding-header "Stuff at home")))
+                                                            (todo "HOUSE" ((org-agenda-span 'fortnight) (org-agenda-overriding-header "Renovation")))
+                                                            (todo "SINO|REACH|DREAMS-AI" ((org-agenda-overriding-header "Dreams-AI") (org-agenda-span 'fortnight))))
+                                    nil nil)))
+#+END_SRC
+* Org files to monitor
 
-* CONFIG Capturing templates   =C-c c=
+#+BEGIN_SRC emacs-lisp
+(setq org-agenda-files
+      (
+       list
+       "~/creamy_seas/antlers.org"
+       "~/creamy_seas/monday_starts_on_saturday/adventure_brief.org"
+       "~/creamy_seas/monday_starts_on_saturday/cqps/cqps_notes.org"
+       "~/creamy_seas/monday_starts_on_saturday/photon/photon_counting_notes.org"
+       "~/creamy_seas/monday_starts_on_saturday/lab-results/log_file.org"
+       "~/creamy_seas/drill.org"
+       ;; "~/Google Drive/renovation/plan-file.org"
+       ;; ;; "~/mydrive/people.org"
+       "~/mydrive/east-data-company.org"
+       ;; "~/mydrive/adv21_reachingway/adventure_brief.org"
+       ))
+#+END_SRC
+* Timestamp
+#+BEGIN_SRC emacs-lisp
+  (setq org-time-stamp-custom-formats '("<%d %b %Y>" . "<%d %b %Y %a %H:%M>"))
+ #+END_SRC
+* Capturing templates
 Emacs/orgmode has an intense feature where you can quickly call upon templates to insert into your org files.
 
 *The structure of the template is the following*:
@@ -27,228 +42,219 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
 - template to insert
 
 #+BEGIN_SRC emacs-lisp
+(after! org
   (setq org-capture-templates
-        '(("b" "Bloat"
-           entry
-           (id "antlers-bloat")
-           "** BLOAT %^{stuff-to-be-done}\nSHEDULED: %^T")
+      '(("b" "Bloat"
+         entry
+         (id "antlers-bloat")
+         "** BLOAT %^{stuff-to-be-done}\nSHEDULED: %^T")
 
-          ("c" "Copy Pasta"
-           entry
-           (id "copy-pasta")
-           "** %^{Pasta Title} %t\n%?")
+        ("c" "Copy Pasta"
+         entry
+         (id "copy-pasta")
+         "** %^{Pasta Title} %t\n%?")
 
-          ("d" "Draft"
-           plain
-           (file "~/Desktop/.temp.org")
-           "%?")
+        ("d" "Draft"
+         plain
+         (file "~/Desktop/.temp.org")
+         "%?")
 
-          ("e" "East India Data Company Task"
-           entry
-           (file "~/mydrive/east-data-company.org")
-           "** %^{TODO-STATE} %^{stuff-to-be-done}:\nDEADLINE: %^T")
-          ;; ("et" "Time log"
-          ;;  table-line (id "bryan-done")
-          ;;  "| %^u | %^{Project}: %^{task-summary} | %^{hours-worked} hours | |"
-          ;;  :table-line-pos "@<-1")
+        ("e" "East India Data Company Task"
+         entry
+         (file "~/mydrive/east-data-company.org")
+         "** %^{TODO-STATE} %^{stuff-to-be-done}:\nDEADLINE: %^T")
+        ;; ("et" "Time log"
+        ;;  table-line (id "bryan-done")
+        ;;  "| %^u | %^{Project}: %^{task-summary} | %^{hours-worked} hours | |"
+        ;;  :table-line-pos "@<-1")
 
-          ("x" "People")
-          ("xe" "Ernest"
-           entry
-           (id "ernest")
-           "** SKYPE Ernest: Catchup:\nDEADLINE: %^T"
-           :empty-lines-after 1)
+        ("x" "People")
+        ("xe" "Ernest"
+         entry
+         (id "ernest")
+         "** SKYPE Ernest: Catchup:\nDEADLINE: %^T"
+         :empty-lines-after 1)
 
-          ("xb" "Benjamin"
-           entry
-           (id "benjamin")
-           "** SKYPE Benjamin: Catchup:\nDEADLINE: %^T"
-           :empty-lines-after 1)
+        ("xb" "Benjamin"
+         entry
+         (id "benjamin")
+         "** SKYPE Benjamin: Catchup:\nDEADLINE: %^T"
+         :empty-lines-after 1)
 
-          ("xf" "Fred"
-           entry
-           (id "fred")
-           "** SKYPE Fred: Catchup:\nDEADLINE: %^T"
-           :empty-lines-after 1)
+        ("xf" "Fred"
+         entry
+         (id "fred")
+         "** SKYPE Fred: Catchup:\nDEADLINE: %^T"
+         :empty-lines-after 1)
 
-          ("xv" "Vlad"
-           entry
-           (id "vlad")
-           "** SKYPE Vlad: Catchup:\nDEADLINE: %^T"
-           :empty-lines-after 1)
+        ("xv" "Vlad"
+         entry
+         (id "vlad")
+         "** SKYPE Vlad: Catchup:\nDEADLINE: %^T"
+         :empty-lines-after 1)
 
-          ("xm" "Milan"
-           entry
-           (id "milan")
-           "** SKYPE Milan: Catchup:\nDEADLINE: %^T"
-           :empty-lines-after 1)
+        ("xm" "Milan"
+         entry
+         (id "milan")
+         "** SKYPE Milan: Catchup:\nDEADLINE: %^T"
+         :empty-lines-after 1)
 
-          ("xs" "Sam"
-           entry
-           (id "sam")
-           "** SKYPE Sam: Catchup:\nDEADLINE: %^T"
-           :empty-lines-after 1)
+        ("xs" "Sam"
+         entry
+         (id "sam")
+         "** SKYPE Sam: Catchup:\nDEADLINE: %^T"
+         :empty-lines-after 1)
 
-          ("xa" "Alan"
-           entry
-           (id "alan")
-           "** SKYPE Alan: Catchup:\nDEADLINE: %^T"
-           :empty-lines-after 1)
+        ("xa" "Alan"
+         entry
+         (id "alan")
+         "** SKYPE Alan: Catchup:\nDEADLINE: %^T"
+         :empty-lines-after 1)
 
-          ("xi" "Vivian"
-           entry
-           (id "vivian")
-           "** SKYPE Vivian: Catchup:\nDEADLINE: %^T"
-           :empty-lines-after 1)
+        ("xi" "Vivian"
+         entry
+         (id "vivian")
+         "** SKYPE Vivian: Catchup:\nDEADLINE: %^T"
+         :empty-lines-after 1)
 
-          ("xh" "Heili"
-           entry
-           (id "heili")
-           "** SKYPE Heili: Catchup:\nDEADLINE: %^T"
-           :empty-lines-after 1)
+        ("xh" "Heili"
+         entry
+         (id "heili")
+         "** SKYPE Heili: Catchup:\nDEADLINE: %^T"
+         :empty-lines-after 1)
 
 
-          ("l" "Boomer Entry"
-           item
-           (file+headline "~/creamy_seas/1488.org.gpg" "Becoming a boomer")
-           "%^{What did Luke say} %^G\n%?"
-           (file "~/creamy_seas/1488.org.gpg")
-           "%?")
+        ("l" "Boomer Entry"
+         item
+         (file+headline "~/creamy_seas/1488.org.gpg" "Becoming a boomer")
+         "%^{What did Luke say} %^G\n%?"
+         (file "~/creamy_seas/1488.org.gpg")
+         "%?")
 
-          ("p" "PhD Tasks")
+        ("p" "PhD Tasks")
 
-          ("ps" "Photon Counting Simulation"
-           entry
-           (id "phd-photon-simulation")
-           "*** PHD %^{stuff-to-be-done} [/] :PHOTONSIMULATION:\nDEADLINE: %^T\n- [ ] %?")
+        ("pp" "Photon"
+         entry
+         (id "phd-photon")
+         "*** PHD %^{stuff-to-be-done} [/] :PHOTON:\nDEADLINE: %^T\n- [ ] %?")
 
-          ("px" "xMon"
-           entry
-           (id "phd-xmon")
-           "*** PHD %^{stuff-to-be-done} [/] :XMON:\nDEADLINE: %^T\n- [ ] %?")
+        ("pl" "Laboratory"
+         entry
+         (file "~/creamy_seas/monday_starts_on_saturday/lab-results/log_file.org")
+         "*** PHD %^{stuff-to-be-done} [/] :MEASUREMENT:\nDEADLINE: %^T\n- [ ] %?")
 
-          ("pb" "Photon Counting Beam Splitter"
-           entry
-           (id "phd-photon-beams-splitter")
-           "*** PHD %^{stuff-to-be-done} [/] :PHOTONBEAMSPLITTER:\nDEADLINE: %^T\n- [ ] %?")
+        ("pq" "CQPS"
+         entry
+         (id "phd-cqps")
+         "*** PHD %^{stuff-to-be-done} [/] :CQPS:\nDEADLINE: %^T\n- [ ] %?")
 
-          ("pc" "Photon Counting CUDA"
-           entry
-           (id "phd-photon-cuda")
-           "*** PHD %^{stuff-to-be-done} [/] :PHOTONPROGRAMMING:\nDEADLINE: %^T\n- [ ] %?")
+        ("pg" "General"
+         entry
+         (id "phd-general")
+         "*** PHD %^{stuff-to-be-done} [/] :GENERAL:\nDEADLINE: %^T\n- [ ] %?")
 
-          ("pq" "CQPS"
-           entry
-           (id "phd-cqps")
-           "*** PHD %^{stuff-to-be-done} [/] :CQPS:\nDEADLINE: %^T\n- [ ] %?")
+        ("u" "Save URL"
+         entry
+         (file+headline "~/creamy_seas/1488.org.gpg" "URL too good to throw away")
+         "** %^L %? %^G"
+         :kill-buffer t)
 
-          ("pa" "APL Letter"
-           entry
-           (id "phd-apl")
-           "*** PHD %^{stuff-to-be-done} [/] :APL:\nDEADLINE: %^T\n- [ ] %?")
+        ("s" "Stories"
+         entry (id "stories")
+         "** %^{Title} %t\n%?"
+         :empty-lines-after 1))))
+#+END_SRC
+** Drills
+#+begin_src emacs-lisp
+(after! org
+  (my/org/add-to-capture '("L" "Lord of the Rings"
+                           entry
+                           (id "drill-lotr")
+                           "** %^{Title} :drill:
+Added: %U
+    :PROPERTIES:
+    :DRILL_CARD_TYPE: twosided
+    :END:
+,*** Definition
+%?
+"
+                           ))
+  (my/org/add-to-capture '("D" "Dune"
+                           entry
+                           (id "drill-dune")
+                           "** %^{Title} :drill:
+Added: %U
+    :PROPERTIES:
+    :DRILL_CARD_TYPE: twosided
+    :END:
+,*** Definition
+%?
+"
+                           ))
+  (my/org/add-to-capture '("C" "Church"
+                           entry
+                           (id "drill-church")
+                           "** %^{Title} :drill:
+Added: %U
+    :PROPERTIES:
+    :DRILL_CARD_TYPE: twosided
+    :END:
+,*** Definition
+%?
+"
+                           ))
+  )
+#+end_src
 
-          ("pg" "General"
-           entry
-           (id "phd-general")
-           "*** PHD %^{stuff-to-be-done} [/] :GENERAL:\nDEADLINE: %^T\n- [ ] %?")
-
-          ("u" "Save URL"
-           entry
-           (file+headline "~/creamy_seas/1488.org.gpg" "URL too good to throw away")
-           "** %^L %? %^G"
-           :kill-buffer t)
-
-          ("s" "Stories"
-           entry (id "stories")
-           "** %^{Title} %t\n%?"
-           :empty-lines-after 1)))
-  ;; tutoring
-  ;; ("t" "Tutoring lessons")
-  ;; ("tw" "Nikhil Lesson (Winchester)" table-line (id "tutoring-nikhil-invoice")
-  ;;  "| # | %^u | %^{lesson summary} | 120%? | |"
-  ;;  :table-line-pos "III-1")
-  ;; ("tn" "Nathan Lesson" table-line (id "tutoring-nathan-invoice")
-  ;;  "| # | %^u | %^{lesson summary} | 45%? | |"
-  ;;  :table-line-pos "III-1")
-  ;; ("td" "Darrens Programming" table-line (id "tutoring-darren-invoice")
-  ;;  "| # | %^u | %^{lesson summary} | 50%? | |"
-  ;;  :table-line-pos "III-1")
-  ;; ("f" "Future Lesson")
-  ;; ("fw" "Nikhil Lesson (Winchester)" entry (id "tutoring-nikhil-lesson")
-  ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
-  ;; ("fn" "Nathan Lesson" entry (id "tutoring-nathan-lesson")
-  ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
-  ;; ))
- #+END_SRC
-* CONFIG Tables
-** =gradeBand=
-Evaluate of grade for Brilliant Club
+* Org keywords =C-c C-t=
 #+BEGIN_SRC emacs-lisp
-  (defmath gradeBand(score)
-    (if (< score 1)
-        "DNS"
-      (if (< score 40)
-          "Working"
-        (if (< score 50)
-            "3rd"
-          (if (< score 60)
-              "2:2"
-            (if (< score 70)
-                "2:1"
-              "1st"))))))
- #+END_SRC
-* CONFIG Todo lists    =C-c C-t=
-These todo blocks can be put in front of any org heading with =C-c C-t=
-- Must be capital letters
-#+BEGIN_SRC emacs-lisp
+(after! org
   (setq org-todo-keywords '((sequence "TODO(t)"
-                                      "BLOAT(B)"
-                                      "BRYAN(z)"
-                                      "PHD(p)"
-                                      "DREAMS-AI(a)"
-                                      "HORSE(h)"
-                                      "SA36(3)"
-                                      "WORKFORCE(w)"
-                                      "SCHOOLS"
-                                      "TUTORING(l)"
-                                      "CURRENT(c)"
-                                      "SKYPE(s)"
-                                      "SINO"
-                                      "REACH"
-                                      "DOWN"
-                                      "|"
-                                      "DOMINATED(d)"
-                                      "PACKAGE"
-                                      "MANUAL-PACKAGE"
-                                      "CONFIG"
-                                      "BUREUCRACY(b)"
-                                      )))
-
+                                    "BLOAT(B)"
+                                    ;; "BRYAN(z)"
+                                    "PHD(p)"
+                                    "DREAMS-AI(a)"
+                                    ;; "HORSE(h)"
+                                    ;; "SA36(3)"
+                                    "HOUSE(h)"
+                                    ;; "SCHOOLS"
+                                    "DOWN(D)"
+                                    ;; "TUTORING(l)"
+                                    ;; "CURRENT(c)"
+                                    ;; "SKYPE(s)"
+                                    "SINO"
+                                    "REACH"
+                                    "|"
+                                    "DONE(d)"
+                                    "DOMINATED(x)"
+                                    "PACKAGE"
+                                    "MANUAL-PACKAGE"
+                                    "CONFIG"
+                                    "BUREUCRACY(b)"
+                                    )))
   (setq org-todo-keyword-faces (quote (
-                                       ("STARTED" . "yellow")
-                                       ("CURRENT" . (:foreground "#ffff0a" :background "#754ec1" :weight bold))
-                                       ("DREAMS-AI" . (:foreground "#68c3c1" :background "#fdc989" :weight bold))
-                                       ("SA36" . (:background "#01168a" :foreground "#fdc989" :weight bold))
-                                       ("MANUAL-PACKAGE" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
-                                       ("SKYPE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
-                                       ("SINO" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
-                                       ("HORSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
-                                       ("REACH" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
-                                       ("WORKFORCE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
-                                       ("PHD" . (:foreground "yellow" :background "#FF3333"))
-                                       ("DONE" . (:foreground "yellow" :background "#FF3333"))
-                                       ("SCHOOLS" . (:foreground "#090C42" :background "#9DFE9D"))
-                                       ("Dominated" . (:foreground "#9DFE9D" :weight bold))
-                                       ("BLOAT" . (:foreground "#000001" :background "#ffffff"))
-                                       ("TUTORING" . (:foreground "#090C42" :background "#FFD700": weight bold))
-                                       ("BRYAN" . (:foreground "#090C42" :background "#33ccff" :weight bold))
-                                       ("PACKAGE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
-                                       ("CONFIG" . (:background "#00AFF0" :foreground "#090C42" :weight bold))
-                                       ("BUREUCRACY" . (:background "#ab82ff" :foreground "#8b6969" :weight bold))
-                                       )))
+                                     ("STARTED" . "yellow")
+                                     ("CURRENT" . (:foreground "#ffff0a" :background "#754ec1" :weight bold))
+                                     ("DREAMS-AI" . (:foreground "#68c3c1" :background "#fdc989" :weight bold))
+                                     ;; ("SA36" . (:background "#01168a" :foreground "#fdc989" :weight bold))
+                                     ("MANUAL-PACKAGE" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
+                                     ;; ("SKYPE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
+                                     ("SINO" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
+                                     ;; ("HORSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
+                                     ("REACH" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
+                                     ("HOUSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
+                                     ("PHD" . (:foreground "yellow" :background "#FF3333"))
+                                     ("DOWN" . (:foreground "yellow" :background "#FF3333"))
+                                     ;;("DONE" . (:foreground "yellow" :background "#FF3333"))
+                                     ;; ("SCHOOLS" . (:foreground "#090C42" :background "#9DFE9D"))
+                                     ("Dominated" . (:foreground "#9DFE9D" :weight bold))
+                                     ("BLOAT" . (:foreground "#000001" :background "#ffffff"))
+                                     ;; ("TUTORING" . (:foreground "#090C42" :background "#FFD700": weight bold))
+                                     ;; ("BRYAN" . (:foreground "#090C42" :background "#33ccff" :weight bold))
+                                     ("PACKAGE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
+                                     ("CONFIG" . (:background "#00AFF0" :foreground "#090C42" :weight bold))
+                                     ("BUREUCRACY" . (:background "#ab82ff" :foreground "#8b6969" :weight bold))
+                                     )))
   (setq org-agenda-span 15)
- #+END_SRC
-* Timestamp
-#+BEGIN_SRC emacs-lisp
-  (setq org-time-stamp-custom-formats '("<%d %b %Y>" . "<%d %b %Y %a %H:%M>"))
- #+END_SRC
+  )
+#+END_SRC

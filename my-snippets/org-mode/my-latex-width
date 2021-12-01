@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: my-latex-width
+# key: lw
+# --
+#+ATTR_LATEX: :width ${1}cm

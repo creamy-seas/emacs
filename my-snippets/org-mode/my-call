@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: my-call
+# key: call
+# --
+#+CALL: ${1:what-to-call}

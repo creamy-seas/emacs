@@ -1,0 +1,70 @@
+#+TITLE: Navigation
+
+* Buffers
+** Moving in subwords
+#+BEGIN_SRC emacs-lisp
+  (global-subword-mode 1)
+#+END_SRC
+** Buffer name style
+#+BEGIN_SRC emacs-lisp
+  (setq uniquify-buffer-name-style 'post-forward)
+ #+END_SRC
+* PACKAGE Avy   =M-s=
+The superior search method with highlighting of the leading characters.
+
+#+BEGIN_SRC emacs-lisp
+(use-package! avy
+  :config
+  (global-set-key (kbd "M-s") 'avy-goto-word-or-subword-1)
+  (setq avy-background t)
+  (setq avy-all-windows t))
+#+END_SRC
+* Eyebrowse multiple windows
+
+#+BEGIN_SRC emacs-lisp
+(use-package! eyebrowse
+  :config
+  (eyebrowse-mode)
+  (global-set-key (kbd "s-a") (function eyebrowse-switch-to-window-config-1))
+  (global-set-key (kbd "s-s") (function eyebrowse-switch-to-window-config-2))
+  (global-set-key (kbd "s-d") (function eyebrowse-switch-to-window-config-3))
+  (global-set-key (kbd "s-f") (function eyebrowse-switch-to-window-config-4))
+  (global-set-key (kbd "s-g") (function eyebrowse-switch-to-window-config-5))
+  )
+#+END_SRC
+* Window splitting
+
+#+BEGIN_SRC emacs-lisp
+(defun split-and-follow-horizontally ()
+  (interactive)
+  (split-window-below)
+  (balance-windows)
+  (other-window 1))
+(global-set-key (kbd "C-x 2") 'split-and-follow-horizontally)
+
+(defun split-and-follow-vertically ()
+  (interactive)
+  (split-window-right)
+  (balance-windows)
+  (other-window 1))
+(global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
+
+(setq split-height-threshold 80)
+(setq split-width-threshold 160)
+#+END_SRC
+
+* Window switching
+
+#+BEGIN_SRC emacs-lisp
+(use-package! switch-window
+  :config
+  (setq switch-window-input-style 'minibuffer
+        switch-window-increase 8
+        switch-window-threshold 2
+        switch-window-shortcut-style 'qwerty
+        switch-window-multiple-frames t
+        switch-window-qwerty-shortcuts
+        '("a" "s" "d" "f" "g" "h" "j")
+        )
+  (global-set-key (kbd "s-o") 'switch-window))
+#+END_SRC

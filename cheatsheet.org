@@ -1,21 +1,185 @@
 #+TITLE: Common things that I forget
-#+STARTUP: showall
+#+STARTUP: overview
 #+PROPERTY: header-args :tangle no
 
-| =M-?= | Find refferences |
-|       |                  |
+| C-c t | Toggling view |
+| C-c M | Mail          |
+| C-c f | Files         |
+| C-c p | Projectile |
 
-| Flycheck             | =C-c != |          |
-| Projectile           | =s-p=   |          |
-| Zap (delete) to char | =M-z=   | Inactive |
+To get a list of pretty symbols run =(all-the-icons-insert)=
 
+Tags
+| =C-j=           | jump to a tag selected from menu |   |
+| =M-.= and =M-,= | move to an from tag under cursor |   |
+| =C-c g h=       | List all tasg                    |   |
+| =C-c g r=       | Find tags in project             |   |
+| =C-c g a=       | List tags in current scope       | h |
+|-----------------+----------------------------------+---|
+
+A generic autocompletion framework
+| Ivy     | Generic completion                      |
+| Counsel | Ivy-enhanced versions of emacs commands |
+| Swiper  | Alternative search                      |
+
+| =C-==     | Expand region                |
+| =C-x n ?= | Narrow and widen in org mode |
+
+* Scratch
+** Default load
+#+BEGIN_SRC emacs-lisp
+(setq initial-scratch-message (concat
+                               "#+Title: Persistent Scratch Buffer"))
+ #+END_SRC
+** Save scratch when emacs closes
+#+BEGIN_SRC emacs-lisp
+(use-package! persistent-scratch
+  :config
+  (persistent-scratch-setup-default))
+ #+END_SRC
+* About Emacs  =C-h C-a=
+#+BEGIN_SRC emacs-lisp
+(defhydra hydra-about-emacs ()
+  "
+  About Emacs                                                        [_q_] quit
+  ^^---------------------------------------------------------------------------
+           PID:    %s(emacs-pid)
+        Uptime:    %s(emacs-uptime)
+     Init time:    %s(emacs-init-time)
+     Directory:    %s(identity user-emacs-directory)
+  Invoked from:    %s(concat invocation-directory invocation-name)
+       Version:    %s(identity emacs-version)
+
+  User Info
+  ^^---------------------------------------------------------------------------
+     User name:    %s(user-full-name)
+  Login (real):    %s(user-login-name) (%s(user-real-login-name))
+    UID (real):    %s(user-uid) (%s(user-real-uid))
+    GID (real):    %s(group-gid) (%s(group-real-gid))
+  Mail address:    %s(identity user-mail-address)
+  "
+  ("q" nil nil))
+
+(global-set-key (kbd "C-h C-a") #'hydra-about-emacs/body)
+ #+END_SRC
+* Prettify-symbols
+#+BEGIN_SRC emacs-lisp
+  (global-prettify-symbols-mode 1)
+  (setq prettify-symbols-unprettify-at-point t)
+#+END_SRC
+* GPG prompt
+Make emacs prompt for password in the minibuffer
+#+BEGIN_SRC emacs-lisp
+  (setq epa-pinentry-mode 'loopback)
+ #+END_SRC
+* CONFIG Expand region =C-==
+* Dired
+| M | chmod |
 * Org mode
-| C-c C-x C-l | View latex in buffer - must be in math quotes $$ |
+| C-c C-x C-l              | View latex in buffer - must be in math quotes $$ |
+| C-c C-x ;                | Start countdown                                  |
+| C-c C-x 0                | Start timer                                      |
+| C-c C-x . or =C-c C-x -= | Insert timestamp                                 |
+| C-c C-x ,                | Pause/Resume                                     |
+| C-c C-x _                | Stop                                             |
 * Babel
+*General*
+- If  inside function or a loop, *do not have empty lines*!
+- If using session (what we generally have rule) *DO NOT HAVE RETURN STATEMENTS*. Instead, place the value that you would return at the end of the line.
+
+Add
+#+BEGIN_SRC text
+# -*- org-export-babel-evaluate: nil -*-
+#+END_SRC
+Add # -*- org-export-babel-evaluate: nil -*- to top of file in order to avoid execution of the source blocks during export. This way, only the results you have evaluated yourself are exported
+
+*For tables*
+- =:eval yes=
+- If using a  function, *make sure that there is a space after the definition and before invocation*
+
+#+NAME: example
+#+HEADER: :session ps-session
+#+HEADER: :noweb yes
+#+HEADER: :exports code
+#+HEADER: :eval yes
+#+HEADER: :results value silent
+#+HEADER: :var jj_side=1
+#+HEADER: :var oxidation=""
+ #+BEGIN_SRC python
+  def eval_expected_rt_resistance(jj_side, oxidation):
+      """
+      Evaluates the expected room temperature resistance from the dimensions of the designed JJ and known scalings.
+      @param jj_side:              The side off the designed JJ in nm
+      """
+      x_side = jj_side; y_size = jj_side
+      x = jj_side * JJ_x_scaling
+      y = jj_side * JJ_y_scaling
+      # Number of 100x100nm² squares
+      N_squares = x/100 * y/100
+      return R_square_room_temperature[oxidation] / N_squares / kOhm
+
+  eval_expected_rt_resistance(jj_side, oxidation)
+ #+END_SRC
+
+#+name: hello-world
+#+begin_src sh
+  <<hello-world-prefix>>
+  echo "|                       hello world                         |"
+  <<hello-world-postfix>>
+#+end_src
+** Exporting table
+can add post processing
+#+name: attr_wrap
+#+begin_src sh :var data="" :var height="400px" :results output
+  echo "#+ATTR_HTML: :height $height"
+  echo "$data"
+#+end_src
+
+and use the following header
+#+HEADER: :post attr_wrap(height="5cm", data=*this*)
+
+Or it can be made with prologu
+
+#+HEADER: :results output replace raw
+#+HEADER: :eval no-export
+#+HEADER: :prologue print('#+ATTR_HTML: :height 400px')
+** Example inline variables
+=src_python[:session cqps-session]{coil_al}=
+** Example headers
+| #+HEADER: :var R_cold_scaling=(car (read (org-table-get-remote-range "calibration_table" "$R_cold_scaling"))) | sbv |
+| #+HEADER: :var JJ_x_scaling=(car (read (org-table-get-remote-range "calibration_table" "$JJ_x_scaling")))     | sbv |
+| #+HEADER: :var JJ_y_scaling=(car (read (org-table-get-remote-range "calibration_table" "$JJ_y_scaling")))     | sbv |
+| #+HEADER: :var coil_au=(car (read (org-table-get-remote-range "calibration_table" "$coil_au")))               | sbv |
+| #+HEADER: :var coil_al=(car (read (org-table-get-remote-range "calibration_table" "$coil_al")))               | sbv |
+| #+HEADER: :var calibration_table=calibration_table                                                            | sbv |
+|---------------------------------------------------------------------------------------------------------------+-----|
+| All commands below                                                                                            | sb  |
+|---------------------------------------------------------------------------------------------------------------+-----|
+| #+NAME: example                                                                                               | sbn |
+|---------------------------------------------------------------------------------------------------------------+-----|
+| #+HEADER: :session session-name!                                                                              | sbs |
+|---------------------------------------------------------------------------------------------------------------+-----|
+| #+HEADER: :noweb yes                                                                                          | sbw |
+|---------------------------------------------------------------------------------------------------------------+-----|
+| #+HEADER: :exports results :results output                                                                    | sbo |
+** Tables
+Example of reading cell from remote table
+- =@#= is the current column that is evaluated immediatelly
+- The reason that the refference is built up this way, is so that there are no substirytions
+
+(mapconcat 'identity (org-table-get-remote-range "2021-07-photon-source-time-series-resistance" (let ((row (number-to-string (- @# 1)))) (concat "@" row "$" "2..@" row "$" "4"))))
+** Commands
+
 | =C-c C-v=   | all the functions |
 | =C-c C-v j= | Add a header      |
 
-| =:results=      |                                                     |
+| =:exports:= | What to show in latex or html |
+| code        |                               |
+| results     |                               |
+| both        |                               |
+| none        |                               |
+
+| =:results=      | If exporting results, what to take                  |
 |-----------------+-----------------------------------------------------|
 | value           | functional mode,                                    |
 |                 | output of the previous result (python needs return) |
@@ -25,7 +189,7 @@
 | list            | result is a list                                    |
 | scalar verbatim | just raw output                                     |
 | file            | take it as a link to a file                         |
-| :=:file-desc=   | to name the file                                    |
+| =:file-desc=    | to name the file                                    |
 | =:output-dir=   | where to store file                                 |
 |-----------------+-----------------------------------------------------|
 | raw             | insert directly into buffer                         |
@@ -46,10 +210,10 @@
 | a=b(a=1) | call a named codeblock with it's parameters  |
 |          |                                              |
 
-| *Tables*    |                               |
-| =:hlines=   | export lines or not in tables |
-| =:colnames= |                               |
-| =:rownames= |                               |
+| *Tables*    |                                    |
+| =:hlines=   | export lines or not in tables      |
+| =:colnames= | Ignore input variable table column |
+| =:rownames= |                                    |
 
 | =:dir= | working directory - can be tramp |
 
@@ -71,8 +235,10 @@
 | no      |                                |
 | query   |                                |
 
-| :=session= | *create/use a named session*. If nothing supplied, use default one |
-| =:cache=   | yes or no - *do not use with session*                              |
+| :=session= | *create/use a named session*. If nothing supplied, use default one. No return statements in session (like jnb) |
+| =:cache=   | yes or no - *do not use with session*                                                                          |
+
+| =:noweb yes= | allows insertion of named blocks with <<name>> |
 
 * Artist mode
 | C-c C-a M-w | Copy rectangle (enter to start and end selection)        |

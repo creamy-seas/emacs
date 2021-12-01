@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: my-border
+# key: bor
+# --
+#+REVEAL_HTML: <div style="border:1px solid black;">
+$0
+#+REVEAL_HTML: </div>

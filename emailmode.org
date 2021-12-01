@@ -1,6 +1,9 @@
 #+TITLE: Emailmode
 #+STARTUP: overview
-#+PROPERTY: header-args :tangle yes
+
+If user-mail-address is not part of mu's addresses; add it with mu init --my-address=
+After being careful that no instance of mu is running (in particular, quit mu4e if launched), you may want to remove `/home/zw963/.cache/mu/xapian/flintlock'
+
 
 |-----------+-------------------------------------------------|
 |           | *Custom*                                        |
@@ -53,7 +56,7 @@
 |           | *Actions*                                       |
 | =R,F,C=   | reply/forward/compose                           |
 | =E=       | edit (only allowed for draft messages)          |
-| =c-a=     | Capture message - can attach it in reply        |
+| =C-c c= | Capture message - can attach it in reply        |
 |-----------+-------------------------------------------------|
 |           | *Message View*                                  |
 | =C-+,C--= | increase / decrease the number of headers shown |
@@ -69,9 +72,15 @@
 | =A=       | Operate on attachment                           |
 |-----------+-------------------------------------------------|
 
+To kill gpg agent and dump passwords
 
-* Latest commit used to build mu/mu4e
-2b49db2c28c53936e31d174a9fc6b63099387130
+=gpgconf --kill gpg-agent=
+
+| SMTP | sends messages to server               |
+|------+----------------------------------------|
+| POP  | Downloads from server and deletes them |
+| IMAP | Syncs with server                      |
+
 * To read
 - [[https://kkatsuyuki.github.io/notmuch-conf/][Arch Setup]]
 - [[https://medium.com/@kirang89/emacs-as-email-client-with-offlineimap-and-mu4e-on-os-x-3ba55adc78b6]]
@@ -80,11 +89,8 @@
 - [[https://vxlabs.com/2014/06/06/configuring-emacs-mu4e-with-nullmailer-offlineimap-and-multiple-identities/][It keeps going]]
 - [[https://ict4g.net/adolfo/notes/2014/12/27/emacs-imap.html][Using keychains]]
 - [[https://www.djcbsoftware.nl/code/mu/cheatsheet.html][mu cheatsheet]]
-* CONFIG External setup
-| SMTP | sends messages to server               |
-| POP  | Downloads from server and deletes them |
-| IMAP | Syncs with server                     |
 
+* External setup
 ** Setup
 1. Remeber to run the setup in [[https://www.djcbsoftware.nl/code/mu/mu4e/Getting-started.html#Getting-started][this tutorial]] for doing external setup
 2. https://etienne.depar.is/emacs.d/mu4e.html
@@ -93,29 +99,35 @@
 - mu4e works tightly with mu. As a result, part of the configuration is set in mu.
 - In order to setup the mail database, you need to run the following
 
-#+BEGIN_SRC shell :tangle no
+#+BEGIN_SRC shell
  mu init --maildir="~/db_mail" --my-address="ilya.antonov@dreams-ai.com" --my-address="ilya.antonov24@ntlworld" --my-address="antonov.ilya225@gmail.com" --my-address="ilya.antonov.2013@live.rhul.ac.uk"
  #+END_SRC
 
+- Then index the messages with:
+#+BEGIN_SRC shell
+ mu index
+ #+END_SRC
+
 You can then run
-#+BEGIN_SRC shell :tangle no
+#+BEGIN_SRC shell
  mu info
  #+END_SRC
 
 to get information on the install
+** Password file
+Make password file and put it into the email folder ="~/db_mail/.pswd_mail.gpg"=
+#+BEGIN_SRC text
+EMAIL password PASSWORD
+#+END_SRC
 
-** Correct openssl
+** What to install
+| =mu=          | indexer and searcher              |
+| =offlineimap= | for the emailserver               |
+| =w3m=         | text based webrowser to show html |
+| =openssl=     | Encryption and certificates       |
+| =msmtp=       |                                   |
 
-#+BEGIN_SRC shell :tangle no
-  brew switch openssl 1.0.2s
- #+END_SRC
-
-** Offlineimap
-*** Install offlineimap
-#+BEGIN_SRC emacs-lisp
-  (my/add-dependency "offlineimap")
- #+END_SRC
-
+** Offlineimap (fetching mail)
 *** Set the =~/.offlineimaprc=
 - Example for 4 accounts
 - See [[*Certificates][Certificates]] and [[*SSL certificate][SSL certificate]]
@@ -252,32 +264,150 @@ to get information on the install
 If offlineimap is giving an error, it is probably picking up python3.7. Delete all python3.7 email-related libraries:
 
 1. Find the site libraries
-#+BEGIN_SRC shell :tangle no
+#+BEGIN_SRC shell
   python3 -m site
  #+END_SRC
 
 2. [@2] Remove all =imap= packages
-** Certificates
-For [[*Sending mail][Sending mail]] you may need to get certificates and update them in =msmtprc=
-#+BEGIN_SRC shell :tangle no
-  msmtp --host=smtp.office365.com --port=587 --serverinfo --tls --tls-certcheck=off
- #+END_SRC
-- Copy the SHA256 into tls_fingerprint of the =.offlineimaprc= file
-** SSL certificate
-This ensures that the connection is secure. This fingerprint is required for ntlworld
+*** Certificates for IMAP server (fetching)
+There is a cerficata to verify connection to an IMAP server (to make sure you are syncing and giving away details to correct server):
 [[https://www.offlineimap.org/doc/FAQ.html#how-do-i-generate-an-sslcacertfile-file]]
 https://www.offlineimap.org/doc/FAQ.html#does-offlineimap-verify-ssl-certificates
 
-- first part gets the certificate
-- second part gets information from certificate - the fingerprint
+- [2021-10-21 Thu] For some reason, I found that I should point to the root cert.pem that has the root certificates that most of the servers will be checked against. No need for the sslcertfile below
 
-#+BEGIN_SRC sh :tangle no
-  SSL_CERT_DIR="" openssl s_client -connect imap.SERVERTHATYOUCHOOSE.com:993 < /dev/null 2>/dev/null | openssl x509 -fingerprint -noout -text -in /dev/stdin
+You can either:
+**** Generate =sslcacertfile= (required for GMail)
+#+BEGIN_SRC sh
+openssl s_client -CApath /etc/ssl/certs -connect outlook.office365.com:imaps -showcerts | perl -ne 'print if /BEGIN/../END/'
 #+END_SRC
-** What to install
-| =offlineimap= | for the emailserver               |
-| =w3m=         | text based webrowser to show html |
-| =mu=          | indexer and searcher              |
+- add =-showcerts= for full chain of certificates
+
+- Copy it over the top certificate to the the chosen =sslcacertfile= which is set in =.offlineimaprc=
+- Verify with
+#+BEGIN_SRC sh
+  SSL_CERT_DIR="" openssl s_client -CAfile /usr/local/etc/ca-certificates/offlineimap.pem  -connect imap.gmail.com:993 -partial_chain 2>&1 </dev/null
+#+END_SRC
+
+It should return a done, code0
+**** Generate a constant =cert_fingerprint= (required for example for ntlworld)
+#+BEGIN_SRC sh
+SSL_CERT_DIR="" openssl s_client -connect imap.SERVERTHATYOUCHOOSE.com:993 < /dev/null 2>/dev/null | openssl x509 -fingerprint -noout -text -in /dev/stdin
+#+END_SRC
+- Copy over the =SHA1 Fingerprint= to =cert_fingerprint= in =.offlineimaprc=
+
+** Sending mail =mstmp=
+Configuration file something like:
+#+BEGIN_SRC text
+  defaults
+  logfile ~/.msmtp.log
+  protocol smtp
+
+  #  ___   _   _  _____  _      ___    ___   _  __
+  # / _ \ | | | ||_   _|| |    / _ \  / _ \ | |/ /
+  #| | | || | | |  | |  | |   | | | || | | || ' /
+  #| |_| || |_| |  | |  | |___| |_| || |_| || . \
+  # \___/  \___/   |_|  |_____|\___/  \___/ |_|\_\
+  #
+
+  account ilya_OUTLOOK
+  host smtp.office365.com
+  port 587
+
+  from zyva263@live.rhul.ac.uk
+  user zyva263@live.rhul.ac.uk
+  passwordeval python3 ~/.emacs.d/my-scripts/email/read_password.py -u zyva263@live.rhul.ac.uk
+
+  auth on
+  tls on
+  tls_starttls on
+  tls_fingerprint 46:A3:2E:AF:1F:3F:1E:85:8C:74:67:72:BA:70:B1:72:5E:C4:84:8C:B3:57:92:0A:A7:3E:DF:92:A5:6A:75:4F
+
+  #  ____  __  __     _     ___  _
+  # / ___||  \/  |   / \   |_ _|| |
+  #| |  _ | |\/| |  / _ \   | | | |
+  #| |_| || |  | | / ___ \  | | | |___
+  # \____||_|  |_|/_/   \_\|___||_____|
+  #
+
+  account ilya_GMAIL
+  host smtp.gmail.com
+  port 587
+
+  from antonov.ilya225@gmail.com
+  user antonov.ilya225@gmail.com
+  passwordeval python3 ~/.emacs.d/my-scripts/email/read_password.py -u antonov.ilya225@gmail.com
+
+  auth on
+  tls on
+  tls_starttls on
+  tls_trust_file /usr/local/etc/openssl@1.1/cert.pem
+
+  # ____   ____   _____     _     __  __  ____            _     ___
+  #|  _ \ |  _ \ | ____|   / \   |  \/  |/ ___|          / \   |_ _|
+  #| | | || |_) ||  _|    / _ \  | |\/| |\___ \  _____  / _ \   | |
+  #| |_| ||  _ < | |___  / ___ \ | |  | | ___) ||_____|/ ___ \  | |
+  #|____/ |_| \_\|_____|/_/   \_\|_|  |_||____/       /_/   \_\|___|
+  #
+  #
+
+  account ilya_DREAMSAI
+  host smtp.gmail.com
+  port 587
+
+  from ilya.antonov@dreams-ai.com
+  user ilya.antonov@dreams-ai.com
+  passwordeval python3 ~/.emacs.d/my-scripts/email/read_password.py -u ilya.antonov@dreams-ai.com
+
+  auth on
+  tls on
+  tls_starttls on
+  tls_trust_file /usr/local/etc/openssl@1.1/cert.pem
+
+  # _   _  _____  _  __        __ ___   ____   _      ____
+  #| \ | ||_   _|| | \ \      / // _ \ |  _ \ | |    |  _ \
+  #|  \| |  | |  | |  \ \ /\ / /| | | || |_) || |    | | | |
+  #| |\  |  | |  | |___\ V  V / | |_| ||  _ < | |___ | |_| |
+  #|_| \_|  |_|  |_____|\_/\_/   \___/ |_| \_\|_____||____/
+  #
+
+  account ilya_NTLWORLD
+  host smtp.ntlworld.com
+  port 465
+
+  from ilya.antonov24@ntlworld.com
+  user ilya.antonov24@ntlworld.com
+  passwordeval "python3 ~/.emacs.d/my-scripts/email/read_password.py -u ilya.antonov24@ntlworld.com"
+
+
+  auth plain
+  tls on
+  tls_starttls off
+  tls_fingerprint B8:7A:44:C5:DB:B6:61:07:92:44:2A:9C:AE:92:6A:71:7D:E1:66:42:63:93:23:A1:8A:D0:9F:2E:37:B5:FD:E4
+
+  account default: ilya_OUTLOOK
+#+END_SRC
+
+** Certificates for SMTP server (Sending)
+For [[*Sending mail][Sending mail]] you may need to get certificates and update them in =.msmtprc=
+
+You can either:
+
+*** Set =tls_trust_file= as before for =sslcacertfile=
+- Copy it over the the chosen =tls_trust_file= which is set in =.msmtprc=
+
+*** Generate constant fingerprint
+#+BEGIN_SRC shell
+  msmtp --port=587 --serverinfo --tls --tls-certcheck=off --host=smtp.office365.com
+ #+END_SRC
+or
+
+#+BEGIN_SRC shell
+  msmtp --port=587 --serverinfo --tls --tls-certcheck=off -a ACCOUNT_NAME_FROM_MSTPRC
+ #+END_SRC
+
+- Copy the SHA256 into tls_fingerprint of the =.msmtprc= file
+
 ** Google authentication
 - With google, you need to allow unknow applications to have access to the account
 - go to =https://myaccount.google.com/lesssecureapps=
@@ -300,319 +430,199 @@ Create a new label in Google Mail. Next time it will sync to computer
 | Server port     | 993                                 |
 | Authentication  | Password                            |
 | SSL/TLS         | Yes                                 |
-* CONFIG Personal Configuration
+* Syncing mail with =offlineimap=
+#+begin_src emacs-lisp
+(setq +mu4e-backend 'offlineimap)
+;; (setq mu4e-get-mail-command "offlineimap")
+(setq mu4e-attachment-dir (expand-file-name "~/Downloads/mail"))
+(setq mu4e-update-interval 500)
+#+end_src
+
+* Sending mail with =msmtp=
 #+BEGIN_SRC emacs-lisp
-  (defvar my/mu4e-load-path "/usr/local/share/emacs/site-lisp/mu4e" "location of the emacs mu4e package")
-  (defvar my/mu4e-save-dir "~/Downloads/mail" "Location of where to save the mail attachement")
-  ;; (defvar sendmail-program "/usr/local/bin/msmtp" "The SMTP binary")
+(after! mu4e
+  (setq sendmail-program (executable-find "msmtp")
+        message-send-mail-function (function smtpmail-send-it)
+        message-sendmail-f-is-evil t
+                                        ; Use the correct account context when sending mail based on the from header.
+                                        ; message-sendmail-envelope-from 'header
+        message-sendmail-extra-arguments '("--read-envelope-from")
+        message-send-mail-function (function message-send-mail-with-sendmail))
+  )
  #+END_SRC
-* MANUAL-PACKAGE Init
-#+BEGIN_SRC emacs-lisp
-  ;; Add to path and load mu4e
-  (add-to-list 'load-path
-               (expand-file-name my/mu4e-load-path))
-  (require 'mu4e)
-  (require 'smtpmail)
-  (my/add-to-package-list 'mu4e)
 
-
-  (setq mu4e-get-mail-command "offlineimap")
-
-                                          ; directory for saving attachments
-  (setq mu4e-attachment-dir (expand-file-name my/mu4e-save-dir))
-                                          ; email addresses of user
-  (setq mu4e-update-interval 500)
+** DOWN Overriding defaults
+#+BEGIN_SRC emacs-lisp :tangle no
+(after! mu4e
+  (setq message-citation-line-format "%N @ %Y-%m-%d %H:%M %Z:\n")
+  (setq message-citation-line-function 'message-insert-formatted-citation-line)
+                    ; Use the correct account context when sending mail based on the from header.
+  (setq message-sendmail-envelope-from 'header))
  #+END_SRC
-* CONFIG Account setup
+
+* Account setup
 Remember to run [[*Initial setup][Initial setup]]
+** =ilya.antonov24@ntlworld=
+#+BEGIN_SRC emacs-lisp
+(after! mu4e
+  (defvar my/mu4e/context-ntlworld
+    (make-mu4e-context
+     :name "ntlworld"
+     :enter-func (lambda () (mu4e-message "Entering NTLWORLD"))
+     :leave-func (lambda () (mu4e-message "Leaving NTLWORLD"))
+     :match-func (lambda (msg)
+                   (when msg
+                     (mu4e-message-contact-field-matches
+                      msg (list :to :from :cc) "ilya.antonov24@ntlworld.com")))
+     :vars '((user-mail-address           . "ilya.antonov24@ntlworld.com")
+             (user-full-name              . "Ilya Antonov (NTLWORLD)")
+             (mu4e-sent-messages-behavior . sent)
+             (mu4e-sent-folder            . "/ilya_NTLWORLD/Sent")
+             (mu4e-drafts-folder          . "/ilya_NTLWORLD/Drafts")
+             (mu4e-trash-folder           . "/ilya_NTLWORLD/Trash")
+             (mu4e-refile-folder          . "/ilya_NTLWORLD/Archive")
+             (mu4e-compose-signature      . (concat
+                                             "Ilya Antonov,\n"
+                                             "⦿ NTLWORLD\n"))
+             (mu4e-compose-format-flowed . nil)))))
+ #+END_SRC
 ** =ilya.antonov.2013@live.rhul.ac.uk=
 #+BEGIN_SRC emacs-lisp
-  (setq my/mu4e/context-outlook
-        (make-mu4e-context
-         :name "outlook"
-         :enter-func (lambda () (mu4e-message "Entering OUTLOOK"))
-         :leave-func (lambda () (mu4e-message "Leaving OUTLOOK"))
-         :match-func (lambda (msg)
-                       (when msg
-                         (mu4e-message-contact-field-matches
-                          msg '(list :from :to :cc :bcc) "ilya.antonov.2013@live.rhul.ac.uk")))
-         :vars '((user-mail-address . "ilya.antonov.2013@live.rhul.ac.uk")
-                 (user-full-name . "Ilya Antonov (OUTLOOK)")
-                 (mu4e-sent-folder . "/ilya_OUTLOOK/Sent Items")
-                 (mu4e-drafts-folder . "/ilya_OUTLOOK/Drafts")
-                 (mu4e-trash-folder . "/ilya_OUTLOOK/Deleted Items")
-                 (mu4e-refile-folder . "/ilya_OUTLOOK/Archive")
-                 (mu4e-sent-messages-behavior . sent)
-                 (mu4e-compose-signature . (concat
-                                            "\nPhD Student\n\n"
-                                            "*Royal Holloway University of London*"))
-                 (mu4e-compose-format-flowed . nil))))
+(after! mu4e
+  (defvar my/mu4e/context-outlook
+    (make-mu4e-context
+     :name "outlook"
+     :enter-func (lambda () (mu4e-message "Entering OUTLOOK"))
+     :leave-func (lambda () (mu4e-message "Leaving OUTLOOK"))
+     :match-func (lambda (msg)
+                   (when msg
+                     (mu4e-message-contact-field-matches
+                      msg '(list :from :to :cc :bcc) "ilya.antonov.2013@live.rhul.ac.uk")))
+     :vars '((user-mail-address . "ilya.antonov.2013@live.rhul.ac.uk")
+             (mu4e-sent-folder            . "/ilya_OUTLOOK/Sent Items")
+             (mu4e-drafts-folder          . "/ilya_OUTLOOK/Drafts")
+             (mu4e-trash-folder           . "/ilya_OUTLOOK/Deleted Items")
+             (mu4e-refile-folder          . "/ilya_OUTLOOK/Archive")
+             (mu4e-sent-messages-behavior . sent)
+             (mu4e-compose-signature      . (concat
+                                             "\nPhD Student\n\n"
+                                             "*Royal Holloway University of London*"))
+             (mu4e-compose-format-flowed  . nil))))
+  )
 #+END_SRC
 ** =ilya.antonov@dreams-ai.com=
 #+BEGIN_SRC emacs-lisp
-  (setq my/mu4e/context-dreamsai
-        (make-mu4e-context
-         :name "dreams-ai"
-         :enter-func (lambda () (message "Entering Dreams ☁"))
-         :leave-func (lambda () (message "🦑 Plummeting out"))
-         :match-func (lambda (msg)
-                       (when msg
-                         (mu4e-message-contact-field-matches
-                          msg (list :to :from :cc) "ilya.antonov@dreams-ai.com")))
-         :vars '((user-mail-address . "ilya.antonov@dreams-ai.com")
-                 (user-full-name . "Ilya Antonov (Dreams-AI)")
-                 (mu4e-sent-folder . "/ilya_DREAMSAI/[Gmail].Sent Mail")
-                 (mu4e-drafts-folder . "/ilya_DREAMSAI/[Gmail].Drafts")
-                 (mu4e-trash-folder . "/ilya_DREAMSAI/[Gmail].Bin")
-                 (mu4e-refile-folder . "/ilya_DREAMSAI/[Gmail].Starred")
-                 (mu4e-sent-messages-behavior . delete) ; Gmail takes care of this
-                 (mu4e-compose-signature . (concat
-                                            "\n\n"
-                                            "Physics Handyman\n\n"
-                                            "+825 56856958\n\n"
-                                            "☁ DREAMSAI"))
-                 (mu4e-compose-format-flowed . t))))
- #+END_SRC
-** =ilya.antonov24@ntlworld=
-#+BEGIN_SRC emacs-lisp
-  (setq my/mu4e/context-ntlworld
-        (make-mu4e-context
-         :name "ntlworld"
-         :enter-func (lambda () (mu4e-message "Entering NTLWORLD"))
-         :leave-func (lambda () (mu4e-message "Leaving NTLWORLD"))
-         :match-func (lambda (msg)
-                       (when msg
-                         (mu4e-message-contact-field-matches
-                          msg (list :to :from :cc) "ilya.antonov24@ntlworld.com")))
-         :vars '((user-mail-address . "ilya.antonov24@ntlworld.com")
-                 (user-full-name . "Ilya Antonov (NTLWORLD)")
-                 ;;(mu4e-sent-messages-behavior 'delete)
-                 (mu4e-sent-folder . "/ilya_NTLWORLD/Sent")
-                 (mu4e-drafts-folder . "/ilya_NTLWORLD/Drafts")
-                 (mu4e-trash-folder . "/ilya_NTLWORLD/Trash")
-                 (mu4e-refile-folder . "/ilya_NTLWORLD/Archive")
-                 (mu4e-compose-signature . (concat
-                                            "Ilya Antonov,\n"
-                                            "⦿ NTLWORLD\n"))
-                 (mu4e-compose-format-flowed . nil))))
+(after! mu4e
+  (defvar my/mu4e/context-dreamsai
+    (make-mu4e-context
+     :name "dreams-ai"
+     :enter-func (lambda () (message "Entering Dreams ☁"))
+     :leave-func (lambda () (message "🦑 Plummeting out"))
+     :match-func (lambda (msg)
+                   (when msg
+                     (mu4e-message-contact-field-matches
+                      msg (list :to :from :cc) "ilya.antonov@dreams-ai.com")))
+     :vars '((user-mail-address . "ilya.antonov@dreams-ai.com")
+             (user-full-name              . "Ilya Antonov (Dreams-AI)")
+             (mu4e-sent-folder            . "/ilya_DREAMSAI/[Gmail].Sent Mail")
+             (mu4e-drafts-folder          . "/ilya_DREAMSAI/[Gmail].Drafts")
+             (mu4e-trash-folder           . "/ilya_DREAMSAI/[Gmail].Bin")
+             (mu4e-refile-folder          . "/ilya_DREAMSAI/[Gmail].Starred")
+             (mu4e-sent-messages-behavior . delete) ; Gmail takes care of this
+             (mu4e-compose-signature      . (concat
+                                             "\n\n"
+                                             "Physics Handyman\n\n"
+                                             "+825 56856958\n\n"
+                                             "☁ DREAMSAI"))
+             (mu4e-compose-format-flowed  . t)))))
  #+END_SRC
 ** =antonov.ilya225@gmail.com=
 #+BEGIN_SRC emacs-lisp
-  (setq my/mu4e/context-gmail
-        (make-mu4e-context
-         :name "gmail"
-         :enter-func (lambda () (mu4e-message "Entering GMAIL"))
-         :leave-func (lambda () (mu4e-message "Leaving GMAIL"))
-         :match-func (lambda (msg)
-                       (when msg
-                         (mu4e-message-contact-field-matches
-                          msg (list :to :from :cc) "antonov.ilya225@gmail.com")))
-         :vars '((user-mail-address . "antonov.ilya225@gmail.com")
-                 (user-full-name . "Ilya Antonov (GMAIL)")
-                 ;; (mu4e-sent-messages-behavior 'delete)
-                 (mu4e-sent-folder . "/ilya_GMAIL/[Gmail].Sent Mail")
-                 (mu4e-drafts-folder . "/ilya_GMAIL/[Gmail].Drafts")
-                 (mu4e-trash-folder . "/ilya_GMAIL/[Gmail].Bin")
-                 (mu4e-refile-folder . "/ilya_GMAIL/[Gmail].Starred")
-                 (mu4e-sent-messages-behavior . delete)
-                 (mu4e-compose-signature . (concat
-                                            "Ilya Antonov,\n"
-                                            "⦿ GMAIL\n"))
-                 (mu4e-compose-format-flowed . nil))))
+(after! mu4e
+  (defvar my/mu4e/context-gmail
+    (make-mu4e-context
+     :name "gmail"
+     :enter-func (lambda () (mu4e-message "Entering GMAIL"))
+     :leave-func (lambda () (mu4e-message "Leaving GMAIL"))
+     :match-func (lambda (msg)
+                   (when msg
+                     (mu4e-message-contact-field-matches
+                      msg (list :to :from :cc) "antonov.ilya225@gmail.com")))
+     :vars '((user-mail-address . "antonov.ilya225@gmail.com")
+             (user-full-name              . "Ilya Antonov (GMAIL)")
+             (mu4e-sent-folder            . "/ilya_GMAIL/[Gmail].Sent Mail")
+             (mu4e-drafts-folder          . "/ilya_GMAIL/[Gmail].Drafts")
+             (mu4e-trash-folder           . "/ilya_GMAIL/[Gmail].Bin")
+             (mu4e-refile-folder          . "/ilya_GMAIL/[Gmail].Starred")
+             (mu4e-sent-messages-behavior . trash)
+             (mu4e-compose-signature      . (concat
+                                             "Ilya Antonov,\n"
+                                             "⦿ GMAIL\n"))
+             (mu4e-compose-format-flowed . nil)))))
 #+END_SRC
 ** Load the accounts
 #+BEGIN_SRC emacs-lisp
-                                          ; always ask for context when sending mail
-
-  (setq mu4e-context-policy ''always-ask)
-  (setq mu4e-compose-context-policy 'always-ask)
-
-   (setq mu4e-contexts
-         (list
-          my/mu4e/context-outlook
-          my/mu4e/context-dreamsai
-          my/mu4e/context-ntlworld
-          my/mu4e/context-gmail))
+(after! mu4e
+  (setq mu4e-context-policy ''always-ask
+        mu4e-compose-context-policy 'always-ask
+        mu4e-contexts
+        (list my/mu4e/context-outlook
+              my/mu4e/context-dreamsai
+              my/mu4e/context-ntlworld
+              my/mu4e/context-gmail)))
  #+END_SRC
-* CONFIG Main menu
-** CONFIG Jump to inboxes
+* Main menu
+** Jump to inboxes
 #+BEGIN_SRC emacs-lisp
-  (setq mu4e-maildir-shortcuts
-        '(("/ilya_DREAMSAI/INBOX" . ?d)
-          ("/ilya_GMAIL/INBOX" . ?g)
-          ("/ilya_NTLWORLD/INBOX" . ?n)
-          ("/ilya_OUTLOOK/INBOX" . ?l)))
+(setq mu4e-maildir-shortcuts
+      '(("/ilya_DREAMSAI/INBOX" . ?d)
+        ("/ilya_GMAIL/INBOX" . ?g)
+        ("/ilya_NTLWORLD/INBOX" . ?n)
+        ("/ilya_OUTLOOK/INBOX" . ?l)))
  #+END_SRC
-** CONFIG Bookmarks
+** Bookmarks
 Define queries that will be sent to =mu find= command. To see the possible queries run
-#+BEGIN_SRC shell :tangle no
+#+BEGIN_SRC shell
   man mu-find
   man mu-query
  #+END_SRC
-*** Paypal (=p=)
+Then add them here
+
 #+BEGIN_SRC emacs-lisp
+(after! mu4e
   (add-to-list 'mu4e-bookmarks
                ;; add bookmark for recent messages on the Mu mailing list.
                '( :name "Paypal example"
-                        :key  ?p
-                        :query "subject:/Paypal/ AND date:20d..now"))
- #+END_SRC
-*** ALl inboxes (=i=)
-#+BEGIN_SRC emacs-lisp
+                  :key  ?p
+                  :query "subject:/Paypal/ AND date:20d..now"))
   (add-to-list 'mu4e-bookmarks
                '(:name "All Inboxes"
-                       :key ?i
-                       :query "maildir:/ilya_GMAIL/INBOX OR maildir:/ilya_NTLWORLD/INBOX OR maildir:/ilya_OUTLOOK/INBOX OR maildir:/ilya_DREAMSAI/INBOX"
-                       ))
- #+END_SRC
-*** All archives (=a=)
-#+BEGIN_SRC emacs-lisp
+                 :key ?i
+                 :query "maildir:/ilya_GMAIL/INBOX OR maildir:/ilya_NTLWORLD/INBOX OR maildir:/ilya_OUTLOOK/INBOX OR maildir:/ilya_DREAMSAI/INBOX"
+                 ))
   (add-to-list 'mu4e-bookmarks
                '(:name "All Archives"
-                       :query "maildir:/ilya_GMAIL/[Gmail].Starred OR maildir:/ilya_NTLWORLD/Archive OR maildir:/ilya_OUTLOOK/Archive OR maildir:/ilya_DREAMSAI/[Gmail].Starred"
-                       :key ?a))
- #+END_SRC
-* CONFIG Header view
-Header view is the one that displays all the emails
-** Table settings
-#+BEGIN_SRC emacs-lisp
-  (setq mu4e-headers-fields
-        '((:human-date . 10)
-          (:flags . 6)
-          (:mailing-list . 10)
-          (:from . 22)
-          (:size . 8)
-          (:subject . nil)))
-
-  (setq mu4e-split-view 'horizontal)
-                                          ; allow fancy chars in the first column
-  (setq mu4e-use-fancy-chars nil)
- #+END_SRC
-** CONFIG Customized marking actions
-*** Read and delete
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'mu4e-marks
-               '(read-and-trash
-                 :char       "D . ☠"
-                 :prompt     "wRead and Trash?"
-                 :show-target (lambda (target) "Read and Trash")
-                 :action      (lambda (docid msg target)
-                                          ;remove [u]nread and [N]ew → Mark as [S]een and [T]rash
-                                (mu4e~proc-move docid nil "+S+T-u-N"))))
-
-  (mu4e~headers-defun-mark-for read-and-trash)
-  (define-key mu4e-headers-mode-map (kbd "d") 'mu4e-headers-mark-for-read-and-trash)
- #+END_SRC
-*** Dump order
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'mu4e-marks
-               '(dump-order
-                 :char       ("o" . "🐋")
-                 :prompt     "wPlace into order?"
-                 :show-target (lambda (target) "Order")
-                 :action      (lambda (docid msg target)
-                                          ;remove [u]nread and [N]ew → Mark as [S]een. move to the orders directory
-                                (mu4e~proc-move docid "/ilya_GMAIL/Orders" "+S-u-N"))))
-
-  (mu4e~headers-defun-mark-for dump-order)
-  (define-key mu4e-headers-mode-map (kbd "o") 'mu4e-headers-mark-for-dump-order)
- #+END_SRC
-*** Expenses
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'mu4e-marks
-               '(expenses-dreamsai
-                 :char       ("e" . "💰")
-                 :prompt     "wMark as expense"
-                 :show-target (lambda (target) "Expenses ☁")
-                 :action      (lambda (docid msg target)
-                                          ;remove [u]nread and [N]ew → Mark as [S]een. move to the orders directory
-                                (mu4e~proc-move docid "/ilya_DREAMSAI/Expenses" "+S-u-N"))))
-
-  (mu4e~headers-defun-mark-for expenses-dreamsai)
-  (define-key mu4e-headers-mode-map (kbd "e") 'mu4e-headers-mark-for-expenses-dreamsai)
+                 :query "maildir:/ilya_GMAIL/[Gmail].Starred OR maildir:/ilya_NTLWORLD/Archive OR maildir:/ilya_OUTLOOK/Archive OR maildir:/ilya_DREAMSAI/[Gmail].Starred"
+                 :key ?a)))
  #+END_SRC
 * Message view
-** Images
-#+BEGIN_SRC emacs-lisp
-  (setq mu4e-view-show-images t)
-                                          ; hook imagemagick if it was installed with emacs
-  (when (fboundp 'imagemagick-register-types)
-    (imagemagick-register-types))
- #+END_SRC
-** View in browser
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'mu4e-view-actions '("web-view" . mu4e-action-view-in-browser) t)
- #+END_SRC
-* Compose (send)
-** MANUAL-PACKAGE Editing with org-mu4e
-It is installed with mu4e
-#+BEGIN_SRC emacs-lisp
-  (require 'org-mu4e)
-  (add-hook 'mu4e-compose-mode-hook 'org-mu4e-compose-org-mode)
- #+END_SRC
-** Format citation when replying
-#+BEGIN_SRC emacs-lisp
-  (setq message-citation-line-format "%N @ %Y-%m-%d %H:%M %Z:\n")
-  (setq message-citation-line-function 'message-insert-formatted-citation-line)
- #+END_SRC
-** HTML the email being sent
-#+BEGIN_SRC emacs-lisp
-  (use-package org-mime
-    :ensure t)
+#+BEGIN_SRC emacs-lisp :tangle no
+(after! mu4e
+  ;;(setq mu4e-view-show-images t)
+  (add-to-list 'mu4e-view-actions '("web-view" . mu4e-action-view-in-browser) t))
 
-  (defun my/mu4e-htmlize-and-send ()
-    "When in an org-mu4e-compose-org-mode message, htmlize and send it."
-    (interactive)
-    (when (member 'org~mu4e-mime-switch-headers-or-body post-command-hook)
-      (org-mime-htmlize)
-      (message-send-and-exit)))
-
-  (add-hook 'org-ctrl-c-ctrl-c-hook 'my/mu4e-htmlize-and-send t)
+                                        ; hook imagemagick if it was installed with emacs
+(when (fboundp 'imagemagick-register-types)
+  (imagemagick-register-types))
  #+END_SRC
-** Sending mail using send-mail binary
-Alternative is to use a server =(setq message-send-mail-function 'smtpmail-send-it)=
-
+* Capturing messages
 #+BEGIN_SRC emacs-lisp
-  (setq message-send-mail-function (function message-send-mail-with-sendmail))
-                                          ; Use the correct account context when sending mail based on the from header.
-  (setq message-sendmail-envelope-from 'header)
+(after! mu4e
+  (define-key mu4e-headers-mode-map (kbd "C-c c") 'mu4e-org-store-and-capture)
+  (define-key mu4e-view-mode-map    (kbd "C-c c") 'mu4e-org-store-and-capture))
  #+END_SRC
-
-* PACKAGE Alert
-#+BEGIN_SRC emacs-lisp
-  (use-package mu4e-alert
-    :ensure t
-    :after mu4e
-    :init (my/add-to-package-list 'mu4e-alert)
-    (setq mu4e-alert-interesting-mail-query
-          (concat
-           "flag:unread maildir:/ilya_NTLWORLD/INBOX "
-           "OR "
-           "flag:unread maildir:/ilya_GMAIL/INBOX "
-           "OR "
-           "flag:unread maildir:/ilya_DREAMSAI/INBOX "
-           " OR "
-           "flag:unread maildir:/ilya_OUTLOOK/INBOX"
-           ))
-    (mu4e-alert-enable-mode-line-display))
-
-                                          ; alrt to refresh every 60 seconds
-  (defun my/mu4e-alert-mode-line ()
-    (interactive)
-    (mu4e~proc-kill)
-    (mu4e-alert-enable-mode-line-display))
-  (run-with-timer 0 60 'my/mu4e-alert-mode-line)
- #+END_SRC
-* Custom functions
-** =my/mu4e-compose-org-mail= (Composing from anywhere)
-#+BEGIN_SRC emacs-lisp
-  ;; (defun my/mu4e-compose-org-mail ()
-  ;;   (interactive)
-  ;;   (mu4e-compose-new)
-  ;;   (org-mu4e-compose-org-mode))
- #+END_SRC
-** Attach with dired =C=c RET C-a=
-#+BEGIN_SRC emacs-lisp
+* DOWN Attach with dired =C-c RET C-a=
+#+BEGIN_SRC emacs-lisp :tangle no
   (require 'gnus-dired)
   ;; make the `gnus-dired-mail-buffers' function also work on
   ;; message-mode derived modes, such as mu4e-compose-mode
@@ -630,67 +640,49 @@ Alternative is to use a server =(setq message-send-mail-function 'smtpmail-send-
   (setq gnus-dired-mail-mode 'mu4e-user-agent)
   (add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
  #+END_SRC
+* DOWN Syncing mail =my/update-mu4e=
+ #+BEGIN_SRC emacs-lisp :tangle no
+(defun my/mu4e/update ()
+  (interactive)
+  (let ((last-venv pyvenv-virtual-env-name))
 
-** Start in new frame
-#+BEGIN_SRC emacs-lisp
-  (defun my/mu4e-in-new-frame ()
-    "Start mu4e in new frame"
-    (interactive)
-    (select-frame (make-frame))
-    (mu4e))
- #+END_SRC
+    ;; (message (concat ">>>> Set my/python/last-venv to " last-venv))
+    ;; (pyvenv-workon "imap")
+    (pyvenv-deactivate)
+    ;; (message ">>>> deactivated")
 
-* Capturing messages
-#+BEGIN_SRC emacs-lisp
-  (define-key mu4e-headers-mode-map (kbd "C-c c") 'mu4e-org-store-and-capture)
-  (define-key mu4e-view-mode-map    (kbd "C-c c") 'mu4e-org-store-and-capture)
- #+END_SRC
-* Syncing mail
-** =my/update-mu4e=
- #+BEGIN_SRC emacs-lisp
-   (defun my/mu4e/update ()
-     (interactive)
-     (let ((last-venv pyvenv-virtual-env-name))
+    ;;(exec-path-from-shell-initialize)
 
-       ;; (message (concat ">>>> Set my/python/last-venv to " last-venv))
-       ;; (pyvenv-workon "imap")
-       (pyvenv-deactivate)
-       ;; (message ">>>> deactivated")
+    (message ">>>> decrypting dummy file")
+    (epa-decrypt-file
+     (concat user-emacs-directory "my-files/gpg/load_password_dummy_file.gpg") "/dev/null")
 
-       (exec-path-from-shell-initialize)
+    ;; (message ">>>> updating")
+    (mu4e-update-mail-and-index t)
 
-       ;; (message ">>>> decrypting dummy file")
-       ;; (epa-decrypt-file
-       ;;  (my/config-file-path-evaluate
-       ;;   "my-files/gpg/load_password_dummy_file.gpg") "/dev/null")
-
-       ;; (message ">>>> updating")
-       (mu4e-update-mail-and-index t)
-
-       (message (concat " (((cringe incoming))) " last-venv))
-       (pyvenv-workon last-venv)
-       ))
+    (message (concat " (((cringe incoming))) " last-venv))
+    (pyvenv-workon last-venv)))
  #+END_SRC
-* Sending mail
-#+BEGIN_SRC emacs-lisp
-  (my/add-dependency "gnupg")
- #+END_SRC
-** Citation when replying
-#+BEGIN_SRC emacs-lisp
-  (setq message-citation-line-format "%N @ %Y-%m-%d %H:%M %Z:\n")
-  (setq message-citation-line-function 'message-insert-formatted-citation-line)
- #+END_SRC
-** How to send mail
-#+BEGIN_SRC emacs-lisp
-  (setq message-send-mail-function (function message-send-mail-with-sendmail))
-                                          ; Use the correct account context when sending mail based on the from header.
-  (setq message-sendmail-envelope-from 'header)
- #+END_SRC
-* Keybindings
-#+BEGIN_SRC emacs-lisp
-  (define-key my/keymap (kbd "m") (function mu4e))
-  (define-key my/keymap (kbd "M") (function my/mu4e-in-new-frame))
-  (define-key my/keymap (kbd "C") (function mu4e-compose-new))
-  (define-key my/keymap (kbd "u") (function my/mu4e/update))
-  (define-key mu4e-main-mode-map (kbd "U") (function my/mu4e/update))
- #+END_SRC
+* New mail alert
+#+begin_src emacs-lisp
+(after! mu4e-alert
+  (setq mu4e-alert-interesting-mail-query
+        (concat
+         "flag:unread maildir:/ilya_NTLWORLD/INBOX "
+         "OR "
+         "flag:unread maildir:/ilya_GMAIL/INBOX "
+         "OR "
+         "flag:unread maildir:/ilya_DREAMSAI/INBOX "
+         " OR "
+         "flag:unread maildir:/ilya_OUTLOOK/INBOX"
+         ))
+  (mu4e-alert-enable-mode-line-display))
+#+end_src
+** Refresh every 60seconds
+#+begin_src emacs-lisp :tangle no
+(defun my/mu4e-alert-mode-line ()
+  (interactive)
+  (mu4e~proc-kill)
+  (mu4e-alert-enable-mode-line-display))
+(run-with-timer 0 60 'my/mu4e-alert-mode-line)
+#+end_src

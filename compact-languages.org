@@ -1,10 +1,24 @@
-#+TITLE: Languages config not large enough for a separate org file
-#+STARTUP: overview
-#+PROPERTY: header-args :tangle yes
-
-* PACKAGE CSV
+* Markdown preview in browser
+** Init
 #+BEGIN_SRC emacs-lisp
-  (use-package csv-mode
-    :ensure t
-    :init (my/add-to-package-list 'csv-mode))
+  (use-package! grip-mode
+    :config
+    (define-key my/keymap (kbd "V") 'grip-mode))
+ #+END_SRC
+
+** CONFIG Personal configuration
+You will need to create a github token [[https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line][as written here]] and store it in the =~/.authinfo= file
+#+begin_example
+  machine api.github.com login <GITHUB_USERNAME> password <TOKEN>
+#+end_example
+where =<GITHUB_USERNAME>= is your gitlab name and =<TOKEN>= is what was generated on the page
+
+#+BEGIN_SRC emacs-lisp
+(let ((credential (auth-source-user-and-password "api.github.com")))
+  (setq grip-github-user (car credential)
+        grip-github-password (cadr credential)))
+(if (string-equal grip-github-user "")
+    (warn "Markdown preview will not work until you set user in the '~/.authinfo' file - see markdownmode.org"))
+(if (string-equal grip-github-password "")
+    (warn "Markdown preview will not work until you set password in the '~/.authinfo' file - see markdownmode.org"))
  #+END_SRC

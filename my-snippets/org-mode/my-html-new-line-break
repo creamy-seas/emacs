@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: html-new-line-break
+# key: br
+# --
+@@html:<br>@@

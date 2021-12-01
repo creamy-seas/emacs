@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: my-source-block-output
+# key: sbo
+# --
+#+HEADER: :exports ${1:$$(yas-choose-value '("results" "code" "both" "none"))} :results ${2:$$(yas-choose-value '("output" "value"))}

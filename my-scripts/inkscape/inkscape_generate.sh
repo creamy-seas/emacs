@@ -22,12 +22,20 @@ function inkexport {
     BASENAME="$1"
 
     # export png, pdf and pdf_latex
-    inkscape --file="$BASENAME.svg"\
-	     --export-area-drawing\
-	     --without-gui\
-	     --export-pdf="$BASENAME.pdf"\
-	     --export-latex\
-	     --export-png="$BASENAME.png" 2> /dev/null
+    # inkscape --file="$BASENAME.svg"\
+    #          --export-area-drawing\
+    #          --without-gui\
+    #          --export-pdf="$BASENAME.pdf"\
+    #          --export-latex\
+    #          --export-png="$BASENAME.png" 2> /dev/null
+
+    # For inkscape 1.0
+    inkscape --export-area-drawing\
+             --export-latex --export-filename="${BASENAME}.pdf" \
+             "${BASENAME}.svg"
+    inkscape --export-area-drawing\
+             --export-filename="${BASENAME}.png" \
+             "${BASENAME}.svg"
 
     # use imagemagic to trim the png
     convert "$BASENAME.png" -trim "$BASENAME.png" 2> /dev/null

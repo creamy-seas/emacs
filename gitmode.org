@@ -2,103 +2,57 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-To ignore file chmod changes
-#+BEGIN_SRC shell :tangle no
-  git config core.fileMode false
- #+END_SRC
 
-| In magit buffer |                                                 |
-| =C-c C-o=       | Browser topic, commit, etc with gitforge        |
-| ='=             | Visit issues, pull requets etc - per repository |
-| =C-c C-n=       | Add comment in pull request or issue            |
-| =C-c C-e=       | Edit pull request or issue                      |
+| M-x git-time-machine | Preview file                                    |
+|----------------------+-------------------------------------------------|
+| *Forge*              |                                                 |
+| =C-c C-o=            | Browser topic, commit, etc with gitforge        |
+| ='=                  | Visit issues, pull requets etc - per repository |
+| =C-c C-n=            | Add comment in pull request or issue            |
+| =C-c C-e=            | Edit pull request or issue                      |
+|----------------------+-------------------------------------------------|
+| *Smerge*             |                                                 |
+| =C-c C-n=            | next                                            |
+| =C-c c-p=            | previous                                        |
+| =c=                  | keep one under cursor                           |
+| =u=                  | keep upper                                      |
+| =l=                  | keep lower                                      |
+| =a=                  | keep all                                        |
 
-
-* CONFIG Personal Configuration
-Ghub is used to deal with tokens from github and gitlab. [[https://magit.vc/manual/ghub/index.html][Read about it here]]
-
-If using github, tokens will be generated automatically. However if you are using Gitlab you will need to manually create the tokens:
-
+- Ghub is used to deal with tokens from github and gitlab. [[https://magit.vc/manual/ghub/index.html][Read about it here]]
+- If using github, tokens will be generated automatically. However if you are using Gitlab you will need to manually create the tokens:
 - Go to https://gitlab.com/profile/personal_access_tokens and create a token, *ticking the api checkbox*
 - Copy over the token to the =~/authinfo= file
 #+begin_example
   machine gitlab.com/api/v4 login <GITLAB_USERNAME>^forge password <TOKEN>
 #+end_example
 where =<GITLAB_USERNAME>= is your gitlab name and =<TOKEN>= is what was generated on the page
+- To ignore file chmod changes
+#+BEGIN_SRC shell
+git config core.fileMode false
+ #+END_SRC
 
-* Dependencies
-#+BEGIN_SRC emacs-lisp
-  (my/add-dependency "git")
- #+END_SRC
-* PACKAGE Magit         =C-x g=
-#+BEGIN_SRC emacs-lisp
-  (use-package magit
-    :ensure t
-    :init (my/add-to-package-list 'magit))
+* Smerge
+Used to resolve git conflicts
 
-  (global-set-key (kbd "C-x g") (function magit))
- #+END_SRC
-* PACKAGE Git Gutter    =M-g M-g=
-This allows to preview changes in files, see difference and restore hunks
 #+BEGIN_SRC emacs-lisp
-  (use-package git-gutter
-    :ensure t
-    :init (my/add-to-package-list 'git-gutter)
-    (global-git-gutter-mode +1))
+(after! smerge
+  (define-key smerge-mode-map (kbd "C-c C-n") (function smerge-next))
+  (define-key smerge-mode-map (kbd "C-c C-p") (function smerge-prev))
+  (define-key smerge-mode-map (kbd "C-c C-c") (function smerge-keep-current))
+  (define-key smerge-mode-map (kbd "u") (function smerge-keep-upper))
+  (define-key smerge-mode-map (kbd "a") (function smerge-keep-all))
+  (define-key smerge-mode-map (kbd "c") (function smerge-keep-current))
+  (define-key smerge-mode-map (kbd "l") (function smerge-keep-lower)))
  #+END_SRC
-** Hydra
-#+BEGIN_SRC emacs-lisp
-  (defhydra hydra-git-gutter (:body-pre (git-gutter-mode 1)
-                                        :hint nil)
-    "
-    Git gutter:
-      _j_: next hunk        _s_tage hunk     _q_uit
-      _k_: previous hunk    _r_evert hunk    _Q_uit and deactivate git-gutter
-      ^ ^                   _p_opup hunk
-      _h_: first hunk
-      _l_: last hunk        set start _R_evision
-    "
-    ("j" git-gutter:next-hunk)
-    ("k" git-gutter:previous-hunk)
-    ("h" (progn (goto-char (point-min))
-                (git-gutter:next-hunk 1)))
-    ("l" (progn (goto-char (point-min))
-                (git-gutter:previous-hunk 1)))
-    ("s" git-gutter:stage-hunk)
-    ("r" git-gutter:revert-hunk)
-    ("p" git-gutter:popup-hunk)
-    ("R" git-gutter:set-start-revision)
-    ("q" nil :color blue)
-    ("Q" (progn (git-gutter-mode -1)
-                                          ; git-gutter-fringe doesn't seem to
-                                          ; clear the markup right away
-                (sit-for 0.1)
-                (with-no-warnings
-                  (git-gutter:clear)
-                  ))
-     :color blue))
 
-  (global-set-key (kbd "M-g M-g") (function hydra-git-gutter/body))
- #+END_SRC
-* PACKAGE Time machine
-Allow quickly to browser through the file version. Launch with =M-x git-time-machine=
-#+BEGIN_SRC emacs-lisp
-  (use-package git-timemachine
-    :ensure t)
- #+END_SRC
-* PACKAGE Forge
-#+BEGIN_SRC emacs-lisp
-  (use-package forge
-    :ensure t
-    :init (my/add-to-package-list 'forge)
-    ;; :after magit
-    )
-
-  (defhydra hydra-forge (
-                         :color teal
-                         :hint nil
-                         )
-    "
+* Forge
+#+begin_src emacs-lisp
+(defhydra hydra-forge (
+                       :color teal
+                       :hint nil
+                       )
+  "
     ------------------------------------------------------------------------------------------
     _A_: Add repository (without fetching issues and pull requests)
     _D_: Delete repository
@@ -108,32 +62,70 @@ Allow quickly to browser through the file version. Launch with =M-x git-time-mac
 
     _i_: List issues for me
     "
-    ("A" forge-add-repository)
-    ("D" forge-remove-repository)
-    ("X" forge-reset-database)
-    ("L" forge-list-repositories)
-    ("T" forge-remove-topic-locally)
-    ("i" forge-list-owned-issues)
+  ("A" forge-add-repository)
+  ("D" forge-remove-repository)
+  ("X" forge-reset-database)
+  ("L" forge-list-repositories)
+  ("T" forge-remove-topic-locally)
+  ("i" forge-list-owned-issues)
 
-    ("q"   nil "cancel" :color blue))
+  ("q"   nil "cancel" :color blue))
 
-  (define-key my/keymap (kbd "F") (function hydra-forge/body))
- #+END_SRC
-* smerge
-Used to resolve git conflicts
-| =C-c C-n= | next                  |
-| =C-c c-p= | previous              |
-| =c=       | keep one under cursor |
-| =u=       | keep upper            |
-| =l=       | keep lower            |
-| =a=       | keep all              |
+(define-key my/keymap (kbd "F") (function hydra-forge/body))
+#+end_src
+* Git gutter =M-g M-g=
+This allows to preview changes in files, see difference and restore hunks
 #+BEGIN_SRC emacs-lisp
-  (require 'magit)
-  (define-key smerge-mode-map (kbd "C-c C-n") (function smerge-next))
-  (define-key smerge-mode-map (kbd "C-c C-p") (function smerge-prev))
-  (define-key smerge-mode-map (kbd "C-c C-c") (function smerge-keep-current))
-  (define-key smerge-mode-map (kbd "u") (function smerge-keep-upper))
-  (define-key smerge-mode-map (kbd "a") (function smerge-keep-all))
-  (define-key smerge-mode-map (kbd "c") (function smerge-keep-current))
-  (define-key smerge-mode-map (kbd "l") (function smerge-keep-lower))
+(after! git-gutter
+  (global-git-gutter-mode +1))
+
+(defhydra hydra-git-gutter (:body-pre (git-gutter-mode 1)
+                            :hint nil)
+  "
+    Git gutter:
+      _j_: next hunk        _s_tage hunk     _q_uit
+      _k_: previous hunk    _r_evert hunk    _Q_uit and deactivate git-gutter
+      ^ ^                   _p_opup hunk
+      _h_: first hunk
+      _l_: last hunk        set start _R_evision
+    "
+  ("j" git-gutter:next-hunk)
+  ("k" git-gutter:previous-hunk)
+  ("h" (progn (goto-char (point-min))
+              (git-gutter:next-hunk 1)))
+  ("l" (progn (goto-char (point-min))
+              (git-gutter:previous-hunk 1)))
+  ("s" git-gutter:stage-hunk)
+  ("r" git-gutter:revert-hunk)
+  ("p" git-gutter:popup-hunk)
+  ("R" git-gutter:set-start-revision)
+  ("q" nil :color blue)
+  ("Q" (progn (git-gutter-mode -1)
+                                        ; git-gutter-fringe doesn't seem to
+                                        ; clear the markup right away
+              (sit-for 0.1)
+              (with-no-warnings
+                (git-gutter:clear)
+                ))
+   :color blue))
+
+(global-set-key (kbd "M-g M-g") (function hydra-git-gutter/body))
+ #+END_SRC
+
+* Diff mode
+Show white spaces in diff mode
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'diff-mode-hook (lambda ()
+                              (setq-local whitespace-style
+                                          '(face
+                                            tabs
+                                            tab-mark
+                                            spaces
+                                            space-mark
+                                            trailing
+                                            indentation::space
+                                            indentation::tab
+                                            newline
+                                            newline-mark))
+                              (whitespace-mode 1)))
  #+END_SRC

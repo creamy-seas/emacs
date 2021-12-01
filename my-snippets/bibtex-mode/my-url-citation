@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: url
+# key: url
+# --
+@online{${1:cite-key},
+    title = ${2:title},
+    url = ${3:url},
+    urldate = ${4:access-date}
+}

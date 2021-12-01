@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: my-autoref
+# key: ar
+# --
+\\${1:auto}ref{${2}}

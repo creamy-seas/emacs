@@ -1,7 +1,0 @@
-file-icons.ttf
-fontawesome.ttf
-ocitcons.ttf
-weathericons.ttf
-material-design-icons.ttf
-all-the-icons.ttf
-inconsolata.ttf

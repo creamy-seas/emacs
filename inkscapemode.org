@@ -1,14 +1,7 @@
 #+TITLE: Inkscape Integration
 #+STARTUP: overview
-#+PROPERTY: header-args :tangle yes
 
 To export an inkscape image for latex interactively, open =.svg= file → save as → =.pdf= → =omit text= → use exported object size
-
-* Dependencies
-#+BEGIN_SRC emacs-lisp
-  (my/add-dependency "fswatch")
-  (my/add-dependency "inkscape")
- #+END_SRC
 
 |------------+-------------------------------------------------------------------------------------|
 | =inkscape= | old but versatile svg editor                                                        |
@@ -17,11 +10,29 @@ To export an inkscape image for latex interactively, open =.svg= file → save a
 
 * General Parameters
 #+BEGIN_SRC emacs-lisp
-  (defvar my/inkscape/generate-script (my/config-file-path-evaluate "my-scripts/inkscape/inkscape_generate.sh"))
-  (defvar my/inkscape/template-file (my/config-file-path-evaluate "my-scripts/inkscape/inkscape_template.svg"))
+(defvar my/inkscape/generate-script (concat doom-private-dir "my-scripts/inkscape/inkscape_generate.sh"))
+(defvar my/inkscape/template-file (concat doom-private-dir "my-scripts/inkscape/inkscape_template.svg"))
+(defvar my/inkscape/running-processes nil)
+ #+END_SRC
+* Supress showing inkscape generation buffer
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'display-buffer-alist
+               '("InkscapeGenerating:*"
+                 (display-buffer-no-window)))
  #+END_SRC
 
-* Common
+* Functions
+** =my/kill-buffer-process=
+#+BEGIN_SRC emacs-lisp
+  (defun my/kill-buffer-process (process-buffer-name)
+    "Kills the process running in the current 'buffer-name'"
+
+    ;; 1 - evaluate the process running in the buffer
+    (let* ((process (get-buffer-process process-buffer-name)))
+      ;; 2 - close buffer and ignore warnings
+      (ignore-errors (set-process-query-on-exit-flag process nil)
+                     (kill-buffer process-buffer-name))))
+ #+END_SRC
 ** =my/inkscape/kill=
 #+BEGIN_SRC emacs-lisp
   (defun my/inkscape/kill ()
@@ -55,17 +66,6 @@ To export an inkscape image for latex interactively, open =.svg= file → save a
     (message "🦑 Killed all processes"))
  #+END_SRC
 
-** =my/kill-buffer-process=
-#+BEGIN_SRC emacs-lisp
-  (defun my/kill-buffer-process (process-buffer-name)
-    "Kills the process running in the current 'buffer-name'"
-
-    ;; 1 - evaluate the process running in the buffer
-    (let* ((process (get-buffer-process process-buffer-name)))
-      ;; 2 - close buffer and ignore warnings
-      (ignore-errors (set-process-query-on-exit-flag process nil)
-                     (kill-buffer process-buffer-name))))
- #+END_SRC
 * Org
 ** =my/inkscape/org/prepare=
 #+BEGIN_SRC emacs-lisp
@@ -122,7 +122,18 @@ To export an inkscape image for latex interactively, open =.svg= file → save a
     (my/inkscape/org/generate my/inkscape/org/file-name)
     )
  #+END_SRC
-
+** =my/inkscape/org/load=
+#+BEGIN_SRC emacs-lisp
+  (defun my/inkscape/org/load ()
+    "Prompts user to select an .svg file from the 'images_inkscape' directory and opens it"
+    (interactive)
+    (let* ((svg-file-list (directory-files
+                           "images_inkscape"
+                           nil ".*\.svg"))
+           (svg-selected (ido-completing-read "🦑 Inkscape file to open: " svg-file-list))
+           (base-filename (replace-regexp-in-string "\.svg" "" svg-selected)))
+      (my/inkscape/org/generate base-filename)))
+ #+END_SRC
 * Latex
 ** =my/inkscape/latex/prepare=
 #+BEGIN_SRC emacs-lisp
@@ -249,10 +260,4 @@ To export an inkscape image for latex interactively, open =.svg= file → save a
     (define-key LaTeX-mode-map (kbd "C-x i") (function hydra-inkscape/body)))
 
   (define-key org-mode-map (kbd "C-x i") (function hydra-inkscape-org/body))
- #+END_SRC
-* Supress showing inkscape generation buffer
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'display-buffer-alist
-               '("InkscapeGenerating.*"
-                 (display-buffer-no-window)))
  #+END_SRC

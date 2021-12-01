@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: my-source-block
+# key: sb
+# --
+#+NAME: ${1:name-of-block}
+#+HEADER: :session ${2:session}
+#+HEADER: :noweb ${3:yes}
+#+HEADER: :exports ${4:$$(yas-choose-value '("results" "code" "both" "none"))}
+#+HEADER: :results ${5:$$(yas-choose-value '("value replace" "silent" "output" "value append"))}
+#+HEADER: :eval ${6:$$(yas-choose-value '("yes" "query" "no"))}
