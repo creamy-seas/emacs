@@ -1,5 +1,10 @@
 #+TITLE: Ricing
 
+* Welcome screen
+#+begin_src emacs-lisp
+(setq fancy-splash-image "~/.doom.d/my-files/doom-black-hole.png")
+#+end_src
+
 * DOWN Cursor
 #+BEGIN_SRC emacs-lisp :tangle no
   (set-default 'cursor-type 'hollow)
@@ -77,8 +82,6 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 #+END_SRC
-
-
 * Unicode
 Display a whale 🐳 as an icon and not an emoji
 #+BEGIN_SRC emacs-lisp

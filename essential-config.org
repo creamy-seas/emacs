@@ -48,19 +48,19 @@ Whenever an org file specifying configuration is saved
 3. Reload doom
 
 #+BEGIN_SRC emacs-lisp
-(defun my/config-file-tangle ()
-  "Should be run after saving every file - check if it is a config file in the doom directory and tangle if yes"
-  (if (and
-       (equal (file-name-extension (buffer-file-name)) "org")
-       (not (equal (file-name-base (buffer-file-name)) "cheatsheet"))
-       (equal (file-name-directory (buffer-file-name)) (expand-file-name doom-private-dir)))
-        ;; Tangle the file and bytecompile it
-      (let ((el-file-name (replace-regexp-in-string "\\.org" ".el" buffer-file-name)))
-          (org-babel-tangle-file buffer-file-name el-file-name "emacs-lisp")
-          (byte-compile-file el-file-name t)
-          ;;(doom/reload)
-          (message (concat " Compiled and loaded " el-file-name)))))
-(add-hook 'after-save-hook 'my/config-file-tangle)
+  (defun my/config-file-tangle ()
+    "Should be run after saving every file - check if it is a config file in the doom directory and tangle if yes"
+    (if (and
+         (equal (file-name-extension (buffer-file-name)) "org")
+         (not (equal (file-name-base (buffer-file-name)) "cheatsheet"))
+         (equal (file-name-directory (buffer-file-name)) (expand-file-name doom-private-dir)))
+          ;; Tangle the file and bytecompile it
+        (let ((el-file-name (replace-regexp-in-string "\\.org" ".el" buffer-file-name)))
+            (org-babel-tangle-file buffer-file-name el-file-name "emacs-lisp")
+            (byte-compile-file el-file-name t)
+            ;;(doom/reload)
+            (message (concat " Compiled and loaded " el-file-name)))))
+  (add-hook 'after-save-hook 'my/config-file-tangle)
  #+END_SRC
 * My keymap
 

@@ -2,3 +2,6 @@
 *.elc
 \.DS*
 __pycache__
+!init.el
+!config.el
+!packages.el

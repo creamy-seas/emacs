@@ -1,6 +1,5 @@
 #+TITLE: Personal config of orgmode
 
-
 * Agenda view
 #+BEGIN_SRC emacs-lisp
 (setq org-agenda-custom-commands '(("c" "Simple agenda view" ((agenda "" nil)) nil)

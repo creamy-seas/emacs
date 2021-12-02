@@ -2,7 +2,6 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-
 | M-x git-time-machine | Preview file                                    |
 |----------------------+-------------------------------------------------|
 | *Forge*              |                                                 |
