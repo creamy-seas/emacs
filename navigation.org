@@ -1,5 +1,11 @@
 #+TITLE: Navigation
 
+* Projectile
+#+begin_src emacs-lisp
+(after! counsel-projectile
+  (setcar counsel-projectile-switch-project-action 14))
+#+end_src
+
 * Buffers
 ** Moving in subwords
 #+BEGIN_SRC emacs-lisp

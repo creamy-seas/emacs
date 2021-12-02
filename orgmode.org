@@ -192,13 +192,13 @@ You can type =<el= and the =TAB= to create the desired source block
 (after! org
   (add-to-list 'org-modules 'org-tempo t)
   (add-to-list 'org-structure-template-alist
-               '("el" . "src"))
+               '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist
-               '("py" . "src"))
+               '("py" . "src python"))
   (add-to-list 'org-structure-template-alist
                '("pyi" . "src_python[:session ?]{}"))
   (add-to-list 'org-structure-template-alist
-               '("sh" . "src")))
+               '("sh" . "src shell")))
 #+END_SRC
 * PACKAGE Ox-reveal
 - Presentations can be hosted from github - look at video 50.
