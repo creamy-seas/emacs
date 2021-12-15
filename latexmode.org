@@ -55,13 +55,14 @@ Setup with skim
 2. Make sure that =emacsclient= is linked to the binary from the running emacs installation
 3. In Skim, go to preferences and select Emacs
 
+
 * General setup
 #+begin_src emacs-lisp
 (after! tex
-  (setq-default TeX-show-compilation t))
+  (setq-default TeX-show-compilation t)
+  ;; (add-hook 'find-file-hook 'TeX-fold-buffer t)
+  (add-hook 'TeX-mode-hook 'prettify-symbols-mode))
 ;; Opening a LaTeX file will format titles, equations, textbg etc
-(add-hook 'find-file-hook 'TeX-fold-buffer t)
-(add-hook 'TeX-mode-hook 'prettify-symbols-mode)
 
 #+end_src
 
@@ -140,6 +141,16 @@ It would be a mumble jumble like with a lot of escapes
                              (2 'my/face/latex-title t))))
  #+END_SRC
 
+* Latex export
+
+
+#+begin_src emacs-lisp
+(after! org
+  ;; Use imagemagick for export
+  (setq org-preview-latex-default-process 'imagemagick)
+  (add-to-list 'org-latex-packages-alist '("" "ketbra" t)))
+#+end_src
+(setq org-latex-packages-alist '("\\usepackage{ketbra}"))
 * DOWN =my/latex/save-buffer=       =C-x C-s=
 #+BEGIN_SRC emacs-lisp
 (defun my/latex/buffer-fill-column ()

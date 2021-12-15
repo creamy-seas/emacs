@@ -91,43 +91,31 @@ To kill gpg agent and dump passwords
 - [[https://www.djcbsoftware.nl/code/mu/cheatsheet.html][mu cheatsheet]]
 
 * External setup
-** Setup
-1. Remeber to run the setup in [[https://www.djcbsoftware.nl/code/mu/mu4e/Getting-started.html#Getting-started][this tutorial]] for doing external setup
-2. https://etienne.depar.is/emacs.d/mu4e.html
-3. http://kitchingroup.cheme.cmu.edu/blog/2016/10/29/Sending-html-emails-from-org-mode-with-org-mime/
-** MANUAL-PACKAGE Initial setup
-- mu4e works tightly with mu. As a result, part of the configuration is set in mu.
-- In order to setup the mail database, you need to run the following
-
-#+BEGIN_SRC shell
- mu init --maildir="~/db_mail" --my-address="ilya.antonov@dreams-ai.com" --my-address="ilya.antonov24@ntlworld" --my-address="antonov.ilya225@gmail.com" --my-address="ilya.antonov.2013@live.rhul.ac.uk"
- #+END_SRC
-
-- Then index the messages with:
-#+BEGIN_SRC shell
- mu index
- #+END_SRC
-
-You can then run
-#+BEGIN_SRC shell
- mu info
- #+END_SRC
-
-to get information on the install
-** Password file
-Make password file and put it into the email folder ="~/db_mail/.pswd_mail.gpg"=
-#+BEGIN_SRC text
-EMAIL password PASSWORD
-#+END_SRC
-
-** What to install
+** 1. What to install
 | =mu=          | indexer and searcher              |
 | =offlineimap= | for the emailserver               |
 | =w3m=         | text based webrowser to show html |
 | =openssl=     | Encryption and certificates       |
 | =msmtp=       |                                   |
 
-** Offlineimap (fetching mail)
+** 2. Password file
+Make password file and put it into the email folder ="~/db_mail/.pswd_mail.gpg"=
+#+BEGIN_SRC text
+EMAIL password PASSWORD
+#+END_SRC
+
+Or install pass and add the key
+#+begin_src shell
+pass init KEY-NAME
+#+end_src
+
+and add the passwords
+
+#+begin_src shell
+pass insert a@gmail.com
+#+end_src
+
+** 3. Offlineimap (fetching mail)
 *** Set the =~/.offlineimaprc=
 - Example for 4 accounts
 - See [[*Certificates][Certificates]] and [[*SSL certificate][SSL certificate]]
@@ -295,7 +283,33 @@ It should return a done, code0
 SSL_CERT_DIR="" openssl s_client -connect imap.SERVERTHATYOUCHOOSE.com:993 < /dev/null 2>/dev/null | openssl x509 -fingerprint -noout -text -in /dev/stdin
 #+END_SRC
 - Copy over the =SHA1 Fingerprint= to =cert_fingerprint= in =.offlineimaprc=
+*** Run sync
+#+begin_src shell
+offlineimap
+#+end_src
+** 3. Setup mu4e
+1. Remeber to run the setup in [[https://www.djcbsoftware.nl/code/mu/mu4e/Getting-started.html#Getting-started][this tutorial]] for doing external setup
+2. https://etienne.depar.is/emacs.d/mu4e.html
+3. http://kitchingroup.cheme.cmu.edu/blog/2016/10/29/Sending-html-emails-from-org-mode-with-org-mime/
 
+mu4e works tightly with mu. As a result, part of the configuration is set in mu.
+In order to setup the mail database, you need to run the following
+
+#+BEGIN_SRC shell
+ mu init --maildir="~/db_mail" --my-address="ilya.antonov@dreams-ai.com" --my-address="ilya.antonov24@ntlworld.com" --my-address="antonov.ilya225@gmail.com" --my-address="ilya.antonov.2013@live.rhul.ac.uk"
+#+END_SRC
+
+- Then index the messages with:
+#+BEGIN_SRC shell
+ mu index
+ #+END_SRC
+
+You can then run
+#+BEGIN_SRC shell
+ mu info
+ #+END_SRC
+
+to get information on the install
 ** Sending mail =mstmp=
 Configuration file something like:
 #+BEGIN_SRC text
@@ -410,7 +424,7 @@ or
 
 ** Google authentication
 - With google, you need to allow unknow applications to have access to the account
-- go to =https://myaccount.google.com/lesssecureapps=
+- go to https://myaccount.google.com/lesssecureapps
 - allow all applications
 - https://myaccount.google.com/u/4/security
 
@@ -451,7 +465,7 @@ Create a new label in Google Mail. Next time it will sync to computer
   )
  #+END_SRC
 
-** DOWN Overriding defaults
+** Overriding defaults
 #+BEGIN_SRC emacs-lisp :tangle no
 (after! mu4e
   (setq message-citation-line-format "%N @ %Y-%m-%d %H:%M %Z:\n")
@@ -563,7 +577,7 @@ Remember to run [[*Initial setup][Initial setup]]
 ** Load the accounts
 #+BEGIN_SRC emacs-lisp
 (after! mu4e
-  (setq mu4e-context-policy ''always-ask
+  (setq mu4e-context-policy 'always-ask
         mu4e-compose-context-policy 'always-ask
         mu4e-contexts
         (list my/mu4e/context-outlook

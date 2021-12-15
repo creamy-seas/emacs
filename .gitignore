@@ -5,3 +5,4 @@ __pycache__
 !init.el
 !config.el
 !packages.el
+pyc

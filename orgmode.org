@@ -176,6 +176,9 @@ What languages can be evaluated in org buffers by hitting =C-c C-c=
   (define-key org-mode-map (kbd "C-c l") 'org-store-link)
   (define-key org-mode-map (kbd "C-c C-l") 'org-insert-link)
   (define-key org-mode-map (kbd "C-c #") (function org-time-stamp-inactive)))
+
+(unbind-key (kbd "a") 'doom-leader-map)
+(global-set-key (kbd "C-c a") 'org-agenda)
 #+end_src
 * Org bullets
 

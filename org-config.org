@@ -3,11 +3,16 @@
 * Agenda view
 #+BEGIN_SRC emacs-lisp
 (setq org-agenda-custom-commands '(("c" "Simple agenda view" ((agenda "" nil)) nil)
-                                   ("i" "卍 My summary 卍" ((todo "PHD" ((org-agenda-sorting-strategy '(deadline-up)) (org-agenda-span 'fortnight) (org-agenda-overriding-header "Quantum Physics!")))
+                                   ("i" "My summary" ((todo "PHD" ((org-agenda-sorting-strategy '(deadline-up)) (org-agenda-span 'fortnight) (org-agenda-overriding-header "Quantum Physics!")))
                                                             (todo "BLOAT" ((org-agenda-span 'day) (org-agenda-overriding-header "Stuff at home")))
                                                             (todo "HOUSE" ((org-agenda-span 'fortnight) (org-agenda-overriding-header "Renovation")))
                                                             (todo "SINO|REACH|DREAMS-AI" ((org-agenda-overriding-header "Dreams-AI") (org-agenda-span 'fortnight))))
                                     nil nil)))
+(defun my/open-my-summary ()
+  (org-agenda "i"))
+
+(after! org
+  (global-set-key (kbd "C-c n i") 'my/open-my-summary))
 #+END_SRC
 * Org files to monitor
 
@@ -170,10 +175,10 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
                            entry
                            (id "drill-lotr")
                            "** %^{Title} :drill:
-Added: %U
     :PROPERTIES:
     :DRILL_CARD_TYPE: twosided
     :END:
+ Added: %U
 ,*** Definition
 %?
 "
@@ -182,10 +187,10 @@ Added: %U
                            entry
                            (id "drill-dune")
                            "** %^{Title} :drill:
-Added: %U
     :PROPERTIES:
     :DRILL_CARD_TYPE: twosided
     :END:
+Added: %U
 ,*** Definition
 %?
 "
@@ -194,13 +199,24 @@ Added: %U
                            entry
                            (id "drill-church")
                            "** %^{Title} :drill:
-Added: %U
     :PROPERTIES:
     :DRILL_CARD_TYPE: twosided
     :END:
+Added: %U
 ,*** Definition
 %?
 "
+                           ))
+  (my/org/add-to-capture '("S" "Stoicism"
+                           entry
+                           (id "drill-stoic")
+                           "** %^{Title} :drill:
+:PROPERTIES:
+:DRILL_CARD_TYPE: twosided
+:END:
+Added: %U
+,*** Definition
+%?"
                            ))
   )
 #+end_src

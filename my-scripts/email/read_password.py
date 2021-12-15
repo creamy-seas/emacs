@@ -30,10 +30,39 @@ def get_pswd(path):
         ["gpg", "--quiet", "--batch", "-d", os.path.expanduser(path)]
     ).strip()
 
+#!/usr/bin/env python
+
+from subprocess import check_output
+from re import sub
+
+def get_pass(account):
+    data = check_output("/usr/local/bin/pass " + account, shell=True).splitlines()
+    password = data[0]
+
+    # print("----------")
+    # print(password)
+    # print(account)
+    # print("----------")
+
+    return {"password": password, "user": account}
+
+def folder_filter(name):
+    return not (name in ['INBOX',
+                         '[Gmail]/Spam',
+                         '[Gmail]/Important',
+                         '[Gmail]/Starred'] or
+                name.startswith('[Airmail]'))
+
+def nametrans(name):
+    """Translation of golder names"""
+    return sub('^(Starred|Sent Mail|Drafts|Trash|All Mail|Spam)$', '[Gmail]/\\1', name)
+
+def nametrans_reverse(name):
+    return sub('^(\[Gmail\]/)', '', name)
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("-u", "--user", required=True, help="user")
     args = vars(ap.parse_args())
 
-    print(get_password_emacs(args["user"]))
+    print(get_pass(args["user"])["password"].decode("utf-8"))

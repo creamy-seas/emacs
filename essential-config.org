@@ -2,6 +2,11 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
+* Yes or no
+#+begin_src emacs-lisp
+(defalias 'yes-or-no-p 'y-or-n-p)
+#+end_src
+
 * IDO mode
 #+begin_src emacs-lisp
 (ido-vertical-mode 1)
