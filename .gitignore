@@ -6,3 +6,4 @@ __pycache__
 !config.el
 !packages.el
 pyc
+*.pyc

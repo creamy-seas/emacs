@@ -654,28 +654,36 @@ Then add them here
   (setq gnus-dired-mail-mode 'mu4e-user-agent)
   (add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
  #+END_SRC
-* DOWN Syncing mail =my/update-mu4e=
- #+BEGIN_SRC emacs-lisp :tangle no
+* Syncing mail =my/update-mu4e=
+ #+BEGIN_SRC emacs-lisp
+(setq mu4e~update-mail-mode-hook (lambda ()
+                                   (epa-decrypt-file
+     (concat doom-private-dir "my-files/gpg/load_password_dummy_file.gpg") "/dev/null")))
+
 (defun my/mu4e/update ()
   (interactive)
-  (let ((last-venv pyvenv-virtual-env-name))
+  (let (
+        ;; (last-venv pyvenv-virtual-env-name)
+        )
 
     ;; (message (concat ">>>> Set my/python/last-venv to " last-venv))
     ;; (pyvenv-workon "imap")
-    (pyvenv-deactivate)
+    ;; (pyvenv-deactivate)
     ;; (message ">>>> deactivated")
 
     ;;(exec-path-from-shell-initialize)
 
     (message ">>>> decrypting dummy file")
     (epa-decrypt-file
-     (concat user-emacs-directory "my-files/gpg/load_password_dummy_file.gpg") "/dev/null")
+     (concat doom-private-dir "my-files/gpg/load_password_dummy_file.gpg") "/dev/null")
 
     ;; (message ">>>> updating")
     (mu4e-update-mail-and-index t)
 
-    (message (concat " (((cringe incoming))) " last-venv))
-    (pyvenv-workon last-venv)))
+    ;; (message (concat " (((cringe incoming))) " last-venv))
+    ;; (pyvenv-workon last-venv)
+    ))
+(global-set-key (kbd "C-C M U") 'my/mu4e/update)
  #+END_SRC
 * New mail alert
 #+begin_src emacs-lisp
