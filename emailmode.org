@@ -656,7 +656,7 @@ Then add them here
  #+END_SRC
 * Syncing mail =my/update-mu4e=
  #+BEGIN_SRC emacs-lisp
-(setq mu4e~update-mail-mode-hook (lambda ()
+(setq mu4e-update-pre-hook (lambda ()
                                    (epa-decrypt-file
      (concat doom-private-dir "my-files/gpg/load_password_dummy_file.gpg") "/dev/null")))
 

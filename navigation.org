@@ -1,5 +1,64 @@
 #+TITLE: Navigation
 
+* Dired+
+Beautiful file browsing. Dired+ is downloaded manually
+| =e=       | to preview file                                 |
+| =a=       | go to file or directory and close dired bufffer |
+| =v=       | preview                                         |
+| =o=       | open in new window                              |
+| =m/u=     | mark/unmark                                     |
+| =+=       | add directory                                   |
+| =r=       | rename                                          |
+| =R=       | move mass                                       |
+| =*=       | regexp                                          |
+| =C-x C-q= | rename then =C-c C-c=                           |
+| =M=       | change mode                                     |
+| =c=       | compress                                        |
+
+** Activate globally
+#+BEGIN_SRC emacs-lisp
+(add-hook 'dired-mode-hook (lambda () (dired-omit-mode)))
+(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+ #+END_SRC
+** Sorting
+#+BEGIN_SRC emacs-lisp
+(after! dired+
+  (setq dired-listing-switches "-aBhl")
+  (setq dired-hide-details-mode t))
+ #+END_SRC
+** Omissions and ignores (Can be hidden with =C-x M-o=)
+| Applied to              | Face                       |                                |
+|-------------------------+----------------------------+--------------------------------|
+| =dired-omit-extensions= | =diredp-ignored-file-name= | grey + red box                 |
+| =diredp-omit-files=     | =diredp-omit-file-name=    | red strikeout + grey + red box |
+
+*** =dired-omit-extensions=
+#+BEGIN_SRC emacs-lisp
+(after! dired+
+  (add-to-list 'dired-omit-extensions "git")
+  (add-to-list 'dired-omit-extensions "gitignore")
+  (add-to-list 'dired-omit-extensions "coverage")
+
+  (custom-set-faces
+   '(diredp-ignored-file-name ((t (:foreground "#b0bec5" :box (:line-width 2 :color "VioletRed3" :style pressed-button)))))))
+ #+END_SRC
+*** =dired-omit-files=
+#+BEGIN_SRC emacs-lisp
+(after! dired+
+  (setq dired-omit-files "^\\.?#\\|^\\.$\\|__pycache__")
+
+  (custom-set-faces
+   '(diredp-omit-file-name ((t (
+                                :inherit diredp-ignore-file-name
+                                :foreground "#b0bec5" :strike-through "#C29D6F156F15"))))))
+
+ #+END_SRC
+** Keybindings
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-x C-d") (function diredp-dired-plus-help))
+
+  (define-key dired-mode-map (kbd "<right>") (function dired-find-file-other-window))
+ #+END_SRC
 * Projectile
 #+begin_src emacs-lisp
 (after! counsel-projectile

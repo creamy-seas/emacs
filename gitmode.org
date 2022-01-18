@@ -21,11 +21,11 @@
 - Ghub is used to deal with tokens from github and gitlab. [[https://magit.vc/manual/ghub/index.html][Read about it here]]
 - If using github, tokens will be generated automatically. However if you are using Gitlab you will need to manually create the tokens:
 - Go to https://gitlab.com/profile/personal_access_tokens and create a token, *ticking the api checkbox*
-- Copy over the token to the =~/authinfo= file
+- Copy over the token to the =~/.authinfo.info= file (emacs will NEED to encrypt it!)
 #+begin_example
   machine gitlab.com/api/v4 login <GITLAB_USERNAME>^forge password <TOKEN>
 #+end_example
-where =<GITLAB_USERNAME>= is your gitlab name and =<TOKEN>= is what was generated on the page
+where =<GITLAB_USERNAME>= is your gitlab name and =<TOKEN>= is what was generated on the page and there must be a newline!
 - To ignore file chmod changes
 #+BEGIN_SRC shell
 git config core.fileMode false

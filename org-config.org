@@ -2,10 +2,12 @@
 
 * Agenda view
 #+BEGIN_SRC emacs-lisp
-(setq org-agenda-custom-commands '(("c" "Simple agenda view" ((agenda "" nil)) nil)
+(setq org-agenda-custom-commands '(("c" "Simple agenda view"
+                                    ((agenda "" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'regexp ":drill:"))))) nil)
+
                                    ("i" "My summary" ((todo "PHD" ((org-agenda-sorting-strategy '(deadline-up)) (org-agenda-span 'fortnight) (org-agenda-overriding-header "Quantum Physics!")))
                                                             (todo "BLOAT" ((org-agenda-span 'day) (org-agenda-overriding-header "Stuff at home")))
-                                                            (todo "HOUSE" ((org-agenda-span 'fortnight) (org-agenda-overriding-header "Renovation")))
+                                                            ;;(todo "HOUSE" ((org-agenda-span 'fortnight) (org-agenda-overriding-header "Renovation")))
                                                             (todo "SINO|REACH|DREAMS-AI" ((org-agenda-overriding-header "Dreams-AI") (org-agenda-span 'fortnight))))
                                     nil nil)))
 (defun my/open-my-summary ()
@@ -171,12 +173,33 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
 ** Drills
 #+begin_src emacs-lisp
 (after! org
+  (my/org/add-to-capture '("A" "Democracy: The God that Failed"
+                           entry
+                           (id "drill-dem")
+                           "** %^{Title} :drill:
+    :PROPERTIES:
+    :END:
+ Added: %U
+,*** Definition
+%?
+"
+                           ))
+  (my/org/add-to-capture '("M" "Myth"
+                           entry
+                           (id "drill-myth")
+                           "** %^{Title} :drill:
+    :PROPERTIES:
+    :END:
+ Added: %U
+,*** Definition
+%?
+"
+                           ))
   (my/org/add-to-capture '("L" "Lord of the Rings"
                            entry
                            (id "drill-lotr")
                            "** %^{Title} :drill:
-    :PROPERTIES:
-    :DRILL_CARD_TYPE: twosided
+    :PROPERTIES::
     :END:
  Added: %U
 ,*** Definition
@@ -187,8 +210,7 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
                            entry
                            (id "drill-dune")
                            "** %^{Title} :drill:
-    :PROPERTIES:
-    :DRILL_CARD_TYPE: twosided
+    :PROPERTIES::
     :END:
 Added: %U
 ,*** Definition
@@ -199,8 +221,7 @@ Added: %U
                            entry
                            (id "drill-church")
                            "** %^{Title} :drill:
-    :PROPERTIES:
-    :DRILL_CARD_TYPE: twosided
+    :PROPERTIES::
     :END:
 Added: %U
 ,*** Definition
@@ -220,6 +241,9 @@ Added: %U
                            ))
   )
 #+end_src
+
+#+RESULTS:
+| S | Stoicism | entry | (id drill-stoic) | ** %^{Title} :drill: |
 
 * Org keywords =C-c C-t=
 #+BEGIN_SRC emacs-lisp

@@ -14,9 +14,12 @@
 (package! org-drill) ;; anki!
 (package! grip-mode) ;; preview markdown
 (package! org-bullets)
+(package! dired+)
+(package! all-the-icons-dired)
 (package! eyebrowse) ;; mutliple tabs
 (package! switch-window) ;; suggest asdf for window movement
 (package! beacon) ;;pretty trail
+(package! vue-mode)
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;(package! some-package)
