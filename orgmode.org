@@ -197,6 +197,8 @@ You can type =<el= and the =TAB= to create the desired source block
   (add-to-list 'org-structure-template-alist
                '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist
+               '("cl" . "src common-lisp"))
+  (add-to-list 'org-structure-template-alist
                '("py" . "src python"))
   (add-to-list 'org-structure-template-alist
                '("pyi" . "src_python[:session ?]{}"))

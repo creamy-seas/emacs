@@ -1,3 +1,5 @@
+| Babel | Compiler |
+
 * Typescript
 #+begin_src emacs-lisp
 (add-hook 'typescript-mode-hook (lambda ()
@@ -5,6 +7,21 @@
                                   ;; (setq tab-width 2
                                   typescript-indent-level 2
                                   ))
+#+end_src
+
+* Vue
+Need to run the install the language server globally
+
+#+begin_src shell
+npm install vls -g
+#+end_src
+
+#+begin_src emacs-lisp
+(setq lsp-eslint-validate '("svelte" "vue"))
+(setq-hook! 'vue-mode-hook +format-with-lsp nil)
+;; (add-hook 'vue-mode-hook #'lsp!)
+(add-hook 'vue-mode-hook (lambda ()
+                           (setq js-indent-level 4)))
 #+end_src
 
 #+BEGIN_SRC emacs-lisp
