@@ -223,7 +223,7 @@ If you don't want the Helm window to be resized, you can set helm-autoresize-max
 
   (global-set-key (kbd "C-C h C-f") 'helm-find-files)
 
-  (global-set-key (kbd "C-x C-b") 'helm-mini)
+  (global-set-key (kbd "C-x b") 'helm-mini)
 
   (global-set-key (kbd "M-y") 'helm-show-kill-ring)
 
@@ -296,7 +296,7 @@ Allows to select a word, and run through all the matches
 Buffer that groups other buffers
 ** Init
 #+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-x b") 'ibuffer)
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
   (setq ibuffer-saved-filter-groups
         (quote (("default"
                  (" Magit" (or

@@ -34,10 +34,10 @@ Little function to help with formulas
                ((org-agenda-span
                  (quote day))
                 (org-agenda-overriding-header "Stuff at home")))
-         (todo "HOUSE"
-               ((org-agenda-span
-                 (quote fortnight))
-                (org-agenda-overriding-header "Renovation")))
+         ;; (todo "HOUSE"
+         ;; ((org-agenda-span
+         ;; (quote fortnight))
+         ;; (org-agenda-overriding-header "Renovation")))
          (todo "SINO|REACH|DREAMS-AI"
                ((org-agenda-overriding-header "Dreams-AI")
                 (org-agenda-span
@@ -45,20 +45,21 @@ Little function to help with formulas
         nil nil))))
    '(org-log-reschedule (quote note)))
  #+END_SRC
-* CONFIG Org files to monitor
+* Org files to monitor
 #+BEGIN_SRC emacs-lisp
   (setq org-agenda-files (list "~/creamy_seas/antlers.org"
                                "~/creamy_seas/monday_starts_on_saturday/adventure_brief.org"
                                "~/creamy_seas/monday_starts_on_saturday/cqps/cqps_notes.org"
                                "~/creamy_seas/monday_starts_on_saturday/photon/photon_counting_notes.org"
                                "~/creamy_seas/monday_starts_on_saturday/lab-results/log_file.org"
-                               "~/Google Drive/renovation/plan-file.org"
+                               "~/creamy_seas/drill.org"
                                ;; "~/mydrive/people.org"
                                "~/mydrive/east-data-company.org"
-                               "~/mydrive/adv21_reachingway/adventure_brief.org"))
+                               "~/mydrive/adv21_reachingway/adventure_brief.org"
+                               "~/mydrive/adv25_simulations/adventure-brief.org"))
  #+END_SRC
 
-* CONFIG Capturing templates   =C-c c=
+* Capturing templates   =C-c c=
 Emacs/orgmode has an intense feature where you can quickly call upon templates to insert into your org files.
 
 *The structure of the template is the following*:
@@ -188,42 +189,77 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
            entry (id "stories")
            "** %^{Title} %t\n%?"
            :empty-lines-after 1)))
-  ;; tutoring
-  ;; ("t" "Tutoring lessons")
-  ;; ("tw" "Nikhil Lesson (Winchester)" table-line (id "tutoring-nikhil-invoice")
-  ;;  "| # | %^u | %^{lesson summary} | 120%? | |"
-  ;;  :table-line-pos "III-1")
-  ;; ("tn" "Nathan Lesson" table-line (id "tutoring-nathan-invoice")
-  ;;  "| # | %^u | %^{lesson summary} | 45%? | |"
-  ;;  :table-line-pos "III-1")
-  ;; ("td" "Darrens Programming" table-line (id "tutoring-darren-invoice")
-  ;;  "| # | %^u | %^{lesson summary} | 50%? | |"
-  ;;  :table-line-pos "III-1")
-  ;; ("f" "Future Lesson")
-  ;; ("fw" "Nikhil Lesson (Winchester)" entry (id "tutoring-nikhil-lesson")
-  ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
-  ;; ("fn" "Nathan Lesson" entry (id "tutoring-nathan-lesson")
-  ;;  "*** TUTORING Lesson %^{location|at Home|on Skype} covering: %^{topic-to-cover}\n%^T")
-  ;; ))
- #+END_SRC
-* CONFIG Tables
-** =gradeBand=
-Evaluate of grade for Brilliant Club
-#+BEGIN_SRC emacs-lisp
-  (defmath gradeBand(score)
-    (if (< score 1)
-        "DNS"
-      (if (< score 40)
-          "Working"
-        (if (< score 50)
-            "3rd"
-          (if (< score 60)
-              "2:2"
-            (if (< score 70)
-                "2:1"
-              "1st"))))))
- #+END_SRC
-* CONFIG Todo lists    =C-c C-t=
+#+END_SRC
+** Drills
+#+begin_src emacs-lisp
+  (my/org/add-to-capture '("A" "Democracy: The God that Failed"
+                           entry
+                           (id "drill-dem")
+                           "** %^{Title} :drill:
+      :PROPERTIES:
+      :END:
+   Added: %U
+  ,*** Definition
+  %?
+  "
+                           ))
+  (my/org/add-to-capture '("M" "Myth"
+                           entry
+                           (id "drill-myth")
+                           "** %^{Title} :drill:
+      :PROPERTIES:
+      :END:
+   Added: %U
+  ,*** Definition
+  %?
+  "
+                           ))
+  (my/org/add-to-capture '("L" "Lord of the Rings"
+                           entry
+                           (id "drill-lotr")
+                           "** %^{Title} :drill:
+      :PROPERTIES::
+      :END:
+   Added: %U
+  ,*** Definition
+  %?
+  "
+                           ))
+  (my/org/add-to-capture '("D" "Dune"
+                           entry
+                           (id "drill-dune")
+                           "** %^{Title} :drill:
+      :PROPERTIES::
+      :END:
+  Added: %U
+  ,*** Definition
+  %?
+  "
+                           ))
+  (my/org/add-to-capture '("C" "Church"
+                           entry
+                           (id "drill-church")
+                           "** %^{Title} :drill:
+      :PROPERTIES::
+      :END:
+  Added: %U
+  ,*** Definition
+  %?
+  "
+                           ))
+  (my/org/add-to-capture '("S" "Stoicism"
+                           entry
+                           (id "drill-stoic")
+                           "** %^{Title} :drill:
+  :PROPERTIES:
+  :DRILL_CARD_TYPE: twosided
+  :END:
+  Added: %U
+  ,*** Definition
+  %?"
+                           ))
+#+end_src
+* Todo lists    =C-c C-t=
 These todo blocks can be put in front of any org heading with =C-c C-t=
 - Must be capital letters
 #+BEGIN_SRC emacs-lisp
@@ -243,13 +279,13 @@ These todo blocks can be put in front of any org heading with =C-c C-t=
                                       "SINO"
                                       "REACH"
                                       "|"
-                                      "DOMINATED(d)"
+                                      "DONE(d)"
+                                      "DOMINATED(x)"
                                       "PACKAGE"
                                       "MANUAL-PACKAGE"
                                       "CONFIG"
                                       "BUREUCRACY(b)"
                                       )))
-
   (setq org-todo-keyword-faces (quote (
                                        ("STARTED" . "yellow")
                                        ("CURRENT" . (:foreground "#ffff0a" :background "#754ec1" :weight bold))
@@ -263,7 +299,7 @@ These todo blocks can be put in front of any org heading with =C-c C-t=
                                        ("HOUSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
                                        ("PHD" . (:foreground "yellow" :background "#FF3333"))
                                        ("DOWN" . (:foreground "yellow" :background "#FF3333"))
-                                       ("DONE" . (:foreground "yellow" :background "#FF3333"))
+                                       ;;("DONE" . (:foreground "yellow" :background "#FF3333"))
                                        ;; ("SCHOOLS" . (:foreground "#090C42" :background "#9DFE9D"))
                                        ("Dominated" . (:foreground "#9DFE9D" :weight bold))
                                        ("BLOAT" . (:foreground "#000001" :background "#ffffff"))

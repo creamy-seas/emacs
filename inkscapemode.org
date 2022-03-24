@@ -1,4 +1,4 @@
-#+TITLE: Inkscape Integration
+#+TITLE: Inkscape Integration (and drawio)
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
@@ -19,9 +19,18 @@ To export an inkscape image for latex interactively, open =.svg= file → save a
 #+BEGIN_SRC emacs-lisp
   (defvar my/inkscape/generate-script (my/config-file-path-evaluate "my-scripts/inkscape/inkscape_generate.sh"))
   (defvar my/inkscape/template-file (my/config-file-path-evaluate "my-scripts/inkscape/inkscape_template.svg"))
+  (defvar my/drawio/generate-script (my/config-file-path-evaluate "my-scripts/inkscape/drawio_generate.sh"))
+  (defvar my/drawio/template-file (my/config-file-path-evaluate "my-scripts/inkscape/drawio_template.drawio"))
+  (defvar my/inkscape/running-processes nil)
  #+END_SRC
 
-* Common
+* Supress showing inkscape generation buffer
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'display-buffer-alist
+               '("InkscapeGenerating.*"
+                 (display-buffer-no-window)))
+ #+END_SRC
+* Functions
 ** =my/inkscape/kill=
 #+BEGIN_SRC emacs-lisp
   (defun my/inkscape/kill ()
@@ -88,8 +97,6 @@ To export an inkscape image for latex interactively, open =.svg= file → save a
  #+END_SRC
 ** =my/inkscape/org/generate=
 #+BEGIN_SRC emacs-lisp
-  (defvar my/inkscape/running-processes nil)
-
   (defun my/inkscape/org/generate (filename)
     "1) Copies an svg template to './images_inkscape/file-name.svg' (relative to the root directory of the latex project)
   2) Runs the 'my/inkscape/generate-script' that will open the file and track changes to it
@@ -133,6 +140,73 @@ To export an inkscape image for latex interactively, open =.svg= file → save a
            (svg-selected (ido-completing-read "🦑 Inkscape file to open: " svg-file-list))
            (base-filename (replace-regexp-in-string "\.svg" "" svg-selected)))
       (my/inkscape/org/generate base-filename)))
+ #+END_SRC
+* Org Drawio
+** =my/drawio/org/prepare=
+#+BEGIN_SRC emacs-lisp
+  (defun my/drawio/org/prepare ()
+    "Uses the characters on the current line to
+    1) Construct a valid filename and store it in 'my/inkscape/latex/file-name'
+    2) Insert figure snippet with the the filename filled out"
+    (let (
+          ;; 0 - evaluate filename from the current line
+          (file-name (my/generate-filename-from-line)))
+
+      ;; 1 - set the 'generated-filename' to be used in the snippet
+      (setq my/drawio/org/file-name file-name)
+
+      ;; 2 - clear the line
+      (delete-region (line-beginning-position) (line-end-position))
+
+      ;; 3 - insert snippet
+      (yas-expand-snippet (yas-lookup-snippet "my-drawio-org-insert"))))
+ #+END_SRC
+
+** =my/drawio/org/generate=
+#+BEGIN_SRC emacs-lisp
+  (defun my/drawio/org/generate (filename)
+    "1) Copies an svg template to './images_inkscape/file-name.svg' (relative to the root directory of the latex project)
+  2) Runs the 'my/inkscape/generate-script' that will open the file and track changes to it
+
+  ,** 'filename' must be a pure string without extensions **
+
+  There is a lot of file name preparation - I decided to keep the bash script as clean as possible so evaluate file paths here"
+    (let* (
+           (inkscape-dir-path (concat default-directory "drawio"))
+           (file-path (concat inkscape-dir-path "/" filename))
+           (inkscape-process-name (concat "InkscapeGenerating:" filename)))
+
+      ;; 1 - create inscape directory
+      (ignore-errors (make-directory inkscape-dir-path))
+
+      ;; 2 - add to list of running processes
+      (add-to-list 'my/inkscape/running-processes inkscape-process-name)
+
+      ;; 3 - run the inkscape
+      (async-shell-command
+       (concat my/drawio/generate-script " " file-path " " my/drawio/template-file)
+       inkscape-process-name)))
+ #+END_SRC
+** =my/drawio/org/launch=
+#+BEGIN_SRC emacs-lisp
+  (defun my/drawio/org/launch ()
+    "Runs file-name preparation step and then launched the generation command"
+    (interactive)
+    (my/drawio/org/prepare)
+    (my/drawio/org/generate my/drawio/org/file-name)
+    )
+ #+END_SRC
+** =my/inkscape/org/load=
+#+BEGIN_SRC emacs-lisp
+  (defun my/drawio/org/load ()
+    "Prompts user to select an .svg file from the 'images_inkscape' directory and opens it"
+    (interactive)
+    (let* ((svg-file-list (directory-files
+                           "images_inkscape"
+                           nil ".*\.drawio"))
+           (svg-selected (ido-completing-read "🦑 Drawio file to open: " svg-file-list))
+           (base-filename (replace-regexp-in-string "\.drawio" "" svg-selected)))
+      (my/drawio/org/generate base-filename)))
  #+END_SRC
 * Latex
 ** =my/inkscape/latex/prepare=
@@ -244,13 +318,15 @@ To export an inkscape image for latex interactively, open =.svg= file → save a
     "
         🦑 Inkscape                                                              [_q_] quit
         ^^---------------------------------------------------------------------------
-        [_g_] Generate image (uses the current line to generate filename)
-        [_l_] Load image
+        [_g_] Generate image (uses the current line to generate filename) [_l_] Load image
+        [_d_] Draw io image            [_D_] Load drawio image
         [_k_] Kill single inkscape process        [_K_] Kill ALL inkscape processes
 
         ^^---------------------------------------------------------------------------
         "
     ("g" my/inkscape/org/launch :exit t)
+    ("d" my/drawio/org/launch :exit t)
+    ("D" my/drawio/org/load)
     ("l" my/inkscape/org/load)
     ("k" my/inkscape/kill)
     ("K" my/inkscape/killall :exit t)
@@ -260,10 +336,4 @@ To export an inkscape image for latex interactively, open =.svg= file → save a
     (define-key LaTeX-mode-map (kbd "C-x i") (function hydra-inkscape/body)))
 
   (define-key org-mode-map (kbd "C-x i") (function hydra-inkscape-org/body))
- #+END_SRC
-* Supress showing inkscape generation buffer
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'display-buffer-alist
-               '("InkscapeGenerating.*"
-                 (display-buffer-no-window)))
  #+END_SRC
