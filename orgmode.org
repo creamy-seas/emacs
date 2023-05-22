@@ -16,10 +16,11 @@ Nice export template
 
 * Export
 #+BEGIN_SRC emacs-lisp
-(setq org-export-with-toc t
+(after! org
+  (setq org-export-with-toc t
       org-confirm-babel-evaluate nil
       org-export-backends '(html latex md)
-      org-html-checkbox-type 'html)
+      org-html-checkbox-type 'html))
  #+END_SRC
 
 * Capture template
@@ -113,8 +114,9 @@ Need to install on os-x terminal-notifier
     (interactive "sNotification when (e.g: 2 minutes, 60 seconds, 3 days): \nsMessage: ")
     (run-at-time time nil (lambda (msg) (terminal-notifier-notify "卍 Emacs" msg)) msg))
 
-  (setq org-show-notification-handler
-        (lambda (msg) (timed-notification nil msg)))
+  (after! org
+    (setq org-show-notification-handler
+        (lambda (msg) (timed-notification nil msg))))
  #+END_SRC
 
 * Change the ellipsis to ↴

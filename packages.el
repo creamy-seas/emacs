@@ -5,21 +5,21 @@
 ;; on the command line, then restart Emacs for the changes to take effect -- or
 ;; use 'M-x doom/reload'.
 
-(package! iedit) ;; select all
-(package! ido-vertical-mode)
+(package! iedit) ;; select all :: essential-config.org
+(package! reverse-im) ;; russian keyboard :: essential-config.org
+;;(package! ido-vertical-mode)
 (package! hungry-delete)
-(package! yasnippet-snippets)
-(package! undo-tree)
-(package! reverse-im) ;; russian keyboard
+;;(package! yasnippet-snippets)
+;;(package! undo-tree)
 (package! org-drill) ;; anki!
 (package! grip-mode) ;; preview markdown
 (package! org-bullets)
-(package! dired+)
-(package! all-the-icons-dired)
-(package! eyebrowse) ;; mutliple tabs
-(package! switch-window) ;; suggest asdf for window movement
-(package! beacon) ;;pretty trail
-(package! vue-mode)
+;;(package! dired+)
+;;(package! all-the-icons-dired)
+;;(package! switch-window) ;; suggest asdf for window movement
+(package! eyebrowse) ;; mutliple tabs :: navigation.org
+(package! beacon) ;; pretty fade of line -> ricing.org
+;;(package! vue-mode)
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;(package! some-package)

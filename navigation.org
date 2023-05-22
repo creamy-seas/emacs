@@ -123,13 +123,5 @@ The superior search method with highlighting of the leading characters.
 #+BEGIN_SRC emacs-lisp
 (use-package! switch-window
   :config
-  (setq switch-window-input-style 'minibuffer
-        switch-window-increase 8
-        switch-window-threshold 2
-        switch-window-shortcut-style 'qwerty
-        switch-window-multiple-frames t
-        switch-window-qwerty-shortcuts
-        '("a" "s" "d" "f" "g" "h" "j")
-        )
   (global-set-key (kbd "s-o") 'switch-window))
 #+END_SRC

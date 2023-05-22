@@ -7,14 +7,14 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 #+end_src
 
-* IDO mode
+* =IDO= mode
 #+begin_src emacs-lisp
-(ido-vertical-mode 1)
-(setq ido-vertical-define-keys 'C-n-and-C-p-only)
+;;(ido-vertical-mode 1)
+;;(setq ido-vertical-define-keys 'C-n-and-C-p-only)
 #+end_src
 
 * Mac keymap
-Mapping of mac right keyboard to meta
+Mapping of mac right keyboard to meta dgds
 
 #+BEGIN_SRC emacs-lisp
 (setq ns-right-option-modifier 'meta
@@ -35,15 +35,15 @@ Always kill the current buffer - for some reason it is not the default
 #+BEGIN_SRC emacs-lisp
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type t)
-(setq display-line-numbers-type nil)
+;;(setq display-line-numbers-type t)
+;;(setq display-line-numbers-type nil)
 #+END_SRC
 
 * Identification
 - GPG configuration and email
 #+BEGIN_SRC emacs-lisp
-(setq user-full-name "Ilya Antonov")
-(setq user-mail-address "ilya.antonov24@ntlworld.com")
+;;(setq user-full-name "Ilya Antonov")
+;;(setq user-mail-address "ilya.antonov24@ntlworld.com")
  #+END_SRC
 
 * Compiling of literate configuration
@@ -53,22 +53,22 @@ Whenever an org file specifying configuration is saved
 3. Reload doom
 
 #+BEGIN_SRC emacs-lisp
-  (defun my/config-file-tangle ()
-    "Should be run after saving every file - check if it is a config file in the doom directory and tangle if yes"
-    (if (and
-         (equal (file-name-extension (buffer-file-name)) "org")
-         (not (equal (file-name-base (buffer-file-name)) "cheatsheet"))
-         (equal (file-name-directory (buffer-file-name)) (expand-file-name doom-private-dir)))
-          ;; Tangle the file and bytecompile it
-        (let ((el-file-name (replace-regexp-in-string "\\.org" ".el" buffer-file-name)))
-            (org-babel-tangle-file buffer-file-name el-file-name "emacs-lisp")
-            (byte-compile-file el-file-name t)
-            ;;(doom/reload)
-            (message (concat " Compiled and loaded " el-file-name)))))
-  (add-hook 'after-save-hook 'my/config-file-tangle)
+(defun my/config-file-tangle ()
+  "Tangle if file is a configuration file"
+  (if (and
+       (equal (file-name-extension (buffer-file-name)) "org")
+       (not (equal (file-name-base (buffer-file-name)) "cheatsheet"))
+       (equal (file-name-directory (buffer-file-name)) (expand-file-name doom-user-dir)))
+      ;; Tangle the file and bytecompile it
+      (let ((el-file-name (replace-regexp-in-string "\\.org" ".el" buffer-file-name)))
+        (org-babel-tangle-file buffer-file-name el-file-name "emacs-lisp")
+        (byte-compile-file el-file-name)
+        ;;(doom/reload)
+        (message (concat "۞ Compiled and loaded " el-file-name)))))
+(add-hook 'after-save-hook 'my/config-file-tangle)
  #+END_SRC
 * My keymap
-
+Access to my custom keymap space on =C-z= or =C-\=
 #+BEGIN_SRC emacs-lisp
   (define-prefix-command 'my/keymap)
   (global-set-key (kbd "C-z") 'my/keymap)
@@ -76,12 +76,11 @@ Whenever an org file specifying configuration is saved
  #+END_SRC
 
 * Saving hooks
-
 #+BEGIN_SRC emacs-lisp
-(add-hook 'before-save-hook #'whitespace-cleanup)
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-(setq require-final-newline    t)
-(setq next-line-add-newlines nil)
+;;(add-hook 'before-save-hook #'whitespace-cleanup)
+;;(add-hook 'before-save-hook 'delete-trailing-whitespace)
+;;(setq require-final-newline    t)
+;;(setq next-line-add-newlines nil)
  #+END_SRC
 
 * Overwrite selected text when typing
@@ -100,17 +99,17 @@ Hungry delete deletes all white space between cursor and the next character
 * PACKAGE Searching with Swiper =C-s=
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-s") (function counsel-grep-or-swiper))
-(setq counsel-grep-base-command
-      "rg -i -M 120 --no-heading --line-number --color never %s %s")
+;; (global-set-key (kbd "C-s") (function counsel-grep-or-swiper))
+;; (setq counsel-grep-base-command
+;;       "rg -i -M 120 --no-heading --line-number --color never %s %s")
 
-(setq counsel-grep-use-swiper-p
-      ;; When this functions returns non-nil, call 'swiper', else 'counsel-grep-base-command'
-      (lambda ()
-        (or
-         ;; If buffer is small enough
-         (<= (buffer-size) (/ counsel-grep-swiper-limit (if (eq major-mode 'org-mode) 4 1)))
-         (string-match "\\.gpg$" (file-name-nondirectory (buffer-file-name))))))
+;; (setq counsel-grep-use-swiper-p
+;;       ;; When this functions returns non-nil, call 'swiper', else 'counsel-grep-base-command'
+;;       (lambda ()
+;;         (or
+;;          ;; If buffer is small enough
+;;          (<= (buffer-size) (/ counsel-grep-swiper-limit (if (eq major-mode 'org-mode) 4 1)))
+;;          (string-match "\\.gpg$" (file-name-nondirectory (buffer-file-name))))))
 
 
 
@@ -121,7 +120,7 @@ Hungry delete deletes all white space between cursor and the next character
 
 #+begin_src emacs-lisp
 (defun my/config-file-open ()
-  "Browser config files in `doom-private-dir'."
+  "Browser config files in `doom-user-dir'."
   (interactive)
   (let ((file-list
          ;; Remove files that are not org files and not one of the default doom files
@@ -129,26 +128,11 @@ Hungry delete deletes all white space between cursor and the next character
           (lambda (x)
             (or (equal "org" (file-name-extension x))
                 (string-match "^\\(config\\|custom\\|packages\\|init\\).el$" x)))
-          (directory-files doom-private-dir))))
-    (find-file (concat doom-private-dir (ido-completing-read "Config file: " file-list)))))
+          (directory-files doom-user-dir))))
+    (find-file (concat doom-user-dir (ido-completing-read "Config file: " file-list)))))
 
 (global-set-key (kbd "C-c f i") (function my/config-file-open))
 #+end_src
-
-* Yasnippet
-Autocompletion by typing in first part of word and tabbing to insert a template
-- yasnippet is the framework
-- yasnippet-snippets is the official collection of snippets
-
-#+BEGIN_SRC emacs-lisp
-(use-package! yasnippet-snippets
-  :config
-  (setq yas-snippet-dirs (list
-                          (concat doom-private-dir "my-snippets")
-                          'yasnippet-snippets-dir))
-  (yas-reload-all))
-(yas-global-mode)
- #+END_SRC
 
 * Auto yasnippets
 
@@ -159,95 +143,9 @@ Quickly create disposable yasnippets with =~=
     (define-key my/keymap (kbd "s") (function aya-create))
     (define-key my/keymap (kbd "y") (function aya-expand)))
  #+END_SRC
-
-* Spellchecking
-
-If you want to check specific buffer with different language, add the following to top of buffer
-#+begin_example
--*- ispell-dictionary: "english" -*-
-#+end_example
-
-#+BEGIN_SRC emacs-lisp
-(setq ispell-personal-dictionary "/Users/CCCP/.aspell.en.pws")
-;;(global-set-key (kbd "C-x C-b") (function ispell-buffer))
-;;(global-set-key (kbd "C-x C-B") (function ispell-word))
- #+END_SRC
-
-** External setup
-#+BEGIN_SRC emacs-lisp
-  (setq ispell-program-name "/usr/local/bin/aspell")
-  (setq ispell-dictionary "en_GB")
- #+END_SRC
-
-** Region skips
-#+BEGIN_SRC emacs-lisp
-(setq ispell-tex-skip-alists
-      (list
-       (append
-        (car ispell-tex-skip-alists)
-        '(("\\\\eqref"   ispell-tex-arg-end 1)
-          ("\\\\label"   ispell-tex-arg-end 1)
-          ("\\\\inkfig"   ispell-tex-arg-end 2)
-          ("\\\\gls"   ispell-tex-arg-end 1)
-          ("\\\\glspl"   ispell-tex-arg-end 1)
-          ("\\\\begin{tabular}"   ispell-tex-arg-end 1) ;; skip column specification
-          ("[^\\]\\$" . "[^\\]\\$")
-          ))
-       (cadr ispell-tex-skip-alists)))
-(add-to-list 'ispell-skip-region-alist '("\\\\begin{equation}". "\\\\end{equation}"))
- #+END_SRC
-
-** DOWN Hydra
-#+BEGIN_SRC emacs-lisp
-  ;; (defun my/switch-dictionary ()
-  ;;   "Switch dictionary"
-  ;;   (interactive)
-  ;;   (if (string-equal ispell-dictionary "en_GB")
-  ;;       (progn
-  ;;         (ispell-change-dictionary "ru")
-  ;;         (message "Changed to Russian "))
-  ;;     (progn
-  ;;       (ispell-change-dictionary "en_GB")
-  ;;       (message "Switched to English"))))
-  ;; (define-key my/keymap (kbd "r") 'my/switch-dictionary)
-
-  ;; (defhydra hydra-flyspell (
-  ;;                           :color red
-  ;;                           :hint nil
-  ;;                           )
-  ;;   "
-  ;;   ------------------------------------------------------------------------------------------
-  ;;   _n_: Go to next error
-  ;;   _a_: Autocorrect
-  ;;   _c_: Correct word
-  ;;   _t_: Flyspell mode
-  ;;   _b_: Check the current buffer
-  ;;   "
-  ;;   ("n" flyspell-goto-next-error)
-  ;;   ("a" flyspell-auto-correct-word)
-  ;;   ("t" flyspell-mode)
-  ;;   ("c" ispell-word)
-  ;;   ("b" ispell-buffer)
-  ;;   ;;("d" ispell-change-dictionary)
-  ;;   ;;("t" my/switch-dictionary)
-  ;;   ("q"   nil "cancel" :color blue))
-
-  ;; (define-key my/keymap (kbd "w") (function hydra-flyspell/body))
-  ;; (define-key my/keymap (kbd "B") (function ispell-buffer))
- #+END_SRC
-** DOWN Set dictionaries
-#+BEGIN_SRC emacs-lisp
-  ;; Save to user dictionary
-  ;;(setq ispell-silently-savep t)
-  ;; (setq ispell-personal-dictionary "/Users/CCCP/.aspell.en.prepl"
-  ;; (my/config-file-path-evaluate "dictionaries/aspell.en.pws")
-  ;; )
- #+END_SRC
-* Company
-- Completion. With a dropdown box. Metal.
+* Company autocompletion
 - Name stands for compLETEanything
-
-| =company-backends= | Lists backends that are used to return candidates |
+- =company-backends=: lists backends that are used to return candidates
 
 #+BEGIN_SRC emacs-lisp
 (after! company
@@ -267,7 +165,7 @@ Spawns a tree of all the undos that you have ever made
   (setq undo-tree-visualizer-timestamps t)
   (setq undo-tree-visualizer-diff t)
   (global-set-key (kbd "M-/") 'undo-tree-visualize)
-  )
+)
 #+END_SRC
 
 * Tabs
@@ -317,7 +215,7 @@ Any changes of a file, will be automatically reloaded
   (global-set-key (kbd "C-c i") (function info-other-window))
  #+END_SRC
 
-* Smartparens
+* =Smartparens=
 #+BEGIN_SRC emacs-lisp
 (after! smartparens
   (show-smartparens-global-mode)
@@ -371,7 +269,7 @@ Any changes of a file, will be automatically reloaded
   ;; (define-key smartparens-mode-map (kbd "C-M-<tab>") #'sp-indent-defun)
   )
  #+END_SRC
-* Open magit by default when opening project
+* Open =magit= by default when opening project
 #+BEGIN_SRC emacs-lisp
  (setq projectile-switch-project-action 'projectile-vc)
  #+END_SRC
@@ -426,7 +324,7 @@ Any changes of a file, will be automatically reloaded
 ** =my/strings/recursive-count=                                      :regex:
 #+BEGIN_SRC emacs-lisp
   (defun my/strings/recursive-count (regex string start)
-    "Count up total number of matches of regex in a string, beggining from 'start' offset"
+    "Count number of matches in string eggining from 'start' offset"
     (if (string-match regex string start)
         (+ 1 (my/strings/recursive-count regex string (match-end 0)))
       0))

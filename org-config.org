@@ -27,11 +27,9 @@
        "~/creamy_seas/monday_starts_on_saturday/cqps/cqps_notes.org"
        "~/creamy_seas/monday_starts_on_saturday/photon/photon_counting_notes.org"
        "~/creamy_seas/monday_starts_on_saturday/lab-results/log_file.org"
+       "~/creamy_seas/monday_starts_on_saturday/power-meter/adventure_brief.org"
        "~/creamy_seas/drill.org"
-       ;; "~/Google Drive/renovation/plan-file.org"
-       ;; ;; "~/mydrive/people.org"
-       "~/mydrive/east-data-company.org"
-       ;; "~/mydrive/adv21_reachingway/adventure_brief.org"
+       "~/creamy_seas/projects/dai/2022-10_helium-pay/adventure-brief.org"
        ))
 #+END_SRC
 * Timestamp
@@ -64,15 +62,6 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
          plain
          (file "~/Desktop/.temp.org")
          "%?")
-
-        ("e" "East India Data Company Task"
-         entry
-         (file "~/mydrive/east-data-company.org")
-         "** %^{TODO-STATE} %^{stuff-to-be-done}:\nDEADLINE: %^T")
-        ;; ("et" "Time log"
-        ;;  table-line (id "bryan-done")
-        ;;  "| %^u | %^{Project}: %^{task-summary} | %^{hours-worked} hours | |"
-        ;;  :table-line-pos "@<-1")
 
         ("x" "People")
         ("xe" "Ernest"

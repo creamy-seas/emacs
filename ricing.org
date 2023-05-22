@@ -4,12 +4,6 @@
 #+begin_src emacs-lisp
 (setq fancy-splash-image "~/.doom.d/my-files/doom-black-hole.png")
 #+end_src
-
-* DOWN Cursor
-#+BEGIN_SRC emacs-lisp :tangle no
-  (set-default 'cursor-type 'hollow)
-  (set-cursor-color "#ffd700")
- #+END_SRC
 * Wrapping lines
 #+BEGIN_SRC emacs-lisp
   (global-visual-line-mode t)
@@ -34,7 +28,7 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 ;; (setq doom-theme 'spacemacs-light)
-;;(setq doom-theme 'leuven)
+(setq doom-theme 'leuven)
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -58,33 +52,18 @@
 ;; font string. You generally only need these two:
 ;; (setq doom-font (font-spec :family "monospace" :size 12 :weight 'semi-light)
 ;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
-(setq doom-font (font-spec :family "Inconsolata" :size 15))
+(setq doom-font (font-spec :family "Inconsolata" :size 14))
 #+end_src
-
-* Dashboard appearance
-
-#+begin_src emacs-lisp
-(setq +doom-dashboard-banner-file (concat user-emacs-directory "my-files/unaboomer.png"))
-#+end_src
-
 * Fade current line
-
 #+BEGIN_SRC emacs-lisp
 (use-package! beacon
   :config
   (beacon-mode 1))
 #+END_SRC
 * Window appearance
-
 #+BEGIN_SRC emacs-lisp
-(setq frame-title-format "🦅 House Atreidies!")
+(setq frame-title-format "The emacs experience")
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 #+END_SRC
-* Unicode
-Display a whale 🐳 as an icon and not an emoji
-#+BEGIN_SRC emacs-lisp
-(when (member "Symbola" (font-family-list))
-  (set-fontset-font t 'unicode "Symbola" nil 'prepend))
- #+END_SRC

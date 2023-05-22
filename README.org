@@ -1,0 +1,4 @@
+* Automatic formating
+- Added with (format +onsave) in [[./init.el]]
+- Need to install the relevant backend or it will silently fail
+* Neotree with =C-c o p=
