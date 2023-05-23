@@ -2,18 +2,26 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
+* Automatic file reload
+Any changes of a file, will be automatically reloaded
+#+BEGIN_SRC emacs-lisp
+(global-auto-revert-mode 1)
+(setq load-prefer-newer t)
+ #+END_SRC
 * Yes or no
 #+begin_src emacs-lisp
 (defalias 'yes-or-no-p 'y-or-n-p)
 #+end_src
 
-* =IDO= mode
+* PACKAGE =ido= mode
+- Vertical buffer do display choices (full package is the search engine)
+- Use =ido-completing-read= to display the selection
 #+begin_src emacs-lisp
-;;(ido-vertical-mode 1)
-;;(setq ido-vertical-define-keys 'C-n-and-C-p-only)
+(ido-vertical-mode 1)
+(setq ido-vertical-define-keys 'C-n-and-C-p-only)
 #+end_src
 
-* Mac keymap
+* Keymap: MacOs
 Mapping of mac right keyboard to meta dgds
 
 #+BEGIN_SRC emacs-lisp
@@ -21,32 +29,64 @@ Mapping of mac right keyboard to meta dgds
       mac-right-option-modifier 'meta)
 #+END_SRC
 
-* Kill current buffer
-Always kill the current buffer - for some reason it is not the default
-
+* Keymap: Russian
 #+BEGIN_SRC emacs-lisp
-(defun my/kill-curr-buffer ()
-  (interactive)
-  (kill-buffer (current-buffer)))
-(global-set-key (kbd "C-x k") 'my/kill-curr-buffer)
-#+END_SRC
-
-* Line numbers
+  (use-package! reverse-im
+    :config
+    (reverse-im-activate "russian-computer"))
+ #+END_SRC
+* Keymap: my subpsace
+Access to my custom keymap space on =C-z= or =C-\=
 #+BEGIN_SRC emacs-lisp
-;; This determines the style of line numbers in effect. If set to `nil', line
-;; numbers are disabled. For relative line numbers, set this to `relative'.
-;;(setq display-line-numbers-type t)
-;;(setq display-line-numbers-type nil)
-#+END_SRC
+  (define-prefix-command 'my/keymap)
+  (global-set-key (kbd "C-z") 'my/keymap)
+  (global-set-key (kbd "C-\\") 'my/keymap)
+ #+END_SRC
+* Keymap: symbols
+#+BEGIN_SRC emacs-lisp
+  (define-key key-translation-map (kbd "C-x 8 h") (kbd "卍")) ; naughty
+  (define-key key-translation-map (kbd "C-x 8 C") (kbd "☭")) ; erm, kinda naughty
+  (define-key key-translation-map (kbd "C-x 8 e") (kbd "🐘"))
+  (define-key key-translation-map (kbd "C-x 8 p") (kbd "π"))
+  (define-key key-translation-map (kbd "C-x 8 s") (kbd "🦑"))
+  (define-key key-translation-map (kbd "C-x 8 o") (kbd "🐙"))
+  (define-key key-translation-map (kbd "C-x 8 w") (kbd "🐳"))
+  (define-key key-translation-map (kbd "C-x 8 W") (kbd "🐋"))
+  (define-key key-translation-map (kbd "C-x 8 O") (kbd "Ω"))
+  (define-key key-translation-map (kbd "C-x 8 #") (kbd "£"))
+  (define-key key-translation-map (kbd "C-x 8 t") (kbd "✔"))
+  (define-key key-translation-map (kbd "C-x 8 c") (kbd "✘"))
+  (define-key key-translation-map (kbd "C-x 8 b") (kbd "⦿"))
+  (define-key key-translation-map (kbd "C-x 8 2") (kbd "²"))
+  (global-set-key (kbd "C-c i") (function info-other-window))
+ #+END_SRC
 
 * Identification
 - GPG configuration and email
 #+BEGIN_SRC emacs-lisp
-;;(setq user-full-name "Ilya Antonov")
-;;(setq user-mail-address "ilya.antonov24@ntlworld.com")
+(setq user-full-name "Ilya Antonov")
+(setq user-mail-address "ilya.antonov24@ntlworld.com")
  #+END_SRC
 
-* Compiling of literate configuration
+* Major Functions
+** Browsing configuration files =C-c f i=
+#+begin_src emacs-lisp
+(defun my/config-file-open ()
+  "Browser config files in `doom-user-dir'."
+  (interactive)
+  (let ((file-list
+         ;; Remove files that are not org files and not one of the default doom files
+         (cl-remove-if-not
+          (lambda (x)
+            (or (equal "org" (file-name-extension x))
+                (string-match "^\\(config\\|custom\\|packages\\|init\\).el$" x)))
+          (directory-files doom-user-dir))))
+    (find-file (concat doom-user-dir (ido-completing-read "Config file: " file-list)))))
+
+(global-set-key (kbd "C-c f i") (function my/config-file-open))
+#+end_src
+
+** Compiling of literate configuration
 Whenever an org file specifying configuration is saved
 1. Tangle it (extract out all of the Emacs-lisp code blocks)
 2. Compile it (=.el= -> =.elc=)
@@ -67,222 +107,16 @@ Whenever an org file specifying configuration is saved
         (message (concat "۞ Compiled and loaded " el-file-name)))))
 (add-hook 'after-save-hook 'my/config-file-tangle)
  #+END_SRC
-* My keymap
-Access to my custom keymap space on =C-z= or =C-\=
-#+BEGIN_SRC emacs-lisp
-  (define-prefix-command 'my/keymap)
-  (global-set-key (kbd "C-z") 'my/keymap)
-  (global-set-key (kbd "C-\\") 'my/keymap)
- #+END_SRC
-
-* Saving hooks
-#+BEGIN_SRC emacs-lisp
-;;(add-hook 'before-save-hook #'whitespace-cleanup)
-;;(add-hook 'before-save-hook 'delete-trailing-whitespace)
-;;(setq require-final-newline    t)
-;;(setq next-line-add-newlines nil)
- #+END_SRC
-
-* Overwrite selected text when typing
-#+BEGIN_SRC emacs-lisp
-(delete-selection-mode t)
- #+END_SRC
-
-* PACKAGE Hungry delete
-Hungry delete deletes all white space between cursor and the next character
-#+BEGIN_SRC emacs-lisp
-  (use-package! hungry-delete
-    :config
-    (global-hungry-delete-mode))
-#+END_SRC
-
-* PACKAGE Searching with Swiper =C-s=
+** Kill current buffer
+Always kill the current buffer - for some reason it is not the default
 
 #+BEGIN_SRC emacs-lisp
-;; (global-set-key (kbd "C-s") (function counsel-grep-or-swiper))
-;; (setq counsel-grep-base-command
-;;       "rg -i -M 120 --no-heading --line-number --color never %s %s")
-
-;; (setq counsel-grep-use-swiper-p
-;;       ;; When this functions returns non-nil, call 'swiper', else 'counsel-grep-base-command'
-;;       (lambda ()
-;;         (or
-;;          ;; If buffer is small enough
-;;          (<= (buffer-size) (/ counsel-grep-swiper-limit (if (eq major-mode 'org-mode) 4 1)))
-;;          (string-match "\\.gpg$" (file-name-nondirectory (buffer-file-name))))))
-
-
-
-
-#+END_SRC
-
-* Browsing configuration files =C-c f i=
-
-#+begin_src emacs-lisp
-(defun my/config-file-open ()
-  "Browser config files in `doom-user-dir'."
+(defun my/kill-curr-buffer ()
   (interactive)
-  (let ((file-list
-         ;; Remove files that are not org files and not one of the default doom files
-         (cl-remove-if-not
-          (lambda (x)
-            (or (equal "org" (file-name-extension x))
-                (string-match "^\\(config\\|custom\\|packages\\|init\\).el$" x)))
-          (directory-files doom-user-dir))))
-    (find-file (concat doom-user-dir (ido-completing-read "Config file: " file-list)))))
-
-(global-set-key (kbd "C-c f i") (function my/config-file-open))
-#+end_src
-
-* Auto yasnippets
-
-Quickly create disposable yasnippets with =~=
-#+BEGIN_SRC emacs-lisp
-  (use-package! auto-yasnippet
-    :config
-    (define-key my/keymap (kbd "s") (function aya-create))
-    (define-key my/keymap (kbd "y") (function aya-expand)))
- #+END_SRC
-* Company autocompletion
-- Name stands for compLETEanything
-- =company-backends=: lists backends that are used to return candidates
-
-#+BEGIN_SRC emacs-lisp
-(after! company
-  (setq company-tooltip-align-annotations t)
-                                        ;set time before company popup shows up
-  (setq company-idle-delay 0.2)
-                                        ;;when autocompletion kicks in
-  (setq company-minimum-prefix-length 4))
- #+END_SRC
-
-* Undo Tree     =M-/=
-Spawns a tree of all the undos that you have ever made
-#+BEGIN_SRC emacs-lisp
-(use-package! undo-tree
-  :config
-  (global-undo-tree-mode)
-  (setq undo-tree-visualizer-timestamps t)
-  (setq undo-tree-visualizer-diff t)
-  (global-set-key (kbd "M-/") 'undo-tree-visualize)
-)
+  (kill-buffer (current-buffer)))
+(global-set-key (kbd "C-x k") 'my/kill-curr-buffer)
 #+END_SRC
 
-* Tabs
-Tabs are bloat. Read about them [[http://www.xemacs.org/Links/tutorials_1.html][here]]
-** Change display of tabs
-#+BEGIN_SRC emacs-lisp
-  (setq-default tab-width 4)
- #+END_SRC
-** Prevent using tabs for indent
-#+BEGIN_SRC emacs-lisp
-  (setq-default indent-tabs-mode nil)
- #+END_SRC
-* iedit =C-:=
-Mark and edit all copies of the marked region simultaneously.
-#+BEGIN_SRC emacs-lisp
-(use-package! iedit
-  :bind ("C-:" . iedit-mode))
- #+END_SRC
-* Automatic file reload
-Any changes of a file, will be automatically reloaded
-#+BEGIN_SRC emacs-lisp
-(global-auto-revert-mode 1)
-(setq load-prefer-newer t)
- #+END_SRC
-* Russian keymap
-#+BEGIN_SRC emacs-lisp
-  (use-package! reverse-im
-    :config
-    (reverse-im-activate "russian-computer"))
- #+END_SRC
-* Symbols mapping
-#+BEGIN_SRC emacs-lisp
-  (define-key key-translation-map (kbd "C-x 8 h") (kbd "卍")) ; naughty
-  (define-key key-translation-map (kbd "C-x 8 C") (kbd "☭")) ; erm, kinda naughty
-  (define-key key-translation-map (kbd "C-x 8 e") (kbd "🐘"))
-  (define-key key-translation-map (kbd "C-x 8 p") (kbd "π"))
-  (define-key key-translation-map (kbd "C-x 8 s") (kbd "🦑"))
-  (define-key key-translation-map (kbd "C-x 8 o") (kbd "🐙"))
-  (define-key key-translation-map (kbd "C-x 8 w") (kbd "🐳"))
-  (define-key key-translation-map (kbd "C-x 8 W") (kbd "🐋"))
-  (define-key key-translation-map (kbd "C-x 8 O") (kbd "Ω"))
-  (define-key key-translation-map (kbd "C-x 8 #") (kbd "£"))
-  (define-key key-translation-map (kbd "C-x 8 t") (kbd "✔"))
-  (define-key key-translation-map (kbd "C-x 8 c") (kbd "✘"))
-  (define-key key-translation-map (kbd "C-x 8 b") (kbd "⦿"))
-  (define-key key-translation-map (kbd "C-x 8 2") (kbd "²"))
-  (global-set-key (kbd "C-c i") (function info-other-window))
- #+END_SRC
-
-* =Smartparens=
-#+BEGIN_SRC emacs-lisp
-(after! smartparens
-  (show-smartparens-global-mode)
-
-    ;; Navigation
-  (define-key smartparens-mode-map (kbd "C-M-f") #'sp-forward-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-b") #'sp-backward-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-v") #'sp-backward-up-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-g") #'sp-up-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-c") #'sp-down-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-d") #'sp-backward-down-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-a") #'sp-beginning-of-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-e") #'sp-end-of-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-n") #'sp-next-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-p") #'sp-previous-sexp)
-
-  ;; (define-key smartparens-mode-map (kbd "C-M-q") #'sp-backward-up-sexp)
-  ;; (define-key smartparens-mode-map (kbd "C-M-`") #'beginning-of-defun)
-
-  ;; Transpose
-  (define-key smartparens-mode-map (kbd "C-M-t") 'sp-transpose-sexp)
-
-  ;; Mark/kill/copy
-  (global-set-key [remap mark-sexp] #'sp-mark-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-k") #'sp-kill-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-w") #'sp-copy-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-2") #'sp-mark-sexp)
-
-  ;; Unwrap and rewrap
-  (define-key smartparens-mode-map (kbd "C-M-u") #'sp-splice-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-r") #'sp-rewrap-sexp)
-
-  (define-key smartparens-mode-map (kbd "M-<delete>") #'sp-unwrap-sexp)
-  (define-key smartparens-mode-map (kbd "M-<backspace>") #'sp-backward-unwrap-sexp)
-
-  ;; Slurp/barf
-  (define-key smartparens-mode-map (kbd "<s-right>") #'sp-forward-slurp-sexp)
-  (define-key smartparens-mode-map (kbd "<C-s-right>") #'sp-forward-barf-sexp)
-  (define-key smartparens-mode-map (kbd "<s-left>") #'sp-backward-slurp-sexp)
-  (define-key smartparens-mode-map (kbd "<C-s-left>") #'sp-backward-barf-sexp)
-
-  ;; Selecting functions
-  (define-key smartparens-mode-map (kbd "C-M-z") 'beginning-of-defun)
-  (define-key smartparens-mode-map (kbd "C-M-x") 'end-of-defun)
-  (define-key smartparens-mode-map (kbd "C-M-SPC") 'mark-defun)
-
-  ;; Reintroduce for org-mode
-  ;; (define-key smartparens-mode-map (kbd "C-M-<backspace>") #'sp-splice-sexp-killing-backward)
-  ;; (define-key smartparens-mode-map (kbd "C-S-<backspace>") #'sp-splice-sexp-killing-around)
-  ;; Indent
-  ;; (define-key smartparens-mode-map (kbd "C-M-<tab>") #'sp-indent-defun)
-  )
- #+END_SRC
-* Open =magit= by default when opening project
-#+BEGIN_SRC emacs-lisp
- (setq projectile-switch-project-action 'projectile-vc)
- #+END_SRC
-* Multiple cursors
-
-#+begin_src emacs-lisp
-(use-package! multiple-cursors
-  :bind
-  ("C->" . mc/mark-next-like-this)
-  ("C-<" . mc/mark-previous-like-this)
-  ("C-)" . mc/mark-next-lines)
-  ("C-(" . mc/mark-previous-lines))
-#+end_src
 * Minor Functions
 ** =my/read-string-from-file=
 #+BEGIN_SRC emacs-lisp

@@ -40,8 +40,8 @@
        :completion
        company           ; the ultimate code completion backend
        ;;helm              ; the *other* search engine for love and life
-       ;;ido               ; the other *other* search engine...
-       ;;ivy               ; a search engine for love and life
+       ;;ido               ; the other *other* search engine... :: I like it for my custom commands
+       ;;ivy               ; a search engine for love and life - for searching projectile files
        vertico           ; the search engine of the future
 
        :editor
@@ -167,14 +167,14 @@
 
        :ui
        ;;deft              ; notational velocity for Emacs
-       doom              ; what makes DOOM look the way it does
+       ;;doom              ; what makes DOOM look the way it does
        doom-dashboard    ; a nifty splash screen for Emacs
        ;;doom-quit         ; DOOM quit-message prompts when you quit Emacs
        ;;(emoji +unicode)  ; 🙂
        hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
-       ;;hydra
+       hydra             ; for creating custom menus
        ;;indent-guides     ; highlighted indent columns
-       ligatures         ; ligatures and symbols to make your code pretty again
+       ;;(ligatures +fira)         ; ligatures and symbols to make your code pretty again
        ;;minimap           ; show a map of the code on the side
        modeline          ; snazzy, Atom-inspired modeline, plus API
        nav-flash         ; blink cursor line after big motions

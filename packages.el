@@ -7,16 +7,17 @@
 
 (package! iedit) ;; select all :: essential-config.org
 (package! reverse-im) ;; russian keyboard :: essential-config.org
-;;(package! ido-vertical-mode)
+(package! counsel) ;; searching within a buffer :: essential-config.org
+(package! yasnippet-snippets);; creating quick snippets :: essential-config.org
+(package! ido-completing-read+) ;; for custom vertical menu for my commands :: essential-config.org
+(package! ido-vertical-mode) ;; for custom vertical menu for my commands :: essential-config.org
+
+(package! org-drill) ;; anki! :: orgmode.org
+(package! org-bullets) ;; less triggering :: ormode.org
+
 (package! hungry-delete)
-;;(package! yasnippet-snippets)
-;;(package! undo-tree)
-(package! org-drill) ;; anki!
 (package! grip-mode) ;; preview markdown
-(package! org-bullets)
-;;(package! dired+)
-;;(package! all-the-icons-dired)
-;;(package! switch-window) ;; suggest asdf for window movement
+;;
 (package! eyebrowse) ;; mutliple tabs :: navigation.org
 (package! beacon) ;; pretty fade of line -> ricing.org
 ;;(package! vue-mode)

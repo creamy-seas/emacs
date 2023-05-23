@@ -4,10 +4,6 @@
 #+begin_src emacs-lisp
 (setq fancy-splash-image "~/.doom.d/my-files/doom-black-hole.png")
 #+end_src
-* Wrapping lines
-#+BEGIN_SRC emacs-lisp
-  (global-visual-line-mode t)
- #+END_SRC
 * All-the-icons
 #+BEGIN_SRC emacs-lisp
 (after! all-the-icons
@@ -28,14 +24,8 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 ;; (setq doom-theme 'spacemacs-light)
-(setq doom-theme 'leuven)
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- ;; '(hl-line ((t (:extend t :background "#F6FECD" :foreground "DodgerBlue4"))))
- )
+(setq doom-theme 'creamy-seas)
+;;(disable-theme 'leuven)
 #+END_SRC
 
 * Font
@@ -54,6 +44,15 @@
 ;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
 (setq doom-font (font-spec :family "Inconsolata" :size 14))
 #+end_src
+* Line numbers
+- For relative line numbers, set this to =relative=
+#+BEGIN_SRC emacs-lisp
+;; This determines the style of line numbers in effect. If set to `nil', line
+;; numbers are disabled.
+(setq display-line-numbers-type t)
+(setq display-line-numbers-type nil)
+#+END_SRC
+
 * Fade current line
 #+BEGIN_SRC emacs-lisp
 (use-package! beacon

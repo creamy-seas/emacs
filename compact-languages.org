@@ -1,18 +1,20 @@
-* Markdown preview in browser
-** Init
+* PACKAGE Markdown preview in browser
+You will need to create a github token [[https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line][as written here]] and store it in the =~/.authinfo= file
+
+#+begin_example
+machine api.github.com login <GITHUB_USERNAME> password <TOKEN>
+#+end_example
+
+where =<GITHUB_USERNAME>= is your gitlab name and =<TOKEN>= is what was generated on the page
+
+** Initialise
 #+BEGIN_SRC emacs-lisp
   (use-package! grip-mode
     :config
     (define-key my/keymap (kbd "V") 'grip-mode))
  #+END_SRC
 
-** CONFIG Personal configuration
-You will need to create a github token [[https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line][as written here]] and store it in the =~/.authinfo= file
-#+begin_example
-  machine api.github.com login <GITHUB_USERNAME> password <TOKEN>
-#+end_example
-where =<GITHUB_USERNAME>= is your gitlab name and =<TOKEN>= is what was generated on the page
-
+** Personal configuration
 #+BEGIN_SRC emacs-lisp
 (let ((credential (auth-source-user-and-password "api.github.com")))
   (setq grip-github-user (car credential)

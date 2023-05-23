@@ -1,0 +1,135 @@
+#+TITLE: Text Manipulation
+
+* Overwrite selected text when typing
+#+BEGIN_SRC emacs-lisp
+(delete-selection-mode t)
+ #+END_SRC
+* Tabs
+Tabs are bloat. Read about them [[http://www.xemacs.org/Links/tutorials_1.html][here]]
+** Change display of tabs
+#+BEGIN_SRC emacs-lisp
+  (setq-default tab-width 4)
+ #+END_SRC
+** Prevent using tabs for indent
+#+BEGIN_SRC emacs-lisp
+  (setq-default indent-tabs-mode nil)
+ #+END_SRC
+* Spellcheck
+If you want to check specific buffer with different language, add the following to top of buffer
+
+#+begin_example
+-*- ispell-dictionary: "english" -*-
+#+end_example
+
+** Setup of default dict
+#+BEGIN_SRC emacs-lisp
+(setq ispell-personal-dictionary "/Users/CCCP/.aspell.en.pws")
+(setq ispell-dictionary "en_GB")
+(global-set-key (kbd "C-x C-w") (function ispell-word))
+ #+END_SRC
+
+** Hydra
+#+BEGIN_SRC emacs-lisp
+(defun my/switch-dictionary ()
+  "Switch dictionary"
+  (interactive)
+  (if (string-equal ispell-local-dictionary "en_GB")
+      (progn
+        (ispell-change-dictionary "ru")
+        (setq ispell-personal-dictionary "/Users/CCCP/.aspell.ru.pws")
+        (message "Changed to Russian 📖"))
+    (progn
+      (ispell-change-dictionary "en_GB")
+      (setq ispell-personal-dictionary "/Users/CCCP/.aspell.en.pws")
+      (message "Switched to English 📖"))))
+
+(defhydra hydra-flyspell (
+                          :color red
+                          :hint nil
+                          )
+  "
+  ------------------------------------------------------------------------------------------
+  _n_: Go to next error
+  _a_: Autocorrect
+  _c_: Correct word
+  _t_: Flyspell mode
+  _b_: Check the current buffer
+  _d_: Switch dictionary
+  "
+  ("n" flyspell-goto-next-error)
+  ("a" flyspell-auto-correct-word)
+  ("t" flyspell-mode)
+  ("c" ispell-word)
+  ("b" ispell-buffer)
+  ("d" my/switch-dictionary)
+  ("q"   nil "cancel" :color blue))
+
+
+(after! flyspell
+  (define-key my/keymap (kbd "w") (function hydra-flyspell/body)))
+#+END_SRC
+
+** Region skips
+#+BEGIN_SRC emacs-lisp
+;; (setq ispell-tex-skip-alists
+;;       (list
+;;        (append
+;;         (car ispell-tex-skip-alists)
+;;         '(("\\\\eqref"   ispell-tex-arg-end 1)
+;;           ("\\\\label"   ispell-tex-arg-end 1)
+;;           ("\\\\inkfig"   ispell-tex-arg-end 2)
+;;           ("\\\\gls"   ispell-tex-arg-end 1)
+;;           ("\\\\glspl"   ispell-tex-arg-end 1)
+;;           ("\\\\begin{tabular}"   ispell-tex-arg-end 1) ;; skip column specification
+;;           ("[^\\]\\$" . "[^\\]\\$")
+;;           ))
+;;        (cadr ispell-tex-skip-alists)))
+;; (add-to-list 'ispell-skip-region-alist '("\\\\begin{equation}". "\\\\end{equation}"))
+ #+END_SRC
+
+* PACKAGE Disposable yasnippets
+Quickly create disposable yasnippets with =~=
+#+BEGIN_SRC emacs-lisp
+  (use-package! auto-yasnippet
+    :config
+    (define-key my/keymap (kbd "s") (function aya-create))
+    (define-key my/keymap (kbd "y") (function aya-expand)))
+ #+END_SRC
+
+* PACKAGE Company autocompletion
+- Name stands for compLETEanything
+- =company-backends=: lists backends that are used to return candidates
+
+#+BEGIN_SRC emacs-lisp
+(after! company
+  (setq company-tooltip-align-annotations t)
+                                        ;set time before company popup shows up
+  (setq company-idle-delay 0.2)
+                                        ;;when autocompletion kicks in
+  (setq company-minimum-prefix-length 4))
+ #+END_SRC
+* PACKAGE =iedit= =C-:=
+Mark and edit all copies of the marked region simultaneously.
+#+BEGIN_SRC emacs-lisp
+(use-package! iedit
+  :bind ("C-:" . iedit-mode))
+ #+END_SRC
+* PACKAGE Hungry delete
+Hungry delete deletes all white space between cursor and the next character
+#+BEGIN_SRC emacs-lisp
+  (use-package! hungry-delete
+    :config
+    (global-hungry-delete-mode))
+#+END_SRC
+
+* PACKAGE Undo Tree     =M-/=
+Spawns a tree of all the undos that you have ever made
+#+BEGIN_SRC emacs-lisp
+(use-package! undo-tree
+  :config
+  (global-undo-tree-mode)
+  (setq undo-tree-visualizer-timestamps t)
+  (setq undo-tree-visualizer-diff t)
+  (global-set-key (kbd "M-/") 'undo-tree-visualize)
+)
+#+END_SRC

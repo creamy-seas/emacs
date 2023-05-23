@@ -33,7 +33,7 @@ Nice export template
                  template)))
 #+end_src
 
-* DOWN Capture from anywhere
+* Capture from anywhere
 1. =brew install coreutils=
 2. Automator -> new shell script
 #+BEGIN_SRC sh :tangle no
@@ -64,7 +64,7 @@ Nice export template
           (org-capture)))
  #+END_SRC
 
-* DOWN Autoinsert
+* Auto-insert
 #+BEGIN_SRC emacs-lisp
   (define-skeleton my-skeleton/org/standard-file
     "Skeleton for a brand new org file"
@@ -167,31 +167,7 @@ What languages can be evaluated in org buffers by hitting =C-c C-c=
       (concat "./" relative-file-name)))
  #+END_SRC
 
-* Keybindings
-#+begin_src emacs-lisp
-(after! org
-  (global-set-key (kbd "C-c a") (function org-agenda))
-  (define-key org-mode-map (kbd "<C-return>") (function org-insert-heading))
-  (define-key org-mode-map (kbd "C-x RET") (function org-insert-subheading))
-  (define-key org-mode-map (kbd "C-c C-r") (function org-toggle-inline-images))
-
-  (define-key org-mode-map (kbd "C-c l") 'org-store-link)
-  (define-key org-mode-map (kbd "C-c C-l") 'org-insert-link)
-  (define-key org-mode-map (kbd "C-c #") (function org-time-stamp-inactive)))
-
-(unbind-key (kbd "a") 'doom-leader-map)
-(global-set-key (kbd "C-c a") 'org-agenda)
-#+end_src
-* Org bullets
-
-#+BEGIN_SRC emacs-lisp
-(use-package! org-bullets
-  :hook (org-mode . org-bullets-mode)
-  :config
-  (setq org-bullets-bullet-list (quote ("◉" "○" "✸" "✿" "✚" "❀"))))
-#+END_SRC
 * Source code blocks
-
 You can type =<el= and the =TAB= to create the desired source block
 #+BEGIN_SRC emacs-lisp
 (after! org
@@ -206,6 +182,15 @@ You can type =<el= and the =TAB= to create the desired source block
                '("pyi" . "src_python[:session ?]{}"))
   (add-to-list 'org-structure-template-alist
                '("sh" . "src shell")))
+#+END_SRC
+
+* PACKAGE Org bullets
+
+#+BEGIN_SRC emacs-lisp
+(use-package! org-bullets
+  :hook (org-mode . org-bullets-mode)
+  :config
+  (setq org-bullets-bullet-list (quote ("◉" "○" "✸" "✿" "✚" "❀"))))
 #+END_SRC
 * PACKAGE Ox-reveal
 - Presentations can be hosted from github - look at video 50.
@@ -250,7 +235,7 @@ Best themes
   (setq org-reveal-mathjax t)
   )
 #+end_src
-* Org drill
+* PACKAGE Org drill
 See https://jmm.io/pr/emacs-meetup/#/5
 
 #+begin_src emacs-lisp
@@ -264,4 +249,19 @@ See https://jmm.io/pr/emacs-meetup/#/5
   (setq org-drill-right-cloze-delimiter "]>")
   (setq org-drill-learn-fraction 0.25))
 
+#+end_src
+* Keybindings
+#+begin_src emacs-lisp
+(after! org
+  (global-set-key (kbd "C-c a") (function org-agenda))
+  (define-key my/keymap (kbd "c") (function org-capture))
+  (define-key org-mode-map (kbd "<C-return>") (function org-insert-heading))
+  (define-key org-mode-map (kbd "C-x RET") (function org-insert-subheading))
+  (define-key org-mode-map (kbd "C-c C-r") (function org-toggle-inline-images))
+
+  (define-key org-mode-map (kbd "C-c l") 'org-store-link)
+  (define-key org-mode-map (kbd "C-c C-l") 'org-insert-link)
+  (define-key org-mode-map (kbd "C-c #") (function org-time-stamp-inactive)))
+
+(unbind-key (kbd "a") 'doom-leader-map)
 #+end_src

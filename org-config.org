@@ -51,7 +51,7 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
       '(("b" "Bloat"
          entry
          (id "antlers-bloat")
-         "** BLOAT %^{stuff-to-be-done}\nSHEDULED: %^T")
+         "** BLOAT %^{stuff-to-be-done}\nSCHEDULED: %^T")
 
         ("c" "Copy Pasta"
          entry
