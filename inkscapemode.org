@@ -10,9 +10,10 @@ To export an inkscape image for latex interactively, open =.svg= file → save a
 
 * General Parameters
 #+BEGIN_SRC emacs-lisp
-(defvar my/inkscape/generate-script (concat doom-private-dir "my-scripts/inkscape/inkscape_generate.sh"))
-(defvar my/inkscape/template-file (concat doom-private-dir "my-scripts/inkscape/inkscape_template.svg"))
+(defvar my/inkscape/generate-script (concat doom-user-dir "my-scripts/inkscape/inkscape_generate.sh"))
+(defvar my/inkscape/template-file (concat doom-user-dir "my-scripts/inkscape/inkscape_template.svg"))
 (defvar my/inkscape/running-processes nil)
+(defvar my/inkscape/org/file-name nil)
  #+END_SRC
 * Supress showing inkscape generation buffer
 #+BEGIN_SRC emacs-lisp
@@ -36,7 +37,7 @@ To export an inkscape image for latex interactively, open =.svg= file → save a
 ** =my/inkscape/kill=
 #+BEGIN_SRC emacs-lisp
   (defun my/inkscape/kill ()
-    "Kills an running inkscape process and delete is from list of running inkscape trackers"
+    "Kills an running inkscape process and delete from memory"
     (interactive)
     (let* ((process-buffer-name (ido-completing-read "🦑 Inkscape process to kill:" my/inkscape/running-processes)))
 
@@ -91,12 +92,15 @@ To export an inkscape image for latex interactively, open =.svg= file → save a
   (defvar my/inkscape/running-processes nil)
 
   (defun my/inkscape/org/generate (filename)
-    "1) Copies an svg template to './images_inkscape/file-name.svg' (relative to the root directory of the latex project)
-  2) Runs the 'my/inkscape/generate-script' that will open the file and track changes to it
+    "1) Copies an svg template to './images_inkscape/file-name.svg'
+     (relative to the root directory of the latex project)
+     2) Runs the 'my/inkscape/generate-script' that will open the
+     file and track changes to it
 
-  ,** 'filename' must be a pure string without extensions **
+     ** 'filename' must be a pure string without extensions **
 
-  There is a lot of file name preparation - I decided to keep the bash script as clean as possible so evaluate file paths here"
+     There is a lot of file name preparation - I decided to keep
+     the bash script as clean as possible so evaluate file paths here"
     (let* (
            (inkscape-dir-path (concat default-directory "images_inkscape"))
            (file-path (concat inkscape-dir-path "/" filename))

@@ -87,6 +87,10 @@ If you want to check specific buffer with different language, add the following 
 ;; (add-to-list 'ispell-skip-region-alist '("\\\\begin{equation}". "\\\\end{equation}"))
  #+END_SRC
 
+* My snippets
+#+BEGIN_SRC emacs-lisp
+(setq +snippets-dir (concat doom-user-dir "my-snippets"))
+#+END_SRC
 * PACKAGE Disposable yasnippets
 Quickly create disposable yasnippets with =~=
 #+BEGIN_SRC emacs-lisp
