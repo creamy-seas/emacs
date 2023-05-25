@@ -25,7 +25,6 @@
 ;; `load-theme' function. This is the default:
 ;; (setq doom-theme 'spacemacs-light)
 (setq doom-theme 'creamy-seas)
-;;(disable-theme 'leuven)
 #+END_SRC
 
 * Font

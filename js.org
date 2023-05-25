@@ -1,5 +1,23 @@
 | Babel | Compiler |
 
+#+begin_src emacs-lisp
+(setq lsp-ui-doc-enabled nil)
+(setq lsp-clients-typescript-server "typescript-language-server"
+      lsp-clients-typescript-server-args '("--stdio"))
+#+end_src
+
+* Web mode
+#+begin_src emacs-lisp
+(defun my-web-mode-hook ()
+  "Hooks for Web mode."
+    (setq web-mode-markup-indent-offset 2)
+    (setq web-mode-css-indent-offset 2)
+    (setq web-mode-code-indent-offset 2)
+    (setq web-mode-indent-style 2)
+)
+(add-hook 'web-mode-hook  'my-web-mode-hook)
+#+end_src
+
 * Typescript
 #+begin_src emacs-lisp
 (add-hook 'typescript-mode-hook (lambda ()
