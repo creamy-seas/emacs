@@ -2,4 +2,4 @@
 # name: my-autoref
 # key: ar
 # --
-\\${1:auto}ref{${2}}
+\\autoref{`(my/latex/autoref)`}

@@ -67,6 +67,10 @@ Setup with skim
 #+end_src
 
 * Cdlatex
+** Math mode
+#+begin_src emacs-lisp
+(setq cdlatex-use-dollar-to-ensure-math t)
+#+end_src
 ** Math symbols
 #+BEGIN_SRC emacs-lisp
 (setq cdlatex-math-symbol-alist
@@ -102,6 +106,27 @@ Setup with skim
           ("cases" "Insert case environment"   "" cdlatex-environment ("cases") t t)
           ("thr" "Insert theorem env" "" cdlatex-environment ("theorem") t nil)))
  #+END_SRC
+* Reftex
+#+begin_src emacs-lisp
+(defun my/latex/autoref ()
+  "Insert \autoref using reftex lookup - see the yasnippet that calls this"
+  (interactive)
+  (progn
+    "Set the style to skip the prompt"
+    (setq reftex-refstyle "\autoref"))
+  "Need to insert this way to overcome the \ escaping"
+  (reftex-reference nil t))
+
+(defun my/latex/eqref ()
+  "Lookup formula"
+  (interactive)
+  (progn
+    "Set the style to skip the prompt"
+    (setq reftex-refstyle "\autoref"))
+  "Need to insert this way to overcome the \ escaping"
+  (reftex-reference 'e t))
+#+end_src
+
 * Regexp colouring
 *Suppose we want to highlight certain constructs in a document*
 The first thing that would happen, is latex searches for matching expressions - we need to create a rule for it to do so by running =(regexp-opt '("string1" "string2" etc) OPTION)
@@ -212,7 +237,7 @@ Normally =C-c C-a= is best, but for continous update use =C-c C-s=
     (TeX-command-expand "%s" TeX-expand-list-builtin))
 
   (defun my/latex/modeline-colour ()
-    "Reads the number of active compilations and colours the modeline according to how many compilations are running"
+    "Reads the number of active compilations colour modeline"
     (let ((number-of-running-compilations
            (my/strings/recursive-count "Compile-PDF" (format "%s" (process-list)) 0)))
       (if (> number-of-running-compilations 0)
@@ -237,7 +262,7 @@ Normally =C-c C-a= is best, but for continous update use =C-c C-s=
                                           ; 1st arugment is unique process name
            (compilation-process-id (car compilation-info))
            (compilation-script
-            (my/latex/evaluate-subsitutions (concat doom-private-dir "my-scripts/latex/pdf_engine.sh %s"))))
+            (my/latex/evaluate-subsitutions (concat doom-user-dir "my-scripts/latex/pdf_engine.sh %s"))))
 
       (ignore-errors
         ;; 1 - run compilation script
@@ -263,7 +288,7 @@ Normally =C-c C-a= is best, but for continous update use =C-c C-s=
                                           ; 1st argument is unique process name
            (compilation-process-id (car compilation-info))
            (cleanup-script
-            (my/latex/evaluate-subsitutions (concat doom-private-dir "my-scripts/latex/jew_engine.sh %s"))))
+            (my/latex/evaluate-subsitutions (concat doom-user-dir "my-scripts/latex/jew_engine.sh %s"))))
 
       ;; 2 - locate if the process is running
       (let ((process-to-kill (get-process compilation-process-id)))
