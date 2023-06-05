@@ -26,6 +26,7 @@ If you want to check specific buffer with different language, add the following 
 (setq ispell-personal-dictionary "/Users/CCCP/.aspell.en.pws")
 (setq ispell-dictionary "en_GB")
 (global-set-key (kbd "C-x C-w") (function ispell-word))
+(global-set-key (kbd "C-x w") (function flyspell-goto-next-error))
  #+END_SRC
 
 ** Hydra
@@ -33,15 +34,19 @@ If you want to check specific buffer with different language, add the following 
 (defun my/switch-dictionary ()
   "Switch dictionary"
   (interactive)
-  (if (string-equal ispell-local-dictionary "en_GB")
-      (progn
-        (ispell-change-dictionary "ru")
-        (setq ispell-personal-dictionary "/Users/CCCP/.aspell.ru.pws")
-        (message "Changed to Russian 📖"))
-    (progn
-      (ispell-change-dictionary "en_GB")
-      (setq ispell-personal-dictionary "/Users/CCCP/.aspell.en.pws")
-      (message "Switched to English 📖"))))
+  (progn
+    (ispell-change-dictionary "en_GB")
+    (setq ispell-personal-dictionary "/Users/CCCP/.aspell.en.pws")
+    (message "Switched to English 📖")))
+
+(defun my/switch-dictionary-russian ()
+  "Switch dictionary"
+  (interactive)
+  (progn
+    (ispell-change-dictionary "ru")
+    (setq ispell-personal-dictionary "/Users/CCCP/.aspell.ru.pws")
+    (setq ispell-local-pdict "/Users/CCCP/.aspell.ru.pws")
+    (message "Changed to Russian 📖")))
 
 (defhydra hydra-flyspell (
                           :color red
@@ -54,14 +59,16 @@ If you want to check specific buffer with different language, add the following 
   _c_: Correct word
   _t_: Flyspell mode
   _b_: Check the current buffer
-  _d_: Switch dictionary
+  _r_: Switch Russian
+  _e_: Switch English
   "
   ("n" flyspell-goto-next-error)
   ("a" flyspell-auto-correct-word)
   ("t" flyspell-mode)
   ("c" ispell-word)
   ("b" ispell-buffer)
-  ("d" my/switch-dictionary)
+  ("r" my/switch-dictionary-russian)
+  ("e" my/switch-dictionary)
   ("q"   nil "cancel" :color blue))
 
 
