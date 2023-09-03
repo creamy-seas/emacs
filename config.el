@@ -30,4 +30,4 @@
 (load-file (concat doom-user-dir "inkscapemode.el"))
 ;;(load-file (concat doom-user-dir "compact-languages.el"))
 ;; (load-file (concat doom-user-dir "latexmode.el"))
-;; (load-file (concat doom-user-dir "emailmode.el"))
+(load-file (concat doom-user-dir "emailmode.el"))

@@ -167,8 +167,8 @@ What languages can be evaluated in org buffers by hitting =C-c C-c=
       (concat "./" relative-file-name)))
  #+END_SRC
 
-* Source code blocks
-You can type =<el= and the =TAB= to create the desired source block
+* Source code blocks =C-c C-,=
+
 #+BEGIN_SRC emacs-lisp
 (after! org
   (add-to-list 'org-modules 'org-tempo t)
@@ -177,11 +177,13 @@ You can type =<el= and the =TAB= to create the desired source block
   (add-to-list 'org-structure-template-alist
                '("cl" . "src common-lisp"))
   (add-to-list 'org-structure-template-alist
-               '("py" . "src python"))
+               '("PY" . "src python"))
   (add-to-list 'org-structure-template-alist
                '("pyi" . "src_python[:session ?]{}"))
   (add-to-list 'org-structure-template-alist
-               '("sh" . "src shell")))
+               '("sh" . "src shell"))
+  (add-to-list 'org-structure-template-alist
+               '("t" . "src typescript")))
 #+END_SRC
 
 * PACKAGE Org bullets
@@ -235,6 +237,14 @@ Best themes
   (setq org-reveal-mathjax t)
   )
 #+end_src
+
+* PACKAGE Github markdown
+
+#+begin_src emacs-lisp
+(eval-after-load "org"
+  '(require 'ox-gfm nil t))
+#+end_src
+
 * PACKAGE Org drill
 See https://jmm.io/pr/emacs-meetup/#/5
 

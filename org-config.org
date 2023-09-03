@@ -5,10 +5,12 @@
 (setq org-agenda-custom-commands '(("c" "Simple agenda view"
                                     ((agenda "" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'regexp ":drill:"))))) nil)
 
-                                   ("i" "My summary" ((todo "PHD" ((org-agenda-sorting-strategy '(deadline-up)) (org-agenda-span 'fortnight) (org-agenda-overriding-header "Quantum Physics!")))
-                                                            (todo "BLOAT" ((org-agenda-span 'day) (org-agenda-overriding-header "Stuff at home")))
-                                                            ;;(todo "HOUSE" ((org-agenda-span 'fortnight) (org-agenda-overriding-header "Renovation")))
-                                                            (todo "SINO|REACH|DREAMS-AI" ((org-agenda-overriding-header "Dreams-AI") (org-agenda-span 'fortnight))))
+                                   ("i" "My summary" (
+                                                      (todo "SINO|REACH|DREAMS-AI" ((org-agenda-overriding-header "Dreams-AI") (org-agenda-span 'fortnight)))
+                                                      (todo "PHYS" ((org-agenda-sorting-strategy '(deadline-up)) (org-agenda-span 'fortnight) (org-agenda-overriding-header "Quantum Physics!")))
+                                                      (todo "TODO" ((org-agenda-span 20) (org-agenda-overriding-header "My goals")))
+                                                      (todo "ANNUAL" ((org-agenda-span 'fortnight) (org-agenda-overriding-header "Incoming deadlines")))
+                                                      )
                                     nil nil)))
 (defun my/open-my-summary ()
   (org-agenda "i"))
@@ -51,7 +53,7 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
       '(("b" "Bloat"
          entry
          (id "antlers-bloat")
-         "** BLOAT %^{stuff-to-be-done}\nSCHEDULED: %^T")
+         "** TODO %^{stuff-to-be-done}\nSCHEDULED: %^T")
 
         ("c" "Copy Pasta"
          entry
@@ -131,22 +133,22 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
         ("pp" "Photon"
          entry
          (id "phd-photon")
-         "*** PHD %^{stuff-to-be-done} [/] :PHOTON:\nDEADLINE: %^T\n- [ ] %?")
+         "*** PHYS %^{stuff-to-be-done} [/] :PHOTON:\nDEADLINE: %^T\n- [ ] %?")
 
         ("pl" "Laboratory"
          entry
          (file "~/creamy_seas/monday_starts_on_saturday/lab-results/log_file.org")
-         "*** PHD %^{stuff-to-be-done} [/] :MEASUREMENT:\nDEADLINE: %^T\n- [ ] %?")
+         "*** PHYS %^{stuff-to-be-done} [/] :MEASUREMENT:\nDEADLINE: %^T\n- [ ] %?")
 
         ("pq" "CQPS"
          entry
          (id "phd-cqps")
-         "*** PHD %^{stuff-to-be-done} [/] :CQPS:\nDEADLINE: %^T\n- [ ] %?")
+         "*** PHYS %^{stuff-to-be-done} [/] :CQPS:\nDEADLINE: %^T\n- [ ] %?")
 
         ("pg" "General"
          entry
          (id "phd-general")
-         "*** PHD %^{stuff-to-be-done} [/] :GENERAL:\nDEADLINE: %^T\n- [ ] %?")
+         "*** PHYS %^{stuff-to-be-done} [/] :GENERAL:\nDEADLINE: %^T\n- [ ] %?")
 
         ("u" "Save URL"
          entry
@@ -240,25 +242,26 @@ Added: %U
   (setq org-todo-keywords '((sequence "TODO(t)"
                                     "BLOAT(B)"
                                     ;; "BRYAN(z)"
-                                    "PHD(p)"
+                                    "PHD(q)"
+                                    "PHYS(p)"
                                     "DREAMS-AI(a)"
-                                    ;; "HORSE(h)"
+                                    "ANNUAL(h)"
                                     ;; "SA36(3)"
-                                    "HOUSE(h)"
+                                    ;;"HOUSE(h)"
                                     ;; "SCHOOLS"
-                                    "DOWN(D)"
+                                    ;;"DOWN(D)"
                                     ;; "TUTORING(l)"
                                     ;; "CURRENT(c)"
                                     ;; "SKYPE(s)"
-                                    "SINO"
-                                    "REACH"
+                                    ;;"SINO"
+                                    ;;"REACH"
                                     "|"
                                     "DONE(d)"
-                                    "DOMINATED(x)"
+                                    ;;"DOMINATED(x)"
                                     "PACKAGE"
                                     "MANUAL-PACKAGE"
                                     "CONFIG"
-                                    "BUREUCRACY(b)"
+                                    ;;"BUREUCRACY(b)"
                                     )))
   (setq org-todo-keyword-faces (quote (
                                      ("STARTED" . "yellow")
@@ -267,21 +270,22 @@ Added: %U
                                      ;; ("SA36" . (:background "#01168a" :foreground "#fdc989" :weight bold))
                                      ("MANUAL-PACKAGE" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
                                      ;; ("SKYPE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
-                                     ("SINO" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
-                                     ;; ("HORSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
-                                     ("REACH" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
-                                     ("HOUSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
+                                     ;;("SINO" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
+                                     ("ANNUAL" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
+                                     ;;("REACH" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
+                                     ;;("HOUSE" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))
                                      ("PHD" . (:foreground "yellow" :background "#FF3333"))
-                                     ("DOWN" . (:foreground "yellow" :background "#FF3333"))
+                                     ("PHYS" . (:foreground "yellow" :background "#FF3333"))
+                                     ;;("DOWN" . (:foreground "yellow" :background "#FF3333"))
                                      ;;("DONE" . (:foreground "yellow" :background "#FF3333"))
                                      ;; ("SCHOOLS" . (:foreground "#090C42" :background "#9DFE9D"))
-                                     ("Dominated" . (:foreground "#9DFE9D" :weight bold))
+                                     ;;("Dominated" . (:foreground "#9DFE9D" :weight bold))
                                      ("BLOAT" . (:foreground "#000001" :background "#ffffff"))
                                      ;; ("TUTORING" . (:foreground "#090C42" :background "#FFD700": weight bold))
                                      ;; ("BRYAN" . (:foreground "#090C42" :background "#33ccff" :weight bold))
                                      ("PACKAGE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
                                      ("CONFIG" . (:background "#00AFF0" :foreground "#090C42" :weight bold))
-                                     ("BUREUCRACY" . (:background "#ab82ff" :foreground "#8b6969" :weight bold))
+                                     ;;("BUREUCRACY" . (:background "#ab82ff" :foreground "#8b6969" :weight bold))
                                      )))
   (setq org-agenda-span 15)
   )
