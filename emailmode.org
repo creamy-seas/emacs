@@ -1,87 +1,85 @@
 #+TITLE: Emailmode
 #+STARTUP: overview
 
-If user-mail-address is not part of mu's addresses; add it with mu init --my-address=
-After being careful that no instance of mu is running (in particular, quit mu4e if launched), you may want to remove `/home/zw963/.cache/mu/xapian/flintlock'
+|-----------+--------------------------------------------------------------+-------------------------------|
+|           | *Custom*                                                     |                               |
+| =C-c c=   | Capture message at point                                     |                               |
+| =C-\ u=   | Update                                                       |                               |
+| =C-\ C=   | Compose                                                      |                               |
+|-----------+--------------------------------------------------------------+-------------------------------|
+|           | *Compose*                                                    |                               |
+| =C-c C-a= | Attach to an email                                           |                               |
+| =C-c C-d= | Save as draft                                                |                               |
+|-----------+--------------------------------------------------------------+-------------------------------|
+|           | *Navigation*                                                 |                               |
+| =n,p=     | view the next, previous message                              |                               |
+| =],[=     | move to the next, previous unread message                    |                               |
+|-----------+--------------------------------------------------------------+-------------------------------|
+|           | *Searching*                                                  |                               |
+| =s=       | search                                                       |                               |
+| =S=       | edit last query                                              |                               |
+| =/=       | narrow the search (once already in a maildir for example)    |                               |
+| =b=       | search bookmark                                              |                               |
+| =B=       | edit bookmark before search                                  |                               |
+| =j=       | jump to maildir                                              |                               |
+| =O=       | change sort order                                            |                               |
+| =P=       | toggle threading                                             |                               |
+| =Q=       | toggle full-search                                           |                               |
+| =V=       | toggle skip-duplicates                                       |                               |
+| =W=       | toggle include-related                                       |                               |
+|-----------+--------------------------------------------------------------+-------------------------------|
+|           | *Marking*                                                    |                               |
+| =d=       | mark for TRASH                                               |                               |
+| =D=       | mark for COMPLETE deletion - serious stuff                   |                               |
+| =r=       | mark for refiling (archive) - may be important in the future |                               |
+| =+,-=     | mark for flagging/unflagging                                 | Does not work for VIRGIN MAIL |
+| =?,!=     | mark message as unread, read                                 |                               |
+|           | *Custom/Rare*                                                |                               |
+| =o=       | dump into "orders" folder of gmail                           |                               |
+|           |                                                              |                               |
+| =u=       | unmark message at point                                      |                               |
+| =U=       | unmark *all* messages                                        |                               |
+|           |                                                              |                               |
+| =%=       | mark based on a regular expression                           |                               |
+|           |                                                              |                               |
+| =*=       | mark for 'something' (decide later)                          |                               |
+| =#=       | resolve deferred 'something' marks                           |                               |
+|           |                                                              |                               |
+| =x=       | execute actions for the marked messages                      |                               |
+|-----------+--------------------------------------------------------------+-------------------------------|
+|           | *Actions*                                                    |                               |
+| =R,F,C=   | reply/forward/compose                                        |                               |
+| =E=       | edit (only allowed for draft messages)                       |                               |
+| =C-c c=   | Capture message - can attach it in reply                     |                               |
+|-----------+--------------------------------------------------------------+-------------------------------|
+|           | *Message View*                                               |                               |
+| =C-+,C--= | increase / decrease the number of headers shown              |                               |
+| =w=       | Toggle wrapping                                              |                               |
+| =.=       | Toggle raw                                                   |                               |
+| =h=       | Toggle html                                                  |                               |
+| =#=       | Toggle citation                                              |                               |
+| =<SPC>=   | Scroll downloads                                             |                               |
+| =g=       | Follow link                                                  |                               |
+| =k=       | Save url in kill ring                                        |                               |
+| =e=       | Save attachment                                              |                               |
+| =o=       | Open attachment                                              |                               |
+| =A=       | Operate on attachment                                        |                               |
+|-----------+--------------------------------------------------------------+-------------------------------|
 
+* FAQ
+- If user-mail-address is not part of mu's addresses; add it with mu init --my-address=
+- After being careful that no instance of mu is running (in particular, quit mu4e if launched), you may want to remove `/home/zw963/.cache/mu/xapian/flintlock'
+- To kill gpg agent and dump passwords
 
-|-----------+-----------------------------------------------------------|
-|           | *Custom*                                                  |
-| =C-c c=   | Capture message at point                                  |
-| =C-\ u=   | Update                                                    |
-| =C-\ C=   | Compose                                                   |
-|-----------+-----------------------------------------------------------|
-|           | *Compose*                                                 |
-| =C-c C-a= | Attach to an email                                        |
-| =C-c C-d= | Save as draft                                             |
-|-----------+-----------------------------------------------------------|
-|           | *Navigation*                                              |
-| =n,p=     | view the next, previous message                           |
-| =],[=     | move to the next, previous unread message                 |
-|-----------+-----------------------------------------------------------|
-|           | *Searching*                                               |
-| =s=       | search                                                    |
-| =S=       | edit last query                                           |
-| =/=       | narrow the search (once already in a maildir for example) |
-| =b=       | search bookmark                                           |
-| =B=       | edit bookmark before search                               |
-| =j=       | jump to maildir                                           |
-| =O=       | change sort order                                         |
-| =P=       | toggle threading                                          |
-| =Q=       | toggle full-search                                        |
-| =V=       | toggle skip-duplicates                                    |
-| =W=       | toggle include-related                                    |
-|-----------+-----------------------------------------------------------|
-|           | *Marking*                                                 |
-| =t=       | read and trash                                            |
-| =o=       | dump into "orders" folder of gmail                        |
-| =d=       | mark for moving to the trash folder                       |
-| ===       | mark for removing trash flag ('untrash')                  |
-| =D=       | mark for complete deletion                                |
-| =m=       | mark for moving to another maildir folder                 |
-| =r=       | mark for refiling                                         |
-| =+,-=     | mark for flagging/unflagging                              |
-| =?,!=     | mark message as unread, read                              |
-|           |                                                           |
-| =u=       | unmark message at point                                   |
-| =U=       | unmark *all* messages                                     |
-|           |                                                           |
-| =%=       | mark based on a regular expression                        |
-|           |                                                           |
-| =*=       | mark for 'something' (decide later)                       |
-| =#=       | resolve deferred 'something' marks                        |
-|           |                                                           |
-| =x=       | execute actions for the marked messages                   |
-|-----------+-----------------------------------------------------------|
-|           | *Actions*                                                 |
-| =R,F,C=   | reply/forward/compose                                     |
-| =E=       | edit (only allowed for draft messages)                    |
-| =C-c c=   | Capture message - can attach it in reply                  |
-|-----------+-----------------------------------------------------------|
-|           | *Message View*                                            |
-| =C-+,C--= | increase / decrease the number of headers shown           |
-| =w=       | Toggle wrapping                                           |
-| =.=       | Toggle raw                                                |
-| =h=       | Toggle html                                               |
-| =#=       | Toggle citation                                           |
-| =<SPC>=   | Scroll downloads                                          |
-| =g=       | Follow link                                               |
-| =k=       | Save url in kill ring                                     |
-| =e=       | Save attachment                                           |
-| =o=       | Open attachment                                           |
-| =A=       | Operate on attachment                                     |
-|-----------+-----------------------------------------------------------|
+#+begin_src shell
+gpgconf --kill gpg-agent
+#+end_src
 
-To kill gpg agent and dump passwords
+- *SMTP*: sends messages to server
+- *POP*: Downloads from server and deletes them
+- *IMAP*: Syncs with server
 
-=gpgconf --kill gpg-agent=
-
-| SMTP | sends messages to server               |
-|------+----------------------------------------|
-| POP  | Downloads from server and deletes them |
-| IMAP | Syncs with server                      |
-
-* To read
+* Articles
 - [[https://kkatsuyuki.github.io/notmuch-conf/][Arch Setup]]
 - [[https://medium.com/@kirang89/emacs-as-email-client-with-offlineimap-and-mu4e-on-os-x-3ba55adc78b6]]
 - [[http://cachestocaches.com/2017/3/complete-guide-email-emacs-using-mu-and-][Very great read]]
@@ -91,14 +89,14 @@ To kill gpg agent and dump passwords
 - [[https://www.djcbsoftware.nl/code/mu/cheatsheet.html][mu cheatsheet]]
 
 * External setup
-** What to install
-| =mu=          | indexer and searcher              |
-| =offlineimap= | for the emailserver               |
-| =w3m=         | text based webrowser to show html |
-| =openssl=     | Encryption and certificates       |
-| =msmtp=       |                                   |
+** 1. What to install
+| =mu=          | mail indexer and searcher           |
+| =offlineimap= | for the email server                |
+| =w3m=         | text based web browser to show HTML |
+| =openssl=     | Encryption and certificates         |
+| =msmtp=       | For sending mail                    |
 
-** Password file
+** 2. Password file
 Make password file and put it into the email folder ="~/db_mail/.pswd_mail.gpg"=
 #+BEGIN_SRC text
 EMAIL password PASSWORD
@@ -115,149 +113,259 @@ and add the passwords
 pass insert a@gmail.com
 #+end_src
 
-** Offlineimap (fetching mail)
-*** Set the =~/.offlineimaprc=
+** 3. Offlineimap (fetching mail)
+*** a. Set the =~/.offlineimaprc=
 - Example for 4 accounts
 - See [[*Certificates][Certificates]] and [[*SSL certificate][SSL certificate]]
+- See [[#xoauth-setup][XOAUTH setup]]
 
 #+BEGIN_SRC text
-  #  ____  _____  _   _  _____  ____      _     _
-  # / ___|| ____|| \ | || ____||  _ \    / \   | |
-  #| |  _ |  _|  |  \| ||  _|  | |_) |  / _ \  | |
-  #| |_| || |___ | |\  || |___ |  _ <  / ___ \ | |___
-  # \____||_____||_| \_||_____||_| \_\/_/   \_\|_____|
-  #
+#  ____  _____  _   _  _____  ____      _     _
+# / ___|| ____|| \ | || ____||  _ \    / \   | |
+#| |  _ |  _|  |  \| ||  _|  | |_) |  / _ \  | |
+#| |_| || |___ | |\  || |___ |  _ <  / ___ \ | |___
+# \____||_____||_| \_||_____||_| \_\/_/   \_\|_____|
+#
 
-  [general]
-  accounts = ilya_DREAMSAI, ilya_NTLWORLD, ilya_OUTLOOK, ilya_GMAIL
+[general]
+accounts = vgoptics, ilya_GMAIL, ilya_DREAMSAI, ilya_OUTLOOK, ilya_NTLWORLD, yandex
 
-  # user interface for terminal
-  ui = TTYUI
+# user interface for terminal
+ui = TTYUI
 
-  pythonfile = ~/.emacs.d/my-scripts/email/read_password.py
+pythonfile = ~/.doom.d/my-scripts/email/read_password.py
 
-  # when to stop trying to establish a connection
-  socktimeout = 60
+# when to stop trying to establish a connection
+socktimeout = 120
 
-  postsynchook = mu index --maildir ~/mail
-  autorefresh = 5
-  quick = 10
+postsynchook = mu index --maildir ~/mail
+autorefresh = 5
+quick = 10
 
-  # ____   ____   _____     _     __  __  ____            _     ___
-  #|  _ \ |  _ \ | ____|   / \   |  \/  |/ ___|          / \   |_ _|
-  #| | | || |_) ||  _|    / _ \  | |\/| |\___ \  _____  / _ \   | |
-  #| |_| ||  _ < | |___  / ___ \ | |  | | ___) ||_____|/ ___ \  | |
-  #|____/ |_| \_\|_____|/_/   \_\|_|  |_||____/       /_/   \_\|___|
-  #
-  #
+# ____   ____   _____     _     __  __  ____            _     ___
+#|  _ \ |  _ \ | ____|   / \   |  \/  |/ ___|          / \   |_ _|
+#| | | || |_) ||  _|    / _ \  | |\/| |\___ \  _____  / _ \   | |
+#| |_| ||  _ < | |___  / ___ \ | |  | | ___) ||_____|/ ___ \  | |
+#|____/ |_| \_\|_____|/_/   \_\|_|  |_||____/       /_/   \_\|___|
+#
+#
 
-  [Account ilya_DREAMSAI]
-  localrepository = ilya_DREAMSAI-local
-  remoterepository = ilya_DREAMSAI-remote
+[Account ilya_DREAMSAI]
+localrepository = ilya_DREAMSAI-local
+remoterepository = ilya_DREAMSAI-remote
+synclabels = yes
+labelsheader = X-Keywords
+maxconnections = 2
 
-  [Repository ilya_DREAMSAI-local]
-  type  = GmailMaildir
-  localfolders = ~/db_mail/ilya_DREAMSAI
+[Repository ilya_DREAMSAI-local]
+type  = GmailMaildir
+localfolders = ~/db_mail/ilya_DREAMSAI
 
-  [Repository ilya_DREAMSAI-remote]
-  type = Gmail
-  remotehost = imap.gmail.com
-  remoteuser = ilya.antonov@dreams-ai.com
-  remotepasseval = get_password_emacs("ilya.antonov@dreams-ai.com")
-  realdelete = yes
+[Repository ilya_DREAMSAI-remote]
+type = Gmail
+remotehost = imap.gmail.com
+remoteuser=ilya.antonov@dreams-ai.com
+realdelete = no
 
-  sslcacertfile = /usr/local/etc/openssl/cert.pem
-  auth_mechanisms = LOGIN
+auth_mechanisms=XOAUTH2
+oauth2_request_url=https://accounts.google.com/o/oauth2/token
+oauth2_client_id_eval=get_client_id("ilya.antonov@dreams-ai.com")
+oauth2_client_secret_eval=get_client_secret("ilya.antonov@dreams-ai.com")
+oauth2_refresh_token_eval=get_refresh_token("ilya.antonov@dreams-ai.com")
 
-  # _   _  _____  _  __        __ ___   ____   _      ____
-  #| \ | ||_   _|| | \ \      / // _ \ |  _ \ | |    |  _ \
-  #|  \| |  | |  | |  \ \ /\ / /| | | || |_) || |    | | | |
-  #| |\  |  | |  | |___\ V  V / | |_| ||  _ < | |___ | |_| |
-  #|_| \_|  |_|  |_____|\_/\_/   \___/ |_| \_\|_____||____/
+ssl = yes
+sslcacertfile =/usr/local/etc/ca-certificates/cert.pem
 
-  [Account ilya_NTLWORLD]
-  localrepository = ilya_NTLWORLD-local
-  remoterepository = ilya_NTLWORLD-remote
+#  ____  __  __     _     ___  _
+# / ___||  \/  |   / \   |_ _|| |
+#| |  _ | |\/| |  / _ \   | | | |
+#| |_| || |  | | / ___ \  | | | |___
+# \____||_|  |_|/_/   \_\|___||_____|
 
-  [Repository ilya_NTLWORLD-local]
-  type = Maildir
-  localfolders = ~/db_mail/ilya_NTLWORLD
+[Account ilya_GMAIL]
+localrepository = ilya_GMAIL-local
+remoterepository = ilya_GMAIL-remote
+synclabels = yes
+labelsheader = X-Keywords
+maxconnections = 2
 
-  [Repository ilya_NTLWORLD-remote]
-  type = IMAP
-  remoteport = 993
-  remotehost = imap.virginmedia.com
-  remoteuser = ilya.antonov24@ntlworld.com
-  remotepasseval = get_password_emacs("ilya.antonov24@ntlworld.com")
-  realdelete = no
+[Repository ilya_GMAIL-local]
+type  = GmailMaildir
+localfolders = ~/db_mail/ilya_GMAIL
 
-  ssl = yes
-  cert_fingerprint = 🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋
+[Repository ilya_GMAIL-remote]
+type = Gmail
+remotehost = imap.gmail.com
+remoteuser=antonov.ilya225@gmail.com
+realdelete = no
 
-  folderfilter = lambda foldername: foldername  in ['INBOX', 'Drafts', 'Archive', 'Sent', 'Trash']
+auth_mechanisms=XOAUTH2
+oauth2_request_url=https://accounts.google.com/o/oauth2/token
+oauth2_client_id_eval=get_client_id("antonov.ilya225@gmail.com")
+oauth2_client_secret_eval=get_client_secret("antonov.ilya225@gmail.com")
+oauth2_refresh_token_eval=get_refresh_token("antonov.ilya225@gmail.com")
 
-  #  ____  __  __     _     ___  _
-  # / ___||  \/  |   / \   |_ _|| |
-  #| |  _ | |\/| |  / _ \   | | | |
-  #| |_| || |  | | / ___ \  | | | |___
-  # \____||_|  |_|/_/   \_\|___||_____|
+ssl = yes
+sslcacertfile =/usr/local/etc/ca-certificates/cert.pem
 
-  [Account ilya_GMAIL]
-  localrepository = ilya_GMAIL-local
-  remoterepository = ilya_GMAIL-remote
+# _   _  _____  _  __        __ ___   ____   _      ____
+#| \ | ||_   _|| | \ \      / // _ \ |  _ \ | |    |  _ \
+#|  \| |  | |  | |  \ \ /\ / /| | | || |_) || |    | | | |
+#| |\  |  | |  | |___\ V  V / | |_| ||  _ < | |___ | |_| |
+#|_| \_|  |_|  |_____|\_/\_/   \___/ |_| \_\|_____||____/
 
-  [Repository ilya_GMAIL-local]
-  type  = GmailMaildir
-  localfolders = ~/db_mail/ilya_GMAIL
+[Account ilya_NTLWORLD]
+localrepository = ilya_NTLWORLD-local
+remoterepository = ilya_NTLWORLD-remote
 
-  [Repository ilya_GMAIL-remote]
-  type = Gmail
-  remotehost = imap.gmail.com
-  remoteuser = antonov.ilya225@gmail.com
-  # remotepasseval = get_pswd("~/db_mail/.pswd_gmail.gpg")
-  remotepasseval = get_password_emacs("antonov.ilya225@gmail.com")
-  realdelete = yes
+[Repository ilya_NTLWORLD-local]
+type = Maildir
+localfolders = ~/db_mail/ilya_NTLWORLD
 
-  sslcacertfile = /usr/local/etc/openssl/cert.pem
-  auth_mechanisms = LOGIN
+[Repository ilya_NTLWORLD-remote]
+type = IMAP
+remoteport = 993
+remotehost = imap.virginmedia.com
+remoteuser = ilya.antonov24@ntlworld.com
+remotepasseval = get_pass("ilya.antonov24@ntlworld.com")["password"]
+realdelete = no
 
-  #  ___   _   _  _____  _      ___    ___   _  __
-  # / _ \ | | | ||_   _|| |    / _ \  / _ \ | |/ /
-  #| | | || | | |  | |  | |   | | | || | | || ' /
-  #| |_| || |_| |  | |  | |___| |_| || |_| || . \
-  # \___/  \___/   |_|  |_____|\___/  \___/ |_|\_\
+ssl = yes
+sslcacertfile =/usr/local/etc/ca-certificates/cert.pem
 
+folderfilter = lambda foldername: foldername  in ['INBOX', 'Drafts', 'Archive', 'Sent', 'Trash']
 
-  [Account ilya_OUTLOOK]
-  localrepository = ilya_OUTLOOK-local
-  remoterepository = ilya_OUTLOOK-remote
+#__     __ ____   ___   ____  _____  ___  ____  ____
+#\ \   / // ___| / _ \ |  _ \|_   _||_ _|/ ___|/ ___|
+# \ \ / /| |  _ | | | || |_) | | |   | || |    \___ \
+#  \ V / | |_| || |_| ||  __/  | |   | || |___  ___) |
+#   \_/   \____| \___/ |_|     |_|  |___|\____||____/
+#
+#
 
-  [Repository ilya_OUTLOOK-local]
-  type = Maildir
-  localfolders = ~/db_mail/ilya_OUTLOOK
+[Account vgoptics]
+localrepository = vgoptics-local
+remoterepository = vgoptics-remote
 
-  [Repository ilya_OUTLOOK-remote]
-  type = IMAP
-  remotehost = outlook.office365.com
-  remoteuser = zyva263@live.rhul.ac.uk
-  remotepasseval = get_password_emacs("zyva263@live.rhul.ac.uk")
-  realdelete = no
+[Repository vgoptics-local]
+type = Maildir
+localfolders = ~/db_mail/vgoptics
 
-  sslcacertfile = /usr/local/etc/openssl/cert.pem
-  cert_fingerprint = 🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋
+[Repository vgoptics-remote]
+type = IMAP
+remoteport = 993
+remotehost = imap.virginmedia.com
+remoteuser = vgoptics@virginmedia.com
+remotepasseval = get_pass("vgoptics@virginmedia.com")["password"]
+realdelete = no
 
-  folderfilter = lambda folder: folder in ['INBOX', 'Drafts', 'Archive', 'Sent Items', 'Deleted Items']
+ssl = yes
+sslcacertfile =/usr/local/etc/ca-certificates/cert.pem
 
+folderfilter = lambda foldername: foldername  in ['INBOX', 'Drafts', 'Archive', 'Sent', 'Trash']
+
+#  ___   _   _  _____  _      ___    ___   _  __
+# / _ \ | | | ||_   _|| |    / _ \  / _ \ | |/ /
+#| | | || | | |  | |  | |   | | | || | | || ' /
+#| |_| || |_| |  | |  | |___| |_| || |_| || . \
+# \___/  \___/   |_|  |_____|\___/  \___/ |_|\_\
+
+[Account ilya_OUTLOOK]
+localrepository = ilya_OUTLOOK-local
+remoterepository = ilya_OUTLOOK-remote
+
+[Repository ilya_OUTLOOK-local]
+type = Maildir
+localfolders = ~/db_mail/ilya_OUTLOOK
+
+[Repository ilya_OUTLOOK-remote]
+type = IMAP
+remotehost = outlook.office365.com
+remoteuser = ilya.antonov@rhul.ac.uk
+
+auth_mechanisms=XOAUTH2
+oauth2_request_url=https://login.microsoftonline.com/common/oauth2/v2.0/token
+oauth2_client_id_eval=get_client_id("ilya.antonov@rhul.ac.uk")
+oauth2_client_secret_eval=get_client_secret("ilya.antonov@rhul.ac.uk")
+oauth2_refresh_token_eval=get_refresh_token("ilya.antonov@rhul.ac.uk")
+
+ssl = yes
+sslcacertfile =/usr/local/etc/ca-certificates/cert.pem
+
+folderfilter = lambda folder: folder in ['INBOX', 'Drafts', 'Archive', 'Sent Items', 'Deleted Items']
+
+#__   __  _     _   _  ____   _____ __  __
+#\ \ / / / \   | \ | ||  _ \ | ____|\ \/ /
+# \ V / / _ \  |  \| || | | ||  _|   \  /
+#  | | / ___ \ | |\  || |_| || |___  /  \
+#  |_|/_/   \_\|_| \_||____/ |_____|/_/\_\
+
+[Account yandex]
+localrepository = yandex-local
+remoterepository = yandex-remote
+
+[Repository yandex-local]
+type = Maildir
+localfolders = ~/db_mail/yandex
+
+[Repository yandex-remote]
+type = IMAP
+remoteport = 993
+remotehost = imap.yandex.com
+remoteuser = mail@ilya-antonov.ru
+remotepasseval = get_pass("mail@ilya-antonov.ru")["password"]
+
+ssl = yes
+sslcacertfile =/usr/local/etc/ca-certificates/cert.pem
 #+END_SRC
 If offlineimap is giving an error, it is probably picking up python3.7. Delete all python3.7 email-related libraries:
 
 1. Find the site libraries
 #+BEGIN_SRC shell
   python3 -m site
- #+END_SRC
+#+END_SRC
 
 2. [@2] Remove all =imap= packages
-*** Certificates for IMAP server (fetching)
+*** b. XOAUTH setup
+:PROPERTIES:
+:CUSTOM_ID: xoauth-setup
+:END:
+**** Gmail XOAUTH setup
+1. Create an OAuth consent screen: https://console.cloud.google.com/apis/credentials/consent?project=sunny-idiom-256623
+   - When doing so, add =https://mail.google.com/= to the scopes
+2. Create the credentials [[https://console.cloud.google.com/apis/credentials?project=sunny-idiom-256623][here]] using *Create OAuth client ID* using *Desktop App*
+3. You will be shown a =client_id=
+4. And a =client_secret=
+5. Next we need to get the =refresh_token=. To do this, fill out this json:
+#+begin_src json
+{
+  "scope": "https://mail.google.com/",
+  "user": "@gmail.com",
+  "client_id": "",
+  "client_secret": "",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs"
+}
+#+end_src
+
+6. And then run [[file:my-scripts/email/getmail-gmail-xoauth-tokens.py][getmail-gmail-xoauth-tokens]]
+#+begin_src python
+getmail-gmail-xoauth-tokens --init /path/to/filename.json
+#+end_src
+
+7. [@7] This will give a redirect link, where you grant authorisation. Login with account and it will give the =refresh_token= to copy into the config
+
+
+***** Before
+Google account setup With google, you need to allow unknow applications to have access to the account
+- go to https://myaccount.google.com/lesssecureapps
+- allow all applications
+- https://myaccount.google.com/u/4/security
+**** Outlook XOAUTH setup
+1. Run the [[file:my-scripts/email/get-outlook-xoauth-tokens.py][get-outlook-xouath-tokens]] file - the config file contains the client id and client secret of thunderbird which microsoft trusts
+2. The =refresh_token= is written to a file - copy it over as with gmail
+*** c. Certificates for IMAP server (fetching)
 There is a certificate to verify connection to an IMAP server (to make sure you are syncing and giving away details to correct server):
 [[https://www.offlineimap.org/doc/FAQ.html#how-do-i-generate-an-sslcacertfile-file]]
 https://www.offlineimap.org/doc/FAQ.html#does-offlineimap-verify-ssl-certificates
@@ -284,12 +392,12 @@ SSL_CERT_DIR="" openssl s_client -connect imap.SERVERTHATYOUCHOOSE.com:993 < /de
 #+END_SRC
 - Copy over the =SHA1 Fingerprint= to =cert_fingerprint= in =.offlineimaprc=
 
-*** Run sync
+*** d. Run sync
 #+begin_src shell
 offlineimap
 #+end_src
-** Setup mu4e
-1. Remeber to run the setup in [[https://www.djcbsoftware.nl/code/mu/mu4e/Getting-started.html#Getting-started][this tutorial]] for doing external setup
+** 4. Setup mu4e
+1. Remember to run the setup in [[https://www.djcbsoftware.nl/code/mu/mu4e/Getting-started.html#Getting-started][this tutorial]] for doing external setup
 2. https://etienne.depar.is/emacs.d/mu4e.html
 3. http://kitchingroup.cheme.cmu.edu/blog/2016/10/29/Sending-html-emails-from-org-mode-with-org-mime/
 
@@ -311,107 +419,192 @@ mu info
 #+END_SRC
 
 to get information on the install
-** Sending mail =mstmp=
-Configuration file something like:
+** 5. Sending mail =mstmp=
+
+*** a. Create =~/.config/msmtp/config=
+
+Make sure that the passwords are available in =pass=
+
 #+BEGIN_SRC text
-  defaults
-  logfile ~/.msmtp.log
-  protocol smtp
+defaults
+logfile ~/.msmtp.log
+protocol smtp
+auth on
+tls on
+tls_trust_file /usr/local/etc/ca-certificates/cert.pem
 
-  #  ___   _   _  _____  _      ___    ___   _  __
-  # / _ \ | | | ||_   _|| |    / _ \  / _ \ | |/ /
-  #| | | || | | |  | |  | |   | | | || | | || ' /
-  #| |_| || |_| |  | |  | |___| |_| || |_| || . \
-  # \___/  \___/   |_|  |_____|\___/  \___/ |_|\_\
-  #
+#  ___   _   _  _____  _      ___    ___   _  __
+# / _ \ | | | ||_   _|| |    / _ \  / _ \ | |/ /
+#| | | || | | |  | |  | |   | | | || | | || ' /
+#| |_| || |_| |  | |  | |___| |_| || |_| || . \
+# \___/  \___/   |_|  |_____|\___/  \___/ |_|\_\
+#
 
-  account ilya_OUTLOOK
-  host smtp.office365.com
-  port 587
+account OUTLOOK
+host smtp.office365.com
+port 587
 
-  from zyva263@live.rhul.ac.uk
-  user zyva263@live.rhul.ac.uk
-  passwordeval python3 ~/.emacs.d/my-scripts/email/read_password.py -u zyva263@live.rhul.ac.uk
+from ilya.antonov@rhul.ac.uk
+user ilya.antonov@rhul.ac.uk
 
-  auth on
-  tls on
-  tls_starttls on
-  tls_fingerprint 46:A3:2E:AF:1F:3F:1E:85:8C:74:67:72:BA:70:B1:72:5E:C4:84:8C:B3:57:92:0A:A7:3E:DF:92:A5:6A:75:4F
+auth xoauth2
+passwordeval oauth2get OUTLOOK ilya.antonov@rhul.ac.uk
 
-  #  ____  __  __     _     ___  _
-  # / ___||  \/  |   / \   |_ _|| |
-  #| |  _ | |\/| |  / _ \   | | | |
-  #| |_| || |  | | / ___ \  | | | |___
-  # \____||_|  |_|/_/   \_\|___||_____|
-  #
+#  ____  __  __     _     ___  _
+# / ___||  \/  |   / \   |_ _|| |
+#| |  _ | |\/| |  / _ \   | | | |
+#| |_| || |  | | / ___ \  | | | |___
+# \____||_|  |_|/_/   \_\|___||_____|
+#
 
-  account ilya_GMAIL
-  host smtp.gmail.com
-  port 587
+account ilya_GMAIL
+host smtp.gmail.com
+port 587
 
-  from antonov.ilya225@gmail.com
-  user antonov.ilya225@gmail.com
-  passwordeval python3 ~/.emacs.d/my-scripts/email/read_password.py -u antonov.ilya225@gmail.com
+from antonov.ilya225@gmail.com
+user antonov.ilya225@gmail.com
 
-  auth on
-  tls on
-  tls_starttls on
-  tls_trust_file /usr/local/etc/openssl@1.1/cert.pem
+auth oauthbearer
+passwordeval oauth2get ilya_GMAIL antonov.ilya225@gmail.com
 
-  # ____   ____   _____     _     __  __  ____            _     ___
-  #|  _ \ |  _ \ | ____|   / \   |  \/  |/ ___|          / \   |_ _|
-  #| | | || |_) ||  _|    / _ \  | |\/| |\___ \  _____  / _ \   | |
-  #| |_| ||  _ < | |___  / ___ \ | |  | | ___) ||_____|/ ___ \  | |
-  #|____/ |_| \_\|_____|/_/   \_\|_|  |_||____/       /_/   \_\|___|
-  #
-  #
+# ____   ____   _____     _     __  __  ____            _     ___
+#|  _ \ |  _ \ | ____|   / \   |  \/  |/ ___|          / \   |_ _|
+#| | | || |_) ||  _|    / _ \  | |\/| |\___ \  _____  / _ \   | |
+#| |_| ||  _ < | |___  / ___ \ | |  | | ___) ||_____|/ ___ \  | |
+#|____/ |_| \_\|_____|/_/   \_\|_|  |_||____/       /_/   \_\|___|
+#
+#
 
-  account ilya_DREAMSAI
-  host smtp.gmail.com
-  port 587
+account ilya_DREAMSAI
+host smtp.gmail.com
+port 587
 
-  from ilya.antonov@dreams-ai.com
-  user ilya.antonov@dreams-ai.com
-  passwordeval python3 ~/.emacs.d/my-scripts/email/read_password.py -u ilya.antonov@dreams-ai.com
+from ilya.antonov@dreams-ai.com
+user ilya.antonov@dreams-ai.com
 
-  auth on
-  tls on
-  tls_starttls on
-  tls_trust_file /usr/local/etc/openssl@1.1/cert.pem
+auth oauthbearer
+passwordeval oauth2get ilya_DREAMSAI ilya.antonov@dreams-ai.com
 
-  # _   _  _____  _  __        __ ___   ____   _      ____
-  #| \ | ||_   _|| | \ \      / // _ \ |  _ \ | |    |  _ \
-  #|  \| |  | |  | |  \ \ /\ / /| | | || |_) || |    | | | |
-  #| |\  |  | |  | |___\ V  V / | |_| ||  _ < | |___ | |_| |
-  #|_| \_|  |_|  |_____|\_/\_/   \___/ |_| \_\|_____||____/
-  #
+# _   _  _____  _  __        __ ___   ____   _      ____
+#| \ | ||_   _|| | \ \      / // _ \ |  _ \ | |    |  _ \
+#|  \| |  | |  | |  \ \ /\ / /| | | || |_) || |    | | | |
+#| |\  |  | |  | |___\ V  V / | |_| ||  _ < | |___ | |_| |
+#|_| \_|  |_|  |_____|\_/\_/   \___/ |_| \_\|_____||____/
+#
 
-  account ilya_NTLWORLD
-  host smtp.ntlworld.com
-  port 465
+account ilya_NTLWORLD
+host smtp.ntlworld.com
+port 587
 
-  from ilya.antonov24@ntlworld.com
-  user ilya.antonov24@ntlworld.com
-  passwordeval "python3 ~/.emacs.d/my-scripts/email/read_password.py -u ilya.antonov24@ntlworld.com"
+from ilya.antonov24@ntlworld.com
+user ilya.antonov24@ntlworld.com
+eval echo password $(pass ilya.antonov24@ntlworld.com)
 
+#__   __  _     _   _  ____   _____ __  __
+#\ \ / / / \   | \ | ||  _ \ | ____|\ \/ /
+# \ V / / _ \  |  \| || | | ||  _|   \  /
+#  | | / ___ \ | |\  || |_| || |___  /  \
+#  |_|/_/   \_\|_| \_||____/ |_____|/_/\_\
+#
 
-  auth plain
-  tls on
-  tls_starttls off
-  tls_fingerprint B8:7A:44:C5:DB:B6:61:07:92:44:2A:9C:AE:92:6A:71:7D:E1:66:42:63:93:23:A1:8A:D0:9F:2E:37:B5:FD:E4
+account yandex
+host smtp.yandex.com
+port 587
 
-  account default: ilya_OUTLOOK
+from mail@ilya-antonov.ru
+user mail@ilya-antonov.ru
+eval echo password $(pass mail@ilya-antonov.ru)
+
+#__   __  _     _   _  ____   _____ __  __
+#\ \ / / / \   | \ | ||  _ \ | ____|\ \/ /
+# \ V / / _ \  |  \| || | | ||  _|   \  /
+#  | | / ___ \ | |\  || |_| || |___  /  \
+#  |_|/_/   \_\|_| \_||____/ |_____|/_/\_\
+#
+
+account vgoptics
+host smtp.ntlworld.com
+port 587
+
+from vgoptics@virginmedia.com
+user vgoptics@virginmedia.com
+eval echo password $(pass vgoptics@virginmedia.com)
 #+END_SRC
+*** b Setup for XOAUTH
 
-** Certificates for SMTP server (Sending)
+**** 1. Install oauth2token
+
+#+begin_src shell
+python3 -m pip install oauth2token
+#+end_src
+
+**** 2. Create the following files:
+***** Outlook
+****** =~/.config/oauth2token/OUTLOOK/config.json=
+
+#+begin_src text
+{
+  "web": {
+    "client_id": "xxxx",
+    "client_secret": "yyyy",
+    "auth_uri": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+    "token_uri": "https://login.microsoftonline.com/common/oauth2/v2.0/token"
+  }
+}
+#+end_src
+
+******** =~/.config/oauth2token/OUTLOOK/scopes.json=
+#+begin_src text
+[
+  "https://outlook.office.com/SMTP.Send",
+  "https://outlook.office.com/POP.AccessAsUser.All",
+  "https://outlook.office.com/IMAP.AccessAsUser.All"
+]
+#+end_src
+***** Gmail
+****** =~/.config/oauth2token/GMAIL/config.json=
+
+#+begin_src text
+{
+  "web": {
+    "client_id": "xxxx",
+    "client_secret": "yyyy",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://accounts.google.com/o/oauth2/token"
+  }
+}
+#+end_src
+
+****** =~/.config/oauth2token/GMAIL/scopes.json=
+#+begin_src text
+["https://mail.google.com/"]
+#+end_src
+
+3. []
+
+
+**** 3. Run scripts to load in the refresh tokens
+
+e.g.
+#+begin_src
+oauth2create OUTLOOK ilya.antonov@rhul.ac.uk
+#+end_src
+
+or
+
+#+begin_src
+oauth2create ilya_GMAIL antonov.ilya225@gmail.com
+#+end_src
+
+**** 4. Now the =passwordeval oauth2get OUTLOOK ilya.antonov@rhul.ac.uk= commands should authenticate
+
+*** Certificates for SMTP server (Sending)
 For [[*Sending mail][Sending mail]] you may need to get certificates and update them in =.msmtprc=
 
 You can either:
+1. Set =tls_trust_file= as before for =sslcacertfile=
+2. Generate constant fingerprint
 
-*** Set =tls_trust_file= as before for =sslcacertfile=
-- Copy it over the the chosen =tls_trust_file= which is set in =.msmtprc=
-
-*** Generate constant fingerprint
 #+BEGIN_SRC shell
   msmtp --port=587 --serverinfo --tls --tls-certcheck=off --host=smtp.office365.com
  #+END_SRC
@@ -423,58 +616,27 @@ or
 
 - Copy the SHA256 into tls_fingerprint of the =.msmtprc= file
 
-** +Google authentication+
-- With google, you need to allow unknow applications to have access to the account
-- go to https://myaccount.google.com/lesssecureapps
-- allow all applications
-- https://myaccount.google.com/u/4/security
-
-** Google Mailboxes
+** Google
 Create a new label in Google Mail. Next time it will sync to computer
-** Outgoing Mail Server
-| Account Type    | SMTP                                |
-| Username        | Your email address is your username |
-| Server hostname | smtp.virginmedia.com                |
-| Server port     | 465                                 |
-| Authentication  | Password                            |
-| SSL/TLS         | Yes                                 |
-** Incoming Mail Server
-| Account Type    | IMAP                                |
-| Username        | Your email address is your username |
-| Server hostname | imap.virginmedia.com                |
-| Server port     | 993                                 |
-| Authentication  | Password                            |
-| SSL/TLS         | Yes                                 |
-** Gmail XOAUTH setup
-1. Create an OAuth consent screen: https://console.cloud.google.com/apis/credentials/consent?project=sunny-idiom-256623
-   - When doing so, add =https://mail.google.com/= to the scopes
-2. Create the credentials [[https://console.cloud.google.com/apis/credentials?project=sunny-idiom-256623][here]] using *Create OAuth client ID* using *Desktop App*
-3. You will be shown a =client_id=
-4. And a =client_secret=
-5. Next we need to get the =refresh_token=. To do this, fill out this json:
-#+begin_src json
-{
-  "scope": "https://mail.google.com/",
-  "user": "@gmail.com",
-  "client_id": "",
-  "client_secret": "",
-  "token_uri": "https://accounts.google.com/o/oauth2/token",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs"
-}
-#+end_src
-
-6. And then run [[file:my-scripts/email/getmail-gmail-xoauth-tokens.py][getmail-gmail-xoauth-tokens]]
-#+begin_src python
-getmail-gmail-xoauth-tokens --init /path/to/filename.json
-#+end_src
-
-7. [@7] This will give a redirect link, where you grant authorisation. Login with account and it will give the =refresh_token= to copy into the config
-** Outlook XOAUTH setup
-1. Run the [[file:my-scripts/email/get-outlook-xoauth-tokens.py][get-outlook-xouath-tokens]] file - the config file contains the client id and client secret of thunderbird which microsoft trusts
-2. The =refresh_token= is written to a file - copy it over as with gmail
-
+** Virgin
+| *Outgoing Mail Server* |                                     |
+| Account Type           | SMTP                                |
+| Username               | Your email address is your username |
+| Server hostname        | smtp.virginmedia.com                |
+| Server port            | 465                                 |
+| Authentication         | Password                            |
+| SSL/TLS                | Yes                                 |
+|------------------------+-------------------------------------|
+| *Incoming Mail Server* |                                     |
+| Account Type           | IMAP                                |
+| Username               | Your email address is your username |
+| Server hostname        | imap.virginmedia.com                |
+| Server port            | 993                                 |
+| Authentication         | Password                            |
+| SSL/TLS                | Yes                                 |
 * Syncing mail with =offlineimap=
+** Generic settings
+
 #+begin_src emacs-lisp
 (setq +mu4e-backend 'offlineimap
       mu4e-attachment-dir (expand-file-name "~/Downloads/mail")
@@ -483,88 +645,223 @@ getmail-gmail-xoauth-tokens --init /path/to/filename.json
       mu4e-compose-context-policy 'always-ask)
 #+end_src
 
-* Account setup
-Remember to run [[*Initial setup][Initial setup]]
-** =ilya.antonov24@ntlworld=
+** Account setup
+*** =ilya.antonov24@ntlworld=
 #+BEGIN_SRC emacs-lisp
-(set-email-account! "ilya.antonov24@ntlworld.com"
-  '((user-full-name         . "Ilya Antonov (NTLWORLD)")
-    (smtpmail-smtp-user     . "ilya.antonov24@ntlworld.com")
-    (mu4e-sent-folder       . "/ilya_NTLWORLD/Sent")
-    (mu4e-drafts-folder     . "/ilya_NTLWORLD/Drafts")
-    (mu4e-trash-folder      . "/ilya_NTLWORLD/Trash")
-    (mu4e-refile-folder     . "/ilya_NTLWORLD/Archive")
-    (mu4e-sent-messages-behavior . sent)
-    (mu4e-compose-signature . "---\nIlya Antonov\n⦿ NTLWORLD")
-    (mu4e-compose-format-flowed . nil))
-  t)
+(after! mu4e
+  (defvar my/mu4e/context-ntlworld
+    (make-mu4e-context
+     :name "ntlworld"
+     :enter-func (lambda () (mu4e-message "Entering NTLWORLD"))
+     :leave-func (lambda () (mu4e-message "Leaving NTLWORLD"))
+     :match-func (lambda (msg)
+                   (when msg
+                     (mu4e-message-contact-field-matches
+                      msg (list :to :from :cc) "ilya.antonov24@ntlworld.com")))
+     :vars '((user-mail-address           . "ilya.antonov24@ntlworld.com")
+             (user-full-name              . "Ilya Antonov (NTLWORLD)")
+             (mu4e-sent-messages-behavior . sent)
+             (mu4e-sent-folder            . "/ilya_NTLWORLD/Sent")
+             (mu4e-drafts-folder          . "/ilya_NTLWORLD/Drafts")
+             (mu4e-trash-folder           . "/ilya_NTLWORLD/Trash")
+             (mu4e-refile-folder          . "/ilya_NTLWORLD/Archive")
+             (mu4e-compose-signature      . "Ilya Antonov,\n⦿ NTLWORLD")
+             (mu4e-compose-format-flowed . nil)))))
  #+END_SRC
-** =ilya.antonov@rhul.ac.uk=
+*** =ilya.antonov@rhul.ac.uk=
 #+BEGIN_SRC emacs-lisp
-(set-email-account! "ilya.antonov@rhul.ac.uk"
-  '((smtpmail-smtp-user     . "ilya.antonov@rhul.ac.uk")
-    (mu4e-sent-folder            . "/ilya_OUTLOOK/Sent Items")
-    (mu4e-drafts-folder          . "/ilya_OUTLOOK/Drafts")
-    (mu4e-trash-folder           . "/ilya_OUTLOOK/Deleted Items")
-    (mu4e-refile-folder          . "/ilya_OUTLOOK/Archive")
-    (mu4e-sent-messages-behavior . sent)
-    (mu4e-compose-signature . "---\nResearcher\n*Royal Holloway University of London*")
-    (mu4e-compose-format-flowed . nil))
-  t)
+(after! mu4e
+  (defvar my/mu4e/context-outlook
+    (make-mu4e-context
+     :name "outlook"
+     :enter-func (lambda () (mu4e-message "Entering OUTLOOK"))
+     :leave-func (lambda () (mu4e-message "Leaving OUTLOOK"))
+     :match-func (lambda (msg)
+                   (when msg
+                     (mu4e-message-contact-field-matches
+                      msg '(list :from :to :cc :bcc) "ilya.antonov@rhul.ac.uk")))
+     :vars '((user-mail-address . "ilya.antonov@rhul.ac.uk")
+             (mu4e-sent-folder            . "/ilya_OUTLOOK/Sent Items")
+             (mu4e-drafts-folder          . "/ilya_OUTLOOK/Drafts")
+             (mu4e-trash-folder           . "/ilya_OUTLOOK/Deleted Items")
+             (mu4e-refile-folder          . "/ilya_OUTLOOK/Archive")
+             (mu4e-sent-messages-behavior . sent)
+             (mu4e-compose-signature      . "---\nResearcher\n*Royal Holloway University of London*")
+             (mu4e-compose-format-flowed  . nil))))
+  )
 #+END_SRC
-** =vgoptics@virginmedia.com=
+*** =ilya.antonov@dreams-ai.com=
 #+BEGIN_SRC emacs-lisp
-(set-email-account! "vgoptics@virginmedia.com"
-  '((smtpmail-smtp-user     . "vgoptics@virginmedia.com")
-    (mu4e-sent-folder       . "/vgoptics/Sent")
-    (mu4e-drafts-folder     . "/vgoptics/Drafts")
-    (mu4e-trash-folder      . "/vgoptics/Trash")
-    (mu4e-refile-folder     . "/vgoptics/Archive")
-    (mu4e-sent-messages-behavior . sent)
-    (mu4e-compose-signature . "---\nVG Optics")
-    (mu4e-compose-format-flowed . nil))
-  t)
-#+END_SRC
-
-** =mail@ilya-antonov.ru=
+(after! mu4e
+  (defvar my/mu4e/context-dreamsai
+    (make-mu4e-context
+     :name "dreams-ai"
+     :enter-func (lambda () (message "Entering Dreams ☁"))
+     :leave-func (lambda () (message "🦑 Plummeting out"))
+     :match-func (lambda (msg)
+                   (when msg
+                     (mu4e-message-contact-field-matches
+                      msg (list :to :from :cc) "ilya.antonov@dreams-ai.com")))
+     :vars '((user-mail-address . "ilya.antonov@dreams-ai.com")
+             (user-full-name              . "Ilya Antonov (Dreams-AI)")
+             (mu4e-sent-folder            . "/ilya_DREAMSAI/[Gmail].Sent Mail")
+             (mu4e-drafts-folder          . "/ilya_DREAMSAI/[Gmail].Drafts")
+             (mu4e-trash-folder           . "/ilya_DREAMSAI/[Gmail].Bin")
+             (mu4e-refile-folder          . "/ilya_DREAMSAI/[Gmail].Starred")
+             (mu4e-sent-messages-behavior . delete) ; Gmail takes care of this
+             (mu4e-compose-signature      . "\n\nPhysics Handyman\n\n☁ DREAMSAI")
+             (mu4e-compose-format-flowed  . t)))))
+ #+END_SRC
+***  =antonov.ilya225@gmail.com=
 #+BEGIN_SRC emacs-lisp
-(set-email-account! "mail@ilya-antonov.ru"
-  '((smtpmail-smtp-user     . "mail@ilya-antonov.ru")
-    (mu4e-sent-folder       . "/yandex/Sent")
-    (mu4e-drafts-folder     . "/yandex/Drafts")
-    (mu4e-trash-folder      . "/yandex/Trash")
-    (mu4e-refile-folder     . "/yandex/Archive")
-    (mu4e-sent-messages-behavior . sent)
-    (mu4e-compose-signature . "---\nYandex🦑")
-    (mu4e-compose-format-flowed . nil))
-  t)
+(after! mu4e
+  (defvar my/mu4e/context-gmail
+    (make-mu4e-context
+     :name "gmail"
+     :enter-func (lambda () (mu4e-message "Entering GMAIL"))
+     :leave-func (lambda () (mu4e-message "Leaving GMAIL"))
+     :match-func (lambda (msg)
+                   (when msg
+                     (mu4e-message-contact-field-matches
+                      msg (list :to :from :cc) "antonov.ilya225@gmail.com")))
+     :vars '((user-mail-address . "antonov.ilya225@gmail.com")
+             (user-full-name              . "Ilya Antonov (GMAIL)")
+             (mu4e-sent-folder            . "/ilya_GMAIL/[Gmail].Sent Mail")
+             (mu4e-drafts-folder          . "/ilya_GMAIL/[Gmail].Drafts")
+             (mu4e-trash-folder           . "/ilya_GMAIL/[Gmail].Bin")
+             (mu4e-refile-folder          . "/ilya_GMAIL/[Gmail].Starred")
+             (mu4e-sent-messages-behavior . delete) ; Gmail takes care of this
+             (mu4e-compose-signature      . "Ilya Antonov,\n⦿ GMAIL")
+             (mu4e-compose-format-flowed . nil)))))
 #+END_SRC
-** GMAIL =ilya.antonov@dreams-ai.com= and =antonov.ilya225@gmail.com=
+*** =vgoptics@virginmedia.com=
+#+BEGIN_SRC emacs-lisp
+(after! mu4e
+  (defvar my/mu4e/context-vgoptics
+    (make-mu4e-context
+     :name "vgoptics"
+     :enter-func (lambda () (mu4e-message "Entering VGOptics"))
+     :leave-func (lambda () (mu4e-message "Leaving VGOptics"))
+     :match-func (lambda (msg)
+                   (when msg
+                     (mu4e-message-contact-field-matches
+                      msg (list :to :from :cc) "vgoptics@virginmedia.com")))
+     :vars '((user-mail-address . "vgoptics@virginmedia.com")
+             (user-full-name              . "VGOptics")
+             (mu4e-sent-folder       . "/vgoptics/Sent")
+             (mu4e-drafts-folder     . "/vgoptics/Drafts")
+             (mu4e-trash-folder      . "/vgoptics/Trash")
+             (mu4e-refile-folder     . "/vgoptics/Archive")
+             (mu4e-sent-messages-behavior . sent)
+             (mu4e-compose-signature      . "VGOptics Limited")
+             (mu4e-compose-format-flowed . nil)))))
+#+END_SRC
+*** =mail@ilya-antonov.ru=
+#+BEGIN_SRC emacs-lisp
+(after! mu4e
+  (defvar my/mu4e/context-yandex
+    (make-mu4e-context
+     :name "yandex"
+     :enter-func (lambda () (mu4e-message "Entering Yandex"))
+     :leave-func (lambda () (mu4e-message "Leaving Yandex"))
+     :match-func (lambda (msg)
+                   (when msg
+                     (mu4e-message-contact-field-matches
+                      msg (list :to :from :cc) "mail@ilya-antonov.ru")))
+     :vars '((user-mail-address . "mail@ilya-antonov.ru")
+             (user-full-name              . "Yandex")
+             (mu4e-sent-folder       . "/yandex/Sent")
+             (mu4e-drafts-folder     . "/yandex/Drafts")
+             (mu4e-trash-folder      . "/yandex/Trash")
+             (mu4e-refile-folder     . "/yandex/Archive")
+             (mu4e-sent-messages-behavior . sent)
+             (mu4e-compose-signature      . "---\nYandex🦑")
+             (mu4e-compose-format-flowed . nil)))))
+#+END_SRC
+*** GMAIL =ilya.antonov@dreams-ai.com= and =antonov.ilya225@gmail.com=
 #+BEGIN_SRC emacs-lisp
 (setq +mu4e-gmail-accounts '(("ilya.antonov@dreams-ai.com" . "/ilya_DREAMSAI")
                              ("antonov.ilya225@gmail.com" . "/ilya_GMAIL")))
 #+END_SRC
+*** Load the accounts
+#+begin_src emacs-lisp
+(after! mu4e
+  (setq mu4e-contexts
+        (list my/mu4e/context-outlook
+              my/mu4e/context-dreamsai
+              my/mu4e/context-ntlworld
+              my/mu4e/context-gmail
+              my/mu4e/context-yandex
+              my/mu4e/context-vgoptics
+              )))
+#+end_src
+** Custom actions
+*** Read and delete
+#+BEGIN_SRC emacs-lisp
+;; (after! mu4e
+;;   (add-to-list 'mu4e-marks
+;;                '(read-and-trash
+;;                  :char       "X . ☠"
+;;                  :prompt     "dBloat"
+;;                  :show-target (lambda (target) "Bloat")
+;;                  :action      (lambda (docid msg target)
+;;                                         ;remove [u]nread and [N]ew → Mark as [S]een and [T]rash
+;;                                 (mu4e--server-move docid nil "+S-u-N"))))
 
-* Main menu
-** Jump to inboxes
+;;   (mu4e~headers-defun-mark-for read-and-trash)
+;;   (define-key mu4e-headers-mode-map (kbd "d") 'mu4e-headers-mark-for-read-and-trash)
+;;   )
+ #+END_SRC
+*** Dump order
+#+BEGIN_SRC emacs-lisp
+(after! mu4e
+  (add-to-list 'mu4e-marks
+               '(dump-order
+                 :char       ("o" . "📮")
+                 :prompt     "wPlace into order?"
+                 :show-target (lambda (target) "Order")
+                 :action      (lambda (docid msg target)
+                                          ;remove [u]nread and [N]ew → Mark as [S]een. move to the orders directory
+                                (mu4e--server-move docid "/ilya_GMAIL/Orders" "+S-u-N"))))
+
+  (mu4e~headers-defun-mark-for dump-order)
+  (define-key mu4e-headers-mode-map (kbd "o") 'mu4e-headers-mark-for-dump-order))
+ #+END_SRC
+*** Expenses
+#+BEGIN_SRC emacs-lisp
+(after! mu4e
+  (add-to-list 'mu4e-marks
+               '(expenses-dreamsai
+                 :char       ("e" . "💰")
+                 :prompt     "wMark as expense"
+                 :show-target (lambda (target) "Expenses ☁")
+                 :action      (lambda (docid msg target)
+                                        ;remove [u]nread and [N]ew → Mark as [S]een. move to the orders directory
+                                (mu4e--server-move docid "/ilya_DREAMSAI/Expenses" "+S-u-N"))))
+
+  (mu4e~headers-defun-mark-for expenses-dreamsai)
+  (define-key mu4e-headers-mode-map (kbd "e") 'mu4e-headers-mark-for-expenses-dreamsai))
+ #+END_SRC
+
+** View: Main
+*** Jump to inboxes
 #+BEGIN_SRC emacs-lisp
 (setq mu4e-maildir-shortcuts
       '(("/ilya_DREAMSAI/INBOX" . ?d)
         ("/ilya_GMAIL/INBOX" . ?g)
         ("/ilya_NTLWORLD/INBOX" . ?n)
-        ("/ilya_OUTLOOK/INBOX" . ?l)
+        ("/ilya_OUTLOOK/INBOX" . ?u)
         ("/vgoptics/INBOX" . ?v)
         ("/yandex/INBOX" . ?y)))
  #+END_SRC
-** Bookmarks
+*** Bookmarks
 Define queries that will be sent to =mu find= command. To see the possible queries run
 #+BEGIN_SRC shell
-  man mu-find
-  man mu-query
- #+END_SRC
-Then add them here
+man mu-find
+man mu-query
+#+END_SRC
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (after! mu4e
   (add-to-list 'mu4e-bookmarks
                ;; add bookmark for recent messages on the Mu mailing list.
@@ -574,48 +871,36 @@ Then add them here
   (add-to-list 'mu4e-bookmarks
                '(:name "All Inboxes"
                  :key ?i
-                 :query "maildir:/ilya_GMAIL/INBOX OR maildir:/ilya_NTLWORLD/INBOX OR maildir:/ilya_OUTLOOK/INBOX OR maildir:/ilya_DREAMSAI/INBOX"
+                 :query "maildir:/ilya_GMAIL/INBOX OR maildir:/ilya_NTLWORLD/INBOX OR maildir:/ilya_OUTLOOK/INBOX OR maildir:/ilya_DREAMSAI/INBOX OR maildir:/vgoptics OR maildir:/yandex"
                  ))
   (add-to-list 'mu4e-bookmarks
                '(:name "All Archives"
                  :query "maildir:/ilya_GMAIL/[Gmail].Starred OR maildir:/ilya_NTLWORLD/Archive OR maildir:/ilya_OUTLOOK/Archive OR maildir:/ilya_DREAMSAI/[Gmail].Starred"
                  :key ?a)))
+#+end_src
+** View: Messages
+#+BEGIN_SRC emacs-lisp
+(after! mu4e
+; Hook imagemagick if it was installed with emacs
+(when (fboundp 'imagemagick-register-types)
+  (imagemagick-register-types)))
  #+END_SRC
-* Syncing mail =my/update-mu4e=
- #+BEGIN_SRC emacs-lisp
-(setq mu4e-update-pre-hook (lambda ()
-                                   (epa-decrypt-file
-     (concat doom-user-dir "my-files/gpg/load_password_dummy_file.gpg") "/dev/null")))
-
-(defun my/mu4e/update ()
-  (interactive)
-  (let (
-        ;; (last-venv pyvenv-virtual-env-name)
-        )
-
-    ;; (message (concat ">>>> Set my/python/last-venv to " last-venv))
-    ;; (pyvenv-workon "imap")
-    ;; (pyvenv-deactivate)
-    ;; (message ">>>> deactivated")
-
-    ;;(exec-path-from-shell-initialize)
-
-    (message ">>>> decrypting dummy file")
-    (epa-decrypt-file
-     (concat doom-user-dir "my-files/gpg/load_password_dummy_file.gpg") "/dev/null")
-
-    ;; (message ">>>> updating")
-    (mu4e-update-mail-and-index t)
-
-    ;; (message (concat " (((cringe incoming))) " last-venv))
-    ;; (pyvenv-workon last-venv)
-    ))
-(global-set-key (kbd "C-C M U") 'my/mu4e/update)
- #+END_SRC
-* Icons
+** View: Header
 #+begin_src emacs-lisp
-(setq mu4e-use-fancy-chars nil)
+(after! mu4e
+  (setq mu4e-headers-fields
+      '((:account-stripe . 1)
+        (:human-date . 12)
+        (:flags . 10)
+        ;;(:mailing-list . 10)
+        (:from-or-to . 25)
+        ;;(:size . 8)
+        (:subject)))
+  (setq mu4e-use-fancy-chars nil))
+#+end_src
 
+*** Icons
+#+begin_src emacs-lisp :tangle no
 (setq mu4e-headers-unread-mark    '("u" . "📩 ")
       mu4e-headers-draft-mark     '("D" . "🚧 ")
       mu4e-headers-flagged-mark   '("F" . "🚩 ")
@@ -627,17 +912,34 @@ Then add them here
       mu4e-headers-attach-mark    '("a" . "📎 ")
       mu4e-headers-encrypted-mark '("x" . "🔑 ")
       mu4e-headers-signed-mark    '("s" . "🖊 "))
-
 #+end_src
-* TODO Message view
-#+BEGIN_SRC emacs-lisp
-(after! mu4e
-  ;;(setq mu4e-view-show-images t)
-  (add-to-list 'mu4e-view-actions '("web-view" . mu4e-action-view-in-browser) t))
 
-                                        ; hook imagemagick if it was installed with emacs
-(when (fboundp 'imagemagick-register-types)
-  (imagemagick-register-types))
+** Syncing mail =my/update-mu4e=
+ #+BEGIN_SRC emacs-lisp
+(setq mu4e-update-pre-hook (lambda ()
+                                   (epa-decrypt-file
+     (concat doom-user-dir "my-files/gpg/load_password_dummy_file.gpg") "/dev/null")))
+
+(defun my/mu4e/update ()
+  (interactive)
+  (let (
+        ;; (last-venv pyvenv-virtual-env-name)
+        )
+    ;; (message (concat ">>>> Set my/python/last-venv to " last-venv))
+    ;; (pyvenv-workon "imap")
+    ;; (pyvenv-deactivate)
+    ;; (message ">>>> deactivated")
+    ;;(exec-path-from-shell-initialize)
+
+    (message ">>>> decrypting dummy file")
+    (epa-decrypt-file
+     (concat doom-user-dir "my-files/gpg/load_password_dummy_file.gpg") "/dev/null")
+    ;; (message ">>>> updating")
+    (mu4e-update-mail-and-index t)
+    ;; (message (concat " (((cringe incoming))) " last-venv))
+    ;; (pyvenv-workon last-venv)
+    ))
+(global-set-key (kbd "C-C M U") 'my/mu4e/update)
  #+END_SRC
 * TODO Capturing messages
 #+BEGIN_SRC emacs-lisp :tangle no

@@ -4,5 +4,4 @@ Scopes = ['https://outlook.office.com/IMAP.AccessAsUser.All','https://outlook.of
 RefreshTokenFileName = "imap_smtp_refresh_token"
 AccessTokenFileName = "imap_smtp_access_token"
 
-# Optionally specify a tenantId here: "https://login.microsoftonline.com/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/"
 Authority = None

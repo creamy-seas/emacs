@@ -66,7 +66,7 @@
        vc                ; version-control and Emacs, sitting in a tree
 
        :email
-       ;;(mu4e +org +gmail)
+       (mu4e +org +gmail)
        ;;notmuch
        ;;(wanderlust +gmail)
 

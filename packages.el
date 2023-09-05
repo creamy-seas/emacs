@@ -15,9 +15,12 @@
 (package! org-drill) ;; anki! :: orgmode.org
 (package! org-bullets) ;; less triggering :: ormode.org
 
+(package! gnuplot) ;;
+
 (package! hungry-delete)
 (package! grip-mode) ;; preview markdown
-;;
+(package! ox-gfm) ;; export to git markdown
+
 (package! eyebrowse) ;; mutliple tabs :: navigation.org
 (package! beacon) ;; pretty fade of line -> ricing.org
 ;;(package! vue-mode)

@@ -30,8 +30,6 @@ def get_pswd(path):
         ["gpg", "--quiet", "--batch", "-d", os.path.expanduser(path)]
     ).strip()
 
-#!/usr/bin/env python
-
 from subprocess import check_output
 from re import sub
 
@@ -39,12 +37,17 @@ def get_pass(account):
     data = check_output("/usr/local/bin/pass " + account, shell=True).splitlines()
     password = data[0]
 
-    # print("----------")
-    # print(password)
-    # print(account)
-    # print("----------")
-
     return {"password": password, "user": account}
+
+def get_client_id(account):
+    """Assumes ilya.antonov@dreams-ai.com-client_id"""
+    return check_output("/usr/local/bin/pass " + account + "-client_id", shell=True).splitlines()[0].decode()
+
+def get_client_secret(account):
+    return check_output("/usr/local/bin/pass " + account + "-client_secret", shell=True).splitlines()[0].decode()
+
+def get_refresh_token(account):
+    return check_output("/usr/local/bin/pass " + account + "-refresh_token", shell=True).splitlines()[0].decode()
 
 def folder_filter(name):
     return not (name in ['INBOX',
