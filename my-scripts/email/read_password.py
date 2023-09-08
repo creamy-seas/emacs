@@ -3,10 +3,11 @@ from subprocess import check_output
 import os
 import argparse
 import re
+from subprocess import check_output
+from re import sub
 
 # PATH_OF_PASSWORD_FILE = "~/db_mail/.pswd_mail.gpg"
-PATH_OF_PASSWORD_FILE = os.path.expanduser("~/db_mail/.pswd_mail.gpg")
-
+PATH_OF_PASSWORD_FILE = os.path.expanduser("~/creamy_seas/sync_files/mail/.pswd_mail.gpg")
 
 def get_password_emacs(user):
 
@@ -24,16 +25,34 @@ def get_password_emacs(user):
     # 4 - return ##############################################################
     return p.search(authinfo).group(1)
 
+def get_pass(account):
+    data = check_output("/usr/local/bin/pass " + account, shell=True).splitlines()
+    password = data[0]
 
-def get_pswd(path):
-    return check_output(
-        ["gpg", "--quiet", "--batch", "-d", os.path.expanduser(path)]
-    ).strip()
+    # print("----------")
+    # print(password)
+    # print(account)
+    # print("----------")
 
+    return {"password": password, "user": account}
+
+def folder_filter(name):
+    return not (name in ['INBOX',
+                         '[Gmail]/Spam',
+                         '[Gmail]/Important',
+                         '[Gmail]/Starred'] or
+                name.startswith('[Airmail]'))
+
+def nametrans(name):
+    """Translation of golder names"""
+    return sub('^(Starred|Sent Mail|Drafts|Trash|All Mail|Spam)$', '[Gmail]/\\1', name)
+
+def nametrans_reverse(name):
+    return sub('^(\[Gmail\]/)', '', name)
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("-u", "--user", required=True, help="user")
     args = vars(ap.parse_args())
 
-    print(get_password_emacs(args["user"]))
+    print(get_pass(args["user"])["password"].decode("utf-8"))

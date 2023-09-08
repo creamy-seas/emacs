@@ -2,6 +2,17 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
+* React
+#+begin_src emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.tsx$" . web-mode))
+  (setq web-mode-content-types-alist '(("tsx")))
+  (defun web-mode-init-hook ()
+    "Hooks for Web mode.  Adjust indent."
+    (setq web-mode-markup-indent-offset 4))
+
+  (add-hook 'web-mode-hook  'web-mode-init-hook)
+
+#+end_src
 * Arsist mode
 To dooble in a file
 #+BEGIN_SRC emacs-lisp

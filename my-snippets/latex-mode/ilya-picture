@@ -4,7 +4,7 @@
 # --
 \begin{figure}[h]
   \centering%
-  \includegraphics[height=${1:height}]{${2:example-image-a}}%
+  \includegraphics[width=${1:width}\linewidth]{${2:example-image-a}}%
   \caption{\small%
   ${3:caption-text}%
   \label{fig:$2}}

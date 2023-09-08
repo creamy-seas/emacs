@@ -4,10 +4,19 @@
 (yas-define-snippets 'latex-mode
                      '(("nnp" "\\lstset{language=python,        backgroundcolor=\\color{python},        frame=tb, tabsize=4,basicstyle=\\small, showstringspaces=false,commentstyle=\\color{red!70}}\n\\begin{lstlisting}\n ${1:code-goes-here}\n\\end{lstlisting}" "nn-python" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/nn-python" nil nil)
                        ("st" "\\stub{${1:title}}{${2:completion-date}}{%\n  ${3:content}}%" "my-stub" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/my-stub" nil nil)
+                       ("sq" "\\sqrt{$1}$0" "my-sqrt" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/my-sqrt" nil nil)
                        ("re" "\\color{red}{${1:text-in-red}}" "red" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/my-red" nil nil)
+                       ("qp" "\\gls{QPSJ}" "my-qpsj" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/my-qpsj" nil nil)
+                       ("lw" "${1:1.0}\\linewidth" "my-linewidth" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/my-linewidth" nil nil)
+                       ("lr[" "\\left[ $1 \\right]$0" "left-right-square" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/my-left-right-square" nil nil)
                        ("ket" "\\left|${1:value}\\right\\rangle" "my-ket" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/my-ket" nil nil)
                        ("my-inkscape-latex-snippet" "\\begin{figure}[h]\n  \\centering\n  \\inkfig{${1:width}$0cm}{`my/inkscape/latex/file-name`}\n  \\caption{\\small ${3:caption-text}\\label{fig:`my/inkscape/latex/file-name`}}\n\\end{figure}" "my-inkscape-latex-snippet" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/my-inkscape-latex-snippet" nil nil)
+                       ("h2" "H$_2$O" "my-h20" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/my-h20" nil nil)
+                       ("er" "\\eqref{${1:eq:${2:ref}}}" "my-eqpref" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/my-eqref" nil nil)
+                       ("dg" "$${1:temp}^\\circ\\,$C" "my-degree" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/my-degree" nil nil)
+                       ("d" "\\dagger" "my-dagger" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/my-dagger" nil nil)
                        ("bra" "\\left\\langle ${1:bra}\\right|$0" "my-bra" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/my-bra" nil nil)
+                       ("ar" "\\\\${1:auto}ref{${2}}" "my-autoref" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/my-autoref" nil nil)
                        ("m" "$$1$$0" "math-dollars" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/math-dollars" nil nil)
                        ("lr" "\\left(${1:content}\\right)$0" "left-right-bracket" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/left-right-bracket" nil nil)
                        ("pt" "\\verb|${1:`${2:enter-here-chad}'}|" "ilya-verb-parantheses" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/ilya-verb-parantheses" nil nil)
@@ -102,4 +111,4 @@
                        ("co" "`(yas-trimmed-comment-start)` ${1:comment}`(unless (eq (length comment-end) 0) (concat \" \" (yas-trimmed-comment-end)))`$0" "comment" nil nil nil "/Users/CCCP/.emacs.d/my-snippets/latex-mode/comment" nil nil)))
 
 
-;;; Do not edit! File generated at Fri Mar 26 19:06:41 2021
+;;; Do not edit! File generated at Sun Apr 10 20:02:43 2022

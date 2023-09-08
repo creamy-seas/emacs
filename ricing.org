@@ -7,6 +7,7 @@ To get a list of pretty symbols run =(all-the-icons-insert)=
   (menu-bar-mode t)
  #+END_SRC
 * All-the-icons
+You must run =all-the-icons-install=
 #+BEGIN_SRC emacs-lisp
   ;; fix docker-compose.yml not being set
   (add-to-list 'all-the-icons-icon-alist
@@ -22,7 +23,7 @@ To get a list of pretty symbols run =(all-the-icons-insert)=
  #+END_SRC
 * Application window
 #+BEGIN_SRC emacs-lisp
-  (setq frame-title-format "🦑")
+  (setq frame-title-format "The emacs experience")
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
@@ -33,8 +34,6 @@ To get a list of pretty symbols run =(all-the-icons-insert)=
                               (?\( . ?\))
                               (?\" . ?\")
                               ))
-
-  (add-hook 'org-mode-hook 'electric-pair-mode)
   (add-hook 'emacs-lisp-mode-hook 'electric-pair-mode)
  #+END_SRC
 
@@ -204,14 +203,14 @@ Just read [[https://github.com/tonsky/FiraCode][this]] - one paragraph sums up:
  #+END_SRC
 ** Load ligatures
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'load-path (concat my/config-folder-location "manual_el/fira-code"))
-  (condition-case nil
-      (progn
-        (require 'fira-code)
-        (add-hook 'python-mode-hook (function fira-code-mode))
-        (add-hook 'emacs-lisp-mode-hook (function fira-code-mode)))
-    (error
-     (warn ">>>>>>>>>> Install fira-code manually -> see '~/.emacs.d/ricing.org' or run 'make install_fira' <<<<<<<<<<")))
+  ;; (add-to-list 'load-path (concat my/config-folder-location "manual_el/fira-code"))
+  ;; (condition-case nil
+  ;;     (progn
+  ;;       (require 'fira-code)
+  ;;       (add-hook 'python-mode-hook (function fira-code-mode))
+  ;;       (add-hook 'emacs-lisp-mode-hook (function fira-code-mode)))
+  ;;   (error
+  ;;    (warn ">>>>>>>>>> Install fira-code manually -> see '~/.emacs.d/ricing.org' or run 'make install_fira' <<<<<<<<<<")))
  #+END_SRC
 * Generating test projects
 #+BEGIN_SRC emacs-lisp
@@ -303,76 +302,14 @@ Make emacs prompt for password in the minibuffer
     :init (my/add-to-package-list 'which-key)
     (which-key-mode))
  #+END_SRC
-* DOWN Ligatures
-#+BEGIN_SRC emacs-lisp
-  ;; (defun fira-code-mode--make-alist (list)
-  ;;   "Generate prettify-symbols alist from LIST."
-  ;;   (let ((idx -1))
-  ;;     (mapcar
-  ;;      (lambda (s)
-  ;;        (setq idx (1+ idx))
-  ;;        (let* ((code (+ #Xe100 idx))
-  ;;               (width (string-width s))
-  ;;               (prefix ())
-  ;;               (suffix '(?\s (Br . Br)))
-  ;;               (n 1))
-  ;;          (while (< n width)
-  ;;            (setq prefix (append prefix '(?\s (Br . Bl))))
-  ;;            (setq n (1+ n)))
-  ;;          (cons s (append prefix suffix (list (decode-char 'ucs code))))))
-  ;;      list)))
-
-  ;; (defconst fira-code-mode--ligatures
-  ;;   '("www" "**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\"
-  ;;     "{-" "[]" "::" ":::" ":=" "!!" "!=" "!==" "-}"
-  ;;     "--" "---" "-->" "->" "->>" "-<" "-<<" "-~"
-  ;;     "#{" "#[" "##" "###" "####" "#(" "#?" "#_" "#_("
-  ;;     ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*"
-  ;;     "/**" "/=" "/==" "/>" "//" "///" "&&" "||" "||="
-  ;;     "|=" "|>" "^=" "$>" "++" "+++" "+>" "=:=" "=="
-  ;;     "===" "==>" "=>" "=>>" "<=" "=<<" "=/=" ">-" ">="
-  ;;     ">=>" ">>" ">>-" ">>=" ">>>" "<*" "<*>" "<|" "<|>"
-  ;;     "<$" "<$>" "<!--" "<-" "<--" "<->" "<+" "<+>" "<="
-  ;;     "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<" "<~"
-  ;;     "<~~" "</" "</>" "~@" "~-" "~=" "~>" "~~" "~~>" "%%"
-  ;;     "x" ":" "+" "+" "*"))
-
-  ;; (defvar fira-code-mode--old-prettify-alist)
-
-  ;; (defun fira-code-mode--enable ()
-  ;;   "Enable Fira Code ligatures in current buffer."
-  ;;   (setq-local fira-code-mode--old-prettify-alist prettify-symbols-alist)
-  ;;   (setq-local prettify-symbols-alist (append (fira-code-mode--make-alist fira-code-mode--ligatures) fira-code-mode--old-prettify-alist))
-  ;;   (prettify-symbols-mode t))
-
-  ;; (defun fira-code-mode--disable ()
-  ;;   "Disable Fira Code ligatures in current buffer."
-  ;;   (setq-local prettify-symbols-alist fira-code-mode--old-prettify-alist)
-  ;;   (prettify-symbols-mode -1))
-
-  ;; (define-minor-mode fira-code-mode
-  ;;   "Fira Code ligatures minor mode"
-  ;;   :lighter " Fira Code"
-  ;;   (setq-local prettify-symbols-unprettify-at-point 'right-edge)
-  ;;   (if fira-code-mode
-  ;;       (fira-code-mode--enable)
-  ;;     (fira-code-mode--disable)))
-
-  ;; (defun fira-code-mode--setup ()
-  ;;   "Setup Fira Code Symbols"
-  ;;   (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol"))
-
-  ;; (provide 'fira-code-mode)
-  ;; (add-hook 'prog-mode-hook (function fira-code-mode))
- #+END_SRC
 * Line highlight
 #+BEGIN_SRC emacs-lisp
   (global-hl-line-mode 1)
 #+END_SRC
 * Prettify-symbols
 #+BEGIN_SRC emacs-lisp
-  (global-prettify-symbols-mode 1)
-  (setq prettify-symbols-unprettify-at-point t)
+  ;; (global-prettify-symbols-mode 1)
+  ;; (setq prettify-symbols-unprettify-at-point t)
 #+END_SRC
 * Menus, Popups
 ** About Emacs  =C-h C-a=
@@ -694,7 +631,7 @@ Colourize codes such as #AF3313
 * PACKAGE Scratch buffer
 ** Default load
 #+BEGIN_SRC emacs-lisp
-  ;; (setq initial-major-mode 'org-mode)
+  (setq initial-major-mode 'org-mode)
   (setq initial-scratch-message (concat
                                  "#+Title: Persistent Scratch Buffer"))
  #+END_SRC

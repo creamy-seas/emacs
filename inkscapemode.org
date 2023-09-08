@@ -202,7 +202,7 @@ To export an inkscape image for latex interactively, open =.svg= file → save a
     "Prompts user to select an .svg file from the 'images_inkscape' directory and opens it"
     (interactive)
     (let* ((svg-file-list (directory-files
-                           "images_inkscape"
+                           "drawio"
                            nil ".*\.drawio"))
            (svg-selected (ido-completing-read "🦑 Drawio file to open: " svg-file-list))
            (base-filename (replace-regexp-in-string "\.drawio" "" svg-selected)))

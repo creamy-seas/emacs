@@ -8,6 +8,15 @@ DRAWIO_BIN="/Applications/draw.io.app/Contents/MacOS/draw.io"
 DRAWIO_FILE="$1.drawio"
 TEMPLATE="$2"
 
+# Extract out file_name_<p9> to get a specific page
+PAGE=$(echo $1 | sed 's/.*_<p\([0-9]\{1,\}\)>/\1/')
+
+# re='^[0-9]+$'
+# if ! [[ $PAGE =~ $re ]] ; then
+#     PAGE=1;
+# fi
+echo $PAGE
+
 # 1 - copy template if file does not exist
 if [ -e "$DRAWIO_FILE" ]; then
     echo "==> $DRAWIO_FILE already exists"

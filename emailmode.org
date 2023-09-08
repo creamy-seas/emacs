@@ -80,6 +80,10 @@ To kill gpg agent and dump passwords
 
 * Latest commit used to build mu/mu4e
 2b49db2c28c53936e31d174a9fc6b63099387130
+
+OfflineIMAP 7.3.3
+ Licensed under the GNU GPL v2 or any later version (with an OpenSSL exception)
+imaplib2 v2.101 (bundled), Python v2.7.17, OpenSSL 1.1.1l  24 Aug 2021
 * To read
 - [[https://kkatsuyuki.github.io/notmuch-conf/][Arch Setup]]
 - [[https://medium.com/@kirang89/emacs-as-email-client-with-offlineimap-and-mu4e-on-os-x-3ba55adc78b6]]
@@ -423,6 +427,10 @@ or
 - go to https://myaccount.google.com/lesssecureapps
 - allow all applications
 - https://myaccount.google.com/u/4/security
+
+Or you will needd
+
+Go to library and select GMAIL API
 ** Google Mailboxes
 Create a new label in Google Mail. Next time it will sync to computer
 ** Outgoing Mail Server
@@ -441,7 +449,7 @@ Create a new label in Google Mail. Next time it will sync to computer
 | SSL/TLS         | Yes                                 |
 * CONFIG Personal Configuration
 #+BEGIN_SRC emacs-lisp
-  (defvar my/mu4e-load-path "/usr/local/share/emacs/site-lisp/mu4e" "location of the emacs mu4e package")
+  (defvar my/mu4e-load-path "/usr/local/share/emacs/site-lisp/mu/mu4e" "location of the emacs mu4e package")
   (defvar my/mu4e-save-dir "~/Downloads/mail" "Location of where to save the mail attachement")
   (defvar my/mu4e-sendmail-program "/usr/local/bin/msmtp" "The SMTP binary")
  #+END_SRC
@@ -819,6 +827,9 @@ Header view is the one that displays all the emails
   (define-key my/keymap (kbd "m") (function mu4e))
   (define-key my/keymap (kbd "M") (function my/mu4e-in-new-frame))
   (define-key my/keymap (kbd "C") (function mu4e-compose-new))
-  (define-key my/keymap (kbd "u") (function my/mu4e/update))
-  (define-key mu4e-main-mode-map (kbd "U") (function my/mu4e/update))
+  ;; (define-key my/keymap (kbd "u") (function my/mu4e/update))
+  (define-key my/keymap (kbd "u") (lambda ()
+                                    (mu4e-update-mail-and-index t)))
+  (define-key mu4e-main-mode-map (kbd "U") (lambda ()
+                                             (mu4e-update-mail-and-index t)))
  #+END_SRC

@@ -52,9 +52,9 @@ You will need to =export PATH=~/.rustup/toolchains/stable-x86_64-apple-darwin/li
     :ensure t
     :init (my/add-to-package-list 'rust-mode))
                                           ; use rust analyzer above the normal lsp server
-  (setq lsp-rust-server 'rust-analyzer)
+  ;;(setq lsp-rust-server 'rust-analyzer)
                                           ; launch lsp server
-  (add-hook 'rust-mode-hook #'lsp)
+  ;;(add-hook 'rust-mode-hook #'lsp)
                                           ; indentation
   (add-hook 'rust-mode-hook
             (lambda () (setq indent-tabs-mode nil)))
@@ -63,97 +63,97 @@ You will need to =export PATH=~/.rustup/toolchains/stable-x86_64-apple-darwin/li
   ;; (setq cargo-process--command-doc-open "doc --no-deps --open")
   ;; (setq cargo-process--command-doc "doc --no-deps")
 
-  (setq cargo-process--command-doc-open "doc --document-private-items --no-deps --open")
-  (setq cargo-process--command-doc "doc --document-private-items --no-deps ")
+  ;; (setq cargo-process--command-doc-open "doc --document-private-items --no-deps --open")
+  ;; (setq cargo-process--command-doc "doc --document-private-items --no-deps ")
  #+END_SRC
 
 * PACKAGE Flycheck rust
 #+BEGIN_SRC emacs-lisp
-  (use-package flycheck-rust
-    :ensure t
-    :init (my/add-to-package-list 'flycheck-rust)
-    :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+  ;; (use-package flycheck-rust
+  ;;   :ensure t
+  ;;   :init (my/add-to-package-list 'flycheck-rust)
+  ;;   :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
  #+END_SRC
 * PACKAGE Cargo
 #+BEGIN_SRC emacs-lisp
-  (use-package cargo
-    :ensure t
-    :init (my/add-to-package-list 'cargo)
-    :diminish cargo-minor-mode
-    :hook (rust-mode . cargo-minor-mode))
+  ;; (use-package cargo
+  ;;   :ensure t
+  ;;   :init (my/add-to-package-list 'cargo)
+  ;;   :diminish cargo-minor-mode
+  ;;   :hook (rust-mode . cargo-minor-mode))
  #+END_SRC
 * PACKAGE Racer
 #+BEGIN_SRC emacs-lisp
-  (use-package racer
-    :ensure t
-    :hook
-    (rust-mode . racer-mode)
-    (racer-mode . eldoc-mode)
-                                          ; show current function being typed
-    (racer-mode . company-mode)
-    :init (my/add-to-package-list 'racer))
+  ;; (use-package racer
+  ;;   :ensure t
+  ;;   :hook
+  ;;   (rust-mode . racer-mode)
+  ;;   (racer-mode . eldoc-mode)
+  ;;                                         ; show current function being typed
+  ;;   (racer-mode . company-mode)
+  ;;   :init (my/add-to-package-list 'racer))
 
-  (use-package rustic
-    :ensure t
-    :hook
-    (racer-mode . rustic-mode)
-    :init (my/add-to-package-list 'rustic))
+  ;; (use-package rustic
+  ;;   :ensure t
+  ;;   :hook
+  ;;   (racer-mode . rustic-mode)
+  ;;   :init (my/add-to-package-list 'rustic))
  #+END_SRC
 * PACKAGE Hydra
 #+BEGIN_SRC emacs-lisp
-  (defhydra hydra-rust ()
-    "
-      Cargo                                                              [_q_] quit
-      ^^---------------------------------------------------------------------------
-      [_b_] Build
-      [_r_] Run
-      [_R_] Run Binary
-      [_l_] Clean
+  ;; (defhydra hydra-rust ()
+  ;;   "
+  ;;     Cargo                                                              [_q_] quit
+  ;;     ^^---------------------------------------------------------------------------
+  ;;     [_b_] Build
+  ;;     [_r_] Run
+  ;;     [_R_] Run Binary
+  ;;     [_l_] Clean
 
-      [_f_] Format			[_c_] Clippy: lints to improve rust code
-      ^^---------------------------------------------------------------------------
-      [_D_] Cargo Build Documentation: for all the libraries used
-      [_d_] Cargo Open Documentation: in a browser
-      [_a_] Remove a crate			[_A_] Add a crate
+  ;;     [_f_] Format			[_c_] Clippy: lints to improve rust code
+  ;;     ^^---------------------------------------------------------------------------
+  ;;     [_D_] Cargo Build Documentation: for all the libraries used
+  ;;     [_d_] Cargo Open Documentation: in a browser
+  ;;     [_a_] Remove a crate			[_A_] Add a crate
 
-      ^^---------------------------------------------------------------------------
-      [_e_] Run example?		Test Current [_t_]		Test [_T_]
+  ;;     ^^---------------------------------------------------------------------------
+  ;;     [_e_] Run example?		Test Current [_t_]		Test [_T_]
 
-      [_i_] init a new project
-      [_n_] init a new project with a name
-      "
-    ("r" cargo-process-run nil)
-    ("R" cargo-process-run-bin nil)
-    ("b" cargo-process-build nil)
-    ("f" cargo-process-fmt nil)
-    ("D" cargo-process-doc nil)
-    ("d" cargo-process-doc-open nil)
-    ("t" cargo-process-current-test nil)
-    ("T" cargo-process-test nil)
-    ("n" cargo-process-new nil)
-    ("l" cargo-process-clean nil)
-    ("c" cargo-process-clippy nil)
-    ("a" cargo-process-rm nil)
-    ("A" cargo-process-add nil)
-    ("e" cargo-process-run-example nil)
-    ("i" cargo-process-init nil)
-    ("q" nil nil))
+  ;;     [_i_] init a new project
+  ;;     [_n_] init a new project with a name
+  ;;     "
+  ;;   ("r" cargo-process-run nil)
+  ;;   ("R" cargo-process-run-bin nil)
+  ;;   ("b" cargo-process-build nil)
+  ;;   ("f" cargo-process-fmt nil)
+  ;;   ("D" cargo-process-doc nil)
+  ;;   ("d" cargo-process-doc-open nil)
+  ;;   ("t" cargo-process-current-test nil)
+  ;;   ("T" cargo-process-test nil)
+  ;;   ("n" cargo-process-new nil)
+  ;;   ("l" cargo-process-clean nil)
+  ;;   ("c" cargo-process-clippy nil)
+  ;;   ("a" cargo-process-rm nil)
+  ;;   ("A" cargo-process-add nil)
+  ;;   ("e" cargo-process-run-example nil)
+  ;;   ("i" cargo-process-init nil)
+  ;;   ("q" nil nil))
 
-  (define-key my/keymap (kbd "c") #'hydra-rust/body)
+  ;; (define-key my/keymap (kbd "c") #'hydra-rust/body)
 
-  (add-hook 'rust-mode-hook (lambda ()
-                              (define-key rust-mode-map (kbd "C-c C-c") #'hydra-rust/body)
-                              (message "Rust mode")
-                              (define-key rust-mode-map (kbd "C-c C-c") #'hydra-rust/body)))
-  (add-hook 'rustic-mode-hook (lambda ()
-                                (define-key rustic-mode-map (kbd "C-c C-c") #'hydra-rust/body)
-                                (message "RUSTIC mode")))
-  (add-hook 'lsp-mode-hook (lambda ()
-                             (if (string= (format "%s" major-mode) "rustic-mode")
-                                 (define-key rustic-mode-map (kbd "C-c C-c") #'hydra-rust/body)
-                               (message "RUSTIC mode after LSP"))))
+  ;; (add-hook 'rust-mode-hook (lambda ()
+  ;;                             (define-key rust-mode-map (kbd "C-c C-c") #'hydra-rust/body)
+  ;;                             (message "Rust mode")
+  ;;                             (define-key rust-mode-map (kbd "C-c C-c") #'hydra-rust/body)))
+  ;; ;; (add-hook 'rustic-mode-hook (lambda ()
+  ;; ;;                               (define-key rustic-mode-map (kbd "C-c C-c") #'hydra-rust/body)
+  ;; ;;                               (message "RUSTIC mode")))
+  ;; (add-hook 'lsp-mode-hook (lambda ()
+  ;;                            (if (string= (format "%s" major-mode) "rustic-mode")
+  ;;                                (define-key rustic-mode-map (kbd "C-c C-c") #'hydra-rust/body)
+  ;;                              (message "RUSTIC mode after LSP"))))
  #+END_SRC
-* Bloat
+* Bloatre
 #+BEGIN_SRC emacs-lisp
   ;; (setq racer-rust-src-path "/Users/CCCP/Vagrant_VMs/rust-source-code")
   ;; (setq rustic-format-trigger 'on-save)

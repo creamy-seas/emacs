@@ -2,29 +2,34 @@
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle yes
 
-To ignore file chmod changes
-#+BEGIN_SRC shell :tangle no
-  git config core.fileMode false
- #+END_SRC
+| M-x git-time-machine | Preview file                                    |
+|----------------------+-------------------------------------------------|
+| *Forge*              |                                                 |
+| =C-c C-o=            | Browser topic, commit, etc with gitforge        |
+| ='=                  | Visit issues, pull requets etc - per repository |
+| =C-c C-n=            | Add comment in pull request or issue            |
+| =C-c C-e=            | Edit pull request or issue                      |
+|----------------------+-------------------------------------------------|
+| *Smerge*             |                                                 |
+| =C-c C-n=            | next                                            |
+| =C-c c-p=            | previous                                        |
+| =c=                  | keep one under cursor                           |
+| =u=                  | keep upper                                      |
+| =l=                  | keep lower                                      |
+| =a=                  | keep all                                        |
 
-| In magit buffer |                                                 |
-| =C-c C-o=       | Browser topic, commit, etc with gitforge        |
-| ='=             | Visit issues, pull requets etc - per repository |
-| =C-c C-n=       | Add comment in pull request or issue            |
-| =C-c C-e=       | Edit pull request or issue                      |
-
-
-* CONFIG Personal Configuration
-Ghub is used to deal with tokens from github and gitlab. [[https://magit.vc/manual/ghub/index.html][Read about it here]]
-
-If using github, tokens will be generated automatically. However if you are using Gitlab you will need to manually create the tokens:
-
+- Ghub is used to deal with tokens from github and gitlab. [[https://magit.vc/manual/ghub/index.html][Read about it here]]
+- If using github, tokens will be generated automatically. However if you are using Gitlab you will need to manually create the tokens:
 - Go to https://gitlab.com/profile/personal_access_tokens and create a token, *ticking the api checkbox*
-- Copy over the token to the =~/authinfo= file
+- Copy over the token to the =~/.authinfo.info= file (emacs will NEED to encrypt it!)
 #+begin_example
   machine gitlab.com/api/v4 login <GITLAB_USERNAME>^forge password <TOKEN>
 #+end_example
-where =<GITLAB_USERNAME>= is your gitlab name and =<TOKEN>= is what was generated on the page
+where =<GITLAB_USERNAME>= is your gitlab name and =<TOKEN>= is what was generated on the page and there must be a newline!
+- To ignore file chmod changes
+#+BEGIN_SRC shell
+git config core.fileMode false
+ #+END_SRC
 
 * Dependencies
 #+BEGIN_SRC emacs-lisp
@@ -119,14 +124,25 @@ Allow quickly to browser through the file version. Launch with =M-x git-time-mac
 
   (define-key my/keymap (kbd "F") (function hydra-forge/body))
  #+END_SRC
+* Diff mode
+Show white spaces in diff mode
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'diff-mode-hook (lambda ()
+                              (setq-local whitespace-style
+                                          '(face
+                                            tabs
+                                            tab-mark
+                                            spaces
+                                            space-mark
+                                            trailing
+                                            indentation::space
+                                            indentation::tab
+                                            newline
+                                            newline-mark))
+                              (whitespace-mode 1)))
+ #+END_SRC
 * smerge
 Used to resolve git conflicts
-| =C-c C-n= | next                  |
-| =C-c c-p= | previous              |
-| =c=       | keep one under cursor |
-| =u=       | keep upper            |
-| =l=       | keep lower            |
-| =a=       | keep all              |
 #+BEGIN_SRC emacs-lisp
   (require 'magit)
   (define-key smerge-mode-map (kbd "C-c C-n") (function smerge-next))

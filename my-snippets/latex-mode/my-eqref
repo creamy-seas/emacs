@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: my-eqpref
+# key: er
+# --
+\eqref{${1:eq:${2:ref}}}

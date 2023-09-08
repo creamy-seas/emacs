@@ -293,12 +293,16 @@
 * Major Function: Open config file =C-c e=
 #+BEGIN_SRC emacs-lisp
   (defun my/config-file-open ()
-    "Prints out the config files and opens the selected one for editing. Cheatsheet is also added"
+    "Browser config files in `doom-private-dir'."
     (interactive)
-    (let ((chosen-file (ido-completing-read "Config file to open:"
-                                            (let ((config-file-list (my/fetch-config-files)))
-                                              (add-to-list 'config-file-list "cheatsheet.org")))))
-      (find-file (my/config-file-path-evaluate chosen-file))))
+    (let ((file-list
+           ;; Remove files that are not org files and not one of the default doom files
+           (cl-remove-if-not
+            (lambda (x)
+              (or (equal "org" (file-name-extension x))
+                  (string-match "^\\(config\\|custom\\|packages\\|init\\).el$" x)))
+            (directory-files user-emacs-directory))))
+      (find-file (concat user-emacs-directory (ido-completing-read "Config file: " file-list)))))
 
   (global-set-key (kbd "C-c e") (function my/config-file-open))
  #+END_SRC
@@ -311,25 +315,17 @@ Whenever a config file is saved:
 This way you can quickly edit the configuration (using [[*Open config file =C-c e=][Open config file]]), save it and immediately apply the changes
 #+BEGIN_SRC emacs-lisp
   (defun my/config-file-tangle ()
-    "Should be run after saving every file - check if the name is in the config files and
-      tangle if yes"
-    (let ((current-org-file (file-name-nondirectory (buffer-file-name))))
-      (when (member current-org-file (my/fetch-config-files))
-                                          ; Avoid running hooks when tangling.
-        (let ((prog-mode-hook nil)
-              (el-file (concat
-                        user-emacs-directory
-                        (replace-regexp-in-string "\.org" "\.el" current-org-file))))
-                                          ; Tangle the file -> get name of file -> rename
-          (rename-file
-           (car (org-babel-tangle-file current-org-file))
-           el-file t)
-                                          ; Bytecompile
-          (byte-compile-file el-file t)
-                                          ; Reload config
-          ;; (load-file (concat user-emacs-directory el-emacs-file "c"))
-          (message (concat " Compiled and loaded " el-file))))))
-
+    "Should be run after saving every file - check if it is a config file in the doom directory and tangle if yes"
+    (if (and
+         (equal (file-name-extension (buffer-file-name)) "org")
+         (not (equal (file-name-base (buffer-file-name)) "cheatsheet"))
+         (equal (file-name-directory (buffer-file-name)) (expand-file-name user-emacs-directory)))
+        ;; Tangle the file and bytecompile it
+        (let ((el-file-name (replace-regexp-in-string "\\.org" ".el" buffer-file-name)))
+          (org-babel-tangle-file buffer-file-name el-file-name "emacs-lisp")
+          (byte-compile-file el-file-name t)
+          ;;(doom/reload)
+          (message (concat " Compiled and loaded " el-file-name)))))
   (add-hook 'after-save-hook 'my/config-file-tangle)
  #+END_SRC
 * Bookmarks
@@ -505,8 +501,6 @@ Beautiful file browsing. Dired+ is downloaded manually
 ** Sorting
 On =os-x= run =brew install coreutils= to get =gls=
 #+BEGIN_SRC emacs-lisp
-  ;; (my/add-dependency "gls")
-
   ;; (if (string-equal system-type "darwin")
   ;;     (progn
   ;;       (setq insert-directory-program "gls" dired-use-ls-dired t)
@@ -571,7 +565,7 @@ Allos to expand to word, bracket, sentence, paragraph
   (use-package expand-region
     :ensure t
     :init (my/add-to-package-list 'expand-region)
-    :bind ("C-q" . er/expand-region))
+    :bind ("C-=" . er/expand-region))
 #+END_SRC
 * PACKAGE Fic
 Highlighting of TODOs
@@ -738,12 +732,12 @@ https://github.com/emacs-lsp/lsp-ui
 ** PACKAGE Company Integration
 Put lsp into the backend of company
 #+BEGIN_SRC emacs-lisp
-  (use-package company-lsp
-    :ensure t
-    :config
-    (push '(company-lsp :with company-yasnippet)
-          company-backends)
-    :commands company-lsp)
+  ;; (use-package company-lsp
+  ;;   :ensure t
+  ;;   :config
+  ;;   (push '(company-lsp :with company-yasnippet)
+  ;;         company-backends)
+  ;;   :commands company-lsp)
  #+END_SRC
 
 ** PACKAGE Ivy Intergration

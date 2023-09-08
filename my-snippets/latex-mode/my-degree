@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: my-degree
+# key: dg
+# --
+$${1:temp}^\circ\,$C

@@ -92,14 +92,17 @@ Although there is a package called =auctex= there is no =auctex.el= file.
 *Therefore we first need to test if auctex has been installed by calling one if it's =.el= files*
 
 #+BEGIN_SRC emacs-lisp
-  (fset 'my-auctex-install
-     (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([134217848 108 105 115 116 45 112 97 99 107 97 103 101 115 return 19 97 117 99 116 101 120 return 105 120 121 113] 0 "%d")) arg)))
+  (use-package tex
+    :ensure auctex)
 
-  (condition-case nil
-      (require 'tex-site)
-    (error
-     (message ">>>>>>>>>> Installing auctex manually by running list-packages - Avoid closing emacs<<<<<<<<<<")
-     (my-auctex-install)))
+  ;; (fset 'my-auctex-install
+  ;;    (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([134217848 108 105 115 116 45 112 97 99 107 97 103 101 115 return 19 97 117 99 116 101 120 return 105 120 121 113] 0 "%d")) arg)))
+
+  ;; (condition-case nil
+  ;;     (require 'tex-site)
+  ;;   (error
+  ;;    (message ">>>>>>>>>> Installing auctex manually by running list-packages - Avoid closing emacs<<<<<<<<<<")
+  ;;    (my-auctex-install)))
  #+END_SRC
 ** Basic setup
 #+BEGIN_SRC emacs-lisp
@@ -137,15 +140,15 @@ Autocompletion and environments
  #+END_SRC
 ** Math symbols
 #+BEGIN_SRC emacs-lisp
-  (setq cdlatex-math-symbol-alist
-        `(
-          (?F ("\\Phi"))))
+   (setq cdlatex-math-symbol-alist
+         `(
+           (?F ("\\Phi"))))
  #+END_SRC
 ** Quick application of styles using =`=
 #+BEGIN_SRC emacs-lisp
-  (setq cdlatex-math-modify-alist
-        '(
-          (82 "\\red" "\\red" t nil nil)))
+  ;; (setq cdlatex-math-modify-alist
+  ;;       '(
+  ;;         (82 "\\red" "\\red" t nil nil)))
  #+END_SRC
 ** Quick env templates
 #+BEGIN_SRC emacs-lisp
@@ -166,19 +169,6 @@ Autocompletion and environments
           ("cases" "Insert case environment"   "" cdlatex-environment ("cases") t t)
           ("thr" "Insert theorem env" "" cdlatex-environment ("theorem") t nil)))
  #+END_SRC
-* DOWN Fill-column-indicator
-This is to show what the current fill column is
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package fill-column-indicator
-  ;;   :ensure t
-  ;;   :config
-  ;;   (add-hook 'LaTeX-mode-hook 'fci-mode)
-  ;;                                         ; colour for the fill colum
-  ;;   (setq fci-rule-color "#248")
-  ;;                                         ; width of the indicator
-  ;;   (setq fci-rule-width 1))
- #+END_SRC
-
 * PACKAGE Reftex
 Referencing and bibliography
 #+BEGIN_SRC emacs-lisp
@@ -369,9 +359,9 @@ here we make it do it explictly
     (interactive)
 
     ;; 1 - update fill column
-    (my/latex/buffer-fill-column)
+    ;; (my/latex/buffer-fill-column)
 
-    (my/latex/indent-buffer)
+    ;; (my/latex/indent-buffer)
     ;; 2 - save file
     (save-buffer))
  #+END_SRC
@@ -634,9 +624,9 @@ It would be a mumble jumble like with a lot of escapes
     (insert "_"))
 
   (with-eval-after-load "latex"
-    (define-key LaTeX-mode-map (kbd "C-x C-s") (function my/latex/save-buffer))
-    (define-key LaTeX-mode-map (kbd "C-c C-j") (function my/latex/exterminate))
-    (define-key LaTeX-mode-map (kbd "C-c C-c") (function  my/latex/compile))
+    ;; (define-key LaTeX-mode-map (kbd "C-x C-s") (function my/latex/save-buffer))
+    ;; (define-key LaTeX-mode-map (kbd "C-c C-j") (function my/latex/exterminate))
+    ;; (define-key LaTeX-mode-map (kbd "C-c C-c") (function  my/latex/compile))
     (define-key LaTeX-mode-map (kbd "C-}") (function reftex-hyperref-autoref))
     (define-key LaTeX-mode-map (kbd "C-c C-u") (function my/latex/insert-underscore)))
   ;; ;; (add-hook 'LaTeX-mode-hook (lambda ()

@@ -68,10 +68,10 @@ Activate one or the other. Never both.
  #+END_SRC
 ** PACKAGE Black (=black=)
 #+BEGIN_SRC emacs-lisp
-  (use-package blacken
-    :ensure t
-    :init (my/add-to-package-list 'blacken)
-    (add-hook 'python-mode-hook (function blacken-mode)))
+  ;; (use-package blacken
+  ;;   :ensure t
+  ;;   :init (my/add-to-package-list 'blacken)org
+  ;;   (add-hook 'python-mode-hook (function blacken-mode)))
  #+END_SRC
 * PACKAGE Elpy
 #+BEGIN_SRC emacs-lisp
