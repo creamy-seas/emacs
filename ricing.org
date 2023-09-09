@@ -24,7 +24,8 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 ;; (setq doom-theme 'spacemacs-light)
-(setq doom-theme 'creamy-seas)
+;; (setq doom-theme 'creamy-seas)
+(setq doom-theme 'doom-earl-grey)
 #+END_SRC
 
 * Font
