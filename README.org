@@ -1,4 +1,32 @@
+
+* Initial tangle
+#+begin_src shell
+make init
+#+end_src
+
+will tangle the =.org= files into =.elc= files
+
+* Installing fonts
+#+begin_src shell
+brew tap caskroom/fonts
+brew cask install font-fira-{sans,mono} font-dejavu-sans
+#+end_src
+
+and
+
+#+begin_src shell
+M-x all-the-icons-install-fonts
+#+end_src
+
+* Configuration
+See the top sections of the following files to set personal customisation
+- [[file:emailmode.org][Email configuration]]
+- [[file:org-config.org][Orgmode configuration]]
+
+Moreover, you can always go into the init.el file and comment out the modes you do not want to load
+
 * Automatic formating
 - Added with (format +onsave) in [[./init.el]]
 - Need to install the relevant backend or it will silently fail
+
 * Neotree with =C-c o p=

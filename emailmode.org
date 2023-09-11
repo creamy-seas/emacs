@@ -644,7 +644,8 @@ Create a new label in Google Mail. Next time it will sync to computer
   (setq mu4e-attachment-dir (expand-file-name "~/Downloads/mail")
         mu4e-update-interval nil
         mu4e-context-policy 'pick-first
-        mu4e-compose-context-policy 'always-ask))
+        mu4e-compose-context-policy 'always-ask
+        mu4e-headers-buffer-name "*mu4e-headers*"))
 #+end_src
 
 ** Account setup

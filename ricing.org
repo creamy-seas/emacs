@@ -5,6 +5,12 @@
 (setq fancy-splash-image "~/.doom.d/my-files/doom-black-hole.png")
 #+end_src
 * All-the-icons
+- You will need to run
+
+#+begin_quote
+nerd-icons-install-fonts and all-theicons-install-fonts
+#+end_quote
+
 #+BEGIN_SRC emacs-lisp
 (after! all-the-icons
   (add-to-list 'all-the-icons-icon-alist
