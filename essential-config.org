@@ -118,6 +118,14 @@ Always kill the current buffer - for some reason it is not the default
 #+END_SRC
 
 * Minor Functions
+** =my/gpg-load=
+#+begin_src emacs-lisp
+(defun my/gpg-load ()
+  "Forces user to enter a gpg password if it expired -
+  run before commands where gpg decryption is required"
+  (epa-decrypt-file
+   (concat doom-user-dir "my-files/gpg/load_password_dummy_file.gpg") "/dev/null"))
+#+end_src
 ** =my/read-string-from-file=
 #+BEGIN_SRC emacs-lisp
   (defun my/read-string-from-file (filePath)

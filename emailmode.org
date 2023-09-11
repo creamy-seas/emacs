@@ -638,11 +638,13 @@ Create a new label in Google Mail. Next time it will sync to computer
 ** Generic settings
 
 #+begin_src emacs-lisp
-(setq +mu4e-backend 'offlineimap
-      mu4e-attachment-dir (expand-file-name "~/Downloads/mail")
-      mu4e-update-interval 500
-      mu4e-context-policy 'ask-if-none
-      mu4e-compose-context-policy 'always-ask)
+(setq +mu4e-backend 'offlineimap)
+
+(after! mu4e
+  (setq mu4e-attachment-dir (expand-file-name "~/Downloads/mail")
+        mu4e-update-interval nil
+        mu4e-context-policy 'pick-first
+        mu4e-compose-context-policy 'always-ask))
 #+end_src
 
 ** Account setup
@@ -685,10 +687,9 @@ Create a new label in Google Mail. Next time it will sync to computer
              (mu4e-drafts-folder          . "/ilya_OUTLOOK/Drafts")
              (mu4e-trash-folder           . "/ilya_OUTLOOK/Deleted Items")
              (mu4e-refile-folder          . "/ilya_OUTLOOK/Archive")
-             (mu4e-sent-messages-behavior . sent)
+             (mu4e-sent-messages-behavior . delete)
              (mu4e-compose-signature      . "---\nResearcher\n*Royal Holloway University of London*")
-             (mu4e-compose-format-flowed  . nil))))
-  )
+             (mu4e-compose-format-flowed  . nil)))))
 #+END_SRC
 *** =ilya.antonov@dreams-ai.com=
 #+BEGIN_SRC emacs-lisp
@@ -916,9 +917,7 @@ man mu-query
 
 ** Syncing mail =my/update-mu4e=
  #+BEGIN_SRC emacs-lisp
-(setq mu4e-update-pre-hook (lambda ()
-                                   (epa-decrypt-file
-     (concat doom-user-dir "my-files/gpg/load_password_dummy_file.gpg") "/dev/null")))
+(setq mu4e-update-pre-hook 'my/gpg-load)
 
 (defun my/mu4e/update ()
   (interactive)
@@ -940,6 +939,32 @@ man mu-query
     ;; (pyvenv-workon last-venv)
     ))
 (global-set-key (kbd "C-C M U") 'my/mu4e/update)
+(define-key my/keymap (kbd "u") 'my/mu4e/update)
+(define-key my/keymap (kbd "m") 'mu4e)
+ #+END_SRC
+* Sending mail with =msmtp=
+#+BEGIN_SRC emacs-lisp
+(after! mu4e
+  (setq sendmail-program (executable-find "msmtp")
+        message-send-mail-function (function smtpmail-send-it)
+        message-sendmail-f-is-evil t
+                                        ; Use the correct account context when sending mail based on the from header.
+                                        ; message-sendmail-envelope-from 'header
+        message-sendmail-extra-arguments '("--read-envelope-from")
+        message-send-mail-function (function message-send-mail-with-sendmail))
+  (add-hook 'mu4e-compose-pre-hook 'my/gpg-load))
+
+(define-key my/keymap (kbd "C") 'mu4e-compose-new)
+ #+END_SRC
+
+** Overriding defaults
+#+BEGIN_SRC emacs-lisp :tangle no
+(after! mu4e
+  (setq message-citation-line-function 'message-insert-formatted-citation-line
+                                        ; Use the correct account context when sending mail based on the from header.
+        message-sendmail-envelope-from 'header
+        ;;message-citation-line-format "%N @ %Y-%m-%d %H:%M %Z:\n"
+        ))
  #+END_SRC
 * TODO Capturing messages
 #+BEGIN_SRC emacs-lisp :tangle no
@@ -948,10 +973,11 @@ man mu-query
   (define-key mu4e-view-mode-map    (kbd "C-c c") 'mu4e-org-store-and-capture))
  #+END_SRC
 * TODO Attach with dired =C-c RET C-a=
+
+Make the =gnus-dired-mail-buffers= function also work on message-mode derived modes, such as mu4e-compose-mode
+
 #+BEGIN_SRC emacs-lisp :tangle no
   (require 'gnus-dired)
-  ;; make the `gnus-dired-mail-buffers' function also work on
-  ;; message-mode derived modes, such as mu4e-compose-mode
   (defun gnus-dired-mail-buffers ()
     "Return a list of active message buffers."
     (let (buffers)
@@ -991,24 +1017,3 @@ man mu-query
   (mu4e-alert-enable-mode-line-display))
 (run-with-timer 0 60 'my/mu4e-alert-mode-line)
 #+end_src
-* TODO Sending mail with =msmtp=
-#+BEGIN_SRC emacs-lisp :tangle no
-(after! mu4e
-  (setq sendmail-program (executable-find "msmtp")
-        message-send-mail-function (function smtpmail-send-it)
-        message-sendmail-f-is-evil t
-                                        ; Use the correct account context when sending mail based on the from header.
-                                        ; message-sendmail-envelope-from 'header
-        message-sendmail-extra-arguments '("--read-envelope-from")
-        message-send-mail-function (function message-send-mail-with-sendmail))
-  )
- #+END_SRC
-
-** Overriding defaults
-#+BEGIN_SRC emacs-lisp :tangle no
-(after! mu4e
-  (setq message-citation-line-format "%N @ %Y-%m-%d %H:%M %Z:\n")
-  (setq message-citation-line-function 'message-insert-formatted-citation-line)
-                    ; Use the correct account context when sending mail based on the from header.
-  (setq message-sendmail-envelope-from 'header))
- #+END_SRC
