@@ -66,6 +66,12 @@
 | =A=       | Operate on attachment                                        |                               |
 |-----------+--------------------------------------------------------------+-------------------------------|
 
+After a long break, run offlineimap to update config!
+
+#+begin_src shell
+offlineimap
+#+end_src
+
 * FAQ
 - If user-mail-address is not part of mu's addresses; add it with mu init --my-address=
 - After being careful that no instance of mu is running (in particular, quit mu4e if launched), you may want to remove `/home/zw963/.cache/mu/xapian/flintlock'
@@ -96,15 +102,10 @@ gpgconf --kill gpg-agent
 | =openssl=     | Encryption and certificates         |
 | =msmtp=       | For sending mail                    |
 
-** 2. Password file
-Make password file and put it into the email folder ="~/db_mail/.pswd_mail.gpg"=
-#+BEGIN_SRC text
-EMAIL password PASSWORD
-#+END_SRC
-
-Or install pass and add the key
+** 2. Password authentication (virgin, yandex)
+Install pass and attach it to your gpg key
 #+begin_src shell
-pass init KEY-NAME
+pass init $GPG_RECIPIENT
 #+end_src
 
 and add the passwords
@@ -113,7 +114,45 @@ and add the passwords
 pass insert a@gmail.com
 #+end_src
 
-** 3. Offlineimap (fetching mail)
+** 3. XOAUTH authentication (Google, Outlook)
+:PROPERTIES:
+:CUSTOM_ID: xoauth-setup
+:END:
+
+1. Go to [[file:my-scripts/email/read_password.py][this file]] and set =CREDENTIAL_FOLDER= (e.g. =/Users/CCCP/db_mail=) and the =GPG_RECIPIENT= (i.e. the key that will be used to encrypt the data)
+2. Create following files in the =CREDENTIAL_FOLDER=
+#+begin_src json
+{
+  "client_id": "08162f7c-0fd2-4200-a84a-f25a4db0b584",
+  "client_secret": "TxRBilcHdC6WGBee]fs?QR:SJ8nI[g82"
+}
+#+end_src
+
+and encrypt them e.g.
+
+#+begin_src shell
+gpg -e -r $GPG_RECIPIENT ilya.antonov@rhul.ac.uk
+#+end_src
+
+This will create =ilya.antonov@rhul.ac.uk.gpg= and likewise for other addresses. Remember to delete the original file!
+
+See the sections below on how to find the =client_id= and =client_secret= for different apps
+
+*** Gmail XOAUTH setup
+1. Create an OAuth consent screen: https://console.cloud.google.com/apis/credentials/consent?project=sunny-idiom-256623
+   - When doing so, add =https://mail.google.com/= to the scopes
+2. Create the credentials [[https://console.cloud.google.com/apis/credentials?project=sunny-idiom-256623][here]] using *Create OAuth client ID* using *Desktop App*
+3. You will be shown a =client_id=
+4. And a =client_secret=
+
+*** Outlook XOAUTH setup
+Because my university does not allow one to setup an oauth app, we will spoof Thunderbird with
+#+begin_quote
+ClientId = "08162f7c-0fd2-4200-a84a-f25a4db0b584"
+ClientSecret = "TxRBilcHdC6WGBee]fs?QR:SJ8nI[g82"
+#+end_quote
+
+** 4. Offlineimap (fetching mail)
 *** a. Set the =~/.offlineimaprc=
 - Example for 4 accounts
 - See [[*Certificates][Certificates]] and [[*SSL certificate][SSL certificate]]
@@ -128,7 +167,7 @@ pass insert a@gmail.com
 #
 
 [general]
-accounts = vgoptics, ilya_GMAIL, ilya_DREAMSAI, ilya_OUTLOOK, ilya_NTLWORLD, yandex
+accounts = vgoptics, ilya_DREAMSAI, ilya_OUTLOOK, ilya_NTLWORLD, yandex, ilya_GMAIL
 
 # user interface for terminal
 ui = TTYUI
@@ -169,12 +208,12 @@ realdelete = no
 
 auth_mechanisms=XOAUTH2
 oauth2_request_url=https://accounts.google.com/o/oauth2/token
-oauth2_client_id_eval=get_client_id("ilya.antonov@dreams-ai.com")
-oauth2_client_secret_eval=get_client_secret("ilya.antonov@dreams-ai.com")
-oauth2_refresh_token_eval=get_refresh_token("ilya.antonov@dreams-ai.com")
+oauth2_client_id_eval=read_config_file("ilya.antonov@dreams-ai.com")["client_id"]
+oauth2_client_secret_eval=read_config_file("ilya.antonov@dreams-ai.com")["client_secret"]
+oauth2_access_token_eval=get_token_gmail("ilya.antonov@dreams-ai.com")
 
 ssl = yes
-sslcacertfile =/usr/local/etc/ca-certificates/cert.pem
+sslcacertfile=/usr/local/etc/ca-certificates/cert.pem
 
 #  ____  __  __     _     ___  _
 # / ___||  \/  |   / \   |_ _|| |
@@ -201,9 +240,9 @@ realdelete = no
 
 auth_mechanisms=XOAUTH2
 oauth2_request_url=https://accounts.google.com/o/oauth2/token
-oauth2_client_id_eval=get_client_id("antonov.ilya225@gmail.com")
-oauth2_client_secret_eval=get_client_secret("antonov.ilya225@gmail.com")
-oauth2_refresh_token_eval=get_refresh_token("antonov.ilya225@gmail.com")
+oauth2_client_id_eval=read_config_file("antonov.ilya225@gmail.com")["client_id"]
+oauth2_client_secret_eval=read_config_file("antonov.ilya225@gmail.com")["client_secret"]
+oauth2_access_token_eval=get_token_gmail("antonov.ilya225@gmail.com")
 
 ssl = yes
 sslcacertfile =/usr/local/etc/ca-certificates/cert.pem
@@ -285,9 +324,9 @@ remoteuser = ilya.antonov@rhul.ac.uk
 
 auth_mechanisms=XOAUTH2
 oauth2_request_url=https://login.microsoftonline.com/common/oauth2/v2.0/token
-oauth2_client_id_eval=get_client_id("ilya.antonov@rhul.ac.uk")
-oauth2_client_secret_eval=get_client_secret("ilya.antonov@rhul.ac.uk")
-oauth2_refresh_token_eval=get_refresh_token("ilya.antonov@rhul.ac.uk")
+oauth2_client_id_eval=read_config_file("ilya.antonov@rhul.ac.uk")["client_id"]
+oauth2_client_secret_eval=read_config_file("ilya.antonov@rhul.ac.uk")["client_secret"]
+oauth2_access_token_eval=get_token_outlook("ilya.antonov@rhul.ac.uk")
 
 ssl = yes
 sslcacertfile =/usr/local/etc/ca-certificates/cert.pem
@@ -326,46 +365,7 @@ If offlineimap is giving an error, it is probably picking up python3.7. Delete a
 #+END_SRC
 
 2. [@2] Remove all =imap= packages
-*** b. XOAUTH setup
-:PROPERTIES:
-:CUSTOM_ID: xoauth-setup
-:END:
-**** Gmail XOAUTH setup
-1. Create an OAuth consent screen: https://console.cloud.google.com/apis/credentials/consent?project=sunny-idiom-256623
-   - When doing so, add =https://mail.google.com/= to the scopes
-2. Create the credentials [[https://console.cloud.google.com/apis/credentials?project=sunny-idiom-256623][here]] using *Create OAuth client ID* using *Desktop App*
-3. You will be shown a =client_id=
-4. And a =client_secret=
-5. Next we need to get the =refresh_token=. To do this, fill out this json:
-#+begin_src json
-{
-  "scope": "https://mail.google.com/",
-  "user": "@gmail.com",
-  "client_id": "",
-  "client_secret": "",
-  "token_uri": "https://accounts.google.com/o/oauth2/token",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs"
-}
-#+end_src
-
-6. And then run [[file:my-scripts/email/getmail-gmail-xoauth-tokens.py][getmail-gmail-xoauth-tokens]]
-#+begin_src python
-getmail-gmail-xoauth-tokens --init /path/to/filename.json
-#+end_src
-
-7. [@7] This will give a redirect link, where you grant authorisation. Login with account and it will give the =refresh_token= to copy into the config
-
-
-***** Before
-Google account setup With google, you need to allow unknow applications to have access to the account
-- go to https://myaccount.google.com/lesssecureapps
-- allow all applications
-- https://myaccount.google.com/u/4/security
-**** Outlook XOAUTH setup
-1. Run the [[file:my-scripts/email/get-outlook-xoauth-tokens.py][get-outlook-xouath-tokens]] file - the config file contains the client id and client secret of thunderbird which microsoft trusts
-2. The =refresh_token= is written to a file - copy it over as with gmail
-*** c. Certificates for IMAP server (fetching)
+*** b. Certificates for IMAP server (fetching)
 There is a certificate to verify connection to an IMAP server (to make sure you are syncing and giving away details to correct server):
 [[https://www.offlineimap.org/doc/FAQ.html#how-do-i-generate-an-sslcacertfile-file]]
 https://www.offlineimap.org/doc/FAQ.html#does-offlineimap-verify-ssl-certificates
@@ -392,11 +392,11 @@ SSL_CERT_DIR="" openssl s_client -connect imap.SERVERTHATYOUCHOOSE.com:993 < /de
 #+END_SRC
 - Copy over the =SHA1 Fingerprint= to =cert_fingerprint= in =.offlineimaprc=
 
-*** d. Run sync
+*** c. Run sync
 #+begin_src shell
 offlineimap
 #+end_src
-** 4. Setup mu4e
+** 5. Setup mu4e
 1. Remember to run the setup in [[https://www.djcbsoftware.nl/code/mu/mu4e/Getting-started.html#Getting-started][this tutorial]] for doing external setup
 2. https://etienne.depar.is/emacs.d/mu4e.html
 3. http://kitchingroup.cheme.cmu.edu/blog/2016/10/29/Sending-html-emails-from-org-mode-with-org-mime/
@@ -419,8 +419,8 @@ mu info
 #+END_SRC
 
 to get information on the install
-** 5. Sending mail =mstmp=
 
+** 6. Sending mail =mstmp=
 *** a. Create =~/.config/msmtp/config=
 
 Make sure that the passwords are available in =pass=
@@ -448,7 +448,7 @@ from ilya.antonov@rhul.ac.uk
 user ilya.antonov@rhul.ac.uk
 
 auth xoauth2
-passwordeval oauth2get OUTLOOK ilya.antonov@rhul.ac.uk
+passwordeval read_password.py OUTLOOK ilya.antonov@rhul.ac.uk
 
 #  ____  __  __     _     ___  _
 # / ___||  \/  |   / \   |_ _|| |
@@ -465,7 +465,7 @@ from antonov.ilya225@gmail.com
 user antonov.ilya225@gmail.com
 
 auth oauthbearer
-passwordeval oauth2get ilya_GMAIL antonov.ilya225@gmail.com
+passwordeval read_password.py GMAIL antonov.ilya225@gmail.com
 
 # ____   ____   _____     _     __  __  ____            _     ___
 #|  _ \ |  _ \ | ____|   / \   |  \/  |/ ___|          / \   |_ _|
@@ -483,7 +483,7 @@ from ilya.antonov@dreams-ai.com
 user ilya.antonov@dreams-ai.com
 
 auth oauthbearer
-passwordeval oauth2get ilya_DREAMSAI ilya.antonov@dreams-ai.com
+passwordeval read_password.py GMAIL ilya.antonov@dreams-ai.com
 
 # _   _  _____  _  __        __ ___   ____   _      ____
 #| \ | ||_   _|| | \ \      / // _ \ |  _ \ | |    |  _ \
@@ -530,75 +530,7 @@ from vgoptics@virginmedia.com
 user vgoptics@virginmedia.com
 eval echo password $(pass vgoptics@virginmedia.com)
 #+END_SRC
-*** b Setup for XOAUTH
-
-**** 1. Install oauth2token
-
-#+begin_src shell
-python3 -m pip install oauth2token
-#+end_src
-
-**** 2. Create the following files:
-***** Outlook
-****** =~/.config/oauth2token/OUTLOOK/config.json=
-
-#+begin_src text
-{
-  "web": {
-    "client_id": "xxxx",
-    "client_secret": "yyyy",
-    "auth_uri": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
-    "token_uri": "https://login.microsoftonline.com/common/oauth2/v2.0/token"
-  }
-}
-#+end_src
-
-******** =~/.config/oauth2token/OUTLOOK/scopes.json=
-#+begin_src text
-[
-  "https://outlook.office.com/SMTP.Send",
-  "https://outlook.office.com/POP.AccessAsUser.All",
-  "https://outlook.office.com/IMAP.AccessAsUser.All"
-]
-#+end_src
-***** Gmail
-****** =~/.config/oauth2token/GMAIL/config.json=
-
-#+begin_src text
-{
-  "web": {
-    "client_id": "xxxx",
-    "client_secret": "yyyy",
-    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    "token_uri": "https://accounts.google.com/o/oauth2/token"
-  }
-}
-#+end_src
-
-****** =~/.config/oauth2token/GMAIL/scopes.json=
-#+begin_src text
-["https://mail.google.com/"]
-#+end_src
-
-3. []
-
-
-**** 3. Run scripts to load in the refresh tokens
-
-e.g.
-#+begin_src
-oauth2create OUTLOOK ilya.antonov@rhul.ac.uk
-#+end_src
-
-or
-
-#+begin_src
-oauth2create ilya_GMAIL antonov.ilya225@gmail.com
-#+end_src
-
-**** 4. Now the =passwordeval oauth2get OUTLOOK ilya.antonov@rhul.ac.uk= commands should authenticate
-
-*** Certificates for SMTP server (Sending)
+*** b. Certificates for SMTP server (Sending)
 For [[*Sending mail][Sending mail]] you may need to get certificates and update them in =.msmtprc=
 
 You can either:
@@ -634,6 +566,7 @@ Create a new label in Google Mail. Next time it will sync to computer
 | Server port            | 993                                 |
 | Authentication         | Password                            |
 | SSL/TLS                | Yes                                 |
+
 * Syncing mail with =offlineimap=
 ** Generic settings
 
@@ -956,6 +889,9 @@ man mu-query
   (add-hook 'mu4e-compose-pre-hook 'my/gpg-load))
 
 (define-key my/keymap (kbd "C") 'mu4e-compose-new)
+
+;; Path for the bash scripts
+(setenv "PATH" (concat (getenv "PATH") ":" doom-user-dir "my-scripts/email"))
  #+END_SRC
 
 ** Overriding defaults
