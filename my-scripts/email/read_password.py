@@ -1,4 +1,5 @@
 #!/usr/local/opt/python@3.11/bin/python3.11
+from google.auth.transport.requests import Request
 import subprocess
 from subprocess import check_output, CalledProcessError
 import json
@@ -115,7 +116,15 @@ def get_token(app, user):
     """
     creds = Credentials.from_authorized_user_info(read_config_file(user))
     if creds.expired:
-        creds = run_authentication(app, user)
+        try:
+            # If refresh token works - this should be enough
+            creds.refresh(Request())
+        except:
+            # In case that refresh token is only valid for a short time,
+            # run full authentication to get new refresh token
+            # e.g. https://stackoverflow.com/a/65936387
+            # https://developers.google.com/identity/protocols/oauth2#expiration
+            creds = run_authentication(app, user)
     return creds.token
 
 get_token_gmail = partial(get_token, "GMAIL")
