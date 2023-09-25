@@ -96,12 +96,13 @@ gpgconf --kill gpg-agent
 
 * External setup
 ** 1. What to install
-| =mu=                                          | mail indexer and searcher           |
-| =offlineimap=                                 | for the email server                |
-| =w3m=                                         | text based web browser to show HTML |
-| =openssl=                                     | Encryption and certificates         |
-| =msmtp=                                       | For sending mail                    |
-| =pip install msal, google, google-auth-oauth= | For python                          |
+| =mu=                                                      | mail indexer and searcher                   |
+| =offlineimap=                                             | for the email server                        |
+| =w3m=                                                     | text based web browser to show HTML         |
+| =openssl=                                                 | Encryption and certificates                 |
+| =msmtp=                                                   | For sending mail                            |
+| =pythonX -m pip install msal google google-auth-oauthlib= | For the pythonX version used by offlineimap |
+|                                                           | Run =offlineimap= to get the info           |
 
 Also add to path, to use this in shell mode
 
