@@ -310,7 +310,7 @@ def get_token(app, user):
     elif (app == "OUTLOOK"):
         return OutlookAuth(CREDENTIAL_FOLDER, GPG_RECIPIENT).get_token(user)
     else:
-        raise Error(f"App {app} not recognised")
+        raise Exception(f"App {app} not recognised")
 
 # Shorthand command versions - used by offlineimap
 get_token_gmail = partial(get_token, "GMAIL")
