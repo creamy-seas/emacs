@@ -1,4 +1,5 @@
-#!/usr/local/opt/python@3.11/bin/python3.11
+#!/usr/bin/env python3
+
 from functools import partial
 import json
 import argparse
@@ -287,7 +288,7 @@ def get_pass(user):
     """
     Read a simple password stored in "pass"
     """
-    data = subproces.check_output("/usr/local/bin/pass " + user, shell=True).splitlines()
+    data = subprocess.check_output("/usr/local/bin/pass " + user, shell=True).splitlines()
     password = data[0]
 
     return {"password": password, "user": user}

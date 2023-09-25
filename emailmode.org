@@ -96,11 +96,18 @@ gpgconf --kill gpg-agent
 
 * External setup
 ** 1. What to install
-| =mu=          | mail indexer and searcher           |
-| =offlineimap= | for the email server                |
-| =w3m=         | text based web browser to show HTML |
-| =openssl=     | Encryption and certificates         |
-| =msmtp=       | For sending mail                    |
+| =mu=                                          | mail indexer and searcher           |
+| =offlineimap=                                 | for the email server                |
+| =w3m=                                         | text based web browser to show HTML |
+| =openssl=                                     | Encryption and certificates         |
+| =msmtp=                                       | For sending mail                    |
+| =pip install msal, google, google-auth-oauth= | For python                          |
+
+Also add to path, to use this in shell mode
+
+#+begin_src text
+export PATH = $HOME/.doom.d/my-scripts/email"
+#+end_src
 
 ** 2. Password authentication (virgin, yandex)
 Install pass and attach it to your gpg key
@@ -167,7 +174,8 @@ ClientSecret = "TxRBilcHdC6WGBee]fs?QR:SJ8nI[g82"
 #
 
 [general]
-accounts = vgoptics, ilya_DREAMSAI, ilya_OUTLOOK, ilya_NTLWORLD, yandex, ilya_GMAIL
+accounts = ilya_OUTLOOK
+# accounts = ilya_GMAIL, ilya_DREAMSAI, vgoptics, ilya_NTLWORLD, yandex
 
 # user interface for terminal
 ui = TTYUI
@@ -208,8 +216,8 @@ realdelete = no
 
 auth_mechanisms=XOAUTH2
 oauth2_request_url=https://accounts.google.com/o/oauth2/token
-oauth2_client_id_eval=read_config_file("ilya.antonov@dreams-ai.com")["client_id"]
-oauth2_client_secret_eval=read_config_file("ilya.antonov@dreams-ai.com")["client_secret"]
+oauth2_client_id_eval=get_credentials("ilya.antonov@dreams-ai.com")["client_id"]
+oauth2_client_secret_eval=get_credentials("ilya.antonov@dreams-ai.com")["client_secret"]
 oauth2_access_token_eval=get_token_gmail("ilya.antonov@dreams-ai.com")
 
 ssl = yes
@@ -240,8 +248,8 @@ realdelete = no
 
 auth_mechanisms=XOAUTH2
 oauth2_request_url=https://accounts.google.com/o/oauth2/token
-oauth2_client_id_eval=read_config_file("antonov.ilya225@gmail.com")["client_id"]
-oauth2_client_secret_eval=read_config_file("antonov.ilya225@gmail.com")["client_secret"]
+oauth2_client_id_eval=get_credentials("antonov.ilya225@gmail.com")["client_id"]
+oauth2_client_secret_eval=get_credentials("antonov.ilya225@gmail.com")["client_secret"]
 oauth2_access_token_eval=get_token_gmail("antonov.ilya225@gmail.com")
 
 ssl = yes
@@ -324,8 +332,8 @@ remoteuser = ilya.antonov@rhul.ac.uk
 
 auth_mechanisms=XOAUTH2
 oauth2_request_url=https://login.microsoftonline.com/common/oauth2/v2.0/token
-oauth2_client_id_eval=read_config_file("ilya.antonov@rhul.ac.uk")["client_id"]
-oauth2_client_secret_eval=read_config_file("ilya.antonov@rhul.ac.uk")["client_secret"]
+oauth2_client_id_eval=get_credentials("ilya.antonov@rhul.ac.uk")["client_id"]
+oauth2_client_secret_eval=get_credentials("ilya.antonov@rhul.ac.uk")["client_secret"]
 oauth2_access_token_eval=get_token_outlook("ilya.antonov@rhul.ac.uk")
 
 ssl = yes
@@ -357,6 +365,7 @@ remotepasseval = get_pass("mail@ilya-antonov.ru")["password"]
 ssl = yes
 sslcacertfile =/usr/local/etc/ca-certificates/cert.pem
 #+END_SRC
+
 If offlineimap is giving an error, it is probably picking up python3.7. Delete all python3.7 email-related libraries:
 
 1. Find the site libraries
