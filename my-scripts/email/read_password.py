@@ -272,14 +272,14 @@ class GoogleAuth(GpgFileManager):
         credentials = Credentials.from_authorized_user_info(self.read_file(user))
         if credentials.expired:
             try:
-                print("> Refreshing access_token")
+                #print("> Refreshing access_token")
                 credentials.refresh(Request())
             except:
                 # In case that refresh token is only valid for a short time,
                 # run full authentication to get new refresh token
                 # e.g. https://stackoverflow.com/a/65936387
                 # https://developers.google.com/identity/protocols/oauth2#expiration
-                print("> Creating access tokens")
+                #print("> Creating access tokens")
                 credentials = self.run_authentication(user)
 
         return credentials.token
