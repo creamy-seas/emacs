@@ -1,70 +1,70 @@
 #+TITLE: Emailmode
 #+STARTUP: overview
 
-|-----------+--------------------------------------------------------------+-------------------------------|
-|           | *Custom*                                                     |                               |
-| =C-c c=   | Capture message at point                                     |                               |
-| =C-\ u=   | Update                                                       |                               |
-| =C-\ C=   | Compose                                                      |                               |
-|-----------+--------------------------------------------------------------+-------------------------------|
-|           | *Compose*                                                    |                               |
-| =C-c C-a= | Attach to an email                                           |                               |
-| =C-c C-d= | Save as draft                                                |                               |
-|-----------+--------------------------------------------------------------+-------------------------------|
-|           | *Navigation*                                                 |                               |
-| =n,p=     | view the next, previous message                              |                               |
-| =],[=     | move to the next, previous unread message                    |                               |
-|-----------+--------------------------------------------------------------+-------------------------------|
-|           | *Searching*                                                  |                               |
-| =s=       | search                                                       |                               |
-| =S=       | edit last query                                              |                               |
-| =/=       | narrow the search (once already in a maildir for example)    |                               |
-| =b=       | search bookmark                                              |                               |
-| =B=       | edit bookmark before search                                  |                               |
-| =j=       | jump to maildir                                              |                               |
-| =O=       | change sort order                                            |                               |
-| =P=       | toggle threading                                             |                               |
-| =Q=       | toggle full-search                                           |                               |
-| =V=       | toggle skip-duplicates                                       |                               |
-| =W=       | toggle include-related                                       |                               |
-|-----------+--------------------------------------------------------------+-------------------------------|
-|           | *Marking*                                                    |                               |
-| =d=       | mark for TRASH                                               |                               |
-| =D=       | mark for COMPLETE deletion - serious stuff                   |                               |
-| =r=       | mark for refiling (archive) - may be important in the future |                               |
-| =+,-=     | mark for flagging/unflagging                                 | Does not work for VIRGIN MAIL |
-| =?,!=     | mark message as unread, read                                 |                               |
-|           | *Custom/Rare*                                                |                               |
-| =o=       | dump into "orders" folder of gmail                           |                               |
-|           |                                                              |                               |
-| =u=       | unmark message at point                                      |                               |
-| =U=       | unmark *all* messages                                        |                               |
-|           |                                                              |                               |
-| =%=       | mark based on a regular expression                           |                               |
-|           |                                                              |                               |
-| =*=       | mark for 'something' (decide later)                          |                               |
-| =#=       | resolve deferred 'something' marks                           |                               |
-|           |                                                              |                               |
-| =x=       | execute actions for the marked messages                      |                               |
-|-----------+--------------------------------------------------------------+-------------------------------|
-|           | *Actions*                                                    |                               |
-| =R,F,C=   | reply/forward/compose                                        |                               |
-| =E=       | edit (only allowed for draft messages)                       |                               |
-| =C-c c=   | Capture message - can attach it in reply                     |                               |
-|-----------+--------------------------------------------------------------+-------------------------------|
-|           | *Message View*                                               |                               |
-| =C-+,C--= | increase / decrease the number of headers shown              |                               |
-| =w=       | Toggle wrapping                                              |                               |
-| =.=       | Toggle raw                                                   |                               |
-| =h=       | Toggle html                                                  |                               |
-| =#=       | Toggle citation                                              |                               |
-| =<SPC>=   | Scroll downloads                                             |                               |
-| =g=       | Follow link                                                  |                               |
-| =k=       | Save url in kill ring                                        |                               |
-| =e=       | Save attachment                                              |                               |
-| =o=       | Open attachment                                              |                               |
-| =A=       | Operate on attachment                                        |                               |
-|-----------+--------------------------------------------------------------+-------------------------------|
+|---------------+--------------------------------------------------------------+-------------------------------|
+|               | *Custom*                                                     |                               |
+| =C-c c=       | Capture message at point                                     |                               |
+| =C-\ u=       | Update                                                       |                               |
+| =C-\ C=       | Compose                                                      |                               |
+|---------------+--------------------------------------------------------------+-------------------------------|
+|               | *Compose*                                                    |                               |
+| =C-c RET C-a= | In direct buffer, attach to an email (select first)          |                               |
+| =C-c C-d=     | Save as draft                                                |                               |
+|---------------+--------------------------------------------------------------+-------------------------------|
+|               | *Navigation*                                                 |                               |
+| =n,p=         | view the next, previous message                              |                               |
+| =],[=         | move to the next, previous unread message                    |                               |
+|---------------+--------------------------------------------------------------+-------------------------------|
+|               | *Searching*                                                  |                               |
+| =s=           | search                                                       |                               |
+| =S=           | edit last query                                              |                               |
+| =/=           | narrow the search (once already in a maildir for example)    |                               |
+| =b=           | search bookmark                                              |                               |
+| =B=           | edit bookmark before search                                  |                               |
+| =j=           | jump to maildir                                              |                               |
+| =O=           | change sort order                                            |                               |
+| =P=           | toggle threading                                             |                               |
+| =Q=           | toggle full-search                                           |                               |
+| =V=           | toggle skip-duplicates                                       |                               |
+| =W=           | toggle include-related                                       |                               |
+|---------------+--------------------------------------------------------------+-------------------------------|
+|               | *Marking*                                                    |                               |
+| =d=           | mark for TRASH                                               |                               |
+| =D=           | mark for COMPLETE deletion - serious stuff                   |                               |
+| =r=           | mark for refiling (archive) - may be important in the future |                               |
+| =+,-=         | mark for flagging/unflagging                                 | Does not work for VIRGIN MAIL |
+| =?,!=         | mark message as unread, read                                 |                               |
+|               | *Custom/Rare*                                                |                               |
+| =o=           | dump into "orders" folder of gmail                           |                               |
+|               |                                                              |                               |
+| =u=           | unmark message at point                                      |                               |
+| =U=           | unmark *all* messages                                        |                               |
+|               |                                                              |                               |
+| =%=           | mark based on a regular expression                           |                               |
+|               |                                                              |                               |
+| =*=           | mark for 'something' (decide later)                          |                               |
+| =#=           | resolve deferred 'something' marks                           |                               |
+|               |                                                              |                               |
+| =x=           | execute actions for the marked messages                      |                               |
+|---------------+--------------------------------------------------------------+-------------------------------|
+|               | *Actions*                                                    |                               |
+| =R,F,C=       | reply/forward/compose                                        |                               |
+| =E=           | edit (only allowed for draft messages)                       |                               |
+| =C-c c=       | Capture message - can attach it in reply                     |                               |
+|---------------+--------------------------------------------------------------+-------------------------------|
+|               | *Message View*                                               |                               |
+| =C-+,C--=     | increase / decrease the number of headers shown              |                               |
+| =w=           | Toggle wrapping                                              |                               |
+| =.=           | Toggle raw                                                   |                               |
+| =h=           | Toggle html                                                  |                               |
+| =#=           | Toggle citation                                              |                               |
+| =<SPC>=       | Scroll downloads                                             |                               |
+| =g=           | Follow link                                                  |                               |
+| =k=           | Save url in kill ring                                        |                               |
+| =e=           | Save attachment                                              |                               |
+| =o=           | Open attachment                                              |                               |
+| =A=           | Operate on attachment                                        |                               |
+|---------------+--------------------------------------------------------------+-------------------------------|
 
 After a long break, run offlineimap to update config!
 
@@ -902,6 +902,9 @@ man mu-query
 
 ;; Path for the bash scripts
 (setenv "PATH" (concat (getenv "PATH") ":" doom-user-dir "my-scripts/email"))
+
+;; Attaching with dired with C-c RET C-a
+(add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
  #+END_SRC
 
 ** Overriding defaults
