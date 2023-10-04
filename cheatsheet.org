@@ -5,7 +5,8 @@
 | C-c t | Toggling view |
 | C-c M | Mail          |
 | C-c f | Files         |
-| C-c p | Projectile |
+| C-c p | Projectile    |
+| C-h i | Info          |
 
 To get a list of pretty symbols run =(all-the-icons-insert)=
 

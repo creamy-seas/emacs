@@ -32,6 +32,7 @@
        "~/creamy_seas/monday_starts_on_saturday/power-meter/adventure_brief.org"
        "~/creamy_seas/drill.org"
        "~/creamy_seas/projects/dai/2022-10_helium-pay/adventure-brief.org"
+       "~/creamy_seas/projects/faculty/adventure_brief.org"
        ))
 #+END_SRC
 * Timestamp
