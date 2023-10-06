@@ -288,7 +288,7 @@ def get_pass(user):
     """
     Read a simple password stored in "pass"
     """
-    data = subprocess.check_output("/usr/local/bin/pass " + user, shell=True).splitlines()
+    data = subprocess.check_output("pass " + user, shell=True).splitlines()
     password = data[0]
 
     return {"password": password, "user": user}
