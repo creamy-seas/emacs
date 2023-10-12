@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: math-dollars
+# key: m
+# --
+$$1$$0

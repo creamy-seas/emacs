@@ -6,6 +6,14 @@ make init
 
 will tangle the =.org= files into =.elc= files
 
+
+* Yasnippets
+For faster yasnippets run
+
+#+begin_src emacs-lisp
+(yas-recompile-all)
+#+end_src
+
 * Installing fonts
 #+begin_src shell
 brew tap caskroom/fonts
@@ -16,6 +24,7 @@ and
 
 #+begin_src shell
 M-x all-the-icons-install-fonts
+M-x nerd-icons-install-fonts
 #+end_src
 
 * Configuration

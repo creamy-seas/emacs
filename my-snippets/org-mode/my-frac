@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: my-frac
+# key: fr
+# --
+\frac{${1:1}}{${2:denominator}}$0

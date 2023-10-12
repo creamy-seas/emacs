@@ -97,6 +97,8 @@ If you want to check specific buffer with different language, add the following 
 * My snippets
 #+BEGIN_SRC emacs-lisp
 (setq +snippets-dir (concat doom-user-dir "my-snippets"))
+(after! yasnippet
+  (yas-reload-all))
 #+END_SRC
 * PACKAGE Disposable yasnippets
 Quickly create disposable yasnippets with =~=

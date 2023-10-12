@@ -41,6 +41,8 @@ Access to my custom keymap space on =C-z= or =C-\=
   (define-prefix-command 'my/keymap)
   (global-set-key (kbd "C-z") 'my/keymap)
   (global-set-key (kbd "C-\\") 'my/keymap)
+  (global-unset-key (kbd "C-#"))
+  (global-set-key (kbd "C-#") 'my/keymap)
  #+END_SRC
 * Keymap: symbols
 #+BEGIN_SRC emacs-lisp
@@ -58,6 +60,7 @@ Access to my custom keymap space on =C-z= or =C-\=
   (define-key key-translation-map (kbd "C-x 8 c") (kbd "✘"))
   (define-key key-translation-map (kbd "C-x 8 b") (kbd "⦿"))
   (define-key key-translation-map (kbd "C-x 8 2") (kbd "²"))
+  (define-key key-translation-map (kbd "C-x 8 l") (kbd "λ"))
   (global-set-key (kbd "C-c i") (function info-other-window))
  #+END_SRC
 

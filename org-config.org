@@ -56,6 +56,12 @@ Emacs/orgmode has an intense feature where you can quickly call upon templates t
          (id "antlers-bloat")
          "** TODO %^{stuff-to-be-done}\nSCHEDULED: %^T")
 
+        ("F" "Faculty Task"
+         entry
+         (id "faculty-tasks")
+         "** TODO %^{stuff-to-be-done}\nSCHEDULED: %^T"
+         :empty-lines-after 1)
+
         ("c" "Copy Pasta"
          entry
          (id "copy-pasta")

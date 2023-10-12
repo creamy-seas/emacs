@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: my-text
+# key: tx
+# condition: (org-inside-LaTeX-fragment-p)
+# --
+\text{$1}$0

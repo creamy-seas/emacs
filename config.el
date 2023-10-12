@@ -26,7 +26,7 @@
 (load-file (concat doom-user-dir "orgmode.el"))
 (load-file (concat doom-user-dir "org-config.el"))
 (load-file (concat doom-user-dir "gitmode.el"))
-(load-file (concat doom-user-dir "js.el"))
+;;(load-file (concat doom-user-dir "js.el"))
 (load-file (concat doom-user-dir "inkscapemode.el"))
 ;;(load-file (concat doom-user-dir "compact-languages.el"))
 ;; (load-file (concat doom-user-dir "latexmode.el"))
