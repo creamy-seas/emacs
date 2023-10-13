@@ -17,7 +17,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.oauth2.credentials import Credentials
 from msal import ConfidentialClientApplication, SerializableTokenCache
 
-CREDENTIAL_FOLDER = "/Users/CCCP/db_mail"
+CREDENTIAL_FOLDER = "/home/antonov/db_mail"
 GPG_RECIPIENT = "ilya.antonov24@ntlworld.com"
 
 class GpgFileManager:
