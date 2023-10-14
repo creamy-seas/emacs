@@ -16,7 +16,6 @@
 (package! org-bullets) ;; less triggering :: ormode.org
 
 (package! gnuplot) ;;
-(package! which-key) ;; anki! :: orgmode.org
 
 (package! hungry-delete)
 (package! grip-mode) ;; preview markdown
@@ -24,7 +23,7 @@
 
 (package! eyebrowse) ;; mutliple tabs :: navigation.org
 (package! beacon) ;; pretty fade of line -> ricing.org
-(package! ox-reveal) ;; export to presentation
+(package! ox-reveal)
 ;;(package! vue-mode)
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:

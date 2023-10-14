@@ -252,11 +252,7 @@ See https://jmm.io/pr/emacs-meetup/#/5
 (use-package! org-drill
   :config
   (add-to-list 'org-modules 'org-drill)
-  (setq org-drill-hint-separator "||")
   (setq org-drill-add-random-noise-to-intervals-p t)
-  (setq org-drill-hint-separator "||")
-  (setq org-drill-left-cloze-delimiter "<[")
-  (setq org-drill-right-cloze-delimiter "]>")
   (setq org-drill-learn-fraction 0.25))
 
 #+end_src
