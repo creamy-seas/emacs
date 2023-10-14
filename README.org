@@ -1,3 +1,7 @@
+* Requirements
+- Fira Code fonts
+- Make
+- Doom emacs
 
 * Initial tangle
 #+begin_src shell
@@ -5,8 +9,6 @@ make init
 #+end_src
 
 will tangle the =.org= files into =.elc= files
-
-
 * Yasnippets
 For faster yasnippets run
 
