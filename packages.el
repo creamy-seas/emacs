@@ -16,6 +16,7 @@
 (package! org-bullets) ;; less triggering :: ormode.org
 
 (package! gnuplot) ;;
+(package! which-key) ;; anki! :: orgmode.org
 
 (package! hungry-delete)
 (package! grip-mode) ;; preview markdown

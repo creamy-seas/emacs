@@ -19,6 +19,7 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+
 (load-file (concat doom-user-dir "essential-config.el"))
 (load-file (concat doom-user-dir "text-manipulation.el"))
 (load-file (concat doom-user-dir "navigation.el"))
@@ -26,8 +27,9 @@
 (load-file (concat doom-user-dir "orgmode.el"))
 (load-file (concat doom-user-dir "org-config.el"))
 (load-file (concat doom-user-dir "gitmode.el"))
-;;(load-file (concat doom-user-dir "js.el"))
 (load-file (concat doom-user-dir "inkscapemode.el"))
+(load-file (concat doom-user-dir "emailmode.el"))
+
+;;(load-file (concat doom-user-dir "js.el"))
 ;;(load-file (concat doom-user-dir "compact-languages.el"))
 ;; (load-file (concat doom-user-dir "latexmode.el"))
-(load-file (concat doom-user-dir "emailmode.el"))

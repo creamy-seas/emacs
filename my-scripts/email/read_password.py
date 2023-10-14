@@ -10,11 +10,11 @@ import threading
 import urllib.parse
 import webbrowser
 
-# MAKE SURE TO INSTALL THESE with python -m pip install google google-auth-oauthlib msal
+# MAKE SURE TO INSTALL THESE with python -m pip install google-auth==2.22.0 google-auth-oauthlib==1.0.0 msal
 # using the python version that runs offlineimap
 from google.auth.transport.requests import Request
-from google_auth_oauthlib.flow import InstalledAppFlow
 from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
 from msal import ConfidentialClientApplication, SerializableTokenCache
 
 CREDENTIAL_FOLDER = "/home/antonov/db_mail"
