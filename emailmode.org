@@ -175,18 +175,17 @@ ClientSecret = "TxRBilcHdC6WGBee]fs?QR:SJ8nI[g82"
 #
 
 [general]
-accounts = ilya_OUTLOOK
-# accounts = ilya_GMAIL, ilya_DREAMSAI, vgoptics, ilya_NTLWORLD, yandex
+accounts = ilya_OUTLOOK, ilya_GMAIL, ilya_DREAMSAI, vgoptics, ilya_NTLWORLD, yandex
 
 # user interface for terminal
 ui = TTYUI
 
-pythonfile = ~/.doom.d/my-scripts/email/read_password.py
+pythonfile = $XDG_CONFIG_DIR/doom/my-scripts/email/read_password.py
 
 # when to stop trying to establish a connection
 socktimeout = 120
 
-postsynchook = mu index --maildir ~/mail
+postsynchook = mu index --maildir ~/db_mail
 autorefresh = 5
 quick = 10
 
@@ -222,7 +221,10 @@ oauth2_client_secret_eval=get_credentials("ilya.antonov@dreams-ai.com")["client_
 oauth2_access_token_eval=get_token_gmail("ilya.antonov@dreams-ai.com")
 
 ssl = yes
-sslcacertfile=/usr/local/etc/ca-certificates/cert.pem
+# Mac
+# sslcacertfile=/usr/local/etc/ca-certificates/cert.pem
+# Linux
+sslcacertfile =/etc/ssl/certs/ca-certificates.crt
 
 #  ____  __  __     _     ___  _
 # / ___||  \/  |   / \   |_ _|| |
@@ -254,7 +256,10 @@ oauth2_client_secret_eval=get_credentials("antonov.ilya225@gmail.com")["client_s
 oauth2_access_token_eval=get_token_gmail("antonov.ilya225@gmail.com")
 
 ssl = yes
-sslcacertfile =/usr/local/etc/ca-certificates/cert.pem
+# Mac
+# sslcacertfile=/usr/local/etc/ca-certificates/cert.pem
+# Linux
+sslcacertfile =/etc/ssl/certs/ca-certificates.crt
 
 # _   _  _____  _  __        __ ___   ____   _      ____
 #| \ | ||_   _|| | \ \      / // _ \ |  _ \ | |    |  _ \
@@ -279,7 +284,10 @@ remotepasseval = get_pass("ilya.antonov24@ntlworld.com")["password"]
 realdelete = no
 
 ssl = yes
-sslcacertfile =/usr/local/etc/ca-certificates/cert.pem
+# Mac
+# sslcacertfile=/usr/local/etc/ca-certificates/cert.pem
+# Linux
+sslcacertfile =/etc/ssl/certs/ca-certificates.crt
 
 folderfilter = lambda foldername: foldername  in ['INBOX', 'Drafts', 'Archive', 'Sent', 'Trash']
 
@@ -308,7 +316,10 @@ remotepasseval = get_pass("vgoptics@virginmedia.com")["password"]
 realdelete = no
 
 ssl = yes
-sslcacertfile =/usr/local/etc/ca-certificates/cert.pem
+# Mac
+# sslcacertfile=/usr/local/etc/ca-certificates/cert.pem
+# Linux
+sslcacertfile =/etc/ssl/certs/ca-certificates.crt
 
 folderfilter = lambda foldername: foldername  in ['INBOX', 'Drafts', 'Archive', 'Sent', 'Trash']
 
@@ -338,7 +349,10 @@ oauth2_client_secret_eval=get_credentials("ilya.antonov@rhul.ac.uk")["client_sec
 oauth2_access_token_eval=get_token_outlook("ilya.antonov@rhul.ac.uk")
 
 ssl = yes
-sslcacertfile =/usr/local/etc/ca-certificates/cert.pem
+# Mac
+# sslcacertfile=/usr/local/etc/ca-certificates/cert.pem
+# Linux
+sslcacertfile =/etc/ssl/certs/ca-certificates.crt
 
 folderfilter = lambda folder: folder in ['INBOX', 'Drafts', 'Archive', 'Sent Items', 'Deleted Items']
 
@@ -364,7 +378,10 @@ remoteuser = mail@ilya-antonov.ru
 remotepasseval = get_pass("mail@ilya-antonov.ru")["password"]
 
 ssl = yes
-sslcacertfile =/usr/local/etc/ca-certificates/cert.pem
+# Mac
+# sslcacertfile=/usr/local/etc/ca-certificates/cert.pem
+# Linux
+sslcacertfile =/etc/ssl/certs/ca-certificates.crt
 #+END_SRC
 
 If offlineimap is giving an error, it is probably picking up python3.7. Delete all python3.7 email-related libraries:
@@ -441,7 +458,10 @@ logfile ~/.msmtp.log
 protocol smtp
 auth on
 tls on
-tls_trust_file /usr/local/etc/ca-certificates/cert.pem
+# Mac
+# tls_trust_file /usr/local/etc/ca-certificates/cert.pem
+# Linux
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
 
 #  ___   _   _  _____  _      ___    ___   _  __
 # / _ \ | | | ||_   _|| |    / _ \  / _ \ | |/ /
@@ -557,6 +577,18 @@ or
  #+END_SRC
 
 - Copy the SHA256 into tls_fingerprint of the =.msmtprc= file
+*** c. On certain systems, msmtp has a protection layer to prevent execution of programs
+In that case add the following in the =profile headers= section of =/etc/apparmor.d/usr.bin.msmtp=
+
+#+begin_src text
+/home/antonov/.config/doom/my-scripts/email/read_password.py PUx,
+#+end_src
+
+And then run
+
+#+begin_src shell
+sudo apparmor_parser -r /etc/apparmor.d/usr.bin.msmtp
+#+end_src
 
 ** Google
 Create a new label in Google Mail. Next time it will sync to computer
