@@ -41,3 +41,19 @@ Moreover, you can always go into the init.el file and comment out the modes you 
 - Need to install the relevant backend or it will silently fail
 
 * Neotree with =C-c o p=
+
+
+# Doom commands
+
+Compile files into `.elc` - **remember, that you will need to recompile these files for them to have an effect** which is already handled by the tangle script
+
+```
+doom compile
+```
+
+Doom is an active project and many of its 300+ packages are in active development as well. It is wise to occasionally update:
+```
+doom upgrade
+```
+
+
