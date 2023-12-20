@@ -1,7 +1,7 @@
 #+TITLE: Ricing
 
 * Welcome screen
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle yes
 (setq fancy-splash-image "~/.doom.d/my-files/doom-black-hole.png")
 #+end_src
 * All-the-icons
@@ -30,9 +30,11 @@ nerd-icons-install-fonts and all-theicons-install-fonts
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 ;; (setq doom-theme 'spacemacs-light)
-;; (setq doom-theme 'creamy-seas)
-;; (setq doom-theme 'doom-earl-grey)
-(setq doom-theme 'doom-homage-white)
+;;(setq doom-theme 'doom-earl-grey)
+;;(setq doom-theme 'doom-homage-white)
+;;(setq doom-theme 'whiteboard)
+(setq doom-theme 'doom-shades-of-purple)
+;;(setq doom-theme 'doom-molokai)
 #+END_SRC
 
 * Font
@@ -61,7 +63,7 @@ nerd-icons-install-fonts and all-theicons-install-fonts
 #+END_SRC
 
 * Fade current line
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package! beacon
   :config
   (beacon-mode 1))

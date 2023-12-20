@@ -23,6 +23,12 @@ Nice export template
       org-html-checkbox-type 'html))
  #+END_SRC
 
+
+* Export with nice html
+#+begin_src emacs-lisp
+(require 'ox-twbs)
+#+end_src
+
 * Capture template
 #+begin_src emacs-lisp
 (defun my/org/add-to-capture (template)
@@ -96,7 +102,7 @@ Nice export template
 Need to install on os-x terminal-notifier
 #+BEGIN_SRC emacs-lisp
   (defvar terminal-notifier-command
-    (executable-find "terminal-notifier")
+    (executable-find "notify-send")
     "The path to terminal-notifier.")
 
   (defun terminal-notifier-notify (title message)
@@ -104,15 +110,11 @@ Need to install on os-x terminal-notifier
     (start-process "terminal-notifier"
                    "terminal-notifier"
                    terminal-notifier-command
-                   "-appIcon" "/Users/CCCP/creamy_seas/gallery_road/breeding_humanoids/train.jpg"
-                   "-sound" "submarine"
-                   "-title" title
-                   "-message" message
-                   "-activate" "org.gnu.Emacs"))
+                   "--app-name" "Emacs"))
 
   (defun timed-notification (time msg)
     (interactive "sNotification when (e.g: 2 minutes, 60 seconds, 3 days): \nsMessage: ")
-    (run-at-time time nil (lambda (msg) (terminal-notifier-notify "卍 Emacs" msg)) msg))
+    (run-at-time time nil (lambda (msg) (terminal-notifier-notify "Emacs" msg)) msg))
 
   (after! org
     (setq org-show-notification-handler

@@ -92,9 +92,7 @@ gpgconf --kill gpg-agent
 - [[https://notanumber.io/2016-10-03/better-email-with-mu4e/][Another great read]]
 - [[https://vxlabs.com/2014/06/06/configuring-emacs-mu4e-with-nullmailer-offlineimap-and-multiple-identities/][It keeps going]]
 - [[https://ict4g.net/adolfo/notes/2014/12/27/emacs-imap.html][Using keychains]]
-- [[https://www.djcbsoftware.nl/code/mu/cheatsheet.html][mu cheatsheet]]
-
-* External setup
+- [[https://www.djcbsoftware.nl/code/mu/cheatsheet.html][mu cheatsheet]]* External setup
 ** 1. What to install
 | =mu=                                                      | mail indexer and searcher                   |
 | =offlineimap=                                             | for the email server                        |
@@ -689,7 +687,7 @@ Create a new label in Google Mail. Next time it will sync to computer
              (mu4e-compose-signature      . "\n\nPhysics Handyman\n\n☁ DREAMSAI")
              (mu4e-compose-format-flowed  . t)))))
  #+END_SRC
-***  =antonov.ilya225@gmail.com=
+*** =antonov.ilya225@gmail.com=
 #+BEGIN_SRC emacs-lisp
 (after! mu4e
   (defvar my/mu4e/context-gmail
@@ -709,6 +707,29 @@ Create a new label in Google Mail. Next time it will sync to computer
              (mu4e-refile-folder          . "/ilya_GMAIL/[Gmail].Starred")
              (mu4e-sent-messages-behavior . delete) ; Gmail takes care of this
              (mu4e-compose-signature      . "Ilya Antonov,\n⦿ GMAIL")
+             (mu4e-compose-format-flowed . nil)))))
+#+END_SRC
+
+*** =ilya.antonov@faculty.ai=
+#+BEGIN_SRC emacs-lisp
+(after! mu4e
+  (defvar my/mu4e/context-faculty
+    (make-mu4e-context
+     :name "faculty"
+     :enter-func (lambda () (mu4e-message "Entering FACULTY"))
+     :leave-func (lambda () (mu4e-message "Leaving FACULTY"))
+     :match-func (lambda (msg)
+                   (when msg
+                     (mu4e-message-contact-field-matches
+                      msg (list :to :from :cc) "ilya.antonov@faculty.ai")))
+     :vars '((user-mail-address . "ilya.antonov@faculty.ai")
+             (user-full-name              . "Faculty (GMAIL)")
+             (mu4e-sent-folder            . "/faculty/[Gmail].Sent Mail")
+             (mu4e-drafts-folder          . "/faculty/[Gmail].Drafts")
+             (mu4e-trash-folder           . "/faculty/[Gmail].Bin")
+             (mu4e-refile-folder          . "/faculty/[Gmail].Starred")
+             (mu4e-sent-messages-behavior . delete) ; Gmail takes care of this
+             (mu4e-compose-signature      . "Ilya Antonov")
              (mu4e-compose-format-flowed . nil)))))
 #+END_SRC
 *** =vgoptics@virginmedia.com=
@@ -758,7 +779,9 @@ Create a new label in Google Mail. Next time it will sync to computer
 *** GMAIL =ilya.antonov@dreams-ai.com= and =antonov.ilya225@gmail.com=
 #+BEGIN_SRC emacs-lisp
 (setq +mu4e-gmail-accounts '(("ilya.antonov@dreams-ai.com" . "/ilya_DREAMSAI")
-                             ("antonov.ilya225@gmail.com" . "/ilya_GMAIL")))
+                             ("antonov.ilya225@gmail.com" . "/ilya_GMAIL")
+                             ("ilya.antonov@faculty.ai" . "/faculty")
+                             ))
 #+END_SRC
 *** Load the accounts
 #+begin_src emacs-lisp
@@ -770,6 +793,7 @@ Create a new label in Google Mail. Next time it will sync to computer
               my/mu4e/context-gmail
               my/mu4e/context-yandex
               my/mu4e/context-vgoptics
+              my/mu4e/context-faculty
               )))
 #+end_src
 ** Custom actions
@@ -828,6 +852,7 @@ Create a new label in Google Mail. Next time it will sync to computer
         ("/ilya_GMAIL/INBOX" . ?g)
         ("/ilya_NTLWORLD/INBOX" . ?n)
         ("/ilya_OUTLOOK/INBOX" . ?u)
+        ("/faculty/INBOX" . ?f)
         ("/vgoptics/INBOX" . ?v)
         ("/yandex/INBOX" . ?y)))
  #+END_SRC

@@ -41,8 +41,8 @@ Access to my custom keymap space on =C-z= or =C-\=
   (define-prefix-command 'my/keymap)
   (global-set-key (kbd "C-z") 'my/keymap)
   (global-set-key (kbd "C-\\") 'my/keymap)
-  (after! compact
-    (keymap-set org-mode-map "C-#" nil))
+  (add-hook 'org-mode-hook (lambda ()
+                              (keymap-set org-mode-map "C-#" nil)))
   (global-set-key (kbd "C-#") 'my/keymap)
  #+END_SRC
 * Keymap: symbols

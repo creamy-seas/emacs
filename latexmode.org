@@ -173,7 +173,8 @@ It would be a mumble jumble like with a lot of escapes
 (after! org
   ;; Use imagemagick for export
   (setq org-preview-latex-default-process 'imagemagick)
-  (add-to-list 'org-latex-packages-alist '("" "ketbra" t)))
+  ;;(add-to-list 'org-latex-packages-alist '("" "ketbra" t))
+  )
 #+end_src
 (setq org-latex-packages-alist '("\\usepackage{ketbra}"))
 * DOWN =my/latex/save-buffer=       =C-x C-s=
