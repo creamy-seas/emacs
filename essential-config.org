@@ -122,6 +122,36 @@ Always kill the current buffer - for some reason it is not the default
 #+END_SRC
 
 * Minor Functions
+** =my/get-frame-name=
+#+begin_src emacs-lisp
+(defun my/get-frame-name (&optional frame)
+  "Return the string that names FRAME (a frame).  Default is selected frame."
+  (unless frame
+                                        ; Default to current frame
+    (setq frame (selected-frame)))
+  (if (framep frame)
+                                        ; If argument is grame, unpack the name parameter
+      (cdr (assq 'name (frame-parameters frame)))
+    (error "Function `get-frame-name': Argument not a frame: `%s'" frame)))
+#+end_src
+** =my/find-frame=
+#+begin_src emacs-lisp
+(defun my/find-frame (frame)
+  "Return a frame, if any, named FRAME (a frame or a string).
+If none, return nil.
+If FRAME is a frame, it is returned."
+  (cond ((framep frame) frame) ; Return the frame straigh away
+        ((stringp frame) ; If string is supplied iterate through until matching frame is found
+         (catch 'get-a-frame-found
+           (dolist (fr (frame-list))
+             (when (string= frame (my/get-frame-name fr))
+               (throw 'get-a-frame-found fr)))
+           ;; No frame is found
+           nil))
+        (t (error
+            "Function `get-frame-name': Arg neither a string nor a frame: `%s'"
+            frame))))
+#+end_src
 ** =my/gpg-load=
 #+begin_src emacs-lisp
 (defun my/gpg-load ()

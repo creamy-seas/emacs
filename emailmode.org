@@ -92,7 +92,8 @@ gpgconf --kill gpg-agent
 - [[https://notanumber.io/2016-10-03/better-email-with-mu4e/][Another great read]]
 - [[https://vxlabs.com/2014/06/06/configuring-emacs-mu4e-with-nullmailer-offlineimap-and-multiple-identities/][It keeps going]]
 - [[https://ict4g.net/adolfo/notes/2014/12/27/emacs-imap.html][Using keychains]]
-- [[https://www.djcbsoftware.nl/code/mu/cheatsheet.html][mu cheatsheet]]* External setup
+- [[https://www.djcbsoftware.nl/code/mu/cheatsheet.html][mu cheatsheet]]
+* External setup
 ** 1. What to install
 | =mu=                                                      | mail indexer and searcher                   |
 | =offlineimap=                                             | for the email server                        |
@@ -920,6 +921,20 @@ man mu-query
  #+BEGIN_SRC emacs-lisp
 (setq mu4e-update-pre-hook 'my/gpg-load)
 
+(defun my/mu4e/open-buffer ()
+    "Switches to or opens a new frame, and retains or opens a new mu4e buffer in it."
+    (interactive)
+    (progn
+      (let* ((mu4e-buffer-name "📫 Mail")
+             (fr (my/find-frame mu4e-buffer-name)))
+        ;; Look for mu4e frame, switching to it immediately
+        (if fr (select-frame-set-input-focus fr)
+          ;; Or creating a new frame 
+          (make-frame `((name . ,mu4e-buffer-name)))))
+      ;; If a mu4e buffe is not open, go to the main email page
+      (if (not (string-match ".*mu4e.*" (buffer-name)))
+          (mu4e))))
+
 (defun my/mu4e/update ()
   (interactive)
   (let (
@@ -941,7 +956,7 @@ man mu-query
     ))
 (global-set-key (kbd "C-C M U") 'my/mu4e/update)
 (define-key my/keymap (kbd "u") 'my/mu4e/update)
-(define-key my/keymap (kbd "m") 'mu4e)
+(define-key my/keymap (kbd "m") 'my/mu4e/open-buffer)
  #+END_SRC
 * Sending mail with =msmtp=
 #+BEGIN_SRC emacs-lisp
