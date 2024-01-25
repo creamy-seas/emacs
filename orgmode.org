@@ -185,7 +185,11 @@ What languages can be evaluated in org buffers by hitting =C-c C-c=
   (add-to-list 'org-structure-template-alist
                '("sh" . "src shell"))
   (add-to-list 'org-structure-template-alist
-               '("t" . "src typescript")))
+               '("t" . "src typescript"))
+  (add-to-list 'org-structure-template-alist
+               '("k" . "src haskell"))
+  (add-to-list 'org-structure-template-alist
+               '("k" . "src haskell")))
 #+END_SRC
 
 * PACKAGE Org bullets

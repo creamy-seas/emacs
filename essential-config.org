@@ -277,3 +277,12 @@ If FRAME is a frame, it is returned."
       (insert (format "%s\n" (car list-to-write)))
       (setq list-to-write (cdr list-to-write))))
  #+END_SRC
+
+** =my/say-region=
+#+begin_src emacs-lisp
+(defun my/speak-region (start end)
+ (interactive "r")
+ (shell-command-on-region start end "say $(cat)")
+)
+(define-key my/keymap (kbd "s") 'my/speak-region)
+#+end_src

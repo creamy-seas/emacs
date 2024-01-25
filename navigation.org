@@ -1,5 +1,10 @@
 #+TITLE: Navigation
 
+* Open common buffers
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-c f s") 'list-processes)
+#+end_src
+
 * Buffer name style
 #+BEGIN_SRC emacs-lisp
   (setq uniquify-buffer-name-style 'post-forward)
