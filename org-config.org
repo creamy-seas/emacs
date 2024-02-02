@@ -33,6 +33,7 @@
        "~/creamy_seas/drill.org"
        "~/creamy_seas/projects/dai-cambridge/2022-10_helium-pay/adventure-brief.org"
        "~/creamy_seas/projects/faculty/adventure_brief.org"
+       "~/creamy_seas/projects/mlperformance/adventure_brief.org"
        ))
 #+END_SRC
 * Timestamp
@@ -251,7 +252,7 @@ Added: %U
                                     ;; "BRYAN(z)"
                                     "PHD(q)"
                                     "PHYS(p)"
-                                    "DREAMS-AI(a)"
+                                    "DREAMS-AI(D)" "APPLICATION(a)"
                                     "ANNUAL(h)"
                                     ;; "SA36(3)"
                                     ;;"HOUSE(h)"
@@ -262,11 +263,12 @@ Added: %U
                                     ;; "SKYPE(s)"
                                     ;;"SINO"
                                     ;;"REACH"
+                                    "MONEY(m)"
                                     "|"
                                     "DONE(d)"
                                     ;;"DOMINATED(x)"
                                     "PACKAGE"
-                                    "MANUAL-PACKAGE"
+                                    ;; "MANUAL-PACKAGE"
                                     "CONFIG"
                                     ;;"BUREUCRACY(b)"
                                     )))
@@ -274,8 +276,9 @@ Added: %U
                                      ("STARTED" . "yellow")
                                      ("CURRENT" . (:foreground "#ffff0a" :background "#754ec1" :weight bold))
                                      ("DREAMS-AI" . (:foreground "#68c3c1" :background "#fdc989" :weight bold))
+                                     ("APPLICATION" . (:foreground "#68c3c1" :background "#fdc989" :weight bold))
                                      ;; ("SA36" . (:background "#01168a" :foreground "#fdc989" :weight bold))
-                                     ("MANUAL-PACKAGE" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
+                                     ("MONEY" . (:background "#000000" :foreground "#ffd700" :weight bold))
                                      ;; ("SKYPE" . (:background "#00AFF0" :foreground "#ffffff" :weight bold))
                                      ;;("SINO" . (:background "#ffe7ba" :foreground "#3d3d3d" :weight bold))
                                      ("ANNUAL" . (:background "#68c3c1" :foreground "#fdc989" :weight bold))

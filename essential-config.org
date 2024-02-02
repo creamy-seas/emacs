@@ -89,7 +89,19 @@ Access to my custom keymap space on =C-z= or =C-\=
 
 (global-set-key (kbd "C-c f i") (function my/config-file-open))
 #+end_src
+** Browser private config =C-c f m=
+#+begin_src emacs-lisp
+(defun my/private-config-open ()
+  "Open an interactively chosen file in the ./config directory."
+  (interactive)
+  (let* ((config-dir (expand-file-name "~/.config"))
+         (chosen-file (completing-read "Choose a file: " (directory-files config-dir t))))
+      (if (file-exists-p chosen-file)
+          (find-file chosen-file)
+        (message "File does not exist: %s" chosen-file))))
 
+(global-set-key (kbd "C-c f q") (function my/private-config-open))
+#+end_src
 ** Compiling of literate configuration
 Whenever an org file specifying configuration is saved
 1. Tangle it (extract out all of the Emacs-lisp code blocks)
