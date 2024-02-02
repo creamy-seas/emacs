@@ -431,7 +431,7 @@ mu4e works tightly with mu. As a result, part of the configuration is set in mu.
 In order to setup the mail database, you need to run the following
 
 #+BEGIN_SRC shell
-mu init --maildir="~/db_mail" --my-address="ilya.antonov@dreams-ai.com" --my-address="ilya.antonov24@ntlworld.com" --my-address="antonov.ilya225@gmail.com" --my-address="ilya.antonov@rhul.ac.uk" --my-address="vgoptics@virginmedia.com" --my-address="mail@ilya-antonov.ru"
+mu init --maildir="~/db_mail" --my-address="ilya.antonov@dreams-ai.com" --my-address="ilya.antonov24@ntlworld.com" --my-address="antonov.ilya225@gmail.com" --my-address="ilya.antonov@rhul.ac.uk" --my-address="vgoptics@virginmedia.com" --my-address="mail@ilya-antonov.ru" --my-address="dr.creamy.seas@gmail.com" --my-address="ilya@mlperformance.co.uk"
 #+END_SRC
 
 Then index the messages with:
@@ -688,6 +688,51 @@ Create a new label in Google Mail. Next time it will sync to computer
              (mu4e-compose-signature      . "\n\nPhysics Handyman\n\n☁ DREAMSAI")
              (mu4e-compose-format-flowed  . t)))))
  #+END_SRC
+*** =dr.creamy.seas@gmail.com=
+#+BEGIN_SRC emacs-lisp
+(after! mu4e
+  (defvar my/mu4e/context-work
+    (make-mu4e-context
+     :name "work"
+     :enter-func (lambda () (message "Entering Work ☁"))
+     :leave-func (lambda () (message "🦑 Plummeting out"))
+     :match-func (lambda (msg)
+                   (when msg
+                     (mu4e-message-contact-field-matches
+                      msg (list :to :from :cc) "dr.creamy.seas@gmail.com")))
+     :vars '((user-mail-address . "dr.creamy.seas@gmail.com")
+             (user-full-name              . "Ilya Antonov (Work)")
+             (mu4e-sent-folder            . "/ilya_work/[Gmail].Sent Mail")
+             (mu4e-drafts-folder          . "/ilya_work/[Gmail].Drafts")
+             (mu4e-trash-folder           . "/ilya_work/[Gmail].Bin")
+             (mu4e-refile-folder          . "/ilya_work/[Gmail].Starred")
+             (mu4e-sent-messages-behavior . delete) ; Gmail takes care of this
+             (mu4e-compose-signature      . "\n\nIlya Antonov\n\n☁ Dreaming")
+             (mu4e-compose-format-flowed  . t)))))
+ #+END_SRC
+
+*** =ilya@mlperformance.co.uk=
+#+BEGIN_SRC emacs-lisp
+(after! mu4e
+  (defvar my/mu4e/context-ml
+    (make-mu4e-context
+     :name "ml"
+     :enter-func (lambda () (message "Entering Work ☁"))
+     :leave-func (lambda () (message "🦑 Plummeting out"))
+     :match-func (lambda (msg)
+                   (when msg
+                     (mu4e-message-contact-field-matches
+                      msg (list :to :from :cc) "ilya@mlperformance.co.uk")))
+     :vars '((user-mail-address . "ilya@mlperformance.co.uk")
+             (user-full-name              . "Ilya Antonov (MLPerformacen)")
+             (mu4e-sent-folder            . "/mlperformance/[Gmail].Sent Mail")
+             (mu4e-drafts-folder          . "/mlperformance/[Gmail].Drafts")
+             (mu4e-trash-folder           . "/mlperformance/[Gmail].Bin")
+             (mu4e-refile-folder          . "/mlperformance/[Gmail].Starred")
+             (mu4e-sent-messages-behavior . delete) ; Gmail takes care of this
+             (mu4e-compose-signature      . "\n\nIlya Antonov")
+             (mu4e-compose-format-flowed  . t)))))
+ #+END_SRC
 *** =antonov.ilya225@gmail.com=
 #+BEGIN_SRC emacs-lisp
 (after! mu4e
@@ -780,8 +825,10 @@ Create a new label in Google Mail. Next time it will sync to computer
 *** GMAIL =ilya.antonov@dreams-ai.com= and =antonov.ilya225@gmail.com=
 #+BEGIN_SRC emacs-lisp
 (setq +mu4e-gmail-accounts '(("ilya.antonov@dreams-ai.com" . "/ilya_DREAMSAI")
+                             ("dr.creamy.seas@gmail.com" . "/ilya_work")
                              ("antonov.ilya225@gmail.com" . "/ilya_GMAIL")
                              ("ilya.antonov@faculty.ai" . "/faculty")
+                             ("ilya@mlperformance.co.uk" . "/mlperformance")
                              ))
 #+END_SRC
 *** Load the accounts
@@ -791,10 +838,11 @@ Create a new label in Google Mail. Next time it will sync to computer
         (list my/mu4e/context-outlook
               my/mu4e/context-dreamsai
               my/mu4e/context-ntlworld
+              my/mu4e/context-work
               my/mu4e/context-gmail
               my/mu4e/context-yandex
               my/mu4e/context-vgoptics
-              my/mu4e/context-faculty
+              my/mu4e/context-ml
               )))
 #+end_src
 ** Custom actions
@@ -855,6 +903,8 @@ Create a new label in Google Mail. Next time it will sync to computer
         ("/ilya_OUTLOOK/INBOX" . ?u)
         ("/faculty/INBOX" . ?f)
         ("/vgoptics/INBOX" . ?v)
+        ("/ilya_work/INBOX" . ?w)
+        ("/mlperformance/INBOX" . ?m)
         ("/yandex/INBOX" . ?y)))
  #+END_SRC
 *** Bookmarks
@@ -874,11 +924,11 @@ man mu-query
   (add-to-list 'mu4e-bookmarks
                '(:name "All Inboxes"
                  :key ?i
-                 :query "maildir:/ilya_GMAIL/INBOX OR maildir:/ilya_NTLWORLD/INBOX OR maildir:/ilya_OUTLOOK/INBOX OR maildir:/ilya_DREAMSAI/INBOX OR maildir:/vgoptics OR maildir:/yandex"
+                 :query "maildir:/ilya_GMAIL/INBOX OR maildir:/ilya_NTLWORLD/INBOX OR maildir:/ilya_OUTLOOK/INBOX OR maildir:/ilya_DREAMSAI/INBOX OR maildir:/vgoptics OR maildir:/yandex OR maildir:/ilya_work/INBOX OR maildir:/mlperformance/INBOX"
                  ))
   (add-to-list 'mu4e-bookmarks
                '(:name "All Archives"
-                 :query "maildir:/ilya_GMAIL/[Gmail].Starred OR maildir:/ilya_NTLWORLD/Archive OR maildir:/ilya_OUTLOOK/Archive OR maildir:/ilya_DREAMSAI/[Gmail].Starred"
+                 :query "maildir:/ilya_GMAIL/[Gmail].Starred OR maildir:/ilya_NTLWORLD/Archive OR maildir:/ilya_OUTLOOK/Archive OR maildir:/ilya_DREAMSAI/[Gmail].Starred OR maildir:/ilya_work/[Gmail].Starred"
                  :key ?a)))
 #+end_src
 ** View: Messages
@@ -1024,9 +1074,13 @@ Make the =gnus-dired-mail-buffers= function also work on message-mode derived mo
          "OR "
          "flag:unread maildir:/ilya_GMAIL/INBOX "
          "OR "
-         "flag:unread maildir:/ilya_DREAMSAI/INBOX "
-         " OR "
-         "flag:unread maildir:/ilya_OUTLOOK/INBOX"
+         "flag:unread maildir:/ilya_OUTLOOK/INBOX "
+         "OR "
+         "flag:unread maildir:/yandex/INBOX "
+         "OR "
+         "flag:unread maildir:/vgoptics/INBOX "
+         "OR "
+         "flag:unread maildir:/mlperformance/INBOX"
          ))
   (mu4e-alert-enable-mode-line-display))
 #+end_src
