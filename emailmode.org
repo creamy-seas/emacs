@@ -1081,6 +1081,8 @@ Make the =gnus-dired-mail-buffers= function also work on message-mode derived mo
          "flag:unread maildir:/vgoptics/INBOX "
          "OR "
          "flag:unread maildir:/mlperformance/INBOX"
+         "OR "
+         "flag:unread maildir:/ilya_work/INBOX"
          ))
   (mu4e-alert-enable-mode-line-display))
 #+end_src

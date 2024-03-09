@@ -296,5 +296,5 @@ If FRAME is a frame, it is returned."
  (interactive "r")
  (shell-command-on-region start end "say $(cat)")
 )
-(define-key my/keymap (kbd "s") 'my/speak-region)
+(define-key my/keymap (kbd "S") 'my/speak-region)
 #+end_src

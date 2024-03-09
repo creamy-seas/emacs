@@ -23,7 +23,7 @@ If you want to check specific buffer with different language, add the following 
 
 ** Setup of default dict
 #+BEGIN_SRC emacs-lisp
-(setq ispell-personal-dictionary "/Users/CCCP/.aspell.en.pws")
+(setq ispell-personal-dictionary "/home/antonov/.aspell.en.pws")
 (setq ispell-dictionary "en_GB")
 (global-set-key (kbd "C-x C-w") (function ispell-word))
 (global-set-key (kbd "C-x w") (function flyspell-goto-next-error))
