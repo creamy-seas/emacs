@@ -43,20 +43,27 @@ Moreover, you can always go into the init.el file and comment out the modes you 
 * Neotree with =C-c o p=
 
 
-# Doom commands
-
+* Doom commands
 Compile files into `.elc` - **remember, that you will need to recompile these files for them to have an effect** which is already handled by the tangle script
 
-```
+#+begin_src shell
 doom compile
-```
+#+end_src
 
-Doom is an active project and many of its 300+ packages are in active development as well. It is wise to occasionally update:
-```
-doom upgrade
-```
+Doom is an active project and many of its 300+ packages are in active development as well. It is wise to occasionally update. This will fetch latest doom, install it and sync local packages
+#+begin_src shell
+doom upgrade # same as doom clean && doom sync && doom update
+#+end_src
 
+To update env file
+#+begin_src shell
+doom env
+#+end_src
 
+After changing emacs versions
+#+begin_src shell
+doom build
+#+end_src
 * Bugs
 ** Typescript language server not starting
 1. Uninstall
