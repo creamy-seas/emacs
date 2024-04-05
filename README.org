@@ -57,3 +57,14 @@ doom upgrade
 ```
 
 
+* Bugs
+** Typescript language server not starting
+1. Uninstall
+#+begin_src shell
+npm uninstall -g typescript-language-server
+#+end_src
+
+2. [@2] Install
+#+begin_src shell
+npm install -g typescript-language-server@4.0.0
+#+end_src
