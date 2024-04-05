@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: my-drawio-org-insert
+# --
+#+ATTR_HTML: :height ${1:200}px
+[[file:drawio/`my/drawio/org/file-name`.png]]
+$0
