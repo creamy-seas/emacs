@@ -100,11 +100,34 @@ Nice export template
 
 * Org timer
 #+BEGIN_SRC emacs-lisp
+(defvar my/org-mode-timer-message-file "/tmp/emacs-timer-message.txt")
+
+(defun my/org-timer-set ()
+  ;; Starts timer, asking user to describe the action to complete
+  (interactive)
+  (progn
+    (shell-command (concat "echo " (read-string "Tak to complete: ") " > " my/org-mode-timer-message-file))
+    (org-timer-set-timer)))
+
+(add-hook 'org-mode-hook (lambda ()
+                           (define-key org-mode-map (kbd "C-c C-x ;") 'my/org-timer-set)))
+
 (defun my/org-timer-done-notify ()
-  (shell-command (concat (executable-find "notify-send")
-                         " -i "
-                         (concat doom-user-dir "my-files/doom-logo.png")
-                         " -w 'Curent task done' '\n>> Move onto next'")))
+  (let ((timer-message (if (file-exists-p my/org-mode-timer-message-file)
+                           (with-temp-buffer
+                             (insert-file-contents my/org-mode-timer-message-file)
+                             (capitalize-word 1)
+                             (buffer-string))
+                         "Org task complete")))
+    (shell-command (concat (executable-find "notify-send")
+                           " -i "
+                           (concat doom-user-dir "my-files/doom-logo.png")
+                           (concat
+                            " --wait"
+                            " 'Current task done\n- "
+                            timer-message
+                            "> Move onto next'"
+                            )))))
 
 (add-hook 'org-timer-done-hook 'my/org-timer-done-notify)
 #+END_SRC
