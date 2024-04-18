@@ -32,4 +32,4 @@
 
 ;;(load-file (concat doom-user-dir "js.el"))
 ;;(load-file (concat doom-user-dir "compact-languages.el"))
-;; (load-file (concat doom-user-dir "latexmode.el"))
+(load-file (concat doom-user-dir "latexmode.el"))

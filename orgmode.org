@@ -138,22 +138,24 @@ Nice export template
  #+END_SRC
 
 * Org agendas
-#+begin_src common-lisp
+#+begin_src emacs-lisp
 (defun my/display-last-logbook-entry ()
   "Display the last logbook entry in the echo area when clocking in."
-  (org-back-to-heading t)
-  (when (re-search-forward "Rescheduled from" nil t) ; Get last rescheduled message
-    (let ((end (point-max); Search until next clock - this will be the message
-            ))
-      (forward-line 1)
-      (save-excursion
-       (setq end (when (re-search-forward "\nCLOCK:" nil t)
-                   (goto-char (match-beginning 0)))))
-      (let ((log-entry (buffer-substring-no-properties (point) end)))
-        (when (> (length log-entry) 0)
-          (message "⚒ Your task ⚒: %s" log-entry))))))
+  (save-excursion
+   (org-back-to-heading t)
+   (when (re-search-forward "Rescheduled from" nil t) ; Get last rescheduled message
+     (let ((end (point-max); Search until next clock - this will be the message
+                ))
+       (forward-line 1)
+       (save-excursion
+        (setq end (when (re-search-forward "\nCLOCK:" nil t)
+                    (goto-char (match-beginning 0)))))
+       (let ((log-entry (buffer-substring-no-properties (point) end)))
+         (when (> (length log-entry) 0)
+           (message "⚒ Your task ⚒: %s" log-entry)))))))
 
-(add-hook 'org-clock-in-hook #'my/display-last-logbook-entry)
+(after! org
+        (add-hook 'org-clock-in-hook 'my/display-last-logbook-entry))
 #+end_src
 * Babel
 What languages can be evaluated in org buffers by hitting =C-c C-c=

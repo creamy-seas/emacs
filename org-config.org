@@ -3,14 +3,28 @@
 * Agenda view
 #+BEGIN_SRC emacs-lisp
 (setq org-agenda-custom-commands '(("c" "Simple agenda view"
-                                    ((agenda "" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'regexp ":drill:"))))) nil)
+                                    ((agenda ""
+                                             ((org-agenda-skip-function '(org-agenda-skip-entry-if 'regexp ":drill:"))
+                                              (org-agenda-prefix-format "%-12t% s")))))
 
                                    ("i" "My summary" (
-                                                      (todo "SINO|REACH|DREAMS-AI" ((org-agenda-overriding-header "Dreams-AI") (org-agenda-span 'fortnight)))
-                                                      (todo "PHYS" ((org-agenda-sorting-strategy '(deadline-up)) (org-agenda-span 'fortnight) (org-agenda-overriding-header "Quantum Physics!")))
-                                                      (todo "TODO" ((org-agenda-span 20) (org-agenda-overriding-header "My goals")))
-                                                      (todo "ANNUAL" ((org-agenda-span 'fortnight) (org-agenda-overriding-header "Incoming deadlines")))
-                                                      )
+                                                      (todo "MONEY" (
+                                                                     (org-agenda-overriding-header "Money")
+                                                                     (org-agenda-span 'fortnight)
+                                                                     (org-agenda-prefix-format "%-12t%s")))
+                                                      (todo "PHYS" (
+                                                                    (org-agenda-sorting-strategy '(deadline-up))
+                                                                    (org-agenda-span 'fortnight)
+                                                                    (org-agenda-overriding-header "Quantum Physics!")
+                                                                    (org-agenda-prefix-format "%-12t% s")))
+                                                      (todo "TODO" (
+                                                                    (org-agenda-span 20)
+                                                                    (org-agenda-overriding-header "My goals")
+                                                                    (org-agenda-prefix-format "%-12t% s")))
+                                                      (todo "ANNUAL" (
+                                                                      (org-agenda-span 'fortnight)
+                                                                      (org-agenda-overriding-header "Incoming deadlines")
+                                                                      (org-agenda-prefix-format "%-12t% s"))))
                                     nil nil)))
 (defun my/open-my-summary ()
   (org-agenda "i"))
@@ -252,7 +266,7 @@ Added: %U
                                     ;; "BRYAN(z)"
                                     "PHD(q)"
                                     "PHYS(p)"
-                                    "DREAMS-AI(D)" "APPLICATION(a)"
+                                    "APPLICATION(a)"
                                     "ANNUAL(h)"
                                     ;; "SA36(3)"
                                     ;;"HOUSE(h)"
