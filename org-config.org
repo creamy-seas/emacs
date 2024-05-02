@@ -48,6 +48,7 @@
        "~/creamy_seas/projects/dai-cambridge/2022-10_helium-pay/adventure-brief.org"
        "~/creamy_seas/projects/faculty/adventure_brief.org"
        "~/creamy_seas/projects/mlperformance/adventure_brief.org"
+       "~/creamy_seas/projects/arbitrage-hero/adventure_brief.org"
        ))
 #+END_SRC
 * Timestamp
