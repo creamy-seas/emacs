@@ -40,13 +40,8 @@
        list
        "~/creamy_seas/antlers.org"
        "~/creamy_seas/monday_starts_on_saturday/adventure_brief.org"
-       "~/creamy_seas/monday_starts_on_saturday/cqps/cqps_notes.org"
-       "~/creamy_seas/monday_starts_on_saturday/photon/photon_counting_notes.org"
-       "~/creamy_seas/monday_starts_on_saturday/lab-results/log_file.org"
        "~/creamy_seas/monday_starts_on_saturday/power-meter/adventure_brief.org"
        "~/creamy_seas/drill.org"
-       "~/creamy_seas/projects/dai-cambridge/2022-10_helium-pay/adventure-brief.org"
-       "~/creamy_seas/projects/faculty/adventure_brief.org"
        "~/creamy_seas/projects/mlperformance/adventure_brief.org"
        "~/creamy_seas/projects/arbitrage-hero/adventure_brief.org"
        ))

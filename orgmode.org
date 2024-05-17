@@ -102,12 +102,35 @@ Nice export template
 #+BEGIN_SRC emacs-lisp
 (defvar my/org-mode-timer-message-file "/tmp/emacs-timer-message.txt")
 
+(defun my/write-logbook-entry (msg)
+  "Write the message on top of the LOGBOOK entry, creating it if required"
+  (save-excursion
+   (org-back-to-heading t)
+   (let ((subtree-end (save-excursion (org-end-of-subtree t t))))
+     ; Get the next logbook entry within the current block
+     (if (re-search-forward ":LOGBOOK:" subtree-end t)
+         (progn
+           ; Case when entry exists - just enter the message
+           (forward-line 1)
+           (insert (concat "- " msg "\n")))
+       (progn
+         ; Case when entry does not exist in subtree - create one
+         (forward-line 1)
+         (let ((current-line (thing-at-point 'line t)))
+           ; Move forward one line if on a deadline or schedule item
+           (when (or (string-match-p "SCHEDULED" current-line)
+                     (string-match-p "DEADLINE" current-line))
+             (forward-line 1)))
+         (insert (concat ":LOGBOOK:" "\n- " msg "\n" ":END:" "\n")))))))
+
 (defun my/org-timer-set ()
   ;; Starts timer, asking user to describe the action to complete
   (interactive)
-  (progn
-    (shell-command (concat "echo " (read-string "Tak to complete: ") " > " my/org-mode-timer-message-file))
-    (org-timer-set-timer)))
+  (let ((msg (read-string "Tak to complete: ")))
+    (shell-command (concat "echo " msg " > " my/org-mode-timer-message-file))
+    (my/write-logbook-entry msg)
+    (org-timer-set-timer)
+    (org-clock-in)))
 
 (add-hook 'org-mode-hook (lambda ()
                            (define-key org-mode-map (kbd "C-c C-x ;") 'my/org-timer-set)))
@@ -131,6 +154,33 @@ Nice export template
 
 (add-hook 'org-timer-done-hook 'my/org-timer-done-notify)
 #+END_SRC
+
+* Export of all log entries
+Using chat
+
+#+begin_src emacs-lisp
+(defun my/export-logbooks-to-file (output-file)
+  "Export all :LOGBOOK: entries in the current buffer to OUTPUT-FILE."
+  (interactive "FEnter output file name: ")
+  (let ((logbooks '())
+        (output-buffer (get-buffer-create "*Logbooks Output*")))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward ":LOGBOOK:" nil t)
+        (let ((start (point)))
+          (if (re-search-forward "^\\* " nil t)
+              (backward-char)
+            (goto-char (point-max)))
+          (let ((logbook (buffer-substring-no-properties start (point))))
+            (push logbook logbooks))))
+      (with-current-buffer output-buffer
+        (erase-buffer)
+        (dolist (logbook (reverse logbooks))
+          (insert logbook "\n"))
+        (write-file output-file))
+      (kill-buffer output-buffer)
+      (message "Logbooks exported to %s" output-file))))
+#+end_src
 
 * Change the ellipsis to ↴
 #+BEGIN_SRC emacs-lisp
